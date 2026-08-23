@@ -2148,6 +2148,9 @@
               </div>
 
               <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-pull-live-attendance-direct" title="ดึงรายชื่อที่เช็คชื่อผ่าน Dynamic OTP / QR Code ล่าสุด">
+                  <i class="fas fa-bolt"></i> 📥 ดึงข้อมูลจากจอโปรเจกเตอร์
+                </button>
                 <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-mark-all-present">
                   <i class="fas fa-check-double"></i> เลือกมาเรียนทั้งห้อง
                 </button>
@@ -3211,6 +3214,13 @@
           var headerDateLabel = document.getElementById('header-date-text');
           if (headerDateLabel) headerDateLabel.textContent = formatThaiDate(this.value);
           loadAttendanceDataForSelectedDate();
+        });
+      }
+
+      var btnPullLiveDirect = document.getElementById('btn-pull-live-attendance-direct');
+      if (btnPullLiveDirect) {
+        btnPullLiveDirect.addEventListener('click', function() {
+          transferLiveAttendanceToRoomList();
         });
       }
 
@@ -4988,8 +4998,11 @@
 
     function transferLiveAttendanceToRoomList() {
       var sess = AppState.activeSession;
-      var targetClass = (sess && sess.className && sess.className !== 'undefined' && sess.className !== 'all') ? sess.className : AppState.selectedClass;
-      var targetDate = sess ? sess.date : AppState.selectedDate;
+      var attClassInput = document.getElementById('att-class-select');
+      var attDateInput = document.getElementById('att-date-select');
+
+      var targetClass = (attClassInput && attClassInput.value) ? attClassInput.value : ((sess && sess.className && sess.className !== 'undefined' && sess.className !== 'all') ? sess.className : AppState.selectedClass);
+      var targetDate = (attDateInput && attDateInput.value) ? attDateInput.value : (sess ? sess.date : AppState.selectedDate);
 
       if (!targetClass || targetClass === 'all' || targetClass === 'undefined') {
         if (AppState.classes && AppState.classes.length > 0) {
@@ -6105,7 +6118,7 @@
         if (rec !== undefined && rec !== null) {
           currentStatus = (typeof rec === 'object' && rec.status) ? rec.status : rec;
         } else {
-          currentStatus = 'Present';
+          currentStatus = 'Absent';
         }
         
         var card = document.createElement('div');
@@ -6135,7 +6148,19 @@
         
         var subInfo = document.createElement('div');
         subInfo.className = 'student-sub-info';
-        subInfo.textContent = 'รหัส ' + student.studentId + ' • ห้อง ' + student.className;
+        var infoText = 'รหัส ' + student.studentId + ' • ห้อง ' + student.className;
+        if (rec && typeof rec === 'object') {
+          if (rec.selfiePhoto) {
+            infoText += ' • 📸 มีรูปเซลฟี่';
+          }
+          if (rec.distanceMeters) {
+            infoText += ' • 📍 ' + rec.distanceMeters + ' ม.';
+          }
+          if (rec.checkinTime && rec.checkinTime !== '-') {
+            infoText += ' (' + rec.checkinTime + ')';
+          }
+        }
+        subInfo.textContent = infoText;
         textGroup.appendChild(subInfo);
         
         metaBlock.appendChild(textGroup);
@@ -6222,7 +6247,7 @@
       for (var i = 0; i < cards.length; i++) {
         var studentId = cards[i].getAttribute('data-student-id');
         var checkedRadio = cards[i].querySelector('input[type="radio"]:checked');
-        var status = checkedRadio ? checkedRadio.value : 'Present';
+        var status = checkedRadio ? checkedRadio.value : 'Absent';
         
         listToSave.push({
           date: dateStr,
