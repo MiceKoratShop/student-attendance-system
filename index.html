@@ -4037,6 +4037,103 @@
       return Math.round(R * c);
     }
 
+    /**
+     * Robust Multi-Tier Mobile Geolocation Helper
+     * Prevents timeouts on mobile devices (iOS / Android) by using smart caching and progressive fallbacks
+     */
+    function requestRobustGeolocation(onSuccess, onError) {
+      if (!navigator.geolocation) {
+        if (onError) onError({ code: 0, message: 'อุปกรณ์หรือเบราว์เซอร์ไม่รองรับ GPS' });
+        return;
+      }
+
+      var isResolved = false;
+      var watchId = null;
+
+      function cleanup() {
+        if (watchId !== null) {
+          try {
+            navigator.geolocation.clearWatch(watchId);
+          } catch (e) {}
+          watchId = null;
+        }
+      }
+
+      function handleSuccess(pos) {
+        if (isResolved) return;
+        isResolved = true;
+        cleanup();
+        onSuccess(pos);
+      }
+
+      // Tier 1: Fast cached / immediate fix (high accuracy, 6s timeout, 30s cache)
+      navigator.geolocation.getCurrentPosition(
+        handleSuccess,
+        function(err1) {
+          if (isResolved) return;
+          if (err1 && err1.code === 1) {
+            // Permission Denied
+            isResolved = true;
+            if (onError) onError({ code: 1, message: 'กรุณาเปิด GPS และอนุญาตสิทธิ์ Location ในเบราว์เซอร์' });
+            return;
+          }
+
+          // Tier 2: Real-time watchPosition fallback (utilizes cellular/Wi-Fi positioning immediately)
+          try {
+            watchId = navigator.geolocation.watchPosition(
+              handleSuccess,
+              function(err2) {
+                if (isResolved) return;
+                cleanup();
+                // Tier 3: Low accuracy fallback with relaxed cache
+                navigator.geolocation.getCurrentPosition(
+                  handleSuccess,
+                  function(err3) {
+                    if (isResolved) return;
+                    isResolved = true;
+                    var errMsg = 'ไม่สามารถดึงพิกัดได้ (สัญญาณอ่อนหรืออยู่ในอาคารหนาแน่น)';
+                    if (err3 && err3.code === 1) errMsg = 'กรุณาอนุญาตสิทธิ์การเข้าถึงตำแหน่งพิกัด (Location Permission)';
+                    else if (err3 && err3.code === 2) errMsg = 'ไม่พบสัญญาณ GPS กรุณาเปิดระบบระบุตำแหน่ง';
+                    if (onError) onError({ code: err3 ? err3.code : 3, message: errMsg });
+                  },
+                  { enableHighAccuracy: false, timeout: 15000, maximumAge: 180000 }
+                );
+              },
+              { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 }
+            );
+
+            // Watch timeout safety timer
+            setTimeout(function() {
+              if (!isResolved) {
+                cleanup();
+                navigator.geolocation.getCurrentPosition(
+                  handleSuccess,
+                  function(err4) {
+                    if (isResolved) return;
+                    isResolved = true;
+                    if (onError) onError({ code: 3, message: 'การค้นหาพิกัดใช้เวลานานเกินไป กรุณากดลองใหม่อีกครั้ง' });
+                  },
+                  { enableHighAccuracy: false, timeout: 12000, maximumAge: 300000 }
+                );
+              }
+            }, 8000);
+          } catch (ex) {
+            // Immediate Tier 3 fallback
+            navigator.geolocation.getCurrentPosition(
+              handleSuccess,
+              function(err3) {
+                if (isResolved) return;
+                isResolved = true;
+                if (onError) onError({ code: 3, message: 'ไม่สามารถดึงพิกัดได้ กรุณากดลองใหม่' });
+              },
+              { enableHighAccuracy: false, timeout: 15000, maximumAge: 180000 }
+            );
+          }
+        },
+        { enableHighAccuracy: true, timeout: 6000, maximumAge: 30000 }
+      );
+    }
+
     // =========================================================================
     // PROJECTOR LIVE CONTROLLER & FULLSCREEN ENGINE
     // =========================================================================
@@ -4068,21 +4165,26 @@
       var btnTeacherGps = document.getElementById('btn-get-teacher-gps');
       if (btnTeacherGps) {
         btnTeacherGps.addEventListener('click', function() {
-          if (!navigator.geolocation) {
-            showToast('เบราว์เซอร์ไม่รองรับการดึงพิกัด GPS', 'error');
-            return;
-          }
-          showToast('กำลังดึงพิกัด GPS ของห้องเรียน...', 'success');
-          navigator.geolocation.getCurrentPosition(
+          var origText = btnTeacherGps.innerHTML;
+          btnTeacherGps.disabled = true;
+          btnTeacherGps.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังดึงพิกัด...';
+          showToast('กำลังดึงพิกัดห้องเรียน...', 'success');
+
+          requestRobustGeolocation(
             function(pos) {
-              document.getElementById('session-lat-input').value = pos.coords.latitude.toFixed(6);
-              document.getElementById('session-lng-input').value = pos.coords.longitude.toFixed(6);
-              showToast('ดึงพิกัดสำเร็จ (ความแม่นยำ ±' + Math.round(pos.coords.accuracy) + ' ม.)', 'success');
+              btnTeacherGps.disabled = false;
+              btnTeacherGps.innerHTML = origText;
+              var latInput = document.getElementById('session-lat-input');
+              var lngInput = document.getElementById('session-lng-input');
+              if (latInput) latInput.value = pos.coords.latitude.toFixed(6);
+              if (lngInput) lngInput.value = pos.coords.longitude.toFixed(6);
+              showToast('ดึงพิกัดสำเร็จ (ความแม่นยำ ±' + Math.round(pos.coords.accuracy || 10) + ' ม.)', 'success');
             },
             function(err) {
-              showToast('ไม่สามารถดึงพิกัดได้: ' + err.message, 'error');
-            },
-            { enableHighAccuracy: true, timeout: 10000 }
+              btnTeacherGps.disabled = false;
+              btnTeacherGps.innerHTML = origText;
+              showToast(err.message || 'ไม่สามารถดึงพิกัดได้', 'error');
+            }
           );
         });
       }
@@ -4562,16 +4664,19 @@
       var btnGetGps = document.getElementById('btn-get-student-gps');
       if (btnGetGps) {
         btnGetGps.addEventListener('click', function() {
-          if (!navigator.geolocation) {
-            showToast('เบราว์เซอร์ไม่รองรับ GPS', 'error');
-            return;
-          }
-          showToast('กำลังค้นหาพิกัด GPS ของคุณ...', 'success');
-          navigator.geolocation.getCurrentPosition(
+          var origBtnHtml = btnGetGps.innerHTML;
+          btnGetGps.disabled = true;
+          btnGetGps.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังค้นหาตำแหน่ง GPS...';
+          showToast('กำลังค้นหาพิกัด (เปิดดาวเทียม/Wi-Fi)...', 'success');
+
+          requestRobustGeolocation(
             function(pos) {
+              btnGetGps.disabled = false;
+              btnGetGps.innerHTML = origBtnHtml;
+
               AppState.studentState.gpsLat = pos.coords.latitude;
               AppState.studentState.gpsLng = pos.coords.longitude;
-              AppState.studentState.gpsAccuracy = Math.round(pos.coords.accuracy);
+              AppState.studentState.gpsAccuracy = Math.round(pos.coords.accuracy || 10);
 
               var distance = 8;
               if (AppState.activeSession && AppState.activeSession.lat && AppState.activeSession.lng) {
@@ -4591,23 +4696,24 @@
               var btnNext = document.getElementById('btn-step-2-next');
 
               if (distance <= maxRadius) {
-                statusDot.className = 'gps-status-dot green';
-                statusText.textContent = 'พิกัดถูกต้อง อยู่ในห้องเรียน';
-                distText.textContent = 'ระยะห่าง ' + distance + ' เมตร (ความแม่นยำ ±' + AppState.studentState.gpsAccuracy + 'm)';
-                btnNext.disabled = false;
-                showToast('พิกัดผ่านการตรวจสอบ!', 'success');
+                if (statusDot) statusDot.className = 'gps-status-dot green';
+                if (statusText) statusText.textContent = 'พิกัดถูกต้อง อยู่ในห้องเรียน';
+                if (distText) distText.textContent = 'ระยะห่าง ' + distance + ' เมตร (ความแม่นยำ ±' + AppState.studentState.gpsAccuracy + 'm)';
+                if (btnNext) btnNext.disabled = false;
+                showToast('พิกัดผ่านการตรวจสอบ! (ระยะ ' + distance + ' ม.)', 'success');
               } else {
-                statusDot.className = 'gps-status-dot red';
-                statusText.textContent = 'อยู่นอกพื้นที่ห้องเรียน!';
-                distText.textContent = 'ระยะห่าง ' + distance + ' เมตร เกินรัศมีที่กำหนด (' + maxRadius + ' เมตร)';
-                btnNext.disabled = true;
+                if (statusDot) statusDot.className = 'gps-status-dot red';
+                if (statusText) statusText.textContent = 'อยู่นอกพื้นที่ห้องเรียน!';
+                if (distText) distText.textContent = 'ระยะห่าง ' + distance + ' เมตร เกินรัศมีที่กำหนด (' + maxRadius + ' เมตร)';
+                if (btnNext) btnNext.disabled = true;
                 showToast('คุณอยู่นอกพื้นที่ห้องเรียน กรุณาเช็คชื่อในห้อง', 'error');
               }
             },
             function(err) {
-              showToast('ไม่สามารถดึงพิกัดได้: ' + err.message, 'error');
-            },
-            { enableHighAccuracy: true, timeout: 10000 }
+              btnGetGps.disabled = false;
+              btnGetGps.innerHTML = origBtnHtml;
+              showToast(err.message || 'ไม่สามารถดึงพิกัดได้', 'error');
+            }
           );
         });
       }
