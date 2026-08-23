@@ -1964,13 +1964,29 @@
                     <select class="select-glass" id="session-class-select"></select>
                   </div>
                   <div class="form-group-glass">
-                    <label>ระยะเวลาเปิดรับเช็คชื่อ (นาที)</label>
-                    <select class="select-glass" id="session-duration-select">
-                      <option value="10">10 นาที</option>
-                      <option value="15" selected>15 นาที</option>
-                      <option value="30">30 นาที</option>
-                      <option value="60">60 นาที</option>
-                    </select>
+                    <label><i class="fas fa-clock"></i> ระยะเวลาเปิดรับเช็คชื่อ (นาที / ชั่วโมง)</label>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                      <select class="select-glass" id="session-duration-select" style="flex: 1.2; min-width: 140px;">
+                        <option value="5">5 นาที</option>
+                        <option value="10">10 นาที</option>
+                        <option value="15" selected>15 นาที</option>
+                        <option value="30">30 นาที</option>
+                        <option value="45">45 นาที</option>
+                        <option value="60">1 ชั่วโมง (60 นาที)</option>
+                        <option value="90">1 ชั่วโมง 30 นาที</option>
+                        <option value="120">2 ชั่วโมง (120 นาที)</option>
+                        <option value="180">3 ชั่วโมง (180 นาที)</option>
+                        <option value="240">4 ชั่วโมง (240 นาที)</option>
+                        <option value="custom">✏️ กำหนดเวลาเอง...</option>
+                      </select>
+                      <div id="session-custom-duration-box" style="display: none; flex: 1.5; gap: 6px; align-items: center;">
+                        <input type="number" min="1" max="1440" class="input-glass" id="session-duration-custom-val" placeholder="ระบุตัวเลข" value="20" style="width: 90px;" />
+                        <select class="select-glass" id="session-duration-custom-unit" style="width: 100px;">
+                          <option value="minutes" selected>นาที</option>
+                          <option value="hours">ชั่วโมง</option>
+                        </select>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -4327,6 +4343,18 @@
         });
       }
 
+      var durSelect = document.getElementById('session-duration-select');
+      var customBox = document.getElementById('session-custom-duration-box');
+      if (durSelect && customBox) {
+        durSelect.addEventListener('change', function() {
+          if (this.value === 'custom') {
+            customBox.style.display = 'flex';
+          } else {
+            customBox.style.display = 'none';
+          }
+        });
+      }
+
       // Handle Fullscreen Exit via ESC or OS controls
       document.addEventListener('fullscreenchange', function() {
         var isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
@@ -4409,7 +4437,21 @@
 
     function startNewProjectorSession() {
       var className = document.getElementById('session-class-select').value;
-      var duration = parseInt(document.getElementById('session-duration-select').value, 10) || 15;
+      var durationPreset = document.getElementById('session-duration-select').value;
+      var duration = 15;
+      if (durationPreset === 'custom') {
+        var customVal = parseFloat(document.getElementById('session-duration-custom-val').value) || 15;
+        var unit = document.getElementById('session-duration-custom-unit').value;
+        if (unit === 'hours') {
+          duration = Math.round(customVal * 60);
+        } else {
+          duration = Math.round(customVal);
+        }
+      } else {
+        duration = parseInt(durationPreset, 10) || 15;
+      }
+      if (duration < 1) duration = 1;
+
       var lat = parseFloat(document.getElementById('session-lat-input').value) || 0;
       var lng = parseFloat(document.getElementById('session-lng-input').value) || 0;
       var radius = parseInt(document.getElementById('session-radius-select').value, 10) || 50;
@@ -4500,9 +4542,15 @@
           return;
         }
         var totalSec = Math.floor(diffMs / 1000);
-        var mins = Math.floor(totalSec / 60);
+        var hours = Math.floor(totalSec / 3600);
+        var mins = Math.floor((totalSec % 3600) / 60);
         var secs = totalSec % 60;
-        var timeStr = (mins < 10 ? '0' + mins : mins) + ':' + (secs < 10 ? '0' + secs : secs);
+        var timeStr = '';
+        if (hours > 0) {
+          timeStr = (hours < 10 ? '0' + hours : hours) + ':' + (mins < 10 ? '0' + mins : mins) + ':' + (secs < 10 ? '0' + secs : secs);
+        } else {
+          timeStr = (mins < 10 ? '0' + mins : mins) + ':' + (secs < 10 ? '0' + secs : secs);
+        }
         document.getElementById('proj-time-remaining').textContent = timeStr;
       }, 1000);
 
@@ -4569,6 +4617,7 @@
       if (isGASAvailable()) {
         google.script.run
           .withSuccessHandler(function(res) {
+            AppState.latestLiveFeedList = (res && res.list) ? res.list : [];
             updateProjectorLiveUI(res);
           })
           .getSessionLiveAttendance(sess.sessionId);
@@ -4597,6 +4646,7 @@
           }
         }
         list.reverse();
+        AppState.latestLiveFeedList = list;
         updateProjectorLiveUI({
           list: list,
           count: list.length,
@@ -4755,7 +4805,7 @@
       var targetClass = sess ? sess.className : AppState.selectedClass;
       var targetDate = sess ? sess.date : AppState.selectedDate;
 
-      if (!targetClass) {
+      if (!targetClass || targetClass === 'all') {
         if (AppState.classes && AppState.classes.length > 0) {
           targetClass = AppState.classes[0].name;
         } else {
@@ -4764,7 +4814,7 @@
         }
       }
 
-      showToast('กำลังประมวลผลดึงรายชื่อเข้าสู่ตารางเช็คชื่อ...', 'success');
+      showToast('กำลังประมวลผลดึงผลเช็คชื่อเข้าสู่ตาราง...', 'success');
 
       fetchStudents(targetClass, function(students) {
         if (!students || students.length === 0) {
@@ -4772,27 +4822,59 @@
           return;
         }
 
-        var processRecords = function(recordsMap) {
-          recordsMap = recordsMap || {};
+        // Build set of students from Live Feed
+        var checkedInMap = {};
+        if (AppState.latestLiveFeedList && AppState.latestLiveFeedList.length > 0) {
+          for (var f = 0; f < AppState.latestLiveFeedList.length; f++) {
+            var item = AppState.latestLiveFeedList[f];
+            if (item.studentId) {
+              checkedInMap[String(item.studentId).trim().toLowerCase()] = item;
+            }
+          }
+        }
+
+        var processRecords = function(backendRecords) {
+          backendRecords = backendRecords || {};
+          var recordsMap = {};
           var presentCount = 0;
           var absentCount = 0;
 
           for (var i = 0; i < students.length; i++) {
             var sId = students[i].studentId;
-            var currentRec = recordsMap[sId];
-            var curStatus = (currentRec && typeof currentRec === 'object') ? currentRec.status : currentRec;
+            var cleanId = String(sId).trim().toLowerCase();
+            var liveRec = checkedInMap[cleanId];
+            var backRec = backendRecords[sId] || backendRecords[cleanId];
 
-            if (curStatus === 'Present' || curStatus === 'มาเรียน') {
+            var isPresent = false;
+            var selfie = '';
+            var dist = 0;
+
+            if (liveRec) {
+              isPresent = true;
+              selfie = liveRec.selfiePhoto || '';
+              dist = liveRec.distanceMeters || 0;
+            } else if (backRec) {
+              var bStatus = (typeof backRec === 'object') ? backRec.status : backRec;
+              if (bStatus === 'Present' || bStatus === 'มาเรียน' || bStatus === 'Late' || bStatus === 'มาสาย') {
+                isPresent = true;
+                if (typeof backRec === 'object') {
+                  selfie = backRec.selfiePhoto || '';
+                  dist = backRec.distanceMeters || 0;
+                }
+              }
+            }
+
+            if (isPresent) {
+              recordsMap[sId] = { status: 'Present', selfiePhoto: selfie, distanceMeters: dist };
               presentCount++;
-            } else if (!curStatus || curStatus === 'Absent' || curStatus === 'ขาด') {
-              recordsMap[sId] = { status: 'Absent' };
-              absentCount++;
             } else {
-              if (curStatus === 'Late' || curStatus === 'มาสาย') presentCount++;
+              recordsMap[sId] = { status: 'Absent', selfiePhoto: '', distanceMeters: 0 };
+              absentCount++;
             }
           }
 
-          // Switch to Attendance View & Set Selects
+          // Store in pendingTransferredRecords
+          AppState.pendingTransferredRecords = recordsMap;
           AppState.selectedClass = targetClass;
           AppState.selectedDate = targetDate;
 
@@ -4803,39 +4885,38 @@
           if (dateSelect) dateSelect.value = targetDate;
 
           switchView('attendance');
-          renderAttendanceList(students, recordsMap);
 
-          showToast('ดึงผลเช็คชื่อห้อง ' + targetClass + ' เรียบร้อย! (มา ' + presentCount + ' คน, ขาด ' + absentCount + ' คน) กรุณาตรวจสอบแล้วกด "บันทึกการเช็คชื่อ"', 'success');
+          showToast('ดึงผลเช็คชื่อห้อง ' + targetClass + ' เรียบร้อย! (มาเรียน ' + presentCount + ' คน, ขาด ' + absentCount + ' คน) กรุณาตรวจสอบแล้วกด "บันทึกการเช็คชื่อ"', 'success');
 
           // Highlight Save Button with pulse animation
           var btnSave = document.getElementById('btn-save-attendance');
           if (btnSave) {
-            btnSave.style.animation = 'pulseGlow 1.5s 3';
+            btnSave.style.animation = 'pulseGlow 1.5s 4';
             setTimeout(function() {
               btnSave.style.animation = '';
-            }, 4500);
+            }, 6000);
           }
         };
 
         if (isGASAvailable()) {
           google.script.run
-            .withSuccessHandler(function(recordsMap) {
-              processRecords(recordsMap);
+            .withSuccessHandler(function(recMap) {
+              processRecords(recMap);
             })
             .getAttendanceRecords(targetDate, targetClass);
         } else {
           var allAtt = getLocalStorageAttendance();
-          var recordsMap = {};
-          for (var i = 0; i < allAtt.length; i++) {
-            if (allAtt[i].date === targetDate) {
-              recordsMap[allAtt[i].studentId] = {
-                status: allAtt[i].status,
-                selfiePhoto: allAtt[i].selfiePhoto || '',
-                distanceMeters: allAtt[i].distanceMeters || 0
+          var recMap = {};
+          for (var a = 0; a < allAtt.length; a++) {
+            if (allAtt[a].date === targetDate) {
+              recMap[allAtt[a].studentId] = {
+                status: allAtt[a].status,
+                selfiePhoto: allAtt[a].selfiePhoto || '',
+                distanceMeters: allAtt[a].distanceMeters || 0
               };
             }
           }
-          processRecords(recordsMap);
+          processRecords(recMap);
         }
       });
     }
@@ -5681,6 +5762,16 @@
       var targetClass = AppState.selectedClass;
       var targetDate = AppState.selectedDate;
 
+      // If we just transferred live attendance results, render them directly
+      if (AppState.pendingTransferredRecords) {
+        var transferred = AppState.pendingTransferredRecords;
+        AppState.pendingTransferredRecords = null;
+        fetchStudents(targetClass, function(students) {
+          renderAttendanceList(students, transferred);
+        });
+        return;
+      }
+
       fetchStudents(targetClass, function(students) {
         if (isGASAvailable()) {
           google.script.run
@@ -5724,8 +5815,14 @@
 
       for (var i = 0; i < students.length; i++) {
         var student = students[i];
-        var rec = recordsMap[student.studentId];
-        var currentStatus = (rec && typeof rec === 'object') ? rec.status : (rec || 'Present');
+        var cleanId = String(student.studentId).trim().toLowerCase();
+        var rec = recordsMap[student.studentId] || recordsMap[cleanId];
+        var currentStatus = '';
+        if (rec !== undefined && rec !== null) {
+          currentStatus = (typeof rec === 'object' && rec.status) ? rec.status : rec;
+        } else {
+          currentStatus = 'Present';
+        }
         
         var card = document.createElement('div');
         card.className = 'student-att-card';
@@ -5780,9 +5877,23 @@
           radio.type = 'radio';
           radio.name = 'status_' + student.studentId;
           radio.value = st.key;
+          
+          var isMatch = false;
           if (currentStatus === st.key || currentStatus === st.label) {
-            radio.checked = true;
+            isMatch = true;
+          } else if (st.key === 'Present' && (currentStatus === 'Present' || currentStatus === 'มาเรียน')) {
+            isMatch = true;
+          } else if (st.key === 'Absent' && (currentStatus === 'Absent' || currentStatus === 'ขาด')) {
+            isMatch = true;
+          } else if (st.key === 'Late' && (currentStatus === 'Late' || currentStatus === 'มาสาย')) {
+            isMatch = true;
+          } else if (st.key === 'Sick' && (currentStatus === 'Sick' || currentStatus === 'ลาป่วย')) {
+            isMatch = true;
+          } else if (st.key === 'Leave' && (currentStatus === 'Leave' || currentStatus === 'ลากิจ')) {
+            isMatch = true;
           }
+          
+          radio.checked = isMatch;
           label.appendChild(radio);
           
           var chipSpan = document.createElement('span');
