@@ -3238,9 +3238,12 @@
           select.appendChild(optEmpty);
         } else {
           for (var c = 0; c < AppState.classes.length; c++) {
+            var rawItem = AppState.classes[c];
+            var cName = (typeof rawItem === 'object' && rawItem) ? (rawItem.name || rawItem.className || '') : String(rawItem || '');
+            if (!cName || cName === 'undefined') continue;
             var opt = document.createElement('option');
-            opt.value = AppState.classes[c];
-            opt.textContent = AppState.classes[c];
+            opt.value = cName;
+            opt.textContent = cName;
             select.appendChild(opt);
           }
         }
@@ -3257,10 +3260,13 @@
 
         if (AppState.classes && AppState.classes.length > 0) {
           for (var ec = 0; ec < AppState.classes.length; ec++) {
+            var rawItemE = AppState.classes[ec];
+            var cNameE = (typeof rawItemE === 'object' && rawItemE) ? (rawItemE.name || rawItemE.className || '') : String(rawItemE || '');
+            if (!cNameE || cNameE === 'undefined') continue;
             var eOpt = document.createElement('option');
-            eOpt.value = AppState.classes[ec];
-            eOpt.textContent = 'ห้อง: ' + AppState.classes[ec];
-            if (prevVal === AppState.classes[ec]) {
+            eOpt.value = cNameE;
+            eOpt.textContent = 'ห้อง: ' + cNameE;
+            if (prevVal === cNameE) {
               eOpt.selected = true;
             }
             excelClassSelect.appendChild(eOpt);
@@ -4523,8 +4529,12 @@
       var sess = AppState.activeSession;
       if (!sess) return;
 
+      var classNameStr = sess.className;
+      if (!classNameStr || classNameStr === 'undefined' || classNameStr === 'all') {
+        classNameStr = 'ทุกห้องเรียน';
+      }
       var classText = document.getElementById('proj-active-class-text');
-      if (classText) classText.textContent = 'ห้อง ' + (sess.className === 'all' ? 'ทุกห้องเรียน' : sess.className);
+      if (classText) classText.textContent = 'ห้อง ' + classNameStr;
 
       if (AppState.sessionTimer) clearInterval(AppState.sessionTimer);
       if (AppState.totpTimer) clearInterval(AppState.totpTimer);
@@ -4802,16 +4812,19 @@
 
     function transferLiveAttendanceToRoomList() {
       var sess = AppState.activeSession;
-      var targetClass = sess ? sess.className : AppState.selectedClass;
+      var targetClass = (sess && sess.className && sess.className !== 'undefined' && sess.className !== 'all') ? sess.className : AppState.selectedClass;
       var targetDate = sess ? sess.date : AppState.selectedDate;
 
-      if (!targetClass || targetClass === 'all') {
+      if (!targetClass || targetClass === 'all' || targetClass === 'undefined') {
         if (AppState.classes && AppState.classes.length > 0) {
-          targetClass = AppState.classes[0].name;
-        } else {
-          showToast('กรุณาสร้างห้องเรียนก่อนดำเนินการ', 'error');
-          return;
+          var firstCls = AppState.classes[0];
+          targetClass = (typeof firstCls === 'object' && firstCls) ? (firstCls.name || firstCls.className || '') : String(firstCls || '');
         }
+      }
+
+      if (!targetClass || targetClass === 'undefined') {
+        showToast('กรุณาสร้างห้องเรียนก่อนดำเนินการ', 'error');
+        return;
       }
 
       showToast('กำลังประมวลผลดึงผลเช็คชื่อเข้าสู่ตาราง...', 'success');
@@ -4923,24 +4936,57 @@
 
     function endProjectorSession() {
       var sess = AppState.activeSession;
-      if (!sess) return;
+      var sessionId = sess ? sess.sessionId : '';
 
-      if (AppState.sessionTimer) clearInterval(AppState.sessionTimer);
-      if (AppState.totpTimer) clearInterval(AppState.totpTimer);
-      if (AppState.liveFeedTimer) clearInterval(AppState.liveFeedTimer);
+      if (AppState.sessionTimer) { clearInterval(AppState.sessionTimer); AppState.sessionTimer = null; }
+      if (AppState.totpTimer) { clearInterval(AppState.totpTimer); AppState.totpTimer = null; }
+      if (AppState.liveFeedTimer) { clearInterval(AppState.liveFeedTimer); AppState.liveFeedTimer = null; }
+
+      AppState.activeSession = null;
+      localStorage.removeItem('gas_student_active_session');
+
+      // Exit fullscreen if active
+      if (document.fullscreenElement || document.webkitFullscreenElement) {
+        if (document.exitFullscreen) {
+          document.exitFullscreen().catch(function(){});
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        }
+      }
+      document.body.classList.remove('projector-fullscreen-body');
+      updateFullscreenBtnUI(false);
+
+      // Immediate UI reset to setup form
+      var setupCard = document.getElementById('projector-setup-card');
+      var activePanel = document.getElementById('projector-active-panel');
+      if (setupCard) setupCard.style.display = 'block';
+      if (activePanel) activePanel.style.display = 'none';
+
+      var classText = document.getElementById('proj-active-class-text');
+      if (classText) classText.textContent = 'ห้อง ทุกห้องเรียน';
+
+      var timeRem = document.getElementById('proj-time-remaining');
+      if (timeRem) timeRem.textContent = '--:--';
+
+      var otpText = document.getElementById('projector-otp-text');
+      if (otpText) otpText.textContent = '------';
+
+      var qrTarget = document.getElementById('projector-qrcode-target');
+      if (qrTarget) qrTarget.innerHTML = '';
+
+      var feedList = document.getElementById('projector-live-feed-list');
+      if (feedList) feedList.innerHTML = '<div style="padding: 24px; text-align: center; color: var(--text-muted);">ยังไม่มีข้อมูลการเช็คชื่อ</div>';
+
+      var countSpan = document.getElementById('proj-checked-count');
+      if (countSpan) countSpan.textContent = '0';
 
       if (isGASAvailable()) {
         google.script.run
           .withSuccessHandler(function() {
-            AppState.activeSession = null;
-            renderProjectorPage();
             showToast('ปิดคาบเช็คชื่อเรียบร้อยแล้ว', 'success');
           })
-          .closeCheckinSession(sess.sessionId);
+          .closeCheckinSession(sessionId);
       } else {
-        AppState.activeSession = null;
-        localStorage.removeItem('gas_student_active_session');
-        renderProjectorPage();
         showToast('ปิดคาบเช็คชื่อเรียบร้อยแล้ว', 'success');
       }
     }
