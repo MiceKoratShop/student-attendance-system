@@ -26,6 +26,9 @@
   <!-- QRCode.js CDN (Client-side Dynamic QR) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
+  <!-- jsQR CDN (Client-side QR Code Camera Scanner) -->
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+
   <style>
     :root {
       --bg-space: #07090E;
@@ -1239,6 +1242,49 @@
       border-color: #EF4444;
     }
 
+    /* QR Code Scanner Overlay Styling */
+    .qr-scanner-laser {
+      position: absolute;
+      top: 0;
+      left: 5%;
+      width: 90%;
+      height: 3px;
+      background: var(--cyan-400);
+      box-shadow: 0 0 12px var(--cyan-400), 0 0 20px rgba(0, 240, 255, 0.8);
+      animation: scanLaser 2s ease-in-out infinite alternate;
+      z-index: 10;
+    }
+
+    @keyframes scanLaser {
+      0% { top: 8%; opacity: 0.8; }
+      50% { opacity: 1; }
+      100% { top: 92%; opacity: 0.8; }
+    }
+
+    .qr-target-reticle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 70%;
+      height: 70%;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .reticle-corner {
+      position: absolute;
+      width: 28px;
+      height: 28px;
+      border-color: var(--cyan-400);
+      border-style: solid;
+    }
+
+    .reticle-corner.top-left { top: 0; left: 0; border-width: 3px 0 0 3px; border-top-left-radius: 8px; }
+    .reticle-corner.top-right { top: 0; right: 0; border-width: 3px 3px 0 0; border-top-right-radius: 8px; }
+    .reticle-corner.bottom-left { bottom: 0; left: 0; border-width: 0 0 3px 3px; border-bottom-left-radius: 8px; }
+    .reticle-corner.bottom-right { bottom: 0; right: 0; border-width: 0 3px 3px 0; border-bottom-right-radius: 8px; }
+
     /* Pulse Glow Animation */
     @keyframes pulseGlow {
       0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
@@ -1733,13 +1779,24 @@
               </div>
             </div>
 
-            <!-- STEP 4: Dynamic TOTP PIN Input -->
+            <!-- STEP 4: Dynamic TOTP PIN Input & QR Camera Scanner -->
             <div class="checkin-step-card" id="student-step-4" style="display: none;">
               <div class="step-header-badge">
-                <i class="fas fa-key"></i> ขั้นตอนที่ 4 : กรอกรหัส OTP
+                <i class="fas fa-key"></i> ขั้นตอนที่ 4 : ยืนยันรหัส OTP / สแกน QR
               </div>
-              <h2 style="font-size: 20px; font-weight: 700; color: #FFF; margin-bottom: 6px;">กรอกรหัส 6 หลักจากหน้าจอ</h2>
-              <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">ดูรหัส 6 หลักที่อาจารย์กำลังฉายอยู่บนจอ (รหัสเปลี่ยนทุก 15 วินาที)</p>
+              <h2 style="font-size: 20px; font-weight: 700; color: #FFF; margin-bottom: 6px;">ยืนยันรหัสจากหน้าจอโปรเจกเตอร์</h2>
+              <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 18px;">สามารถเปิดกล้องสแกน QR Code หรือกรอกรหัส 6 หลักที่แสดงบนจอ</p>
+
+              <!-- Option 1: Live QR Scanner Camera Button -->
+              <button type="button" class="btn-glass btn-cyan" id="btn-open-qr-scanner" style="width: 100%; margin-bottom: 18px; padding: 14px; font-weight: 700; font-size: 15px; border-color: rgba(0, 240, 255, 0.4); background: rgba(0, 240, 255, 0.1); box-shadow: 0 0 15px rgba(0, 240, 255, 0.15); display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <i class="fas fa-qrcode" style="font-size: 20px; color: var(--cyan-400);"></i> 📷 เปิดกล้องสแกน QR Code จากหน้าจอ
+              </button>
+
+              <div style="display: flex; align-items: center; margin-bottom: 16px;">
+                <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.12);"></div>
+                <span style="padding: 0 10px; font-size: 11.5px; color: var(--text-muted); text-transform: uppercase;">หรือกรอกรหัสตัวเลข 6 หลัก</span>
+                <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.12);"></div>
+              </div>
 
               <div class="pin-inputs-group">
                 <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="pin-digit-box" id="pin-1" autofocus />
@@ -2003,11 +2060,17 @@
 
                 <!-- Live Feed Column -->
                 <div class="projector-live-feed-card">
-                  <div class="card-header-flex" style="margin-bottom: 10px;">
-                    <div class="card-title-text"><i class="fas fa-bolt"></i> นักศึกษาที่เพิ่งเช็คชื่อเข้ามา</div>
-                    <div style="display: flex; gap: 8px;">
+                  <div class="card-header-flex" style="margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+                    <div>
+                      <div class="card-title-text"><i class="fas fa-bolt"></i> นักศึกษาที่เพิ่งเช็คชื่อเข้ามา</div>
+                      <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">แสดงสดแบบ Real-time (สามารถกดลบหรือตัดสิทธิ์รูปผิดได้)</div>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                       <span class="badge-glass badge-present"><span id="proj-checked-count">0</span> / <span id="proj-total-count">0</span> คน</span>
                       <span class="badge-glass badge-late" id="proj-rate-badge">0%</span>
+                      <button type="button" class="btn-glass btn-emerald btn-sm-glass" id="btn-transfer-live-to-attendance" style="padding: 6px 14px; font-weight: 700; font-size: 13px; box-shadow: 0 0 15px rgba(16, 185, 129, 0.25);">
+                        <i class="fas fa-file-import"></i> 📥 ดึงรายชื่อเข้าตารางเช็คชื่อประจำห้อง
+                      </button>
                     </div>
                   </div>
                   <div class="live-feed-list" id="projector-live-feed-list"></div>
@@ -2455,6 +2518,42 @@
     </div>
   </div>
 
+  <!-- MODAL: LIVE QR CODE SCANNER OVERLAY -->
+  <div class="modal-backdrop-glass" id="modal-qr-scanner">
+    <div class="modal-window-glass" style="max-width: 440px; text-align: center; border: 1.5px solid rgba(0, 240, 255, 0.4); box-shadow: 0 20px 60px rgba(0,0,0,0.85), 0 0 35px rgba(0, 240, 255, 0.2);">
+      <div class="modal-header-flex" style="margin-bottom: 14px;">
+        <div class="modal-title"><i class="fas fa-qrcode" style="color: var(--cyan-400);"></i> สแกน QR Code บนโปรเจกเตอร์</div>
+        <button type="button" class="modal-close btn-close-modal" id="btn-close-qr-scanner">&times;</button>
+      </div>
+
+      <div style="position: relative; width: 100%; max-width: 320px; margin: 0 auto 16px auto; border-radius: 18px; overflow: hidden; background: #000; aspect-ratio: 1/1; box-shadow: 0 0 25px rgba(0, 240, 255, 0.25); border: 2px solid var(--cyan-400);">
+        <video id="qr-scanner-video" playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
+        <canvas id="qr-scanner-canvas" style="display: none;"></canvas>
+        
+        <!-- Laser Scanning Line Effect -->
+        <div class="qr-scanner-laser"></div>
+
+        <!-- Target Aim Reticle -->
+        <div class="qr-target-reticle">
+          <div class="reticle-corner top-left"></div>
+          <div class="reticle-corner top-right"></div>
+          <div class="reticle-corner bottom-left"></div>
+          <div class="reticle-corner bottom-right"></div>
+        </div>
+      </div>
+
+      <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 18px;">
+        ส่องกล้องไปที่ <b style="color: var(--cyan-400);">QR Code</b> ที่อาจารย์ฉายบนจอ ระบบจะตรวจจับและยืนยันการเช็คชื่อให้อัตโนมัติ
+      </p>
+
+      <div style="display: flex; gap: 10px;">
+        <button type="button" class="btn-glass btn-dark btn-close-modal" id="btn-cancel-qr-scan" style="flex: 1; padding: 12px;">
+          <i class="fas fa-keyboard"></i> สลับไปพิมพ์รหัสเอง
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL: LUXURY CUSTOM CONFIRMATION POPUP (High Priority z-index) -->
   <div class="modal-backdrop-glass" id="modal-custom-confirm">
     <div class="modal-window-glass" style="max-width: 440px; text-align: center; border: 1.5px solid rgba(239, 68, 68, 0.4); box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 35px rgba(239,68,68,0.25);">
@@ -2597,7 +2696,7 @@
           'initDatabase', 'verifyAdminPassword', 'getClassList', 'addClass', 'deleteClass',
           'getStudents', 'addStudent', 'updateStudent', 'deleteStudent', 'deleteAllStudents',
           'importStudentsBatch', 'createCheckinSession', 'getActiveSession', 'closeCheckinSession',
-          'validateAndCheckinStudent', 'getSessionLiveAttendance', 'getAttendanceRecords',
+          'validateAndCheckinStudent', 'getSessionLiveAttendance', 'deleteLiveCheckinRecord', 'getAttendanceRecords',
           'saveAttendanceBatch', 'getDashboardData', 'getStudentStats'
         ];
 
@@ -4221,6 +4320,13 @@
         });
       }
 
+      var btnTransferLive = document.getElementById('btn-transfer-live-to-attendance');
+      if (btnTransferLive) {
+        btnTransferLive.addEventListener('click', function() {
+          transferLiveAttendanceToRoomList();
+        });
+      }
+
       // Handle Fullscreen Exit via ESC or OS controls
       document.addEventListener('fullscreenchange', function() {
         var isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
@@ -4566,23 +4672,172 @@
 
         var right = document.createElement('div');
         right.style.textAlign = 'right';
+        right.style.display = 'flex';
+        right.style.alignItems = 'center';
+        right.style.gap = '8px';
         
+        var timeBox = document.createElement('div');
         var timeS = document.createElement('div');
         timeS.style.fontSize = '12px';
         timeS.style.fontWeight = '700';
         timeS.style.color = '#10B981';
         timeS.textContent = item.checkinTime;
-        right.appendChild(timeS);
+        timeBox.appendChild(timeS);
 
         var badgeS = document.createElement('div');
         badgeS.style.fontSize = '10px';
         badgeS.style.color = '#FF8533';
         badgeS.textContent = 'Verified';
-        right.appendChild(badgeS);
+        timeBox.appendChild(badgeS);
+        right.appendChild(timeBox);
+
+        // Delete button for this live check-in
+        var btnDel = document.createElement('button');
+        btnDel.type = 'button';
+        btnDel.className = 'btn-preview-action delete';
+        btnDel.title = 'ลบรายการเช็คชื่อ (ภาพถ่ายไม่ถูกต้องหรือข้อมูลผิด)';
+        btnDel.style.width = '30px';
+        btnDel.style.height = '30px';
+        btnDel.style.fontSize = '12px';
+        btnDel.style.color = '#EF4444';
+        btnDel.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+        btnDel.style.background = 'rgba(239, 68, 68, 0.1)';
+        btnDel.innerHTML = '<i class="fas fa-trash"></i>';
+        (function(sId, sName) {
+          btnDel.addEventListener('click', function(e) {
+            e.stopPropagation();
+            deleteLiveStudentCheckin(sId, sName);
+          });
+        })(item.studentId, item.name);
+        right.appendChild(btnDel);
 
         div.appendChild(right);
         container.appendChild(div);
       }
+    }
+
+    function deleteLiveStudentCheckin(studentId, studentName) {
+      var sess = AppState.activeSession;
+      var dateStr = sess ? sess.date : getTodayDateString();
+
+      openConfirmModal({
+        title: 'ยกเลิกการเช็คชื่อ',
+        desc: 'คุณต้องการลบรายการเช็คชื่อของ "' + studentName + '" ใช่หรือไม่? (เนื่องจากภาพไม่ถูกต้องหรือข้อมูลผิด นักศึกษาจะต้องเช็คชื่อใหม่อีกครั้ง)',
+        icon: 'fa-user-xmark',
+        btnIcon: 'fa-trash',
+        okText: 'ยืนยันลบรายการ',
+        onConfirm: function() {
+          if (isGASAvailable()) {
+            google.script.run
+              .withSuccessHandler(function(resp) {
+                showToast(resp.message || 'ลบรายการเช็คชื่อสำเร็จ', 'success');
+                fetchProjectorLiveFeed();
+              })
+              .deleteLiveCheckinRecord(studentId, dateStr);
+          } else {
+            var allAtt = getLocalStorageAttendance();
+            var filtered = [];
+            for (var i = 0; i < allAtt.length; i++) {
+              if (!(allAtt[i].studentId === studentId && allAtt[i].date === dateStr)) {
+                filtered.push(allAtt[i]);
+              }
+            }
+            saveLocalStorageAttendance(filtered);
+            showToast('ลบรายการเช็คชื่อของ ' + studentName + ' เรียบร้อยแล้ว', 'success');
+            fetchProjectorLiveFeed();
+          }
+        }
+      });
+    }
+
+    function transferLiveAttendanceToRoomList() {
+      var sess = AppState.activeSession;
+      var targetClass = sess ? sess.className : AppState.selectedClass;
+      var targetDate = sess ? sess.date : AppState.selectedDate;
+
+      if (!targetClass) {
+        if (AppState.classes && AppState.classes.length > 0) {
+          targetClass = AppState.classes[0].name;
+        } else {
+          showToast('กรุณาสร้างห้องเรียนก่อนดำเนินการ', 'error');
+          return;
+        }
+      }
+
+      showToast('กำลังประมวลผลดึงรายชื่อเข้าสู่ตารางเช็คชื่อ...', 'success');
+
+      fetchStudents(targetClass, function(students) {
+        if (!students || students.length === 0) {
+          showToast('ไม่พบข้อมูลนักเรียนในห้อง ' + targetClass, 'error');
+          return;
+        }
+
+        var processRecords = function(recordsMap) {
+          recordsMap = recordsMap || {};
+          var presentCount = 0;
+          var absentCount = 0;
+
+          for (var i = 0; i < students.length; i++) {
+            var sId = students[i].studentId;
+            var currentRec = recordsMap[sId];
+            var curStatus = (currentRec && typeof currentRec === 'object') ? currentRec.status : currentRec;
+
+            if (curStatus === 'Present' || curStatus === 'มาเรียน') {
+              presentCount++;
+            } else if (!curStatus || curStatus === 'Absent' || curStatus === 'ขาด') {
+              recordsMap[sId] = { status: 'Absent' };
+              absentCount++;
+            } else {
+              if (curStatus === 'Late' || curStatus === 'มาสาย') presentCount++;
+            }
+          }
+
+          // Switch to Attendance View & Set Selects
+          AppState.selectedClass = targetClass;
+          AppState.selectedDate = targetDate;
+
+          var classSelect = document.getElementById('att-class-select');
+          if (classSelect) classSelect.value = targetClass;
+
+          var dateSelect = document.getElementById('att-date-select');
+          if (dateSelect) dateSelect.value = targetDate;
+
+          switchView('attendance');
+          renderAttendanceList(students, recordsMap);
+
+          showToast('ดึงผลเช็คชื่อห้อง ' + targetClass + ' เรียบร้อย! (มา ' + presentCount + ' คน, ขาด ' + absentCount + ' คน) กรุณาตรวจสอบแล้วกด "บันทึกการเช็คชื่อ"', 'success');
+
+          // Highlight Save Button with pulse animation
+          var btnSave = document.getElementById('btn-save-attendance');
+          if (btnSave) {
+            btnSave.style.animation = 'pulseGlow 1.5s 3';
+            setTimeout(function() {
+              btnSave.style.animation = '';
+            }, 4500);
+          }
+        };
+
+        if (isGASAvailable()) {
+          google.script.run
+            .withSuccessHandler(function(recordsMap) {
+              processRecords(recordsMap);
+            })
+            .getAttendanceRecords(targetDate, targetClass);
+        } else {
+          var allAtt = getLocalStorageAttendance();
+          var recordsMap = {};
+          for (var i = 0; i < allAtt.length; i++) {
+            if (allAtt[i].date === targetDate) {
+              recordsMap[allAtt[i].studentId] = {
+                status: allAtt[i].status,
+                selfiePhoto: allAtt[i].selfiePhoto || '',
+                distanceMeters: allAtt[i].distanceMeters || 0
+              };
+            }
+          }
+          processRecords(recordsMap);
+        }
+      });
     }
 
     function endProjectorSession() {
@@ -4783,6 +5038,28 @@
 
       setupPinInputs();
 
+      // Step 4 QR Scanner Button Listeners
+      var btnOpenQR = document.getElementById('btn-open-qr-scanner');
+      if (btnOpenQR) {
+        btnOpenQR.addEventListener('click', function() {
+          openQRScannerModal();
+        });
+      }
+
+      var btnCloseQR = document.getElementById('btn-close-qr-scanner');
+      if (btnCloseQR) {
+        btnCloseQR.addEventListener('click', function() {
+          closeQRScannerModal();
+        });
+      }
+
+      var btnCancelQR = document.getElementById('btn-cancel-qr-scan');
+      if (btnCancelQR) {
+        btnCancelQR.addEventListener('click', function() {
+          closeQRScannerModal();
+        });
+      }
+
       var btnStep4Back = document.getElementById('btn-step-4-back');
       if (btnStep4Back) {
         btnStep4Back.addEventListener('click', function() {
@@ -4807,6 +5084,152 @@
           updateWizardProgress(1);
         });
       }
+    }
+
+    // =========================================================================
+    // QR CODE CAMERA SCANNER ENGINE (FOR STEP 4)
+    // =========================================================================
+    var qrScannerState = {
+      stream: null,
+      animId: null
+    };
+
+    function openQRScannerModal() {
+      openModal('modal-qr-scanner');
+      startQRScannerCamera();
+    }
+
+    function closeQRScannerModal() {
+      stopQRScannerCamera();
+      closeModal('modal-qr-scanner');
+    }
+
+    function startQRScannerCamera() {
+      var video = document.getElementById('qr-scanner-video');
+      if (!video) return;
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        showToast('เบราว์เซอร์ไม่รองรับการเปิดกล้องเพื่อสแกน QR', 'error');
+        return;
+      }
+
+      navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
+        audio: false
+      }).then(function(stream) {
+        qrScannerState.stream = stream;
+        video.srcObject = stream;
+        video.setAttribute('playsinline', 'true');
+        video.play();
+        qrScannerState.animId = requestAnimationFrame(tickQRScan);
+      }).catch(function(err) {
+        // Fallback without environment facingMode
+        navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+          .then(function(stream) {
+            qrScannerState.stream = stream;
+            video.srcObject = stream;
+            video.setAttribute('playsinline', 'true');
+            video.play();
+            qrScannerState.animId = requestAnimationFrame(tickQRScan);
+          })
+          .catch(function(e) {
+            showToast('ไม่สามารถเปิดกล้องได้: ' + (e.message || err.message), 'error');
+          });
+      });
+    }
+
+    function stopQRScannerCamera() {
+      if (qrScannerState.animId) {
+        cancelAnimationFrame(qrScannerState.animId);
+        qrScannerState.animId = null;
+      }
+      if (qrScannerState.stream) {
+        var tracks = qrScannerState.stream.getTracks();
+        for (var i = 0; i < tracks.length; i++) {
+          tracks[i].stop();
+        }
+        qrScannerState.stream = null;
+      }
+    }
+
+    function tickQRScan() {
+      var video = document.getElementById('qr-scanner-video');
+      var canvas = document.getElementById('qr-scanner-canvas');
+      var modal = document.getElementById('modal-qr-scanner');
+
+      if (!modal || !modal.classList.contains('active') || !video) {
+        stopQRScannerCamera();
+        return;
+      }
+
+      if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        canvas.height = video.videoHeight;
+        canvas.width = video.videoWidth;
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        var detectedCode = null;
+
+        // Scanner Method: jsQR Library
+        if (typeof jsQR !== 'undefined') {
+          var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          var code = jsQR(imageData.data, imageData.width, imageData.height, {
+            inversionAttempts: 'dontInvert'
+          });
+          if (code && code.data) {
+            detectedCode = code.data;
+          }
+        }
+
+        if (detectedCode) {
+          handleScannedQRCodeResult(detectedCode);
+          return;
+        }
+      }
+
+      qrScannerState.animId = requestAnimationFrame(tickQRScan);
+    }
+
+    function handleScannedQRCodeResult(qrText) {
+      if (!qrText) return;
+
+      var matchedOtp = null;
+      var otpParamMatch = qrText.match(/otp=([0-9]{6})/i);
+      if (otpParamMatch && otpParamMatch[1]) {
+        matchedOtp = otpParamMatch[1];
+      } else {
+        var sixDigitMatch = qrText.match(/([0-9]{6})/);
+        if (sixDigitMatch && sixDigitMatch[1]) {
+          matchedOtp = sixDigitMatch[1];
+        }
+      }
+
+      if (!matchedOtp) {
+        showToast('QR Code ไม่ถูกต้อง (ไม่พบรหัส OTP 6 หลัก)', 'error');
+        setTimeout(function() {
+          qrScannerState.animId = requestAnimationFrame(tickQRScan);
+        }, 1500);
+        return;
+      }
+
+      // Success Scan
+      stopQRScannerCamera();
+      closeModal('modal-qr-scanner');
+
+      // Populate PIN Boxes
+      for (var i = 1; i <= 6; i++) {
+        var box = document.getElementById('pin-' + i);
+        if (box) {
+          box.value = matchedOtp.charAt(i - 1);
+        }
+      }
+
+      showToast('สแกน QR Code สำเร็จ! รหัส OTP: ' + matchedOtp, 'success');
+
+      // Auto submit check-in
+      setTimeout(function() {
+        submitStudentSelfCheckin();
+      }, 400);
     }
 
     function renderStudentCheckinPage() {
