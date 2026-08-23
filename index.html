@@ -2013,24 +2013,57 @@
                   </div>
                 </div>
 
-                <div style="display: flex; gap: 16px; margin: 18px 0; flex-wrap: wrap;">
-                  <label style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; cursor: pointer;">
-                    <input type="checkbox" id="check-opt-otp" checked /> <span>Dynamic OTP 15s</span>
-                  </label>
-                  <label style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; cursor: pointer;">
-                    <input type="checkbox" id="check-opt-gps" checked /> <span>GPS Geofencing</span>
-                  </label>
-                  <label style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; cursor: pointer;">
-                    <input type="checkbox" id="check-opt-device" checked /> <span>Device Binding</span>
-                  </label>
-                  <label style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; cursor: pointer;">
-                    <input type="checkbox" id="check-opt-selfie" checked /> <span>Live Selfie Camera</span>
-                  </label>
+                <div class="grid-2" style="margin-top: 14px;">
+                  <div class="form-group-glass">
+                    <label><i class="fas fa-rotate"></i> รอบเวลาเปลี่ยน Dynamic OTP / QR Code</label>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                      <select class="select-glass" id="session-otp-interval-select" style="flex: 1.2; min-width: 140px;">
+                        <option value="10">เปลี่ยนทุก 10 วินาที</option>
+                        <option value="15" selected>เปลี่ยนทุก 15 วินาที (แนะนำ)</option>
+                        <option value="30">เปลี่ยนทุก 30 วินาที</option>
+                        <option value="60">เปลี่ยนทุก 1 นาที (60 วิ)</option>
+                        <option value="300">เปลี่ยนทุก 5 นาที</option>
+                        <option value="600">เปลี่ยนทุก 10 นาที</option>
+                        <option value="900">เปลี่ยนทุก 15 นาที</option>
+                        <option value="1800">เปลี่ยนทุก 30 นาที</option>
+                        <option value="3600">เปลี่ยนทุก 1 ชั่วโมง</option>
+                        <option value="custom">✏️ กำหนดเวลารอบเอง...</option>
+                      </select>
+                      <div id="session-custom-otp-box" style="display: none; flex: 1.5; gap: 6px; align-items: center;">
+                        <input type="number" min="5" max="86400" class="input-glass" id="session-otp-custom-val" placeholder="ระบุตัวเลข" value="45" style="width: 90px;" />
+                        <select class="select-glass" id="session-otp-custom-unit" style="width: 100px;">
+                          <option value="seconds" selected>วินาที</option>
+                          <option value="minutes">นาที</option>
+                          <option value="hours">ชั่วโมง</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-group-glass">
+                    <label><i class="fas fa-shield-halved"></i> ระบบความปลอดภัยที่เปิดใช้งาน</label>
+                    <div style="display: flex; gap: 16px; margin-top: 8px; flex-wrap: wrap;">
+                      <label style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; cursor: pointer;">
+                        <input type="checkbox" id="check-opt-otp" checked /> <span id="lbl-opt-otp-title">Dynamic OTP</span>
+                      </label>
+                      <label style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; cursor: pointer;">
+                        <input type="checkbox" id="check-opt-gps" checked /> <span>GPS Geofencing</span>
+                      </label>
+                      <label style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; cursor: pointer;">
+                        <input type="checkbox" id="check-opt-device" checked /> <span>Device Binding</span>
+                      </label>
+                      <label style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; cursor: pointer;">
+                        <input type="checkbox" id="check-opt-selfie" checked /> <span>Live Selfie Camera</span>
+                      </label>
+                    </div>
+                  </div>
                 </div>
 
-                <button type="submit" class="btn-glass btn-orange" style="padding: 14px 28px; font-size: 15px;">
-                  <i class="fas fa-play"></i> เริ่มเปิดคาบเช็คชื่อและฉายโปรเจกเตอร์
-                </button>
+                <div style="margin-top: 20px;">
+                  <button type="submit" class="btn-glass btn-orange" style="padding: 14px 28px; font-size: 15px;">
+                    <i class="fas fa-play"></i> เริ่มเปิดคาบเช็คชื่อและฉายโปรเจกเตอร์
+                  </button>
+                </div>
               </form>
             </div>
 
@@ -2565,6 +2598,92 @@
       <div style="display: flex; gap: 10px;">
         <button type="button" class="btn-glass btn-dark btn-close-modal" id="btn-cancel-qr-scan" style="flex: 1; padding: 12px;">
           <i class="fas fa-keyboard"></i> สลับไปพิมพ์รหัสเอง
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CAMERA PERMISSION GUIDE (ปลดล็อกสิทธิ์กล้องในมือถือ) -->
+  <div class="modal-backdrop-glass" id="modal-camera-permission-guide">
+    <div class="modal-window-glass" style="max-width: 500px;">
+      <div class="modal-header-flex">
+        <div class="modal-title"><i class="fas fa-camera" style="color: #EF4444;"></i> วิธีอนุญาตเปิดกล้อง (Permission Denied)</div>
+        <button type="button" class="modal-close btn-close-modal">&times;</button>
+      </div>
+
+      <p style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 16px;">
+        เบราว์เซอร์ของคุณถูกบล็อกหรือยังไม่ได้รับสิทธิ์เข้าถึงกล้อง กรุณาทำตามขั้นตอนตามระบบที่คุณใช้งาน:
+      </p>
+
+      <!-- OS Tabs -->
+      <div style="display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; flex-wrap: wrap;">
+        <button type="button" class="btn-glass btn-sm-glass btn-orange perm-tab-btn active" data-tab="guide-android">
+          <i class="fab fa-android"></i> Android (Chrome)
+        </button>
+        <button type="button" class="btn-glass btn-sm-glass btn-dark perm-tab-btn" data-tab="guide-ios">
+          <i class="fab fa-apple"></i> iPhone / iPad (Safari)
+        </button>
+        <button type="button" class="btn-glass btn-sm-glass btn-dark perm-tab-btn" data-tab="guide-line">
+          <i class="fab fa-line"></i> LINE / Facebook
+        </button>
+      </div>
+
+      <!-- Android Guide Content -->
+      <div id="guide-android" class="perm-guide-content" style="display: block;">
+        <div style="background: rgba(255,255,255,0.04); border-radius: 12px; padding: 14px; margin-bottom: 12px; border-left: 3px solid #10B981;">
+          <div style="font-weight: 700; color: #FFF; font-size: 13.5px; margin-bottom: 6px;">วิธีที่ 1: ปลดล็อกด่วนในหน้าเว็บ (Chrome)</div>
+          <ol style="font-size: 13px; color: var(--text-secondary); line-height: 1.7; padding-left: 18px; margin: 0;">
+            <li>แตะที่ไอคอน <b>แม่กุญแจ 🔒</b> หรือ <b>ไอคอนตั้งค่า</b> ข้างช่องใส่ URL ด้านบนสุด</li>
+            <li>แตะที่เมนู <b>"สิทธิ์" (Permissions)</b> ➔ <b>กล้อง (Camera)</b></li>
+            <li>เปลี่ยนเป็น <b>"อนุญาต" (Allow)</b> หรือกดปุ่ม <b>"รีเซ็ตสิทธิ์"</b> แล้วรีเฟรชหน้าเว็บ</li>
+          </ol>
+        </div>
+        <div style="background: rgba(255,255,255,0.04); border-radius: 12px; padding: 14px; border-left: 3px solid var(--orange-500);">
+          <div style="font-weight: 700; color: #FFF; font-size: 13.5px; margin-bottom: 6px;">วิธีที่ 2: ตั้งค่าในมือถือ (Settings)</div>
+          <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin: 0;">
+            ไปที่ <b>การตั้งค่ามือถือ (Settings)</b> ➔ <b>แอป (Apps)</b> ➔ <b>Chrome</b> ➔ <b>การอนุญาต (Permissions)</b> ➔ <b>กล้อง</b> ➔ เลือก <b>"อนุญาตขณะใช้แอป"</b>
+          </p>
+        </div>
+      </div>
+
+      <!-- iOS Guide Content -->
+      <div id="guide-ios" class="perm-guide-content" style="display: none;">
+        <div style="background: rgba(255,255,255,0.04); border-radius: 12px; padding: 14px; margin-bottom: 12px; border-left: 3px solid #38BDF8;">
+          <div style="font-weight: 700; color: #FFF; font-size: 13.5px; margin-bottom: 6px;">วิธีที่ 1: ปลดล็อกด่วนใน Safari</div>
+          <ol style="font-size: 13px; color: var(--text-secondary); line-height: 1.7; padding-left: 18px; margin: 0;">
+            <li>แตะที่ปุ่ม <b>aA</b> หรือไอคอน 🔒 ข้างแถบ URL ของ Safari ด้านล่าง/บน</li>
+            <li>เลือก <b>"การตั้งค่าเว็บไซต์" (Website Settings)</b></li>
+            <li>ที่หัวข้อ <b>กล้อง (Camera)</b> ➔ เปลี่ยนเป็น <b>"อนุญาต" (Allow)</b> แล้วแตะ "เสร็จสิ้น"</li>
+          </ol>
+        </div>
+        <div style="background: rgba(255,255,255,0.04); border-radius: 12px; padding: 14px; border-left: 3px solid var(--orange-500);">
+          <div style="font-weight: 700; color: #FFF; font-size: 13.5px; margin-bottom: 6px;">วิธีที่ 2: ตั้งค่าใน iPhone (Settings)</div>
+          <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin: 0;">
+            ไปที่ <b>การตั้งค่า (Settings)</b> ➔ <b>Safari</b> ➔ เลื่อนลงมาที่ <b>กล้อง (Camera)</b> ➔ เลือก <b>"อนุญาต" (Allow)</b> หรือ <b>"ถาม" (Ask)</b>
+          </p>
+        </div>
+      </div>
+
+      <!-- LINE / Facebook In-app Browser Content -->
+      <div id="guide-line" class="perm-guide-content" style="display: none;">
+        <div style="background: rgba(255,255,255,0.04); border-radius: 12px; padding: 14px; border-left: 3px solid #10B981;">
+          <div style="font-weight: 700; color: #FFF; font-size: 13.5px; margin-bottom: 6px;">สำหรับผู้ที่เปิดลิงก์ผ่านแอป LINE / Facebook</div>
+          <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin: 0 0 10px 0;">
+            เบราว์เซอร์ในแอป LINE/Facebook มักจะบล็อกกล้องเพื่อความปลอดภัย แนะนำให้เปิดในเบราว์เซอร์หลัก:
+          </p>
+          <ol style="font-size: 13px; color: var(--text-secondary); line-height: 1.7; padding-left: 18px; margin: 0;">
+            <li>แตะที่ปุ่ม <b>จุด 3 จุด (⋮ หรือ ...)</b> ที่มุมขวาบน หรือมุมล่าง</li>
+            <li>เลือก <b>"เปิดด้วยเบราว์เซอร์เริ่มต้น" (Open in Chrome / Safari)</b></li>
+          </ol>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button type="button" class="btn-glass btn-orange" id="btn-retry-camera-perm" style="flex: 1.5; padding: 12px;">
+          <i class="fas fa-arrows-rotate"></i> ลองเปิดกล้องใหม่อีกครั้ง
+        </button>
+        <button type="button" class="btn-glass btn-dark btn-close-modal" style="flex: 1; padding: 12px;">
+          ปิดหน้าต่าง
         </button>
       </div>
     </div>
@@ -4262,9 +4381,15 @@
       if (isGASAvailable()) {
         google.script.run
           .withSuccessHandler(function(session) {
-            if (session) {
+            if (session && session.status === 'Active' && Date.now() < new Date(session.expiresAt).getTime()) {
               AppState.activeSession = session;
               showActiveProjectorScreen();
+            } else {
+              AppState.activeSession = null;
+              var setupCard = document.getElementById('projector-setup-card');
+              var activePanel = document.getElementById('projector-active-panel');
+              if (setupCard) setupCard.style.display = 'block';
+              if (activePanel) activePanel.style.display = 'none';
             }
           })
           .getActiveSession();
@@ -4272,11 +4397,16 @@
         var localSession = localStorage.getItem('gas_student_active_session');
         if (localSession) {
           var sess = JSON.parse(localSession);
-          if (Date.now() < new Date(sess.expiresAt).getTime()) {
+          if (sess.status === 'Active' && Date.now() < new Date(sess.expiresAt).getTime()) {
             AppState.activeSession = sess;
             showActiveProjectorScreen();
           } else {
+            AppState.activeSession = null;
             localStorage.removeItem('gas_student_active_session');
+            var setupCard = document.getElementById('projector-setup-card');
+            var activePanel = document.getElementById('projector-active-panel');
+            if (setupCard) setupCard.style.display = 'block';
+            if (activePanel) activePanel.style.display = 'none';
           }
         }
       }
@@ -4357,6 +4487,18 @@
             customBox.style.display = 'flex';
           } else {
             customBox.style.display = 'none';
+          }
+        });
+      }
+
+      var otpSelect = document.getElementById('session-otp-interval-select');
+      var customOtpBox = document.getElementById('session-custom-otp-box');
+      if (otpSelect && customOtpBox) {
+        otpSelect.addEventListener('change', function() {
+          if (this.value === 'custom') {
+            customOtpBox.style.display = 'flex';
+          } else {
+            customOtpBox.style.display = 'none';
           }
         });
       }
@@ -4458,6 +4600,23 @@
       }
       if (duration < 1) duration = 1;
 
+      var otpPreset = document.getElementById('session-otp-interval-select').value;
+      var otpInterval = 15;
+      if (otpPreset === 'custom') {
+        var customOtpVal = parseFloat(document.getElementById('session-otp-custom-val').value) || 15;
+        var otpUnit = document.getElementById('session-otp-custom-unit').value;
+        if (otpUnit === 'hours') {
+          otpInterval = Math.round(customOtpVal * 3600);
+        } else if (otpUnit === 'minutes') {
+          otpInterval = Math.round(customOtpVal * 60);
+        } else {
+          otpInterval = Math.round(customOtpVal);
+        }
+      } else {
+        otpInterval = parseInt(otpPreset, 10) || 15;
+      }
+      if (otpInterval < 5) otpInterval = 5;
+
       var lat = parseFloat(document.getElementById('session-lat-input').value) || 0;
       var lng = parseFloat(document.getElementById('session-lng-input').value) || 0;
       var radius = parseInt(document.getElementById('session-radius-select').value, 10) || 50;
@@ -4470,6 +4629,7 @@
       var config = {
         className: className,
         durationMinutes: duration,
+        otpIntervalSeconds: otpInterval,
         lat: lat,
         lng: lng,
         radiusMeters: radius,
@@ -4507,6 +4667,7 @@
           lng: lng,
           radiusMeters: radius,
           secretSeed: secretSeed,
+          otpIntervalSeconds: otpInterval,
           requireSelfie: reqSelfie,
           requireGPS: reqGps,
           requireDeviceBinding: reqDevice,
@@ -4579,12 +4740,27 @@
       var sess = AppState.activeSession;
       if (!sess) return;
 
+      var intervalSeconds = parseInt(sess.otpIntervalSeconds, 10) || 15;
+      if (intervalSeconds < 5) intervalSeconds = 15;
+
       var nowMs = Date.now();
-      var intervalSeconds = 15;
       var secLeft = intervalSeconds - (Math.floor(nowMs / 1000) % intervalSeconds);
       
       var secSpan = document.getElementById('projector-sec-left');
-      if (secSpan) secSpan.textContent = secLeft;
+      if (secSpan) {
+        if (intervalSeconds >= 3600) {
+          var hrs = Math.floor(secLeft / 3600);
+          var m = Math.floor((secLeft % 3600) / 60);
+          var s = secLeft % 60;
+          secSpan.textContent = (hrs > 0 ? hrs + ' ชม. ' : '') + m + ' นาที ' + s + ' วินาที';
+        } else if (intervalSeconds >= 60) {
+          var m = Math.floor(secLeft / 60);
+          var s = secLeft % 60;
+          secSpan.textContent = (m > 0 ? m + ' นาที ' : '') + s + ' วินาที';
+        } else {
+          secSpan.textContent = secLeft + ' วินาที';
+        }
+      }
 
       var bar = document.getElementById('projector-countdown-bar');
       if (bar) {
@@ -5211,6 +5387,41 @@
           updateWizardProgress(1);
         });
       }
+
+      // Camera Permission Guide Modal Tabs
+      var permTabBtns = document.querySelectorAll('.perm-tab-btn');
+      for (var pt = 0; pt < permTabBtns.length; pt++) {
+        permTabBtns[pt].addEventListener('click', function() {
+          var targetTabId = this.getAttribute('data-tab');
+          for (var b = 0; b < permTabBtns.length; b++) {
+            permTabBtns[b].classList.remove('btn-orange', 'active');
+            permTabBtns[b].classList.add('btn-dark');
+          }
+          this.classList.remove('btn-dark');
+          this.classList.add('btn-orange', 'active');
+
+          var contents = document.querySelectorAll('.perm-guide-content');
+          for (var c = 0; c < contents.length; c++) {
+            contents[c].style.display = (contents[c].id === targetTabId) ? 'block' : 'none';
+          }
+        });
+      }
+
+      var btnRetryCamera = document.getElementById('btn-retry-camera-perm');
+      if (btnRetryCamera) {
+        btnRetryCamera.addEventListener('click', function() {
+          closeModal('modal-camera-permission-guide');
+          if (AppState.studentState.step === 3) {
+            startCameraStream();
+          } else {
+            startQRScannerCamera();
+          }
+        });
+      }
+    }
+
+    function openCameraPermissionGuideModal() {
+      openModal('modal-camera-permission-guide');
     }
 
     // =========================================================================
@@ -5237,30 +5448,32 @@
 
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         showToast('เบราว์เซอร์ไม่รองรับการเปิดกล้องเพื่อสแกน QR', 'error');
+        openCameraPermissionGuideModal();
         return;
       }
 
-      navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
-        audio: false
-      }).then(function(stream) {
+      var handleSuccess = function(stream) {
         qrScannerState.stream = stream;
         video.srcObject = stream;
         video.setAttribute('playsinline', 'true');
-        video.play();
+        video.play().catch(function(){});
         qrScannerState.animId = requestAnimationFrame(tickQRScan);
-      }).catch(function(err) {
-        // Fallback without environment facingMode
+        closeModal('modal-camera-permission-guide');
+      };
+
+      // Tier 1: Back camera ideal
+      navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } },
+        audio: false
+      })
+      .then(handleSuccess)
+      .catch(function(err) {
+        // Tier 2: Any video camera
         navigator.mediaDevices.getUserMedia({ video: true, audio: false })
-          .then(function(stream) {
-            qrScannerState.stream = stream;
-            video.srcObject = stream;
-            video.setAttribute('playsinline', 'true');
-            video.play();
-            qrScannerState.animId = requestAnimationFrame(tickQRScan);
-          })
+          .then(handleSuccess)
           .catch(function(e) {
-            showToast('ไม่สามารถเปิดกล้องได้: ' + (e.message || err.message), 'error');
+            showToast('ไม่สามารถเปิดกล้องได้: การเข้าถึงกล้องถูกปฏิเสธ (Permission Denied)', 'error');
+            openCameraPermissionGuideModal();
           });
       });
     }
@@ -5408,24 +5621,47 @@
       
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         showToast('เบราว์เซอร์ไม่รองรับการเปิดกล้องหน้า', 'error');
+        openCameraPermissionGuideModal();
         return;
       }
 
-      navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
-        audio: false
-      }).then(function(stream) {
+      var handleSuccess = function(stream) {
         AppState.studentState.cameraStream = stream;
         if (video) {
           video.srcObject = stream;
+          video.setAttribute('playsinline', 'true');
+          video.play().catch(function(){});
           video.style.display = 'block';
         }
         if (overlay) overlay.style.display = 'block';
         var captured = document.getElementById('selfie-captured-preview');
         if (captured) captured.style.display = 'none';
         if (btnSnap) btnSnap.disabled = false;
-      }).catch(function(err) {
-        showToast('ไม่สามารถเปิดกล้องได้: ' + err.message, 'error');
+        closeModal('modal-camera-permission-guide');
+      };
+
+      // Tier 1: Front camera ideal
+      navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
+        audio: false
+      })
+      .then(handleSuccess)
+      .catch(function(err) {
+        // Tier 2: Simple front camera
+        navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'user' },
+          audio: false
+        })
+        .then(handleSuccess)
+        .catch(function(err2) {
+          // Tier 3: Any video device
+          navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+            .then(handleSuccess)
+            .catch(function(finalErr) {
+              showToast('ไม่สามารถเปิดกล้องได้: การเข้าถึงกล้องถูกปฏิเสธ (Permission Denied)', 'error');
+              openCameraPermissionGuideModal();
+            });
+        });
       });
     }
 
@@ -5575,8 +5811,10 @@
           return;
         }
 
-        var validCurrent = generateClientTOTP(sess.secretSeed, 15, Date.now());
-        var validPrev = generateClientTOTP(sess.secretSeed, 15, Date.now() - 15000);
+        var intervalSec = (sess && sess.otpIntervalSeconds) ? sess.otpIntervalSeconds : 15;
+        var intervalMs = intervalSec * 1000;
+        var validCurrent = generateClientTOTP(sess.secretSeed, intervalSec, Date.now());
+        var validPrev = generateClientTOTP(sess.secretSeed, intervalSec, Date.now() - intervalMs);
 
         if (enteredOtp !== validCurrent && enteredOtp !== validPrev) {
           showToast('รหัส OTP ไม่ถูกต้องหรือหมดอายุแล้ว กรุณาดูรหัสล่าสุดบนจอ', 'error');
