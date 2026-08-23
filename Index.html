@@ -2564,8 +2564,80 @@
       }
     }
 
+    // Google Apps Script Web App Deployment Endpoint (For GitHub Pages & External Hosting)
+    var GAS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyENNsNjTy8YvyBsm73Ab68GUkKklL_E-nuKWWehPzT8C-AlatfNy0IHLaY-F390TYmng/exec';
+
+    // Initialize Universal Bridge for GitHub Pages
+    initGasBridge();
+
+    function initGasBridge() {
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        return; // Running inside Google Apps Script iframe runtime
+      }
+
+      window.google = window.google || {};
+      window.google.script = window.google.script || {};
+
+      function createProxyRunner() {
+        var successHandler = function() {};
+        var failureHandler = function(err) { console.error('GAS Error:', err); };
+
+        var runner = {
+          withSuccessHandler: function(fn) {
+            if (typeof fn === 'function') successHandler = fn;
+            return runner;
+          },
+          withFailureHandler: function(fn) {
+            if (typeof fn === 'function') failureHandler = fn;
+            return runner;
+          }
+        };
+
+        var gasMethods = [
+          'initDatabase', 'verifyAdminPassword', 'getClassList', 'addClass', 'deleteClass',
+          'getStudents', 'addStudent', 'updateStudent', 'deleteStudent', 'deleteAllStudents',
+          'importStudentsBatch', 'createCheckinSession', 'getActiveSession', 'closeCheckinSession',
+          'validateAndCheckinStudent', 'getSessionLiveAttendance', 'getAttendanceRecords',
+          'saveAttendanceBatch', 'getDashboardData', 'getStudentStats'
+        ];
+
+        for (var i = 0; i < gasMethods.length; i++) {
+          (function(methodName) {
+            runner[methodName] = function() {
+              var args = Array.prototype.slice.call(arguments);
+              var payload = args.length === 1 ? args[0] : (args.length > 1 ? args : null);
+
+              fetch(GAS_WEBAPP_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                  action: methodName,
+                  data: payload,
+                  payload: payload,
+                  args: args
+                })
+              })
+              .then(function(res) {
+                return res.json();
+              })
+              .then(function(result) {
+                successHandler(result);
+              })
+              .catch(function(err) {
+                console.warn('GAS Network Error for ' + methodName + ':', err);
+                failureHandler(err);
+              });
+            };
+          })(gasMethods[i]);
+        }
+
+        return runner;
+      }
+
+      window.google.script.run = createProxyRunner();
+    }
+
     function isGASAvailable() {
-      return typeof google !== 'undefined' && google.script && google.script.run;
+      return (typeof google !== 'undefined' && google.script && google.script.run) || (GAS_WEBAPP_URL && GAS_WEBAPP_URL.length > 10);
     }
 
     function getTodayDateString() {
