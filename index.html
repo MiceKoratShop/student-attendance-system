@@ -1693,8 +1693,13 @@
 
             <!-- STEP 1: Student Selection & Device Binding -->
             <div class="checkin-step-card" id="student-step-1">
-              <div class="step-header-badge">
-                <i class="fas fa-id-card"></i> ขั้นตอนที่ 1 : ยืนยันตัวตน
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                <div class="step-header-badge" style="margin-bottom: 0;">
+                  <i class="fas fa-id-card"></i> ขั้นตอนที่ 1 : ยืนยันตัวตน
+                </div>
+                <span class="badge-glass badge-info" id="student-activity-badge" style="background: rgba(255, 107, 0, 0.2); border: 1px solid var(--orange-500); color: var(--orange-400); font-weight: 700; font-size: 12.5px;">
+                  <i class="fas fa-tags"></i> <span id="student-activity-text">เช็คชื่อมาเรียน</span>
+                </span>
               </div>
               <h2 style="font-size: 20px; font-weight: 700; color: #FFF; margin-bottom: 6px;">เลือกห้องและชื่อของคุณ</h2>
               <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">ระบบผูกรหัสอุปกรณ์เพื่อป้องกันการเช็คชื่อซ้ำหรือแทนกัน</p>
@@ -1960,9 +1965,29 @@
               <form id="form-create-session">
                 <div class="grid-2">
                   <div class="form-group-glass">
-                    <label>เลือกห้องเรียนที่เปิดเช็คชื่อ</label>
+                    <label><i class="fas fa-tags"></i> กิจกรรมการเช็คชื่อ / คาบเรียน</label>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                      <select class="select-glass" id="session-activity-select" style="flex: 1.2; min-width: 150px;">
+                        <option value="เช็คชื่อเข้าแถว">🌅 เช็คชื่อเข้าแถว (ตอนเช้า)</option>
+                        <option value="เช็คชื่อมาเรียน" selected>🏫 เช็คชื่อมาเรียน (คาบปกติ)</option>
+                        <option value="เช็คชื่อกิจกรรม">🎪 เช็คชื่อกิจกรรม / อบรม</option>
+                        <option value="เช็คชื่อคาบโฮมรูม">🏢 เช็คชื่อคาบโฮมรูม</option>
+                        <option value="เช็คชื่อชุมนุม">🏃 เช็คชื่อกิจกรรมชุมนุม / ชมรม</option>
+                        <option value="custom">✏️ กำหนดชื่อกิจกรรมเอง...</option>
+                      </select>
+                      <div id="session-custom-activity-box" style="display: none; flex: 1.5;">
+                        <input type="text" class="input-glass" id="session-activity-custom-val" placeholder="พิมพ์ชื่อกิจกรรม เช่น สอบกลางภาค..." value="" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-group-glass">
+                    <label><i class="fas fa-chalkboard-user"></i> เลือกห้องเรียนที่เปิดเช็คชื่อ</label>
                     <select class="select-glass" id="session-class-select"></select>
                   </div>
+                </div>
+
+                <div class="grid-2">
                   <div class="form-group-glass">
                     <label><i class="fas fa-clock"></i> ระยะเวลาเปิดรับเช็คชื่อ (นาที / ชั่วโมง)</label>
                     <div style="display: flex; gap: 8px; flex-wrap: wrap;">
@@ -1988,11 +2013,22 @@
                       </div>
                     </div>
                   </div>
+
+                  <div class="form-group-glass">
+                    <label><i class="fas fa-arrows-to-circle"></i> รัศมี Geofencing ที่อนุญาต (เมตร)</label>
+                    <select class="select-glass" id="session-radius-select">
+                      <option value="30">30 เมตร (เฉพาะในห้องเรียน)</option>
+                      <option value="50" selected>50 เมตร (ครอบคลุมอาคารเรียน)</option>
+                      <option value="100">100 เมตร (บริเวณตึกเรียน)</option>
+                      <option value="200">200 เมตร</option>
+                      <option value="500">500 เมตร (บริเวณสถานศึกษา)</option>
+                    </select>
+                  </div>
                 </div>
 
                 <div class="grid-2">
                   <div class="form-group-glass">
-                    <label>พิกัด GPS ละติจูด / ลองจิจูด</label>
+                    <label><i class="fas fa-location-dot"></i> พิกัด GPS ละติจูด / ลองจิจูด</label>
                     <div style="display: flex; gap: 8px;">
                       <input type="text" class="input-glass" id="session-lat-input" placeholder="Latitude" value="13.7563" />
                       <input type="text" class="input-glass" id="session-lng-input" placeholder="Longitude" value="100.5018" />
@@ -2002,18 +2038,6 @@
                     </div>
                   </div>
 
-                  <div class="form-group-glass">
-                    <label>รัศมี Geofencing ที่อนุญาต (เมตร)</label>
-                    <select class="select-glass" id="session-radius-select">
-                      <option value="30">30 เมตร (เฉพาะในห้องเรียน)</option>
-                      <option value="50" selected>50 เมตร (ครอบคลุมอาคารเรียน)</option>
-                      <option value="100">100 เมตร (บริเวณตึกเรียน)</option>
-                      <option value="200">200 เมตร</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="grid-2" style="margin-top: 14px;">
                   <div class="form-group-glass">
                     <label><i class="fas fa-rotate"></i> รอบเวลาเปลี่ยน Dynamic OTP / QR Code</label>
                     <div style="display: flex; gap: 8px; flex-wrap: wrap;">
@@ -2039,23 +2063,23 @@
                       </div>
                     </div>
                   </div>
+                </div>
 
-                  <div class="form-group-glass">
-                    <label><i class="fas fa-shield-halved"></i> ระบบความปลอดภัยที่เปิดใช้งาน</label>
-                    <div style="display: flex; gap: 16px; margin-top: 8px; flex-wrap: wrap;">
-                      <label style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; cursor: pointer;">
-                        <input type="checkbox" id="check-opt-otp" checked /> <span id="lbl-opt-otp-title">Dynamic OTP</span>
-                      </label>
-                      <label style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; cursor: pointer;">
-                        <input type="checkbox" id="check-opt-gps" checked /> <span>GPS Geofencing</span>
-                      </label>
-                      <label style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; cursor: pointer;">
-                        <input type="checkbox" id="check-opt-device" checked /> <span>Device Binding</span>
-                      </label>
-                      <label style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; cursor: pointer;">
-                        <input type="checkbox" id="check-opt-selfie" checked /> <span>Live Selfie Camera</span>
-                      </label>
-                    </div>
+                <div class="form-group-glass" style="margin-top: 14px;">
+                  <label><i class="fas fa-shield-halved"></i> ระบบความปลอดภัยที่เปิดใช้งาน</label>
+                  <div style="display: flex; gap: 16px; margin-top: 8px; flex-wrap: wrap;">
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; cursor: pointer;">
+                      <input type="checkbox" id="check-opt-otp" checked /> <span id="lbl-opt-otp-title">Dynamic OTP</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; cursor: pointer;">
+                      <input type="checkbox" id="check-opt-gps" checked /> <span>GPS Geofencing</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; cursor: pointer;">
+                      <input type="checkbox" id="check-opt-device" checked /> <span>Device Binding</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; cursor: pointer;">
+                      <input type="checkbox" id="check-opt-selfie" checked /> <span>Live Selfie Camera</span>
+                    </label>
                   </div>
                 </div>
 
@@ -2070,9 +2094,12 @@
             <!-- Active Live Screen -->
             <div id="projector-active-panel" style="display: none;">
               <div class="glass-card" style="margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
-                <div style="display: flex; align-items: center; gap: 14px;">
+                <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
                   <span class="badge-glass badge-present" style="font-size: 13px;">
-                    <i class="fas fa-satellite-dish"></i> กำลังเปิดรับเช็คชื่อ (Active)
+                    <i class="fas fa-satellite-dish"></i> กำลังเปิดรับเช็คชื่อ
+                  </span>
+                  <span class="badge-glass badge-info" id="proj-active-activity-badge" style="background: rgba(255, 107, 0, 0.2); border: 1px solid var(--orange-500); color: var(--orange-400); font-weight: 700; font-size: 13.5px;">
+                    <i class="fas fa-tags"></i> <span id="proj-active-activity-text">เช็คชื่อมาเรียน</span>
                   </span>
                   <span style="font-weight: 700; font-size: 16px; color: #FFF;" id="proj-active-class-text">ห้อง ทุกห้อง</span>
                 </div>
@@ -2137,13 +2164,24 @@
           <div class="glass-card" style="margin-bottom: 24px;">
             <div class="card-header-flex">
               <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-                <div class="form-group-glass" style="margin-bottom: 0; min-width: 170px;">
+                <div class="form-group-glass" style="margin-bottom: 0; min-width: 160px;">
                   <label><i class="fas fa-chalkboard-user"></i> เลือกห้องเรียน</label>
                   <select class="select-glass" id="att-class-select"></select>
                 </div>
-                <div class="form-group-glass" style="margin-bottom: 0; min-width: 170px;">
+                <div class="form-group-glass" style="margin-bottom: 0; min-width: 150px;">
                   <label><i class="fas fa-calendar-day"></i> เลือกวันที่</label>
                   <input type="date" class="input-glass" id="att-date-select" />
+                </div>
+                <div class="form-group-glass" style="margin-bottom: 0; min-width: 160px;">
+                  <label><i class="fas fa-tags"></i> เลือกกิจกรรม</label>
+                  <select class="select-glass" id="att-activity-select">
+                    <option value="all">ทุกกิจกรรม</option>
+                    <option value="เช็คชื่อเข้าแถว">🌅 เช็คชื่อเข้าแถว</option>
+                    <option value="เช็คชื่อมาเรียน" selected>🏫 เช็คชื่อมาเรียน</option>
+                    <option value="เช็คชื่อกิจกรรม">🎪 เช็คชื่อกิจกรรม</option>
+                    <option value="เช็คชื่อคาบโฮมรูม">🏢 เช็คชื่อคาบโฮมรูม</option>
+                    <option value="เช็คชื่อชุมนุม">🏃 เช็คชื่อกิจกรรมชุมนุม</option>
+                  </select>
                 </div>
               </div>
 
@@ -3213,6 +3251,13 @@
           AppState.selectedDate = this.value;
           var headerDateLabel = document.getElementById('header-date-text');
           if (headerDateLabel) headerDateLabel.textContent = formatThaiDate(this.value);
+          loadAttendanceDataForSelectedDate();
+        });
+      }
+
+      var attActivitySelect = document.getElementById('att-activity-select');
+      if (attActivitySelect) {
+        attActivitySelect.addEventListener('change', function() {
           loadAttendanceDataForSelectedDate();
         });
       }
@@ -4501,6 +4546,18 @@
         });
       }
 
+      var actSelect = document.getElementById('session-activity-select');
+      var customActBox = document.getElementById('session-custom-activity-box');
+      if (actSelect && customActBox) {
+        actSelect.addEventListener('change', function() {
+          if (this.value === 'custom') {
+            customActBox.style.display = 'block';
+          } else {
+            customActBox.style.display = 'none';
+          }
+        });
+      }
+
       var otpSelect = document.getElementById('session-otp-interval-select');
       var customOtpBox = document.getElementById('session-custom-otp-box');
       if (otpSelect && customOtpBox) {
@@ -4595,6 +4652,16 @@
 
     function startNewProjectorSession() {
       var className = document.getElementById('session-class-select').value;
+      
+      var actPreset = document.getElementById('session-activity-select') ? document.getElementById('session-activity-select').value : 'เช็คชื่อมาเรียน';
+      var activityName = 'เช็คชื่อมาเรียน';
+      if (actPreset === 'custom') {
+        var customActInput = document.getElementById('session-activity-custom-val');
+        activityName = (customActInput && customActInput.value.trim()) ? customActInput.value.trim() : 'เช็คชื่อกิจกรรม';
+      } else {
+        activityName = actPreset || 'เช็คชื่อมาเรียน';
+      }
+
       var durationPreset = document.getElementById('session-duration-select').value;
       var duration = 15;
       if (durationPreset === 'custom') {
@@ -4638,6 +4705,7 @@
 
       var config = {
         className: className,
+        activityName: activityName,
         durationMinutes: duration,
         otpIntervalSeconds: otpInterval,
         lat: lat,
@@ -4655,7 +4723,7 @@
             if (res.status === 'success') {
               AppState.activeSession = res.session;
               showActiveProjectorScreen();
-              showToast('เปิดคาบเช็คชื่อเรียบร้อยแล้ว!', 'success');
+              showToast('เปิดคาบเช็คชื่อ (' + activityName + ') เรียบร้อยแล้ว!', 'success');
             } else {
               showToast(res.message, 'error');
             }
@@ -4670,6 +4738,7 @@
         var mockSession = {
           sessionId: sessionId,
           className: className,
+          activityName: activityName,
           date: getTodayDateString(),
           createdAt: new Date(nowMs).toISOString(),
           expiresAt: new Date(expiresAtMs).toISOString(),
@@ -4687,7 +4756,7 @@
         AppState.activeSession = mockSession;
         localStorage.setItem('gas_student_active_session', JSON.stringify(mockSession));
         showActiveProjectorScreen();
-        showToast('เปิดคาบเช็คชื่อเรียบร้อยแล้ว!', 'success');
+        showToast('เปิดคาบเช็คชื่อ (' + activityName + ') เรียบร้อยแล้ว!', 'success');
       }
     }
 
@@ -4706,6 +4775,10 @@
       }
       var classText = document.getElementById('proj-active-class-text');
       if (classText) classText.textContent = 'ห้อง ' + classNameStr;
+
+      var actText = document.getElementById('proj-active-activity-text');
+      var curAct = sess.activityName || 'เช็คชื่อมาเรียน';
+      if (actText) actText.textContent = curAct;
 
       if (AppState.sessionTimer) clearInterval(AppState.sessionTimer);
       if (AppState.totpTimer) clearInterval(AppState.totpTimer);
@@ -5000,9 +5073,11 @@
       var sess = AppState.activeSession;
       var attClassInput = document.getElementById('att-class-select');
       var attDateInput = document.getElementById('att-date-select');
+      var attActInput = document.getElementById('att-activity-select');
 
       var targetClass = (attClassInput && attClassInput.value) ? attClassInput.value : ((sess && sess.className && sess.className !== 'undefined' && sess.className !== 'all') ? sess.className : AppState.selectedClass);
       var targetDate = (attDateInput && attDateInput.value) ? attDateInput.value : (sess ? sess.date : AppState.selectedDate);
+      var sessAct = (sess && sess.activityName) ? sess.activityName : 'เช็คชื่อมาเรียน';
 
       if (!targetClass || targetClass === 'all' || targetClass === 'undefined') {
         if (AppState.classes && AppState.classes.length > 0) {
@@ -5017,6 +5092,24 @@
       }
 
       showToast('กำลังประมวลผลดึงผลเช็คชื่อเข้าสู่ตาราง...', 'success');
+
+      if (attActInput) {
+        var foundOpt = false;
+        for (var o = 0; o < attActInput.options.length; o++) {
+          if (attActInput.options[o].value === sessAct) {
+            attActInput.selectedIndex = o;
+            foundOpt = true;
+            break;
+          }
+        }
+        if (!foundOpt) {
+          var newOption = document.createElement('option');
+          newOption.value = sessAct;
+          newOption.textContent = '🏷️ ' + sessAct;
+          newOption.selected = true;
+          attActInput.appendChild(newOption);
+        }
+      }
 
       fetchStudents(targetClass, function(students) {
         if (!students || students.length === 0) {
@@ -5067,10 +5160,10 @@
             }
 
             if (isPresent) {
-              recordsMap[sId] = { status: 'Present', selfiePhoto: selfie, distanceMeters: dist };
+              recordsMap[sId] = { status: 'Present', selfiePhoto: selfie, distanceMeters: dist, activityName: sessAct };
               presentCount++;
             } else {
-              recordsMap[sId] = { status: 'Absent', selfiePhoto: '', distanceMeters: 0 };
+              recordsMap[sId] = { status: 'Absent', selfiePhoto: '', distanceMeters: 0, activityName: sessAct };
               absentCount++;
             }
           }
@@ -5088,7 +5181,7 @@
 
           switchView('attendance');
 
-          showToast('ดึงผลเช็คชื่อห้อง ' + targetClass + ' เรียบร้อย! (มาเรียน ' + presentCount + ' คน, ขาด ' + absentCount + ' คน) กรุณาตรวจสอบแล้วกด "บันทึกการเช็คชื่อ"', 'success');
+          showToast('ดึงผลเช็คชื่อกิจกรรม "' + sessAct + '" ห้อง ' + targetClass + ' เรียบร้อย! (มาเรียน ' + presentCount + ' คน, ขาด ' + absentCount + ' คน) กรุณาตรวจสอบแล้วกด "บันทึกการเช็คชื่อ"', 'success');
 
           // Highlight Save Button with pulse animation
           var btnSave = document.getElementById('btn-save-attendance');
@@ -5105,17 +5198,21 @@
             .withSuccessHandler(function(recMap) {
               processRecords(recMap);
             })
-            .getAttendanceRecords(targetDate, targetClass);
+            .getAttendanceRecords(targetDate, targetClass, sessAct);
         } else {
           var allAtt = getLocalStorageAttendance();
           var recMap = {};
           for (var a = 0; a < allAtt.length; a++) {
             if (allAtt[a].date === targetDate) {
-              recMap[allAtt[a].studentId] = {
-                status: allAtt[a].status,
-                selfiePhoto: allAtt[a].selfiePhoto || '',
-                distanceMeters: allAtt[a].distanceMeters || 0
-              };
+              var act = allAtt[a].activityName || 'เช็คชื่อมาเรียน';
+              if (act === sessAct || (!allAtt[a].activityName && sessAct === 'เช็คชื่อมาเรียน')) {
+                recMap[allAtt[a].studentId] = {
+                  status: allAtt[a].status,
+                  selfiePhoto: allAtt[a].selfiePhoto || '',
+                  distanceMeters: allAtt[a].distanceMeters || 0,
+                  activityName: act
+                };
+              }
             }
           }
           processRecords(recMap);
@@ -5593,6 +5690,10 @@
       document.getElementById('student-step-success').style.display = 'none';
       updateWizardProgress(1);
 
+      var sessAct = (AppState.activeSession && AppState.activeSession.activityName) ? AppState.activeSession.activityName : 'เช็คชื่อมาเรียน';
+      var stdActText = document.getElementById('student-activity-text');
+      if (stdActText) stdActText.textContent = sessAct;
+
       var classSelect = document.getElementById('self-checkin-class');
       if (classSelect && classSelect.value) {
         populateStudentSelectForClass(classSelect.value);
@@ -5845,6 +5946,7 @@
         var allAtt = getLocalStorageAttendance();
         var nowTimeStr = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
         
+        var actName = (sess && sess.activityName) ? sess.activityName : 'เช็คชื่อมาเรียน';
         allAtt.push({
           date: getTodayDateString(),
           studentId: st.selectedStudentId,
@@ -5854,7 +5956,8 @@
           distanceMeters: st.gpsDistance,
           deviceId: st.deviceId,
           selfiePhoto: st.selfieBase64,
-          checkinType: 'Self Check-in (Verified)'
+          checkinType: actName,
+          activityName: actName
         });
         localStorage.setItem('gas_student_app_attendance', JSON.stringify(allAtt));
 
@@ -5863,6 +5966,7 @@
           studentNo: studentObj ? studentObj.studentNo : '1',
           name: studentObj ? studentObj.name : 'นักศึกษา',
           className: studentObj ? studentObj.className : 'ห้องเรียน',
+          activityName: actName,
           checkinTime: nowTimeStr,
           distanceMeters: st.gpsDistance,
           deviceId: st.deviceId.substring(0, 8) + '...',
@@ -5880,7 +5984,8 @@
       if (passSelfie && studentData.selfiePhoto) passSelfie.src = studentData.selfiePhoto;
 
       document.getElementById('pass-student-name').textContent = studentData.name;
-      document.getElementById('pass-student-meta').textContent = 'เลขที่ ' + studentData.studentNo + ' • ห้อง ' + studentData.className + ' (รหัส: ' + studentData.studentId + ')';
+      var actMeta = studentData.activityName ? (' • 🏷️ กิจกรรม: ' + studentData.activityName) : '';
+      document.getElementById('pass-student-meta').textContent = 'เลขที่ ' + studentData.studentNo + ' • ห้อง ' + studentData.className + ' (รหัส: ' + studentData.studentId + ')' + actMeta;
       document.getElementById('pass-time-text').textContent = studentData.checkinTime;
       document.getElementById('pass-distance-text').textContent = studentData.distanceMeters + ' เมตร';
       document.getElementById('pass-device-text').textContent = studentData.deviceId;
@@ -6058,6 +6163,8 @@
     function loadAttendanceDataForSelectedDate() {
       var targetClass = AppState.selectedClass;
       var targetDate = AppState.selectedDate;
+      var attActSelect = document.getElementById('att-activity-select');
+      var targetActivity = attActSelect ? attActSelect.value : 'all';
 
       // If we just transferred live attendance results, render them directly
       if (AppState.pendingTransferredRecords) {
@@ -6075,17 +6182,22 @@
             .withSuccessHandler(function(recordsMap) {
               renderAttendanceList(students, recordsMap);
             })
-            .getAttendanceRecords(targetDate, targetClass);
+            .getAttendanceRecords(targetDate, targetClass, targetActivity);
         } else {
           var allAtt = getLocalStorageAttendance();
           var recordsMap = {};
           for (var i = 0; i < allAtt.length; i++) {
             if (allAtt[i].date === targetDate) {
-              recordsMap[allAtt[i].studentId] = {
-                status: allAtt[i].status,
-                selfiePhoto: allAtt[i].selfiePhoto || '',
-                distanceMeters: allAtt[i].distanceMeters || 0
-              };
+              var act = allAtt[i].activityName || 'เช็คชื่อมาเรียน';
+              if (targetActivity === 'all' || act === targetActivity || (!allAtt[i].activityName && targetActivity === 'เช็คชื่อมาเรียน')) {
+                recordsMap[allAtt[i].studentId] = {
+                  status: allAtt[i].status,
+                  selfiePhoto: allAtt[i].selfiePhoto || '',
+                  distanceMeters: allAtt[i].distanceMeters || 0,
+                  activityName: act,
+                  checkinTime: allAtt[i].checkinTime || ''
+                };
+              }
             }
           }
           renderAttendanceList(students, recordsMap);
@@ -6150,6 +6262,9 @@
         subInfo.className = 'student-sub-info';
         var infoText = 'รหัส ' + student.studentId + ' • ห้อง ' + student.className;
         if (rec && typeof rec === 'object') {
+          if (rec.activityName) {
+            infoText += ' • 🏷️ ' + rec.activityName;
+          }
           if (rec.selfiePhoto) {
             infoText += ' • 📸 มีรูปเซลฟี่';
           }
@@ -6243,6 +6358,9 @@
 
       var listToSave = [];
       var dateStr = AppState.selectedDate;
+      var attActSelect = document.getElementById('att-activity-select');
+      var curActivity = attActSelect ? attActSelect.value : 'เช็คชื่อมาเรียน';
+      if (curActivity === 'all' || !curActivity) curActivity = 'เช็คชื่อมาเรียน';
 
       for (var i = 0; i < cards.length; i++) {
         var studentId = cards[i].getAttribute('data-student-id');
@@ -6252,7 +6370,8 @@
         listToSave.push({
           date: dateStr,
           studentId: studentId,
-          status: status
+          status: status,
+          activityName: curActivity
         });
       }
 
@@ -6261,17 +6380,18 @@
           .withSuccessHandler(function(res) {
             showToast(res.message || 'บันทึกสำเร็จ', 'success');
           })
-          .saveAttendanceBatch(listToSave);
+          .saveAttendanceBatch(listToSave, curActivity);
       } else {
         var allAtt = getLocalStorageAttendance();
         var newAllAtt = [];
         var mapKeys = {};
         for (var k = 0; k < listToSave.length; k++) {
-          mapKeys[listToSave[k].date + '_' + listToSave[k].studentId] = listToSave[k].status;
+          mapKeys[listToSave[k].date + '_' + listToSave[k].studentId + '_' + listToSave[k].activityName] = listToSave[k].status;
         }
         
         for (var j = 0; j < allAtt.length; j++) {
-          var key = allAtt[j].date + '_' + allAtt[j].studentId;
+          var itemAct = allAtt[j].activityName || 'เช็คชื่อมาเรียน';
+          var key = allAtt[j].date + '_' + allAtt[j].studentId + '_' + itemAct;
           if (!mapKeys[key]) {
             newAllAtt.push(allAtt[j]);
           }
@@ -6282,7 +6402,7 @@
         }
         
         localStorage.setItem('gas_student_app_attendance', JSON.stringify(newAllAtt));
-        showToast('บันทึกการเช็คชื่อสำเร็จ (' + listToSave.length + ' คน)', 'success');
+        showToast('บันทึกการเช็คชื่อ (' + curActivity + ') สำเร็จ (' + listToSave.length + ' คน)', 'success');
       }
     }
 
