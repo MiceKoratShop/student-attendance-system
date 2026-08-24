@@ -2820,11 +2820,38 @@
         lockToStudentPortal();
       }
 
-      // Load classes and students
+      // Fast initial hydrate from localStorage cache (Zero latency)
+      var cachedClasses = localStorage.getItem('gas_cached_classes');
+      if (cachedClasses) {
+        try {
+          AppState.classes = JSON.parse(cachedClasses);
+          populateClassDropdowns();
+        } catch (e) {}
+      }
+      var cachedStudents = localStorage.getItem('gas_cached_students');
+      if (cachedStudents) {
+        try {
+          AppState.students = JSON.parse(cachedStudents);
+          var selfCls = document.getElementById('self-checkin-class');
+          if (selfCls && selfCls.value) {
+            populateStudentSelectForClass(selfCls.value);
+          }
+        } catch (e) {}
+      }
+
+      // Load fresh classes and students from backend concurrently
       fetchClasses(function() {
-        fetchStudents('all', function() {
-          checkActiveSessionOnLoad();
-        });
+        var selfCls = document.getElementById('self-checkin-class');
+        if (selfCls && selfCls.value) {
+          populateStudentSelectForClass(selfCls.value);
+        }
+      });
+      fetchStudents('all', function() {
+        var selfCls = document.getElementById('self-checkin-class');
+        if (selfCls && selfCls.value) {
+          populateStudentSelectForClass(selfCls.value);
+        }
+        checkActiveSessionOnLoad();
       });
     }
 
@@ -3377,13 +3404,19 @@
         google.script.run
           .withSuccessHandler(function(classList) {
             AppState.classes = classList || [];
+            try {
+              localStorage.setItem('gas_cached_classes', JSON.stringify(AppState.classes));
+            } catch (e) {}
             populateClassDropdowns();
             if (callback) callback();
           })
           .getClassList();
       } else {
-        var localClasses = localStorage.getItem('gas_student_app_classes');
+        var localClasses = localStorage.getItem('gas_student_app_classes') || localStorage.getItem('gas_cached_classes');
         AppState.classes = localClasses ? JSON.parse(localClasses) : [];
+        try {
+          localStorage.setItem('gas_cached_classes', JSON.stringify(AppState.classes));
+        } catch (e) {}
         populateClassDropdowns();
         if (callback) callback();
       }
@@ -3396,6 +3429,7 @@
         var select = document.getElementById(dropdownIds[d]);
         if (!select) continue;
         
+        var prevVal = select.value;
         select.innerHTML = '';
         
         if (dropdownIds[d] === 'student-class-filter' || dropdownIds[d] === 'report-class-select' || dropdownIds[d] === 'session-class-select') {
@@ -3411,6 +3445,7 @@
           optEmpty.textContent = '-- ยังไม่มีห้องเรียน (เพิ่มห้องเรียนก่อน) --';
           select.appendChild(optEmpty);
         } else {
+          var hasPrev = false;
           for (var c = 0; c < AppState.classes.length; c++) {
             var rawItem = AppState.classes[c];
             var cName = (typeof rawItem === 'object' && rawItem) ? (rawItem.name || rawItem.className || '') : String(rawItem || '');
@@ -3418,6 +3453,10 @@
             var opt = document.createElement('option');
             opt.value = cName;
             opt.textContent = cName;
+            if (prevVal === cName) {
+              opt.selected = true;
+              hasPrev = true;
+            }
             select.appendChild(opt);
           }
         }
@@ -3425,7 +3464,7 @@
 
       var excelClassSelect = document.getElementById('excel-target-class');
       if (excelClassSelect) {
-        var prevVal = excelClassSelect.value;
+        var prevValE = excelClassSelect.value;
         excelClassSelect.innerHTML = '';
         var optAuto = document.createElement('option');
         optAuto.value = '__AUTO__';
@@ -3440,7 +3479,7 @@
             var eOpt = document.createElement('option');
             eOpt.value = cNameE;
             eOpt.textContent = 'ห้อง: ' + cNameE;
-            if (prevVal === cNameE) {
+            if (prevValE === cNameE) {
               eOpt.selected = true;
             }
             excelClassSelect.appendChild(eOpt);
@@ -3450,25 +3489,64 @@
       
       if (AppState.classes.length > 0) {
         if (!AppState.selectedClass || AppState.selectedClass === 'all') {
-          AppState.selectedClass = AppState.classes[0];
+          var fCls = AppState.classes[0];
+          AppState.selectedClass = (typeof fCls === 'object' && fCls) ? (fCls.name || fCls.className || '') : String(fCls || '');
         }
       } else {
         AppState.selectedClass = '';
       }
+
+      // Immediately sync student dropdown
+      var selfCheckinSelect = document.getElementById('self-checkin-class');
+      if (selfCheckinSelect && selfCheckinSelect.value) {
+        populateStudentSelectForClass(selfCheckinSelect.value);
+      }
     }
 
     function fetchStudents(classFilter, callback) {
+      AppState.isFetchingStudents = true;
       if (isGASAvailable()) {
         google.script.run
           .withSuccessHandler(function(studentList) {
-            AppState.students = studentList || [];
+            AppState.isFetchingStudents = false;
+            if (!classFilter || classFilter === 'all') {
+              AppState.students = studentList || [];
+              try {
+                localStorage.setItem('gas_cached_students', JSON.stringify(AppState.students));
+              } catch (e) {}
+            } else {
+              var otherStudents = [];
+              for (var o = 0; o < AppState.students.length; o++) {
+                if (AppState.students[o].className !== classFilter) {
+                  otherStudents.push(AppState.students[o]);
+                }
+              }
+              AppState.students = otherStudents.concat(studentList || []);
+              try {
+                localStorage.setItem('gas_cached_students', JSON.stringify(AppState.students));
+              } catch (e) {}
+            }
+            var selfCls = document.getElementById('self-checkin-class');
+            if (selfCls && selfCls.value) {
+              populateStudentSelectForClass(selfCls.value);
+            }
+            if (callback) callback(studentList || []);
+          })
+          .withFailureHandler(function(err) {
+            AppState.isFetchingStudents = false;
             if (callback) callback(AppState.students);
           })
           .getStudents(classFilter);
       } else {
-        var localData = localStorage.getItem('gas_student_app_students');
+        var localData = localStorage.getItem('gas_student_app_students') || localStorage.getItem('gas_cached_students');
         AppState.students = localData ? JSON.parse(localData) : [];
+        AppState.isFetchingStudents = false;
         
+        var selfCls2 = document.getElementById('self-checkin-class');
+        if (selfCls2 && selfCls2.value) {
+          populateStudentSelectForClass(selfCls2.value);
+        }
+
         if (classFilter && classFilter !== 'all') {
           var filtered = [];
           for (var i = 0; i < AppState.students.length; i++) {
@@ -5690,13 +5768,32 @@
       document.getElementById('student-step-success').style.display = 'none';
       updateWizardProgress(1);
 
-      var sessAct = (AppState.activeSession && AppState.activeSession.activityName) ? AppState.activeSession.activityName : 'เช็คชื่อมาเรียน';
+      var sess = AppState.activeSession;
+      var sessAct = (sess && sess.activityName) ? sess.activityName : 'เช็คชื่อมาเรียน';
       var stdActText = document.getElementById('student-activity-text');
       if (stdActText) stdActText.textContent = sessAct;
 
       var classSelect = document.getElementById('self-checkin-class');
-      if (classSelect && classSelect.value) {
+      if (classSelect) {
+        // If active session belongs to a specific class, auto select it
+        if (sess && sess.className && sess.className !== 'all' && sess.className !== 'undefined') {
+          classSelect.value = sess.className;
+        } else if (!classSelect.value && AppState.classes && AppState.classes.length > 0) {
+          var fClass = AppState.classes[0];
+          var fName = (typeof fClass === 'object' && fClass) ? (fClass.name || fClass.className || '') : String(fClass || '');
+          classSelect.value = fName;
+        }
+
         populateStudentSelectForClass(classSelect.value);
+
+        if (!AppState.students || AppState.students.length === 0) {
+          fetchStudents('all', function() {
+            var curSelect = document.getElementById('self-checkin-class');
+            if (curSelect && curSelect.value) {
+              populateStudentSelectForClass(curSelect.value);
+            }
+          });
+        }
       }
     }
 
@@ -5705,18 +5802,40 @@
       if (!stdSelect) return;
       stdSelect.innerHTML = '';
 
+      if (!className) {
+        var classSelect = document.getElementById('self-checkin-class');
+        if (classSelect && classSelect.value) {
+          className = classSelect.value;
+        }
+      }
+
       var filtered = [];
-      for (var i = 0; i < AppState.students.length; i++) {
-        if (!className || AppState.students[i].className === className) {
-          filtered.push(AppState.students[i]);
+      if (AppState.students && AppState.students.length > 0) {
+        for (var i = 0; i < AppState.students.length; i++) {
+          if (!className || String(AppState.students[i].className).trim().toLowerCase() === String(className).trim().toLowerCase()) {
+            filtered.push(AppState.students[i]);
+          }
         }
       }
 
       if (filtered.length === 0) {
         var optNone = document.createElement('option');
         optNone.value = '';
-        optNone.textContent = '-- ยังไม่มีรายชื่อในห้องนี้ (ให้อาจารย์เพิ่มหรือนำเข้า Excel) --';
+        if (AppState.isFetchingStudents) {
+          optNone.textContent = '⏳ กำลังดึงรายชื่อนักศึกษาจากฐานข้อมูล...';
+        } else {
+          optNone.textContent = '-- ยังไม่มีรายชื่อในห้องนี้ (ให้อาจารย์เพิ่มหรือนำเข้า Excel) --';
+        }
         stdSelect.appendChild(optNone);
+
+        // If not fetched yet, trigger background fetch
+        if (!AppState.isFetchingStudents && (!AppState.students || AppState.students.length === 0)) {
+          fetchStudents('all', function() {
+            var curSelect = document.getElementById('self-checkin-class');
+            var curVal = curSelect ? curSelect.value : className;
+            populateStudentSelectForClass(curVal);
+          });
+        }
         return;
       }
 
