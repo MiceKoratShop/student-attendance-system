@@ -15,14 +15,134 @@ var SHEET_CLASSES = 'Classes';
 var ADMIN_PASSWORD = 'admin888';
 
 /**
- * Serves the HTML Web Application
+ * Serves the HTML Web Application or handles API GET requests
  */
 function doGet(e) {
+  if (e && e.parameter && e.parameter.action) {
+    var action = e.parameter.action;
+    var data = null;
+    var args = [];
+    if (e.parameter.args) {
+      try { args = JSON.parse(e.parameter.args); } catch (ex) {}
+    }
+    if (e.parameter.data) {
+      try {
+        data = JSON.parse(e.parameter.data);
+      } catch (ex) {
+        data = e.parameter.data;
+      }
+    }
+    var result = handleApiRouter(action, data, args);
+    return ContentService.createTextOutput(JSON.stringify(result))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
   var template = HtmlService.createTemplateFromFile('Index');
   return template.evaluate()
     .setTitle('ระบบเช็คชื่อนักเรียนออนไลน์ - Anti-Cheat Edition')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+/**
+ * Handles API POST requests (For GitHub Pages and external HTTP clients)
+ */
+function doPost(e) {
+  var action = '';
+  var data = null;
+  var args = [];
+
+  if (e && e.postData && e.postData.contents) {
+    try {
+      var body = JSON.parse(e.postData.contents);
+      action = body.action || '';
+      data = body.data !== undefined ? body.data : (body.payload !== undefined ? body.payload : body);
+      args = body.args || [];
+    } catch (ex) {
+      action = e.parameter ? e.parameter.action : '';
+      data = e.parameter;
+    }
+  } else if (e && e.parameter) {
+    action = e.parameter.action || '';
+    data = e.parameter.data ? JSON.parse(e.parameter.data) : e.parameter;
+    if (e.parameter.args) {
+      try { args = JSON.parse(e.parameter.args); } catch (ex) {}
+    }
+  }
+
+  var result = handleApiRouter(action, data, args);
+  return ContentService.createTextOutput(JSON.stringify(result))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+/**
+ * Central API Router for all actions
+ */
+function handleApiRouter(action, data, args) {
+  args = args || [];
+  function arg(index, key, fallback) {
+    if (args && args.length > index && args[index] !== undefined && args[index] !== null) {
+      return args[index];
+    }
+    if (data && typeof data === 'object' && key && data[key] !== undefined && data[key] !== null) {
+      return data[key];
+    }
+    if (index === 0 && data !== undefined && data !== null && typeof data !== 'object') {
+      return data;
+    }
+    return fallback;
+  }
+
+  try {
+    switch (action) {
+      case 'initDatabase':
+        return initDatabase();
+      case 'verifyAdminPassword':
+        return verifyAdminPassword(arg(0, 'password', ''));
+      case 'getClassList':
+        return getClassList();
+      case 'addClass':
+        return addClass(arg(0, 'className', ''));
+      case 'deleteClass':
+        return deleteClass(arg(0, 'className', ''));
+      case 'getStudents':
+        return getStudents(arg(0, 'classFilter', 'all'));
+      case 'addStudent':
+        return addStudent(arg(0, 'studentData', data));
+      case 'updateStudent':
+        return updateStudent(arg(0, 'studentData', data));
+      case 'deleteStudent':
+        return deleteStudent(arg(0, 'studentId', ''));
+      case 'deleteAllStudents':
+        return deleteAllStudents();
+      case 'importStudentsBatch':
+        return importStudentsBatch(arg(0, 'studentsList', data));
+      case 'createCheckinSession':
+        return createCheckinSession(arg(0, 'config', data));
+      case 'getActiveSession':
+        return getActiveSession(arg(0, 'className', ''));
+      case 'closeCheckinSession':
+        return closeCheckinSession(arg(0, 'sessionId', ''));
+      case 'validateAndCheckinStudent':
+        return validateAndCheckinStudent(arg(0, 'payload', data));
+      case 'getSessionLiveAttendance':
+        return getSessionLiveAttendance(arg(0, 'sessionId', ''));
+      case 'deleteLiveCheckinRecord':
+        return deleteLiveCheckinRecord(arg(0, 'studentId', ''), arg(1, 'dateStr', ''));
+      case 'getAttendanceRecords':
+        return getAttendanceRecords(arg(0, 'dateStr', ''), arg(1, 'className', ''), arg(2, 'activityName', ''));
+      case 'saveAttendanceBatch':
+        return saveAttendanceBatch(arg(0, 'attendanceList', data), arg(1, 'activityName', ''));
+      case 'getDashboardData':
+        return getDashboardData(arg(0, 'targetDateStr', ''));
+      case 'getStudentStats':
+        return getStudentStats(arg(0, 'studentId', ''));
+      default:
+        return { status: 'error', message: 'Unknown action: ' + action };
+    }
+  } catch (err) {
+    return { status: 'error', message: err.toString() };
+  }
 }
 
 /**
@@ -53,12 +173,12 @@ function initDatabase() {
   if (!attendanceSheet) {
     attendanceSheet = ss.insertSheet(SHEET_ATTENDANCE);
     attendanceSheet.appendRow([
-      'Date', 'StudentID', 'Status', 'CheckinTime', 'GPSLocation', 'DistanceMeters', 'DeviceID', 'SelfiePhoto', 'CheckinType'
+      'Date', 'StudentID', 'Status', 'CheckinTime', 'GPSLocation', 'DistanceMeters', 'DeviceID', 'SelfiePhoto', 'CheckinType', 'SessionID', 'Note'
     ]);
   } else {
     attendanceSheet.clear();
     attendanceSheet.appendRow([
-      'Date', 'StudentID', 'Status', 'CheckinTime', 'GPSLocation', 'DistanceMeters', 'DeviceID', 'SelfiePhoto', 'CheckinType'
+      'Date', 'StudentID', 'Status', 'CheckinTime', 'GPSLocation', 'DistanceMeters', 'DeviceID', 'SelfiePhoto', 'CheckinType', 'SessionID', 'Note'
     ]);
   }
   
@@ -100,9 +220,28 @@ function verifyAdminPassword(password) {
 }
 
 /**
+ * Helper to clear CacheService
+ */
+function clearScriptCache() {
+  try {
+    var cache = CacheService.getScriptCache();
+    cache.remove('cache_class_list');
+    cache.remove('cache_students_all');
+  } catch (e) {}
+}
+
+/**
  * Gets list of all classes (Empty array if no classes added yet)
  */
 function getClassList() {
+  try {
+    var cache = CacheService.getScriptCache();
+    var cached = cache.get('cache_class_list');
+    if (cached) {
+      return JSON.parse(cached);
+    }
+  } catch (e) {}
+
   var ss = getSpreadsheet();
   var classSheet = ss.getSheetByName(SHEET_CLASSES);
   var classMap = {};
@@ -127,6 +266,11 @@ function getClassList() {
 
   var classes = Object.keys(classMap);
   classes.sort(function(a, b) { return a.localeCompare(b, 'th'); });
+
+  try {
+    CacheService.getScriptCache().put('cache_class_list', JSON.stringify(classes), 600);
+  } catch (e) {}
+
   return classes;
 }
 
@@ -154,6 +298,8 @@ function addClass(className) {
   }
 
   sheet.appendRow([className, new Date().toISOString()]);
+  SpreadsheetApp.flush();
+  clearScriptCache();
   return { status: 'success', message: 'เพิ่มห้องเรียน "' + className + '" เรียบร้อยแล้ว', classList: getClassList() };
 }
 
@@ -184,6 +330,8 @@ function deleteClass(className) {
       }
     }
   }
+  SpreadsheetApp.flush();
+  clearScriptCache();
 
   return { status: 'success', message: 'ลบห้องเรียน "' + className + '" เรียบร้อยแล้ว', classList: getClassList() };
 }
@@ -192,45 +340,65 @@ function deleteClass(className) {
  * Gets list of all students (optionally filtered by class)
  */
 function getStudents(classFilter) {
-  var ss = getSpreadsheet();
-  var sheet = ss.getSheetByName(SHEET_STUDENTS);
-  if (!sheet) {
-    initDatabase();
-    sheet = ss.getSheetByName(SHEET_STUDENTS);
-  }
-  
-  var data = sheet.getDataRange().getValues();
-  if (data.length <= 1) return [];
-  
-  var students = [];
-  for (var i = 1; i < data.length; i++) {
-    var row = data[i];
-    var studentId = String(row[0]).trim();
-    var studentNo = String(row[1]).trim();
-    var name = String(row[2]).trim();
-    var className = String(row[3]).trim();
-    var deviceId = row[4] ? String(row[4]).trim() : '';
-    
-    if (!name) continue;
+  var allStudents = null;
+  try {
+    var cache = CacheService.getScriptCache();
+    var cached = cache.get('cache_students_all');
+    if (cached) {
+      allStudents = JSON.parse(cached);
+    }
+  } catch (e) {}
 
-    if (!classFilter || classFilter === 'all' || className.toLowerCase() === classFilter.toLowerCase()) {
-      students.push({
-        studentId: studentId,
-        studentNo: studentNo,
-        name: name,
-        className: className,
-        deviceId: deviceId
-      });
+  if (!allStudents) {
+    var ss = getSpreadsheet();
+    var sheet = ss.getSheetByName(SHEET_STUDENTS);
+    if (!sheet) {
+      initDatabase();
+      sheet = ss.getSheetByName(SHEET_STUDENTS);
+    }
+    
+    var data = sheet.getDataRange().getValues();
+    allStudents = [];
+    if (data.length > 1) {
+      for (var i = 1; i < data.length; i++) {
+        var row = data[i];
+        var studentId = String(row[0]).trim();
+        var studentNo = String(row[1]).trim();
+        var name = String(row[2]).trim();
+        var className = String(row[3]).trim();
+        var deviceId = row[4] ? String(row[4]).trim() : '';
+        
+        if (!name) continue;
+        allStudents.push({
+          studentId: studentId,
+          studentNo: studentNo,
+          name: name,
+          className: className,
+          deviceId: deviceId
+        });
+      }
+    }
+
+    try {
+      CacheService.getScriptCache().put('cache_students_all', JSON.stringify(allStudents), 600);
+    } catch (e) {}
+  }
+
+  var students = [];
+  for (var k = 0; k < allStudents.length; k++) {
+    var s = allStudents[k];
+    if (!classFilter || classFilter === 'all' || s.className.toLowerCase() === classFilter.toLowerCase()) {
+      students.push(s);
     }
   }
-  
+
   students.sort(function(a, b) {
     if (a.className !== b.className) {
       return a.className.localeCompare(b.className, 'th');
     }
     return (parseInt(a.studentNo, 10) || 0) - (parseInt(b.studentNo, 10) || 0);
   });
-  
+
   return students;
 }
 
@@ -312,6 +480,11 @@ function createCheckinSession(config) {
   var now = new Date();
   var nowMs = now.getTime();
   var durationMinutes = config.durationMinutes || 15;
+  var otpIntervalSeconds = parseInt(config.otpIntervalSeconds, 10) || 15;
+  if (otpIntervalSeconds < 5) otpIntervalSeconds = 5;
+  var activityName = String(config.activityName || 'เช็คชื่อมาเรียน').trim();
+  if (!activityName) activityName = 'เช็คชื่อมาเรียน';
+
   var expiresAtMs = nowMs + (durationMinutes * 60 * 1000);
   var sessionId = 'SES' + String(nowMs).slice(-6);
   var secretSeed = 'SEC_' + Math.random().toString(36).substring(2, 10).toUpperCase();
@@ -319,7 +492,7 @@ function createCheckinSession(config) {
   
   var data = sheet.getDataRange().getValues();
   for (var i = 1; i < data.length; i++) {
-    if (String(data[i][1]) === String(config.className) && String(data[i][12]) === 'Active') {
+    if (String(data[i][12]) === 'Active') {
       sheet.getRange(i + 1, 13).setValue('Closed');
     }
   }
@@ -337,10 +510,13 @@ function createCheckinSession(config) {
     config.requireSelfie !== false ? 'YES' : 'NO',
     config.requireGPS !== false ? 'YES' : 'NO',
     config.requireDeviceBinding !== false ? 'YES' : 'NO',
-    'Active'
+    'Active',
+    otpIntervalSeconds,
+    activityName
   ];
   
   sheet.appendRow(newRow);
+  SpreadsheetApp.flush();
   
   return {
     status: 'success',
@@ -348,6 +524,7 @@ function createCheckinSession(config) {
     session: {
       sessionId: sessionId,
       className: config.className || 'all',
+      activityName: activityName,
       date: dateStr,
       createdAt: now.toISOString(),
       expiresAt: new Date(expiresAtMs).toISOString(),
@@ -355,6 +532,7 @@ function createCheckinSession(config) {
       lng: config.lng || 0,
       radiusMeters: config.radiusMeters || 50,
       secretSeed: secretSeed,
+      otpIntervalSeconds: otpIntervalSeconds,
       requireSelfie: config.requireSelfie !== false,
       requireGPS: config.requireGPS !== false,
       requireDeviceBinding: config.requireDeviceBinding !== false,
@@ -373,22 +551,27 @@ function getActiveSession(className) {
   
   for (var i = data.length - 1; i >= 1; i--) {
     var row = data[i];
-    var sId = String(row[0]);
-    var cName = String(row[1]);
-    var expStr = String(row[4]);
+    var sId = String(row[0] || '');
+    var cName = String(row[1] || 'all');
+    var expStr = String(row[4] || '');
     var expMs = new Date(expStr).getTime();
-    var status = String(row[12]);
+    var status = String(row[12] || '');
+    var otpInterval = parseInt(row[13], 10) || 15;
+    if (otpInterval < 5) otpInterval = 15;
+    var actName = String(row[14] || 'เช็คชื่อมาเรียน');
     
     if (status === 'Active') {
       if (nowMs > expMs) {
         sheet.getRange(i + 1, 13).setValue('Expired');
+        SpreadsheetApp.flush();
         continue;
       }
       
       if (!className || className === 'all' || cName === 'all' || cName === className) {
         return {
           sessionId: sId,
-          className: cName,
+          className: cName || 'all',
+          activityName: actName || 'เช็คชื่อมาเรียน',
           date: formatDateString(row[2]),
           createdAt: String(row[3]),
           expiresAt: expStr,
@@ -396,6 +579,7 @@ function getActiveSession(className) {
           lng: parseFloat(row[6]) || 0,
           radiusMeters: parseInt(row[7], 10) || 50,
           secretSeed: String(row[8]),
+          otpIntervalSeconds: otpInterval,
           requireSelfie: String(row[9]) === 'YES',
           requireGPS: String(row[10]) === 'YES',
           requireDeviceBinding: String(row[11]) === 'YES',
@@ -415,13 +599,21 @@ function closeCheckinSession(sessionId) {
   if (!sheet) return { status: 'error', message: 'ไม่พบตารางคาบเรียน' };
   
   var data = sheet.getDataRange().getValues();
+  var cleanId = String(sessionId || '').trim();
+  var closedCount = 0;
+
   for (var i = 1; i < data.length; i++) {
-    if (String(data[i][0]) === String(sessionId)) {
-      sheet.getRange(i + 1, 13).setValue('Closed');
-      return { status: 'success', message: 'ปิดคาบเช็คชื่อเรียบร้อยแล้ว' };
+    var rowSessionId = String(data[i][0] || '').trim();
+    var rowStatus = String(data[i][12] || '').trim();
+    if (!cleanId || cleanId === 'all' || cleanId === 'undefined' || rowSessionId === cleanId || rowStatus === 'Active') {
+      if (rowStatus === 'Active' || rowSessionId === cleanId) {
+        sheet.getRange(i + 1, 13).setValue('Closed');
+        closedCount++;
+      }
     }
   }
-  return { status: 'error', message: 'ไม่พบคราบเรียนนี้' };
+  SpreadsheetApp.flush();
+  return { status: 'success', message: 'ปิดคาบเช็คชื่อเรียบร้อยแล้ว', closedCount: closedCount };
 }
 
 function generateTOTP(secretSeed, intervalSeconds, timestampMs) {
@@ -507,9 +699,11 @@ function validateAndCheckinStudent(payload) {
   
   var now = new Date();
   var nowMs = now.getTime();
+  var intervalSec = activeSession.otpIntervalSeconds || 15;
+  var intervalMs = intervalSec * 1000;
   
-  var validOtpCurrent = generateTOTP(activeSession.secretSeed, 15, nowMs);
-  var validOtpPrev = generateTOTP(activeSession.secretSeed, 15, nowMs - 15000);
+  var validOtpCurrent = generateTOTP(activeSession.secretSeed, intervalSec, nowMs);
+  var validOtpPrev = generateTOTP(activeSession.secretSeed, intervalSec, nowMs - intervalMs);
   
   if (enteredOtp !== validOtpCurrent && enteredOtp !== validOtpPrev) {
     return {
@@ -544,24 +738,27 @@ function validateAndCheckinStudent(payload) {
   
   var attData = attSheet.getDataRange().getValues();
   var dateStr = activeSession.date;
+  var currentActivity = activeSession.activityName || 'เช็คชื่อมาเรียน';
   
   if (activeSession.requireDeviceBinding && deviceId) {
     for (var i = 1; i < attData.length; i++) {
       var rowDate = formatDateString(attData[i][0]);
       var rowStd = String(attData[i][1]);
       var rowDev = String(attData[i][6] || '');
+      var rowAct = String(attData[i][8] || 'เช็คชื่อมาเรียน');
+      var rowSes = String(attData[i][9] || '');
       
-      if (rowDate === dateStr) {
+      if (rowDate === dateStr && (rowSes === activeSession.sessionId || rowAct === currentActivity)) {
         if (rowDev === deviceId && rowStd !== studentId) {
           return {
             status: 'error',
-            message: 'อุปกรณ์นี้ (Device ID) ได้ใช้เช็คชื่อให้นักศึกษาคนอื่นไปแล้วในคาบนี้ ห้ามเช็คชื่อแทนกัน'
+            message: 'อุปกรณ์นี้ (Device ID) ได้ใช้เช็คชื่อ (' + currentActivity + ') ให้นักศึกษาคนอื่นไปแล้ว ห้ามเช็คชื่อแทนกัน'
           };
         }
         if (rowStd === studentId && (attData[i][2] === 'Present' || attData[i][2] === 'Late')) {
           return {
             status: 'error',
-            message: 'นักศึกษาท่านนี้ได้ทำการเช็คชื่อในคาบนี้เรียบร้อยแล้ว'
+            message: 'นักศึกษาท่านนี้ได้ทำการเช็คชื่อ (' + currentActivity + ') ในคาบนี้เรียบร้อยแล้ว'
           };
         }
       }
@@ -580,7 +777,11 @@ function validateAndCheckinStudent(payload) {
   
   var existingRowIndex = -1;
   for (var r = 1; r < attData.length; r++) {
-    if (formatDateString(attData[r][0]) === dateStr && String(attData[r][1]) === studentId) {
+    var rDate = formatDateString(attData[r][0]);
+    var rStd = String(attData[r][1]);
+    var rAct = String(attData[r][8] || 'เช็คชื่อมาเรียน');
+    var rSes = String(attData[r][9] || '');
+    if (rDate === dateStr && rStd === studentId && (rSes === activeSession.sessionId || rAct === currentActivity)) {
       existingRowIndex = r + 1;
       break;
     }
@@ -593,7 +794,8 @@ function validateAndCheckinStudent(payload) {
     attSheet.getRange(existingRowIndex, 6).setValue(distanceMeters);
     attSheet.getRange(existingRowIndex, 7).setValue(deviceId);
     attSheet.getRange(existingRowIndex, 8).setValue(selfieBase64);
-    attSheet.getRange(existingRowIndex, 9).setValue('Self Check-in (Verified)');
+    attSheet.getRange(existingRowIndex, 9).setValue(currentActivity);
+    attSheet.getRange(existingRowIndex, 10).setValue(activeSession.sessionId || '');
   } else {
     attSheet.appendRow([
       dateStr,
@@ -604,18 +806,21 @@ function validateAndCheckinStudent(payload) {
       distanceMeters,
       deviceId,
       selfieBase64,
-      'Self Check-in (Verified)'
+      currentActivity,
+      activeSession.sessionId || ''
     ]);
   }
+  SpreadsheetApp.flush();
   
   return {
     status: 'success',
-    message: 'เช็คชื่อสำเร็จเรียบร้อยแล้ว!',
+    message: 'เช็คชื่อ (' + currentActivity + ') สำเร็จเรียบร้อยแล้ว!',
     student: {
       studentId: studentObj.studentId,
       studentNo: studentObj.studentNo,
       name: studentObj.name,
       className: studentObj.className,
+      activityName: currentActivity,
       checkinTime: checkinTimeStr,
       distanceMeters: distanceMeters,
       deviceId: deviceId.substring(0, 8) + '...',
@@ -639,7 +844,8 @@ function getSessionLiveAttendance(sessionId) {
         sessionId: sData[i][0],
         className: sData[i][1],
         date: formatDateString(sData[i][2]),
-        status: sData[i][12]
+        status: sData[i][12],
+        activityName: String(sData[i][14] || 'เช็คชื่อมาเรียน')
       };
       break;
     }
@@ -660,18 +866,23 @@ function getSessionLiveAttendance(sessionId) {
     var dStr = formatDateString(attData[j][0]);
     var sId = String(attData[j][1]);
     var status = String(attData[j][2]);
+    var rowAct = String(attData[j][8] || 'เช็คชื่อมาเรียน');
+    var rowSes = String(attData[j][9] || '');
     
     if (dStr === session.date && (status === 'Present' || status === 'มาเรียน') && studentMap[sId]) {
-      checkedList.push({
-        studentId: sId,
-        studentNo: studentMap[sId].studentNo,
-        name: studentMap[sId].name,
-        className: studentMap[sId].className,
-        checkinTime: String(attData[j][3] || '-'),
-        distanceMeters: attData[j][5] || 0,
-        selfiePhoto: String(attData[j][7] || ''),
-        checkinType: String(attData[j][8] || 'Self Check-in')
-      });
+      if (rowSes === session.sessionId || rowAct === session.activityName || (!rowSes && session.activityName === 'เช็คชื่อมาเรียน')) {
+        checkedList.push({
+          studentId: sId,
+          studentNo: studentMap[sId].studentNo,
+          name: studentMap[sId].name,
+          className: studentMap[sId].className,
+          activityName: rowAct,
+          checkinTime: String(attData[j][3] || '-'),
+          distanceMeters: attData[j][5] || 0,
+          selfiePhoto: String(attData[j][7] || ''),
+          checkinType: rowAct
+        });
+      }
     }
   }
   
@@ -680,11 +891,41 @@ function getSessionLiveAttendance(sessionId) {
   return {
     list: checkedList,
     count: checkedList.length,
-    total: students.length
+    total: students.length,
+    activityName: session.activityName
   };
 }
 
-function getAttendanceRecords(dateStr, className) {
+/**
+ * Deletes a live check-in attendance record for a student on a specific date (e.g. invalid photo / cheat attempt)
+ */
+function deleteLiveCheckinRecord(studentId, dateStr) {
+  var ss = getSpreadsheet();
+  var attSheet = ss.getSheetByName(SHEET_ATTENDANCE);
+  if (!attSheet) return { status: 'error', message: 'ไม่พบชีต Attendance' };
+
+  var data = attSheet.getDataRange().getValues();
+  var found = false;
+  var targetDate = dateStr ? formatDateString(dateStr) : formatDateString(new Date());
+  var cleanStudentId = String(studentId || '').trim().toLowerCase();
+
+  for (var i = data.length - 1; i >= 1; i--) {
+    var rowDate = formatDateString(data[i][0]);
+    var rowStudentId = String(data[i][1] || '').trim().toLowerCase();
+    if (rowStudentId === cleanStudentId && (!targetDate || rowDate === targetDate)) {
+      attSheet.deleteRow(i + 1);
+      found = true;
+    }
+  }
+  SpreadsheetApp.flush();
+
+  return {
+    status: 'success',
+    message: found ? 'ลบรายการเช็คชื่อเรียบร้อยแล้ว' : 'ไม่พบรายการเช็คชื่อ'
+  };
+}
+
+function getAttendanceRecords(dateStr, className, activityName) {
   var ss = getSpreadsheet();
   var attendanceSheet = ss.getSheetByName(SHEET_ATTENDANCE);
   if (!attendanceSheet) return {};
@@ -697,29 +938,38 @@ function getAttendanceRecords(dateStr, className) {
   
   var attData = attendanceSheet.getDataRange().getValues();
   var records = {};
+  var cleanAct = String(activityName || '').trim();
   
   for (var i = 1; i < attData.length; i++) {
     var rowDate = formatDateString(attData[i][0]);
     var sId = String(attData[i][1]);
     var status = String(attData[i][2]);
+    var rowAct = String(attData[i][8] || 'เช็คชื่อมาเรียน');
+    var rowSes = String(attData[i][9] || '');
+    var rowNote = String(attData[i][10] || '');
     
     if (rowDate === dateStr && studentIds[sId]) {
-      records[sId] = {
-        status: status,
-        checkinTime: String(attData[i][3] || '-'),
-        gpsLocation: String(attData[i][4] || '-'),
-        distanceMeters: attData[i][5] || 0,
-        deviceId: String(attData[i][6] || ''),
-        selfiePhoto: String(attData[i][7] || ''),
-        checkinType: String(attData[i][8] || 'Manual')
-      };
+      if (!cleanAct || cleanAct === 'all' || rowAct === cleanAct || rowAct.indexOf(cleanAct) !== -1 || (!rowAct && cleanAct === 'เช็คชื่อมาเรียน')) {
+        records[sId] = {
+          status: status,
+          checkinTime: String(attData[i][3] || '-'),
+          gpsLocation: String(attData[i][4] || '-'),
+          distanceMeters: attData[i][5] || 0,
+          deviceId: String(attData[i][6] || ''),
+          selfiePhoto: String(attData[i][7] || ''),
+          checkinType: rowAct,
+          activityName: rowAct,
+          sessionId: rowSes,
+          note: rowNote
+        };
+      }
     }
   }
   
   return records;
 }
 
-function saveAttendanceBatch(attendanceList) {
+function saveAttendanceBatch(attendanceList, activityName) {
   var ss = getSpreadsheet();
   var sheet = ss.getSheetByName(SHEET_ATTENDANCE);
   if (!sheet) {
@@ -731,13 +981,20 @@ function saveAttendanceBatch(attendanceList) {
     return { status: 'error', message: 'ไม่มีข้อมูลบันทึก' };
   }
   
+  var defaultAct = String(activityName || 'เช็คชื่อมาเรียน').trim();
+  if (!defaultAct || defaultAct === 'all') defaultAct = 'เช็คชื่อมาเรียน';
+
   var existingData = sheet.getDataRange().getValues();
   var rowMap = {};
   
   for (var i = 1; i < existingData.length; i++) {
     var dStr = formatDateString(existingData[i][0]);
     var sId = String(existingData[i][1]);
-    rowMap[dStr + '_' + sId] = i + 1;
+    var rAct = String(existingData[i][8] || 'เช็คชื่อมาเรียน');
+    rowMap[dStr + '_' + sId + '_' + rAct] = i + 1;
+    if (!rowMap[dStr + '_' + sId]) {
+      rowMap[dStr + '_' + sId] = i + 1;
+    }
   }
   
   var nowTimeStr = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
@@ -745,11 +1002,14 @@ function saveAttendanceBatch(attendanceList) {
   for (var k = 0; k < attendanceList.length; k++) {
     var item = attendanceList[k];
     var formattedDate = formatDateString(item.date);
-    var key = formattedDate + '_' + item.studentId;
+    var itemAct = String(item.activityName || defaultAct).trim();
+    var key = formattedDate + '_' + item.studentId + '_' + itemAct;
+    var noteVal = String(item.note || '').trim();
     
     if (rowMap[key]) {
       var rowIndex = rowMap[key];
       sheet.getRange(rowIndex, 3).setValue(item.status);
+      sheet.getRange(rowIndex, 11).setValue(noteVal);
     } else {
       sheet.appendRow([
         formattedDate,
@@ -760,12 +1020,15 @@ function saveAttendanceBatch(attendanceList) {
         0,
         '-',
         '',
-        'Manual (Teacher)'
+        itemAct,
+        item.sessionId || '',
+        noteVal
       ]);
     }
   }
+  SpreadsheetApp.flush();
   
-  return { status: 'success', message: 'บันทึกการเช็คชื่อเรียบร้อยแล้ว (' + attendanceList.length + ' คน)' };
+  return { status: 'success', message: 'บันทึกการเช็คชื่อ (' + defaultAct + ') เรียบร้อยแล้ว (' + attendanceList.length + ' คน)' };
 }
 
 function getDashboardData(targetDateStr) {
@@ -914,6 +1177,8 @@ function addStudent(studentData) {
   
   var newId = studentData.studentId ? String(studentData.studentId).trim() : ('STD' + String(new Date().getTime()).slice(-6));
   sheet.appendRow([newId, studentData.studentNo, studentData.name, studentData.className, '']);
+  SpreadsheetApp.flush();
+  clearScriptCache();
   return { status: 'success', message: 'เพิ่มนักเรียนเรียบร้อยแล้ว', studentId: newId };
 }
 
@@ -930,6 +1195,8 @@ function updateStudent(studentData) {
       sheet.getRange(row, 2).setValue(studentData.studentNo);
       sheet.getRange(row, 3).setValue(studentData.name);
       sheet.getRange(row, 4).setValue(studentData.className);
+      SpreadsheetApp.flush();
+      clearScriptCache();
       return { status: 'success', message: 'แก้ไขข้อมูลเรียบร้อยแล้ว' };
     }
   }
@@ -946,6 +1213,8 @@ function deleteStudent(studentId) {
   for (var i = 1; i < data.length; i++) {
     if (String(data[i][0]).trim() === studentId) {
       sheet.deleteRow(i + 1);
+      SpreadsheetApp.flush();
+      clearScriptCache();
       return { status: 'success', message: 'ลบข้อมูลนักเรียนเรียบร้อยแล้ว' };
     }
   }
@@ -964,6 +1233,8 @@ function deleteAllStudents() {
   if (lastRow > 1) {
     sheet.deleteRows(2, lastRow - 1);
   }
+  SpreadsheetApp.flush();
+  clearScriptCache();
   
   return { status: 'success', message: 'ลบรายชื่อนักเรียนทั้งหมดเรียบร้อยแล้ว' };
 }
