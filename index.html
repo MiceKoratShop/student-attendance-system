@@ -2182,7 +2182,6 @@
                     <select class="select-glass" id="session-class-select"></select>
                   </div>
 
-                <div class="grid-2">
                   <div class="form-group-glass">
                     <label><i class="fas fa-clock"></i> ระยะเวลาเปิดรับเช็คชื่อ (นาที / ชั่วโมง)</label>
                     <div style="display: flex; gap: 8px; flex-wrap: wrap;">
@@ -2208,7 +2207,9 @@
                       </div>
                     </div>
                   </div>
+                </div>
 
+                <div class="grid-2">
                   <div class="form-group-glass">
                     <label><i class="fas fa-arrows-to-circle"></i> รัศมี Geofencing ที่อนุญาต (เมตร)</label>
                     <select class="select-glass" id="session-radius-select">
@@ -2218,19 +2219,6 @@
                       <option value="200">200 เมตร</option>
                       <option value="500">500 เมตร (บริเวณสถานศึกษา)</option>
                     </select>
-                  </div>
-                </div>
-
-                <div class="grid-2">
-                  <div class="form-group-glass">
-                    <label><i class="fas fa-location-dot"></i> พิกัด GPS ละติจูด / ลองจิจูด</label>
-                    <div style="display: flex; gap: 8px;">
-                      <input type="text" class="input-glass" id="session-lat-input" placeholder="Latitude" value="13.7563" />
-                      <input type="text" class="input-glass" id="session-lng-input" placeholder="Longitude" value="100.5018" />
-                      <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-get-teacher-gps" title="ดึงพิกัดห้องเรียนปัจจุบัน">
-                        <i class="fas fa-location-crosshairs"></i> ดึงพิกัด
-                      </button>
-                    </div>
                   </div>
 
                   <div class="form-group-glass">
@@ -2257,6 +2245,17 @@
                         </select>
                       </div>
                     </div>
+                  </div>
+                </div>
+
+                <div class="form-group-glass" style="margin-bottom: 14px;">
+                  <label><i class="fas fa-location-dot"></i> พิกัด GPS ละติจูด / ลองจิจูด</label>
+                  <div style="display: flex; gap: 8px;">
+                    <input type="text" class="input-glass" id="session-lat-input" placeholder="Latitude" value="13.7563" />
+                    <input type="text" class="input-glass" id="session-lng-input" placeholder="Longitude" value="100.5018" />
+                    <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-get-teacher-gps" title="ดึงพิกัดห้องเรียนปัจจุบัน">
+                      <i class="fas fa-location-crosshairs"></i> ดึงพิกัด
+                    </button>
                   </div>
                 </div>
 
@@ -3121,7 +3120,7 @@
       var cachedActivities = localStorage.getItem('gas_cached_activities');
       if (cachedActivities) {
         try {
-          AppState.activities = JSON.parse(cachedActivities);
+          AppState.activities = normalizeActivitiesList(JSON.parse(cachedActivities));
           populateActivityDropdowns();
         } catch (e) {}
       }
@@ -3198,6 +3197,7 @@
 
         var gasMethods = [
           'initDatabase', 'verifyAdminPassword', 'getClassList', 'addClass', 'deleteClass',
+          'getActivityList', 'addActivity', 'deleteActivity',
           'getStudents', 'addStudent', 'updateStudent', 'deleteStudent', 'deleteAllStudents',
           'importStudentsBatch', 'createCheckinSession', 'getActiveSession', 'closeCheckinSession',
           'validateAndCheckinStudent', 'getSessionLiveAttendance', 'deleteLiveCheckinRecord', 'getAttendanceRecords',
@@ -4077,11 +4077,82 @@
     // =========================================================================
     // ACTIVITY, PERIOD, SUBJECT & CATEGORY MANAGEMENT (เช็คชื่อรายคาบ/รายวิชา/กิจกรรม)
     // =========================================================================
+    function normalizeActivitiesList(rawList) {
+      if (!Array.isArray(rawList)) return [];
+      var normalized = [];
+      var seen = {};
+
+      for (var i = 0; i < rawList.length; i++) {
+        var item = rawList[i];
+        if (!item) continue;
+        var name = '';
+        var type = 'general';
+
+        if (typeof item === 'string') {
+          name = item.trim();
+        } else if (typeof item === 'object') {
+          name = String(item.name || item.title || '').trim();
+          type = String(item.type || 'general').trim().toLowerCase();
+        }
+
+        if (!name) continue;
+
+        if (!type || type === 'general' || type === 'assembly' || type === 'homeroom' || type === 'daily') {
+          if (name.indexOf('คาบ') > -1) {
+            type = 'period';
+          } else if (name.indexOf('วิชา') > -1 || name === 'คณิตศาสตร์' || name === 'ภาษาไทย' || name === 'ภาษาอังกฤษ' || name === 'วิทยาศาสตร์' || name === 'สังคมศึกษา' || name === 'การเขียนโปรแกรม' || name === 'สุขศึกษาและพลศึกษา' || name === 'ศิลปะ' || name === 'การบัญชีเบื้องต้น' || name === 'คอมพิวเตอร์กราฟิก') {
+            type = 'subject';
+          } else if (name.indexOf('กิจกรรม') > -1) {
+            type = 'activity';
+          } else {
+            type = 'general';
+          }
+        }
+
+        if (type !== 'period' && type !== 'subject' && type !== 'activity') {
+          type = 'general';
+        }
+
+        var key = name.toLowerCase();
+        if (!seen[key]) {
+          seen[key] = true;
+          normalized.push({ name: name, type: type });
+        }
+      }
+
+      if (normalized.length === 0) {
+        normalized = [
+          { name: 'เช็คชื่อมาเรียน', type: 'general' },
+          { name: 'เช็คชื่อเข้าแถว', type: 'general' },
+          { name: 'เช็คชื่อคาบโฮมรูม', type: 'general' },
+          { name: 'เช็คชื่อประจำวัน', type: 'general' },
+          { name: 'คาบที่ 1 (08:30 - 09:30)', type: 'period' },
+          { name: 'คาบที่ 2 (09:30 - 10:30)', type: 'period' },
+          { name: 'คาบที่ 3 (10:30 - 11:30)', type: 'period' },
+          { name: 'คาบที่ 4 (11:30 - 12:30)', type: 'period' },
+          { name: 'คาบที่ 5 (13:00 - 14:00)', type: 'period' },
+          { name: 'คาบเช้า', type: 'period' },
+          { name: 'คาบบ่าย', type: 'period' },
+          { name: 'คณิตศาสตร์', type: 'subject' },
+          { name: 'ภาษาไทย', type: 'subject' },
+          { name: 'ภาษาอังกฤษ', type: 'subject' },
+          { name: 'วิทยาศาสตร์', type: 'subject' },
+          { name: 'สังคมศึกษา', type: 'subject' },
+          { name: 'การเขียนโปรแกรม', type: 'subject' },
+          { name: 'กิจกรรมวันไหว้ครู', type: 'activity' },
+          { name: 'กิจกรรมจิตอาสา', type: 'activity' },
+          { name: 'กิจกรรมลูกเสือ/เนตรนารี', type: 'activity' }
+        ];
+      }
+
+      return normalized;
+    }
+
     function fetchActivities(callback) {
       if (isGASAvailable()) {
         google.script.run
           .withSuccessHandler(function(res) {
-            AppState.activities = (res && res.activities) ? res.activities : [];
+            AppState.activities = normalizeActivitiesList((res && res.activities) ? res.activities : []);
             try {
               localStorage.setItem('gas_cached_activities', JSON.stringify(AppState.activities));
             } catch (e) {}
@@ -4095,31 +4166,10 @@
       } else {
         var localAct = localStorage.getItem('gas_cached_activities');
         if (localAct) {
-          try { AppState.activities = JSON.parse(localAct); } catch (e) {}
+          try { AppState.activities = normalizeActivitiesList(JSON.parse(localAct)); } catch (e) {}
         }
         if (!AppState.activities || AppState.activities.length === 0) {
-          AppState.activities = [
-            { name: 'เช็คชื่อมาเรียน', type: 'general' },
-            { name: 'เช็คชื่อเข้าแถว', type: 'general' },
-            { name: 'เช็คชื่อคาบโฮมรูม', type: 'general' },
-            { name: 'เช็คชื่อประจำวัน', type: 'general' },
-            { name: 'คาบที่ 1 (08:30 - 09:30)', type: 'period' },
-            { name: 'คาบที่ 2 (09:30 - 10:30)', type: 'period' },
-            { name: 'คาบที่ 3 (10:30 - 11:30)', type: 'period' },
-            { name: 'คาบที่ 4 (11:30 - 12:30)', type: 'period' },
-            { name: 'คาบที่ 5 (13:00 - 14:00)', type: 'period' },
-            { name: 'คาบเช้า', type: 'period' },
-            { name: 'คาบบ่าย', type: 'period' },
-            { name: 'คณิตศาสตร์', type: 'subject' },
-            { name: 'ภาษาไทย', type: 'subject' },
-            { name: 'ภาษาอังกฤษ', type: 'subject' },
-            { name: 'วิทยาศาสตร์', type: 'subject' },
-            { name: 'สังคมศึกษา', type: 'subject' },
-            { name: 'การเขียนโปรแกรม', type: 'subject' },
-            { name: 'กิจกรรมวันไหว้ครู', type: 'activity' },
-            { name: 'กิจกรรมจิตอาสา', type: 'activity' },
-            { name: 'กิจกรรมลูกเสือ/เนตรนารี', type: 'activity' }
-          ];
+          AppState.activities = normalizeActivitiesList([]);
         }
         try {
           localStorage.setItem('gas_cached_activities', JSON.stringify(AppState.activities));
@@ -4133,7 +4183,8 @@
       cat = cat || AppState.projectorSelectedCat || 'general';
       AppState.projectorSelectedCat = cat;
 
-      var actList = AppState.activities || [];
+      var actList = normalizeActivitiesList(AppState.activities || []);
+      AppState.activities = actList;
       var filtered = [];
       var catLabel = 'ประจำวัน';
       var inputPlaceholder = 'พิมพ์ชื่อการเช็คชื่อประจำวันใหม่ (เช่น เช็คชื่อเข้าหอพัก)...';
@@ -4151,7 +4202,7 @@
 
       for (var i = 0; i < actList.length; i++) {
         var item = actList[i];
-        if (item.type === cat || (!item.type && cat === 'general')) {
+        if (item && (item.type === cat || (!item.type && cat === 'general'))) {
           filtered.push(item.name);
         }
       }
@@ -4165,7 +4216,14 @@
       }
 
       var sessSelect = document.getElementById('session-activity-select');
-      var chosenVal = preselectVal || (filtered.indexOf(AppState.projectorSelectedActivity) > -1 ? AppState.projectorSelectedActivity : (filtered.length > 0 ? filtered[0] : ''));
+      var chosenVal = '';
+      if (preselectVal && filtered.indexOf(preselectVal) > -1) {
+        chosenVal = preselectVal;
+      } else if (AppState.projectorSelectedActivity && filtered.indexOf(AppState.projectorSelectedActivity) > -1) {
+        chosenVal = AppState.projectorSelectedActivity;
+      } else if (filtered.length > 0) {
+        chosenVal = filtered[0];
+      }
 
       if (sessSelect) {
         sessSelect.innerHTML = '';
@@ -4209,11 +4267,11 @@
           var chip = document.createElement('button');
           chip.type = 'button';
           chip.className = 'btn-glass btn-sm-glass session-quick-chip' + (isCur ? ' active-chip' : '');
-          chip.style.cssText = 'font-size: 12px; padding: 4px 10px; border-radius: 20px; transition: all 0.2s;' + (isCur ? ' border: 1.5px solid var(--orange-500); background: rgba(255,107,0,0.25); color: #FFF; font-weight: 700; box-shadow: 0 0 10px rgba(255,107,0,0.3);' : ' border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); color: var(--text-secondary);');
+          chip.style.cssText = 'font-size: 12px; padding: 5px 12px; border-radius: 20px; transition: all 0.2s; cursor: pointer;' + (isCur ? ' border: 1.5px solid var(--orange-500); background: rgba(255,107,0,0.25); color: #FFF; font-weight: 700; box-shadow: 0 0 10px rgba(255,107,0,0.3);' : ' border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); color: var(--text-secondary);');
           
           var checkSpan = document.createElement('i');
           checkSpan.className = 'fas fa-check';
-          checkSpan.style.cssText = 'margin-right:4px; color:var(--orange-400); display:' + (isCur ? 'inline-block;' : 'none;');
+          checkSpan.style.cssText = 'margin-right:5px; color:var(--orange-400); display:' + (isCur ? 'inline-block;' : 'none;');
           chip.appendChild(checkSpan);
           chip.appendChild(document.createTextNode(name));
 
@@ -4239,10 +4297,10 @@
         var isMatch = (chipText === activeVal || chipText === (' ' + activeVal) || chips[i].innerText.trim() === activeVal);
         var checkIcon = chips[i].querySelector('i');
         if (isMatch) {
-          chips[i].style.cssText = 'font-size: 12px; padding: 4px 10px; border-radius: 20px; transition: all 0.2s; border: 1.5px solid var(--orange-500); background: rgba(255,107,0,0.25); color: #FFF; font-weight: 700; box-shadow: 0 0 10px rgba(255,107,0,0.3);';
+          chips[i].style.cssText = 'font-size: 12px; padding: 5px 12px; border-radius: 20px; transition: all 0.2s; cursor: pointer; border: 1.5px solid var(--orange-500); background: rgba(255,107,0,0.25); color: #FFF; font-weight: 700; box-shadow: 0 0 10px rgba(255,107,0,0.3);';
           if (checkIcon) checkIcon.style.display = 'inline-block';
         } else {
-          chips[i].style.cssText = 'font-size: 12px; padding: 4px 10px; border-radius: 20px; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); color: var(--text-secondary);';
+          chips[i].style.cssText = 'font-size: 12px; padding: 5px 12px; border-radius: 20px; transition: all 0.2s; cursor: pointer; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); color: var(--text-secondary);';
           if (checkIcon) checkIcon.style.display = 'none';
         }
       }
@@ -4267,7 +4325,8 @@
     }
 
     function populateActivityDropdowns() {
-      var actList = AppState.activities || [];
+      var actList = normalizeActivitiesList(AppState.activities || []);
+      AppState.activities = actList;
       var generals = [];
       var periods = [];
       var subjects = [];
@@ -4479,7 +4538,8 @@
     }
 
     function renderActivityManageModal() {
-      var actList = AppState.activities || [];
+      var actList = normalizeActivitiesList(AppState.activities || []);
+      AppState.activities = actList;
       var periodContainer = document.getElementById('period-list-container');
       var subjectContainer = document.getElementById('subject-list-container');
       var activityContainer = document.getElementById('activity-list-container');
@@ -4530,21 +4590,42 @@
 
     function addActivityHandler(name, type, callback) {
       name = String(name || '').trim();
-      type = String(type || 'general').trim();
+      type = String(type || 'general').trim().toLowerCase();
+      if (type === 'assembly' || type === 'homeroom' || type === 'daily') type = 'general';
       if (!name) return;
-      showToast('กำลังเพิ่ม ' + name + '...', 'success');
+
+      // 1. Optimistic local update for instant UI feedback (0ms latency)
+      var curList = normalizeActivitiesList(AppState.activities || []);
+      var isExist = false;
+      for (var i = 0; i < curList.length; i++) {
+        if (curList[i].name.toLowerCase() === name.toLowerCase()) {
+          isExist = true;
+          break;
+        }
+      }
+      if (!isExist) {
+        curList.push({ name: name, type: type });
+        AppState.activities = curList;
+        try {
+          localStorage.setItem('gas_cached_activities', JSON.stringify(curList));
+        } catch (e) {}
+        populateActivityDropdowns();
+        renderActivityManageModal();
+      }
+
+      showToast('กำลังบันทึก ' + name + '...', 'success');
 
       if (isGASAvailable()) {
         google.script.run
           .withSuccessHandler(function(res) {
             if (res.status === 'success') {
-              AppState.activities = res.activities || [];
+              AppState.activities = normalizeActivitiesList(res.activities || []);
               try {
                 localStorage.setItem('gas_cached_activities', JSON.stringify(AppState.activities));
               } catch (e) {}
               populateActivityDropdowns();
               renderActivityManageModal();
-              showToast(res.message, 'success');
+              showToast(res.message || ('เพิ่ม ' + name + ' สำเร็จ'), 'success');
               if (callback) callback();
             } else {
               showToast(res.message, 'error');
@@ -4555,21 +4636,6 @@
           })
           .addActivity(name, type);
       } else {
-        var list = AppState.activities || [];
-        for (var i = 0; i < list.length; i++) {
-          if (list[i].name.toLowerCase() === name.toLowerCase()) {
-            showToast('รายการนี้มีอยู่ในระบบแล้ว', 'error');
-            if (callback) callback();
-            return;
-          }
-        }
-        list.push({ name: name, type: type });
-        AppState.activities = list;
-        try {
-          localStorage.setItem('gas_cached_activities', JSON.stringify(list));
-        } catch (e) {}
-        populateActivityDropdowns();
-        renderActivityManageModal();
         showToast('เพิ่ม ' + name + ' เรียบร้อยแล้ว', 'success');
         if (callback) callback();
       }
@@ -4580,17 +4646,31 @@
       if (!name) return;
       showToast('กำลังลบ ' + name + '...', 'success');
 
+      var curList = normalizeActivitiesList(AppState.activities || []);
+      var filtered = [];
+      for (var i = 0; i < curList.length; i++) {
+        if (curList[i].name.toLowerCase() !== name.toLowerCase()) {
+          filtered.push(curList[i]);
+        }
+      }
+      AppState.activities = filtered;
+      try {
+        localStorage.setItem('gas_cached_activities', JSON.stringify(filtered));
+      } catch (e) {}
+      populateActivityDropdowns();
+      renderActivityManageModal();
+
       if (isGASAvailable()) {
         google.script.run
           .withSuccessHandler(function(res) {
             if (res.status === 'success') {
-              AppState.activities = res.activities || [];
+              AppState.activities = normalizeActivitiesList(res.activities || []);
               try {
                 localStorage.setItem('gas_cached_activities', JSON.stringify(AppState.activities));
               } catch (e) {}
               populateActivityDropdowns();
               renderActivityManageModal();
-              showToast(res.message, 'success');
+              showToast(res.message || ('ลบ ' + name + ' เรียบร้อยแล้ว'), 'success');
             } else {
               showToast(res.message, 'error');
             }
@@ -4600,19 +4680,6 @@
           })
           .deleteActivity(name);
       } else {
-        var list = AppState.activities || [];
-        var filtered = [];
-        for (var i = 0; i < list.length; i++) {
-          if (list[i].name.toLowerCase() !== name.toLowerCase()) {
-            filtered.push(list[i]);
-          }
-        }
-        AppState.activities = filtered;
-        try {
-          localStorage.setItem('gas_cached_activities', JSON.stringify(filtered));
-        } catch (e) {}
-        populateActivityDropdowns();
-        renderActivityManageModal();
         showToast('ลบ ' + name + ' เรียบร้อยแล้ว', 'success');
       }
     }
@@ -4763,11 +4830,13 @@
             return;
           }
           var cat = AppState.projectorSelectedCat || 'general';
+          AppState.projectorSelectedActivity = val;
           addActivityHandler(val, cat, function() {
             AppState.projectorSelectedActivity = val;
             updateSessionActivityDropdownForCategory(cat, val);
-            inputQuickAdd.value = '';
           });
+          updateSessionActivityDropdownForCategory(cat, val);
+          inputQuickAdd.value = '';
         });
         inputQuickAdd.addEventListener('keypress', function(e) {
           if (e.key === 'Enter') {
@@ -5959,17 +6028,20 @@
         google.script.run
           .withSuccessHandler(function(res) {
             hideLoadingPopup();
-            if (res.status === 'success') {
+            if (res && res.status === 'success' && res.session) {
               AppState.activeSession = res.session;
+              try {
+                localStorage.setItem('gas_student_active_session', JSON.stringify(res.session));
+              } catch (e) {}
               showActiveProjectorScreen();
               showToast('เปิดคาบเช็คชื่อ (' + activityName + ') เรียบร้อยแล้ว!', 'success');
             } else {
-              showToast(res.message, 'error');
+              showToast((res && res.message) ? res.message : 'ไม่สามารถสร้างคาบเช็คชื่อได้', 'error');
             }
           })
           .withFailureHandler(function(err) {
             hideLoadingPopup();
-            showToast('เกิดข้อผิดพลาดในการเปิดคาบ: ' + (err.message || err), 'error');
+            showToast('เกิดข้อผิดพลาดในการเปิดคาบ: ' + ((err && err.message) ? err.message : String(err)), 'error');
           })
           .createCheckinSession(config);
       } else {
@@ -5981,7 +6053,7 @@
 
         var mockSession = {
           sessionId: sessionId,
-          className: className,
+          className: className || 'all',
           activityName: activityName,
           date: getTodayDateString(),
           createdAt: new Date(nowMs).toISOString(),
@@ -5998,7 +6070,9 @@
         };
 
         AppState.activeSession = mockSession;
-        localStorage.setItem('gas_student_active_session', JSON.stringify(mockSession));
+        try {
+          localStorage.setItem('gas_student_active_session', JSON.stringify(mockSession));
+        } catch (e) {}
         showActiveProjectorScreen();
         showToast('เปิดคาบเช็คชื่อ (' + activityName + ') เรียบร้อยแล้ว!', 'success');
       }
@@ -6109,18 +6183,20 @@
       target.innerHTML = '';
 
       var sess = AppState.activeSession;
-      var qrPayload = window.location.href.split('?')[0] + '#checkin=' + (sess ? sess.sessionId : '') + '&otp=' + otpCode;
+      var qrPayload = window.location.href.split('?')[0].split('#')[0] + '#checkin=' + (sess ? sess.sessionId : '') + '&otp=' + otpCode;
 
-      if (typeof QRCode !== 'undefined') {
-        new QRCode(target, {
-          text: qrPayload,
-          width: 220,
-          height: 220,
-          colorDark : "#0A0D14",
-          colorLight : "#FFFFFF",
-          correctLevel : QRCode.CorrectLevel.M
-        });
-      }
+      try {
+        if (typeof QRCode !== 'undefined') {
+          new QRCode(target, {
+            text: qrPayload,
+            width: 220,
+            height: 220,
+            colorDark : "#0A0D14",
+            colorLight : "#FFFFFF",
+            correctLevel : QRCode.CorrectLevel.M
+          });
+        }
+      } catch (e) {}
     }
 
     function fetchProjectorLiveFeed() {
