@@ -1342,6 +1342,16 @@
       to { opacity: 1; }
     }
 
+    @keyframes spinGlow {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes radarPulse {
+      0%, 100% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.18); opacity: 1; filter: drop-shadow(0 0 8px #FF6B00); }
+    }
+
     /* Mobile Bottom Navigation Dock */
     .mobile-bottom-nav {
       display: none;
@@ -2360,6 +2370,18 @@
   <!-- MODALS -->
   <!-- ============================================================= -->
 
+  <!-- MODAL: GLOBAL LOADING POPUP -->
+  <div class="modal-backdrop-glass" id="modal-global-loading" style="z-index: 9999999; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); background: rgba(3, 5, 10, 0.82);">
+    <div class="modal-window-glass" style="max-width: 350px; text-align: center; padding: 32px 24px; border: 1px solid rgba(255, 107, 0, 0.45); box-shadow: 0 0 35px rgba(255, 107, 0, 0.28); background: rgba(14, 18, 28, 0.95);">
+      <div style="position: relative; width: 68px; height: 68px; margin: 0 auto 18px auto; display: flex; align-items: center; justify-content: center;">
+        <div style="position: absolute; inset: 0; border-radius: 50%; border: 3.5px solid rgba(255, 107, 0, 0.15); border-top-color: var(--orange-500); animation: spinGlow 0.85s linear infinite;"></div>
+        <i class="fas fa-satellite-dish" style="font-size: 24px; color: var(--orange-400); animation: radarPulse 1.5s ease-in-out infinite;"></i>
+      </div>
+      <h3 id="loading-popup-title" style="font-size: 16.5px; font-weight: 800; color: #FFF; margin-bottom: 8px;">กำลังโหลดข้อมูล...</h3>
+      <p id="loading-popup-desc" style="font-size: 12.5px; color: var(--text-secondary); margin-bottom: 0; line-height: 1.5;">กรุณารอสักครู่ ระบบกำลังเชื่อมต่อฐานข้อมูล</p>
+    </div>
+  </div>
+
   <!-- MODAL: ADMIN LOGIN -->
   <div class="modal-backdrop-glass" id="modal-admin-login">
     <div class="modal-window-glass" style="max-width: 420px; text-align: center;">
@@ -2873,18 +2895,19 @@
     initGasBridge();
 
     function initGasBridge() {
-      if (typeof google !== 'undefined' && google.script && google.script.run) {
-        return; // Running inside Google Apps Script iframe runtime
+      if (typeof google !== 'undefined' && google.script && google.script.run && !google.script.run._isProxy) {
+        return; // Running inside native Google Apps Script iframe runtime
       }
 
       window.google = window.google || {};
       window.google.script = window.google.script || {};
 
-      function createProxyRunner() {
+      function makeProxyRunner() {
         var successHandler = function() {};
         var failureHandler = function(err) { console.error('GAS Error:', err); };
 
         var runner = {
+          _isProxy: true,
           withSuccessHandler: function(fn) {
             if (typeof fn === 'function') successHandler = fn;
             return runner;
@@ -2935,7 +2958,12 @@
         return runner;
       }
 
-      window.google.script.run = createProxyRunner();
+      Object.defineProperty(window.google.script, 'run', {
+        get: function() {
+          return makeProxyRunner();
+        },
+        configurable: true
+      });
     }
 
     function isGASAvailable() {
@@ -3368,6 +3396,21 @@
           saveStudentForm();
         });
       }
+    }
+
+    function showLoadingPopup(title, desc) {
+      var modal = document.getElementById('modal-global-loading');
+      if (!modal) return;
+      var titleEl = document.getElementById('loading-popup-title');
+      var descEl = document.getElementById('loading-popup-desc');
+      if (titleEl) titleEl.textContent = title || 'กำลังโหลดข้อมูล...';
+      if (descEl) descEl.textContent = desc || 'กรุณารอสักครู่ ระบบกำลังเชื่อมต่อฐานข้อมูล';
+      modal.classList.add('active');
+    }
+
+    function hideLoadingPopup() {
+      var modal = document.getElementById('modal-global-loading');
+      if (modal) modal.classList.remove('active');
     }
 
     function showToast(message, type) {
@@ -4337,11 +4380,12 @@
         return;
       }
 
-      showToast('กำลังนำเข้ารายชื่อนักเรียน ' + finalImportList.length + ' คน...', 'success');
+      showLoadingPopup('กำลังนำเข้าข้อมูลนักเรียน...', 'กำลังบันทึกข้อมูลนักเรียน ' + finalImportList.length + ' คน ลง Google Sheets');
 
       if (isGASAvailable()) {
         google.script.run
           .withSuccessHandler(function(res) {
+            hideLoadingPopup();
             if (res.status === 'success') {
               showToast(res.message, 'success');
               closeAllModals();
@@ -4354,8 +4398,13 @@
               showToast(res.message, 'error');
             }
           })
+          .withFailureHandler(function(err) {
+            hideLoadingPopup();
+            showToast('เกิดข้อผิดพลาดในการนำเข้า: ' + (err.message || err), 'error');
+          })
           .importStudentsBatch(finalImportList);
       } else {
+        hideLoadingPopup();
         var existing = AppState.students;
         for (var j = 0; j < finalImportList.length; j++) {
           existing.push(finalImportList[j]);
@@ -4795,9 +4844,12 @@
         requireSelfie: reqSelfie
       };
 
+      showLoadingPopup('กำลังเปิดคาบเช็คชื่อ...', 'กำลังสร้างรหัส Dynamic OTP และเริ่มเปิดรับข้อมูล');
+
       if (isGASAvailable()) {
         google.script.run
           .withSuccessHandler(function(res) {
+            hideLoadingPopup();
             if (res.status === 'success') {
               AppState.activeSession = res.session;
               showActiveProjectorScreen();
@@ -4806,8 +4858,13 @@
               showToast(res.message, 'error');
             }
           })
+          .withFailureHandler(function(err) {
+            hideLoadingPopup();
+            showToast('เกิดข้อผิดพลาดในการเปิดคาบ: ' + (err.message || err), 'error');
+          })
           .createCheckinSession(config);
       } else {
+        hideLoadingPopup();
         var nowMs = Date.now();
         var expiresAtMs = nowMs + (duration * 60 * 1000);
         var sessionId = 'SES' + String(nowMs).slice(-6);
@@ -5169,7 +5226,7 @@
         return;
       }
 
-      showToast('กำลังประมวลผลดึงผลเช็คชื่อเข้าสู่ตาราง...', 'success');
+      showLoadingPopup('กำลังประมวลผลดึงรายชื่อ...', 'กำลังดึงและแปลงสถานะเข้าสู่ตารางเช็คชื่อห้อง ' + targetClass);
 
       if (attActInput) {
         var foundOpt = false;
@@ -5191,6 +5248,7 @@
 
       fetchStudents(targetClass, function(students) {
         if (!students || students.length === 0) {
+          hideLoadingPopup();
           showToast('ไม่พบข้อมูลนักเรียนในห้อง ' + targetClass, 'error');
           return;
         }
@@ -5257,6 +5315,7 @@
           var dateSelect = document.getElementById('att-date-select');
           if (dateSelect) dateSelect.value = targetDate;
 
+          hideLoadingPopup();
           switchView('attendance');
 
           showToast('ดึงผลเช็คชื่อกิจกรรม "' + sessAct + '" ห้อง ' + targetClass + ' เรียบร้อย! (มาเรียน ' + presentCount + ' คน, ขาด ' + absentCount + ' คน) กรุณาตรวจสอบแล้วกด "บันทึกการเช็คชื่อ"', 'success');
@@ -5275,6 +5334,11 @@
           google.script.run
             .withSuccessHandler(function(recMap) {
               processRecords(recMap);
+            })
+            .withFailureHandler(function(err) {
+              hideLoadingPopup();
+              console.warn('Error fetching live attendance records:', err);
+              processRecords({});
             })
             .getAttendanceRecords(targetDate, targetClass, sessAct);
         } else {
@@ -6117,10 +6181,16 @@
     // ADMIN DASHBOARD, STATS & REPORTS
     // =========================================================================
     function renderDashboard() {
+      showLoadingPopup('กำลังโหลดข้อมูลแดชบอร์ด...', 'กำลังดึงสถิติการมาเรียนล่าสุด');
       if (isGASAvailable()) {
         google.script.run
           .withSuccessHandler(function(data) {
+            hideLoadingPopup();
             updateDashboardUI(data);
+          })
+          .withFailureHandler(function(err) {
+            hideLoadingPopup();
+            showToast('เกิดข้อผิดพลาดในการโหลดแดชบอร์ด', 'error');
           })
           .getDashboardData(AppState.selectedDate);
       } else {
@@ -6161,6 +6231,7 @@
           classSummary.push(item);
         }
         
+        hideLoadingPopup();
         updateDashboardUI({
           date: dateStr,
           totalStudents: total,
@@ -6280,16 +6351,30 @@
     }
 
     function loadAttendanceDataForSelectedDate() {
-      var targetClass = AppState.selectedClass;
-      var targetDate = AppState.selectedDate;
+      var attClassSelect = document.getElementById('att-class-select');
+      var targetClass = (attClassSelect && attClassSelect.value) ? attClassSelect.value : AppState.selectedClass;
+      if (!targetClass && AppState.classes && AppState.classes.length > 0) {
+        var fClass = AppState.classes[0];
+        targetClass = (typeof fClass === 'object' && fClass) ? (fClass.name || fClass.className || '') : String(fClass || '');
+      }
+      AppState.selectedClass = targetClass;
+      if (attClassSelect && targetClass && attClassSelect.value !== targetClass) {
+        attClassSelect.value = targetClass;
+      }
+
+      var targetDate = AppState.selectedDate || getTodayDateString();
       var attActSelect = document.getElementById('att-activity-select');
       var targetActivity = attActSelect ? attActSelect.value : 'all';
+
+      // Show popup indicator immediately so the user knows data is loading!
+      showLoadingPopup('กำลังโหลดข้อมูลห้อง ' + (targetClass || 'ทุกห้องเรียน'), 'กำลังดึงรายชื่อและสถานะการเช็คชื่อจากฐานข้อมูล...');
 
       // If we just transferred live attendance results, render them directly
       if (AppState.pendingTransferredRecords) {
         var transferred = AppState.pendingTransferredRecords;
         AppState.pendingTransferredRecords = null;
         fetchStudents(targetClass, function(students) {
+          hideLoadingPopup();
           renderAttendanceList(students, transferred);
         });
         return;
@@ -6299,7 +6384,13 @@
         if (isGASAvailable()) {
           google.script.run
             .withSuccessHandler(function(recordsMap) {
+              hideLoadingPopup();
               renderAttendanceList(students, recordsMap);
+            })
+            .withFailureHandler(function(err) {
+              hideLoadingPopup();
+              console.warn('Error loading attendance records:', err);
+              renderAttendanceList(students, {});
             })
             .getAttendanceRecords(targetDate, targetClass, targetActivity);
         } else {
@@ -6319,6 +6410,7 @@
               }
             }
           }
+          hideLoadingPopup();
           renderAttendanceList(students, recordsMap);
         }
       });
@@ -6494,10 +6586,17 @@
         });
       }
 
+      showLoadingPopup('กำลังบันทึกการเช็คชื่อ (' + curActivity + ')...', 'กำลังบันทึกข้อมูล ' + listToSave.length + ' คน ลง Google Sheets');
+
       if (isGASAvailable()) {
         google.script.run
           .withSuccessHandler(function(res) {
+            hideLoadingPopup();
             showToast(res.message || 'บันทึกสำเร็จ', 'success');
+          })
+          .withFailureHandler(function(err) {
+            hideLoadingPopup();
+            showToast('เกิดข้อผิดพลาดในการบันทึก: ' + (err.message || err), 'error');
           })
           .saveAttendanceBatch(listToSave, curActivity);
       } else {
@@ -6521,6 +6620,7 @@
         }
         
         localStorage.setItem('gas_student_app_attendance', JSON.stringify(newAllAtt));
+        hideLoadingPopup();
         showToast('บันทึกการเช็คชื่อ (' + curActivity + ') สำเร็จ (' + listToSave.length + ' คน)', 'success');
       }
     }
