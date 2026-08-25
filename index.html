@@ -1948,21 +1948,49 @@
         <!-- ============================================================= -->
         <!-- VIEW: ADMIN DASHBOARD -->
         <!-- ============================================================= -->
+        <!-- VIEW: DASHBOARD (STATISTICS & FILTERS) -->
+        <!-- ============================================================= -->
         <section class="view-section" id="view-dashboard">
-          <div class="grid-cards">
-            <div class="glass-card stat-card stat-theme-orange">
-              <div class="stat-icon-wrapper"><i class="fas fa-user-group"></i></div>
-              <div class="stat-info">
-                <span class="stat-value" id="dash-total-students">0</span>
-                <span class="stat-label">นักเรียนทั้งหมด</span>
+          
+          <!-- DASHBOARD FILTER TOOLBAR -->
+          <div class="glass-card" style="margin-bottom: 20px; padding: 16px 20px;">
+            <div style="display: flex; gap: 14px; align-items: flex-end; justify-content: space-between; flex-wrap: wrap;">
+              <div style="display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; flex: 1;">
+                <div class="form-group-glass" style="margin-bottom: 0; min-width: 150px;">
+                  <label style="font-size: 12px; margin-bottom: 4px;"><i class="fas fa-calendar-day" style="color: var(--orange-500);"></i> วันที่</label>
+                  <input type="date" class="input-glass" id="dash-date-filter" style="padding: 7px 12px; height: 40px;" />
+                </div>
+                <div class="form-group-glass" style="margin-bottom: 0; min-width: 170px;">
+                  <label style="font-size: 12px; margin-bottom: 4px;"><i class="fas fa-chalkboard-user" style="color: var(--orange-500);"></i> ห้องเรียน</label>
+                  <select class="select-glass" id="dash-class-filter" style="padding: 7px 12px; height: 40px;">
+                    <option value="all">ทุกห้องเรียน (All)</option>
+                  </select>
+                </div>
+                <div class="form-group-glass" style="margin-bottom: 0; min-width: 230px;">
+                  <label style="font-size: 12px; margin-bottom: 4px;"><i class="fas fa-tags" style="color: var(--orange-500);"></i> กิจกรรม / รายวิชา</label>
+                  <select class="select-glass" id="dash-activity-filter" style="padding: 7px 12px; height: 40px;">
+                    <option value="all">🌟 ทุกกิจกรรม / ทุกรายวิชา (All)</option>
+                  </select>
+                </div>
+              </div>
+              <div style="display: flex; gap: 8px; align-items: center; margin-top: 6px;">
+                <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-dash-manage-activities" title="จัดการรายวิชาและกิจกรรม">
+                  <i class="fas fa-sliders"></i> จัดการรายวิชา/กิจกรรม
+                </button>
+                <button type="button" class="btn-glass btn-orange btn-sm-glass" id="btn-refresh-dashboard" title="รีเฟรชข้อมูลล่าสุด">
+                  <i class="fas fa-arrows-rotate"></i> รีเฟรช
+                </button>
               </div>
             </div>
+          </div>
 
-            <div class="glass-card stat-card stat-theme-green">
-              <div class="stat-icon-wrapper"><i class="fas fa-circle-check"></i></div>
+          <!-- STATS CARDS (PRIORITIZING มาเรียน AS #1 CARD) -->
+          <div class="grid-cards">
+            <div class="glass-card stat-card stat-theme-green" style="border: 1.5px solid rgba(16, 185, 129, 0.45); box-shadow: 0 0 25px rgba(16, 185, 129, 0.25);">
+              <div class="stat-icon-wrapper" style="background: rgba(16, 185, 129, 0.2); color: #10B981;"><i class="fas fa-circle-check"></i></div>
               <div class="stat-info">
-                <span class="stat-value" id="dash-present-today">0</span>
-                <span class="stat-label">มาเรียนวันนี้</span>
+                <span class="stat-value" id="dash-present-today" style="color: #10B981; text-shadow: 0 0 16px rgba(16, 185, 129, 0.6);">0</span>
+                <span class="stat-label" style="color: #E2E8F0; font-weight: 700;">✨ มาเรียน (อันดับ 1)</span>
               </div>
             </div>
 
@@ -1997,12 +2025,20 @@
                 <span class="stat-label">มาสาย</span>
               </div>
             </div>
+
+            <div class="glass-card stat-card stat-theme-orange">
+              <div class="stat-icon-wrapper"><i class="fas fa-user-group"></i></div>
+              <div class="stat-info">
+                <span class="stat-value" id="dash-total-students">0</span>
+                <span class="stat-label">นักเรียนทั้งหมด</span>
+              </div>
+            </div>
           </div>
 
           <div class="grid-2">
             <div class="glass-card">
               <div class="card-header-flex">
-                <div class="card-title-text"><i class="fas fa-chart-donut"></i> สัดส่วนการมาเรียนวันนี้</div>
+                <div class="card-title-text"><i class="fas fa-chart-donut"></i> สัดส่วนการมาเรียน</div>
               </div>
               <div class="chart-wrapper">
                 <canvas id="chart-status-doughnut"></canvas>
@@ -2019,9 +2055,10 @@
             </div>
           </div>
 
+          <!-- TABLE 1: CLASSROOM SUMMARY -->
           <div class="glass-card">
             <div class="card-header-flex">
-              <div class="card-title-text"><i class="fas fa-table-list"></i> สรุปข้อมูลการมาเรียนรายห้องประจำวัน</div>
+              <div class="card-title-text"><i class="fas fa-table-list"></i> สรุปข้อมูลการมาเรียนรายห้อง (เรียงตามสถิติมาเรียนสูงสุด)</div>
             </div>
             <div class="table-glass-container">
               <table class="glass-table">
@@ -2029,7 +2066,7 @@
                   <tr>
                     <th>ห้องเรียน</th>
                     <th>จำนวนนักเรียน</th>
-                    <th>มาเรียน</th>
+                    <th style="color: #10B981;">✨ มาเรียน (อันดับ 1)</th>
                     <th>ขาด</th>
                     <th>ลาป่วย/ลากิจ</th>
                     <th>มาสาย</th>
@@ -2037,6 +2074,28 @@
                   </tr>
                 </thead>
                 <tbody id="dash-class-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TABLE 2: ACTIVITY & SUBJECT SUMMARY -->
+          <div class="glass-card" style="margin-top: 20px;">
+            <div class="card-header-flex">
+              <div class="card-title-text"><i class="fas fa-tags" style="color: #00F0FF;"></i> สรุปสถิติแยกตามกิจกรรมและรายวิชา</div>
+            </div>
+            <div class="table-glass-container">
+              <table class="glass-table">
+                <thead>
+                  <tr>
+                    <th>กิจกรรม / รายวิชา</th>
+                    <th>ประเภท</th>
+                    <th style="color: #10B981;">✨ มาเรียน</th>
+                    <th>ขาด</th>
+                    <th>ลา / สาย</th>
+                    <th>ร้อยละมาเรียน</th>
+                  </tr>
+                </thead>
+                <tbody id="dash-activity-table-body"></tbody>
               </table>
             </div>
           </div>
@@ -2056,16 +2115,14 @@
               <form id="form-create-session">
                 <div class="grid-2">
                   <div class="form-group-glass">
-                    <label><i class="fas fa-tags"></i> กิจกรรมการเช็คชื่อ / คาบเรียน</label>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                      <label style="margin: 0;"><i class="fas fa-tags"></i> กิจกรรมการเช็คชื่อ / คาบเรียน / รายวิชา</label>
+                      <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-projector-manage-act" style="font-size: 11px; padding: 2px 8px;" title="เพิ่มรายวิชาหรือกิจกรรมใหม่">
+                        <i class="fas fa-plus"></i> เพิ่มรายวิชา/กิจกรรม
+                      </button>
+                    </div>
                     <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                      <select class="select-glass" id="session-activity-select" style="flex: 1.2; min-width: 150px;">
-                        <option value="เช็คชื่อเข้าแถว">🌅 เช็คชื่อเข้าแถว (ตอนเช้า)</option>
-                        <option value="เช็คชื่อมาเรียน" selected>🏫 เช็คชื่อมาเรียน (คาบปกติ)</option>
-                        <option value="เช็คชื่อกิจกรรม">🎪 เช็คชื่อกิจกรรม / อบรม</option>
-                        <option value="เช็คชื่อคาบโฮมรูม">🏢 เช็คชื่อคาบโฮมรูม</option>
-                        <option value="เช็คชื่อชุมนุม">🏃 เช็คชื่อกิจกรรมชุมนุม / ชมรม</option>
-                        <option value="custom">✏️ กำหนดชื่อกิจกรรมเอง...</option>
-                      </select>
+                      <select class="select-glass" id="session-activity-select" style="flex: 1.2; min-width: 150px;"></select>
                       <div id="session-custom-activity-box" style="display: none; flex: 1.5;">
                         <input type="text" class="input-glass" id="session-activity-custom-val" placeholder="พิมพ์ชื่อกิจกรรม เช่น สอบกลางภาค..." value="" />
                       </div>
@@ -2263,16 +2320,14 @@
                   <label><i class="fas fa-calendar-day"></i> เลือกวันที่</label>
                   <input type="date" class="input-glass" id="att-date-select" />
                 </div>
-                <div class="form-group-glass" style="margin-bottom: 0; min-width: 160px;">
-                  <label><i class="fas fa-tags"></i> เลือกกิจกรรม</label>
-                  <select class="select-glass" id="att-activity-select">
-                    <option value="all">ทุกกิจกรรม</option>
-                    <option value="เช็คชื่อเข้าแถว">🌅 เช็คชื่อเข้าแถว</option>
-                    <option value="เช็คชื่อมาเรียน" selected>🏫 เช็คชื่อมาเรียน</option>
-                    <option value="เช็คชื่อกิจกรรม">🎪 เช็คชื่อกิจกรรม</option>
-                    <option value="เช็คชื่อคาบโฮมรูม">🏢 เช็คชื่อคาบโฮมรูม</option>
-                    <option value="เช็คชื่อชุมนุม">🏃 เช็คชื่อกิจกรรมชุมนุม</option>
-                  </select>
+                <div class="form-group-glass" style="margin-bottom: 0; min-width: 170px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                    <label style="margin: 0;"><i class="fas fa-tags"></i> เลือกกิจกรรม/วิชา</label>
+                    <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-att-manage-act" style="font-size: 10.5px; padding: 1px 6px;" title="เพิ่มรายวิชาหรือกิจกรรมใหม่">
+                      <i class="fas fa-plus"></i> เพิ่ม
+                    </button>
+                  </div>
+                  <select class="select-glass" id="att-activity-select"></select>
                 </div>
               </div>
 
@@ -2540,6 +2595,50 @@
       <div id="class-list-container" style="display: flex; flex-direction: column; gap: 8px; max-height: 260px; overflow-y: auto;"></div>
 
       <div style="margin-top: 20px; text-align: right;">
+        <button type="button" class="btn-glass btn-dark btn-close-modal">ปิด</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: MANAGE ACTIVITIES & SUBJECTS -->
+  <div class="modal-backdrop-glass" id="modal-activity-manage">
+    <div class="modal-window-glass" style="max-width: 560px;">
+      <div class="modal-header-flex">
+        <div class="modal-title"><i class="fas fa-tags" style="color: #FF6B00;"></i> จัดการรายวิชาและกิจกรรม</div>
+        <button type="button" class="modal-close btn-close-modal">&times;</button>
+      </div>
+
+      <!-- Segment Tabs: Subjects vs Activities -->
+      <div style="display: flex; gap: 8px; margin-bottom: 16px; background: rgba(0,0,0,0.3); padding: 4px; border-radius: var(--radius-sm);">
+        <button type="button" class="btn-glass btn-sm-glass active" id="tab-manage-subjects" style="flex: 1; font-weight: 700;">
+          <i class="fas fa-book-open"></i> รายวิชา (เช็คชื่อรายคาบ)
+        </button>
+        <button type="button" class="btn-glass btn-sm-glass" id="tab-manage-activities" style="flex: 1; font-weight: 700;">
+          <i class="fas fa-trophy"></i> กิจกรรม / พิเศษ
+        </button>
+      </div>
+
+      <!-- Panel 1: Subjects -->
+      <div id="panel-manage-subjects">
+        <form id="form-add-subject" style="display: flex; gap: 8px; margin-bottom: 16px;">
+          <input type="text" class="input-glass" id="input-new-subject-name" placeholder="ชื่อรายวิชาใหม่ (เช่น การเขียนโปรแกรมเว็บ, ฟิสิกส์)" required />
+          <button type="submit" class="btn-glass btn-orange" style="white-space: nowrap; font-weight: 700;"><i class="fas fa-plus"></i> เพิ่มรายวิชา</button>
+        </form>
+        <div style="font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px;">รายวิชาในระบบ (<span id="subject-count-badge">0</span> วิชา)</div>
+        <div id="subject-list-container" style="display: flex; flex-direction: column; gap: 8px; max-height: 240px; overflow-y: auto; padding-right: 4px;"></div>
+      </div>
+
+      <!-- Panel 2: Activities -->
+      <div id="panel-manage-activities" style="display: none;">
+        <form id="form-add-activity" style="display: flex; gap: 8px; margin-bottom: 16px;">
+          <input type="text" class="input-glass" id="input-new-activity-name" placeholder="ชื่อกิจกรรมใหม่ (เช่น กิจกรรมจิตอาสา, ประชุมผู้ปกครอง)" required />
+          <button type="submit" class="btn-glass btn-cyan" style="white-space: nowrap; font-weight: 700;"><i class="fas fa-plus"></i> เพิ่มกิจกรรม</button>
+        </form>
+        <div style="font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px;">กิจกรรมในระบบ (<span id="activity-count-badge">0</span> กิจกรรม)</div>
+        <div id="activity-list-container" style="display: flex; flex-direction: column; gap: 8px; max-height: 240px; overflow-y: auto; padding-right: 4px;"></div>
+      </div>
+
+      <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
         <button type="button" class="btn-glass btn-dark btn-close-modal">ปิด</button>
       </div>
     </div>
@@ -2880,6 +2979,7 @@
       selectedDate: getTodayDateString(),
       students: [],
       classes: [],
+      activities: [],
       charts: {},
       parsedExcelStudents: [],
       
@@ -2922,6 +3022,7 @@
       bindStudentCheckinEvents();
       bindExcelImportEvents();
       bindClassManageEvents();
+      bindActivityManageEvents();
       bindConfirmModalEvents();
       bindBackdropClicks();
       
@@ -2940,6 +3041,13 @@
           populateClassDropdowns();
         } catch (e) {}
       }
+      var cachedActivities = localStorage.getItem('gas_cached_activities');
+      if (cachedActivities) {
+        try {
+          AppState.activities = JSON.parse(cachedActivities);
+          populateActivityDropdowns();
+        } catch (e) {}
+      }
       var cachedStudents = localStorage.getItem('gas_cached_students');
       if (cachedStudents) {
         try {
@@ -2951,12 +3059,15 @@
         } catch (e) {}
       }
 
-      // Load fresh classes and students from backend concurrently
+      // Load fresh classes, activities, and students from backend concurrently
       fetchClasses(function() {
         var selfCls = document.getElementById('self-checkin-class');
         if (selfCls && selfCls.value) {
           populateStudentSelectForClass(selfCls.value);
         }
+      });
+      fetchActivities(function() {
+        populateActivityDropdowns();
       });
       fetchStudents('all', function() {
         var selfCls = document.getElementById('self-checkin-class');
@@ -3428,6 +3539,36 @@
         });
       }
 
+      // Dashboard Top Filter Toolbar Events
+      var dashDateFilter = document.getElementById('dash-date-filter');
+      if (dashDateFilter) {
+        dashDateFilter.addEventListener('change', function() {
+          renderDashboard();
+        });
+      }
+
+      var dashClassFilter = document.getElementById('dash-class-filter');
+      if (dashClassFilter) {
+        dashClassFilter.addEventListener('change', function() {
+          renderDashboard();
+        });
+      }
+
+      var dashActivityFilter = document.getElementById('dash-activity-filter');
+      if (dashActivityFilter) {
+        dashActivityFilter.addEventListener('change', function() {
+          renderDashboard();
+        });
+      }
+
+      var btnRefreshDash = document.getElementById('btn-refresh-dashboard');
+      if (btnRefreshDash) {
+        btnRefreshDash.addEventListener('click', function(e) {
+          e.preventDefault();
+          renderDashboard();
+        });
+      }
+
       var studentSearchInput = document.getElementById('student-search-input');
       if (studentSearchInput) {
         studentSearchInput.addEventListener('input', function() {
@@ -3853,6 +3994,490 @@
         renderClassManageModal();
         filterStudentsTable();
         showToast('ลบห้องเรียนเรียบร้อย', 'success');
+      }
+    }
+
+    // =========================================================================
+    // ACTIVITY & SUBJECT MANAGEMENT (เพิ่มรายวิชา / กิจกรรม)
+    // =========================================================================
+    function fetchActivities(callback) {
+      if (isGASAvailable()) {
+        google.script.run
+          .withSuccessHandler(function(res) {
+            AppState.activities = (res && res.activities) ? res.activities : [];
+            try {
+              localStorage.setItem('gas_cached_activities', JSON.stringify(AppState.activities));
+            } catch (e) {}
+            populateActivityDropdowns();
+            if (callback) callback(AppState.activities);
+          })
+          .withFailureHandler(function(err) {
+            if (callback) callback(AppState.activities);
+          })
+          .getActivityList();
+      } else {
+        var localAct = localStorage.getItem('gas_cached_activities');
+        if (localAct) {
+          try { AppState.activities = JSON.parse(localAct); } catch (e) {}
+        }
+        if (!AppState.activities || AppState.activities.length === 0) {
+          AppState.activities = [
+            { name: 'เช็คชื่อมาเรียน', type: 'general' },
+            { name: 'เช็คชื่อเข้าแถว', type: 'assembly' },
+            { name: 'เช็คชื่อคาบโฮมรูม', type: 'homeroom' },
+            { name: 'คณิตศาสตร์', type: 'subject' },
+            { name: 'ภาษาไทย', type: 'subject' },
+            { name: 'ภาษาอังกฤษ', type: 'subject' },
+            { name: 'วิทยาศาสตร์', type: 'subject' },
+            { name: 'สังคมศึกษา', type: 'subject' },
+            { name: 'การเขียนโปรแกรม', type: 'subject' },
+            { name: 'กิจกรรมวันไหว้ครู', type: 'activity' },
+            { name: 'กิจกรรมจิตอาสา', type: 'activity' },
+            { name: 'กิจกรรมลูกเสือ/เนตรนารี', type: 'activity' }
+          ];
+        }
+        try {
+          localStorage.setItem('gas_cached_activities', JSON.stringify(AppState.activities));
+        } catch (e) {}
+        populateActivityDropdowns();
+        if (callback) callback(AppState.activities);
+      }
+    }
+
+    function populateActivityDropdowns() {
+      var actList = AppState.activities || [];
+      var generals = [];
+      var subjects = [];
+      var activities = [];
+
+      for (var i = 0; i < actList.length; i++) {
+        var item = actList[i];
+        if (item.type === 'subject') subjects.push(item.name);
+        else if (item.type === 'activity') activities.push(item.name);
+        else generals.push(item.name);
+      }
+
+      // 1. Projector Session Activity Select
+      var sessSelect = document.getElementById('session-activity-select');
+      if (sessSelect) {
+        var prevValS = sessSelect.value || 'เช็คชื่อมาเรียน';
+        sessSelect.innerHTML = '';
+
+        var grpGen = document.createElement('optgroup');
+        grpGen.label = '📋 การเช็คชื่อทั่วไป';
+        for (var g = 0; g < generals.length; g++) {
+          var optG = document.createElement('option');
+          optG.value = generals[g];
+          optG.textContent = (generals[g] === 'เช็คชื่อเข้าแถว' ? '🌅 ' : (generals[g] === 'เช็คชื่อมาเรียน' ? '🏫 ' : '🏢 ')) + generals[g];
+          if (generals[g] === prevValS) optG.selected = true;
+          grpGen.appendChild(optG);
+        }
+        sessSelect.appendChild(grpGen);
+
+        if (subjects.length > 0) {
+          var grpSub = document.createElement('optgroup');
+          grpSub.label = '📖 รายวิชา (เช็คชื่อรายคาบ)';
+          for (var s = 0; s < subjects.length; s++) {
+            var optS = document.createElement('option');
+            optS.value = subjects[s];
+            optS.textContent = '📖 วิชา' + subjects[s];
+            if (subjects[s] === prevValS) optS.selected = true;
+            grpSub.appendChild(optS);
+          }
+          sessSelect.appendChild(grpSub);
+        }
+
+        if (activities.length > 0) {
+          var grpAct = document.createElement('optgroup');
+          grpAct.label = '🏆 กิจกรรม / พิเศษ';
+          for (var a = 0; a < activities.length; a++) {
+            var optA = document.createElement('option');
+            optA.value = activities[a];
+            optA.textContent = '🏆 ' + activities[a];
+            if (activities[a] === prevValS) optA.selected = true;
+            grpAct.appendChild(optA);
+          }
+          sessSelect.appendChild(grpAct);
+        }
+
+        var optCustom = document.createElement('option');
+        optCustom.value = 'custom';
+        optCustom.textContent = '✏️ กำหนดชื่อกิจกรรม/วิชาเอง...';
+        sessSelect.appendChild(optCustom);
+      }
+
+      // 2. Classroom Attendance Activity Select
+      var attSelect = document.getElementById('att-activity-select');
+      if (attSelect) {
+        var prevValA = attSelect.value || 'all';
+        attSelect.innerHTML = '';
+
+        var optAll = document.createElement('option');
+        optAll.value = 'all';
+        optAll.textContent = '🌟 ทุกกิจกรรม / ทุกรายวิชา';
+        attSelect.appendChild(optAll);
+
+        var grpGen2 = document.createElement('optgroup');
+        grpGen2.label = '📋 การเช็คชื่อทั่วไป';
+        for (var g2 = 0; g2 < generals.length; g2++) {
+          var optG2 = document.createElement('option');
+          optG2.value = generals[g2];
+          optG2.textContent = generals[g2];
+          if (generals[g2] === prevValA) optG2.selected = true;
+          grpGen2.appendChild(optG2);
+        }
+        attSelect.appendChild(grpGen2);
+
+        if (subjects.length > 0) {
+          var grpSub2 = document.createElement('optgroup');
+          grpSub2.label = '📖 รายวิชา';
+          for (var s2 = 0; s2 < subjects.length; s2++) {
+            var optS2 = document.createElement('option');
+            optS2.value = subjects[s2];
+            optS2.textContent = 'วิชา' + subjects[s2];
+            if (subjects[s2] === prevValA) optS2.selected = true;
+            grpSub2.appendChild(optS2);
+          }
+          attSelect.appendChild(grpSub2);
+        }
+
+        if (activities.length > 0) {
+          var grpAct2 = document.createElement('optgroup');
+          grpAct2.label = '🏆 กิจกรรม';
+          for (var a2 = 0; a2 < activities.length; a2++) {
+            var optA2 = document.createElement('option');
+            optA2.value = activities[a2];
+            optA2.textContent = activities[a2];
+            if (activities[a2] === prevValA) optA2.selected = true;
+            grpAct2.appendChild(optA2);
+          }
+          attSelect.appendChild(grpAct2);
+        }
+      }
+
+      // 3. Dashboard Activity Filter
+      var dashActSelect = document.getElementById('dash-activity-filter');
+      if (dashActSelect) {
+        var prevValD = dashActSelect.value || 'all';
+        dashActSelect.innerHTML = '';
+
+        var optDashAll = document.createElement('option');
+        optDashAll.value = 'all';
+        optDashAll.textContent = '🌟 ทุกกิจกรรม / ทุกรายวิชา (All)';
+        dashActSelect.appendChild(optDashAll);
+
+        var grpGenD = document.createElement('optgroup');
+        grpGenD.label = '📋 การเช็คชื่อทั่วไป';
+        for (var gd = 0; gd < generals.length; gd++) {
+          var optGD = document.createElement('option');
+          optGD.value = generals[gd];
+          optGD.textContent = generals[gd];
+          if (generals[gd] === prevValD) optGD.selected = true;
+          grpGenD.appendChild(optGD);
+        }
+        dashActSelect.appendChild(grpGenD);
+
+        if (subjects.length > 0) {
+          var grpSubD = document.createElement('optgroup');
+          grpSubD.label = '📖 รายวิชา (เช็คชื่อรายคาบ)';
+          for (var sd = 0; sd < subjects.length; sd++) {
+            var optSD = document.createElement('option');
+            optSD.value = subjects[sd];
+            optSD.textContent = 'วิชา' + subjects[sd];
+            if (subjects[sd] === prevValD) optSD.selected = true;
+            grpSubD.appendChild(optSD);
+          }
+          dashActSelect.appendChild(grpSubD);
+        }
+
+        if (activities.length > 0) {
+          var grpActD = document.createElement('optgroup');
+          grpActD.label = '🏆 กิจกรรม';
+          for (var ad = 0; ad < activities.length; ad++) {
+            var optAD = document.createElement('option');
+            optAD.value = activities[ad];
+            optAD.textContent = activities[ad];
+            if (activities[ad] === prevValD) optAD.selected = true;
+            grpActD.appendChild(optAD);
+          }
+          dashActSelect.appendChild(grpActD);
+        }
+      }
+
+      // 4. Dashboard Class Filter
+      var dashClassSelect = document.getElementById('dash-class-filter');
+      if (dashClassSelect) {
+        var prevValDC = dashClassSelect.value || 'all';
+        dashClassSelect.innerHTML = '';
+        var optDAll = document.createElement('option');
+        optDAll.value = 'all';
+        optDAll.textContent = 'ทุกห้องเรียน (All)';
+        dashClassSelect.appendChild(optDAll);
+
+        if (AppState.classes && AppState.classes.length > 0) {
+          for (var dc = 0; dc < AppState.classes.length; dc++) {
+            var rawItem = AppState.classes[dc];
+            var cName = (typeof rawItem === 'object' && rawItem) ? (rawItem.name || rawItem.className || '') : String(rawItem || '');
+            if (!cName || cName === 'undefined') continue;
+            var optDC = document.createElement('option');
+            optDC.value = cName;
+            optDC.textContent = cName;
+            if (prevValDC === cName) optDC.selected = true;
+            dashClassSelect.appendChild(optDC);
+          }
+        }
+      }
+    }
+
+    function renderActivityManageModal() {
+      var actList = AppState.activities || [];
+      var subjectContainer = document.getElementById('subject-list-container');
+      var activityContainer = document.getElementById('activity-list-container');
+      var subBadge = document.getElementById('subject-count-badge');
+      var actBadge = document.getElementById('activity-count-badge');
+
+      if (subjectContainer) subjectContainer.innerHTML = '';
+      if (activityContainer) activityContainer.innerHTML = '';
+
+      var subCount = 0;
+      var actCount = 0;
+
+      for (var i = 0; i < actList.length; i++) {
+        var item = actList[i];
+        if (item.type === 'subject') {
+          subCount++;
+          if (subjectContainer) {
+            var rowS = document.createElement('div');
+            rowS.style.cssText = 'display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.04); border:1px solid var(--border-glass); border-radius:var(--radius-sm); padding:8px 12px;';
+            
+            var nameS = document.createElement('div');
+            nameS.innerHTML = '<i class="fas fa-book" style="color:var(--orange-400); margin-right:8px;"></i> <span style="font-weight:600; color:#FFF;">' + item.name + '</span>';
+            rowS.appendChild(nameS);
+
+            var delBtnS = document.createElement('button');
+            delBtnS.type = 'button';
+            delBtnS.className = 'btn-glass btn-danger-glass btn-sm-glass';
+            delBtnS.innerHTML = '<i class="fas fa-trash-can"></i>';
+            delBtnS.title = 'ลบรายวิชา ' + item.name;
+            (function(delName) {
+              delBtnS.addEventListener('click', function(e) {
+                e.preventDefault();
+                openConfirmModal({
+                  title: 'ยืนยันการลบรายวิชา',
+                  desc: 'คุณต้องการลบรายวิชา <strong>"' + delName + '"</strong> ใช่หรือไม่?',
+                  icon: 'fa-trash-can',
+                  btnIcon: 'fa-trash',
+                  okText: 'ยืนยันลบ',
+                  onConfirm: function() {
+                    deleteActivityHandler(delName);
+                  }
+                });
+              });
+            })(item.name);
+            rowS.appendChild(delBtnS);
+
+            subjectContainer.appendChild(rowS);
+          }
+        } else if (item.type === 'activity') {
+          actCount++;
+          if (activityContainer) {
+            var rowA = document.createElement('div');
+            rowA.style.cssText = 'display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.04); border:1px solid var(--border-glass); border-radius:var(--radius-sm); padding:8px 12px;';
+
+            var nameA = document.createElement('div');
+            nameA.innerHTML = '<i class="fas fa-trophy" style="color:#00F0FF; margin-right:8px;"></i> <span style="font-weight:600; color:#FFF;">' + item.name + '</span>';
+            rowA.appendChild(nameA);
+
+            var delBtnA = document.createElement('button');
+            delBtnA.type = 'button';
+            delBtnA.className = 'btn-glass btn-danger-glass btn-sm-glass';
+            delBtnA.innerHTML = '<i class="fas fa-trash-can"></i>';
+            delBtnA.title = 'ลบกิจกรรม ' + item.name;
+            (function(delNameA) {
+              delBtnA.addEventListener('click', function(e) {
+                e.preventDefault();
+                openConfirmModal({
+                  title: 'ยืนยันการลบกิจกรรม',
+                  desc: 'คุณต้องการลบกิจกรรม <strong>"' + delNameA + '"</strong> ใช่หรือไม่?',
+                  icon: 'fa-trash-can',
+                  btnIcon: 'fa-trash',
+                  okText: 'ยืนยันลบ',
+                  onConfirm: function() {
+                    deleteActivityHandler(delNameA);
+                  }
+                });
+              });
+            })(item.name);
+            rowA.appendChild(delBtnA);
+
+            activityContainer.appendChild(rowA);
+          }
+        }
+      }
+
+      if (subBadge) subBadge.textContent = subCount;
+      if (actBadge) actBadge.textContent = actCount;
+
+      if (subCount === 0 && subjectContainer) {
+        var emptyS = document.createElement('div');
+        emptyS.style.cssText = 'text-align:center; padding:16px; color:var(--text-muted); font-size:12.5px;';
+        emptyS.textContent = 'ยังไม่มีรายวิชาที่เพิ่มเอง (พิมพ์ชื่อและกด + เพิ่มรายวิชา ด้านบน)';
+        subjectContainer.appendChild(emptyS);
+      }
+
+      if (actCount === 0 && activityContainer) {
+        var emptyA = document.createElement('div');
+        emptyA.style.cssText = 'text-align:center; padding:16px; color:var(--text-muted); font-size:12.5px;';
+        emptyA.textContent = 'ยังไม่มีกิจกรรมที่เพิ่มเอง (พิมพ์ชื่อและกด + เพิ่มกิจกรรม ด้านบน)';
+        activityContainer.appendChild(emptyA);
+      }
+    }
+
+    function addActivityHandler(name, type) {
+      name = String(name || '').trim();
+      if (!name) return;
+      showToast('กำลังเพิ่ม ' + name + '...', 'success');
+
+      if (isGASAvailable()) {
+        google.script.run
+          .withSuccessHandler(function(res) {
+            if (res.status === 'success') {
+              AppState.activities = res.activities || [];
+              try {
+                localStorage.setItem('gas_cached_activities', JSON.stringify(AppState.activities));
+              } catch (e) {}
+              populateActivityDropdowns();
+              renderActivityManageModal();
+              showToast(res.message, 'success');
+            } else {
+              showToast(res.message, 'error');
+            }
+          })
+          .withFailureHandler(function(err) {
+            showToast('เกิดข้อผิดพลาด: ' + err.message, 'error');
+          })
+          .addActivity(name, type);
+      } else {
+        var list = AppState.activities || [];
+        for (var i = 0; i < list.length; i++) {
+          if (list[i].name.toLowerCase() === name.toLowerCase()) {
+            showToast('รายการนี้มีอยู่ในระบบแล้ว', 'error');
+            return;
+          }
+        }
+        list.push({ name: name, type: type });
+        AppState.activities = list;
+        try {
+          localStorage.setItem('gas_cached_activities', JSON.stringify(list));
+        } catch (e) {}
+        populateActivityDropdowns();
+        renderActivityManageModal();
+        showToast('เพิ่ม ' + name + ' เรียบร้อยแล้ว', 'success');
+      }
+    }
+
+    function deleteActivityHandler(name) {
+      name = String(name || '').trim();
+      if (!name) return;
+      showToast('กำลังลบ ' + name + '...', 'success');
+
+      if (isGASAvailable()) {
+        google.script.run
+          .withSuccessHandler(function(res) {
+            if (res.status === 'success') {
+              AppState.activities = res.activities || [];
+              try {
+                localStorage.setItem('gas_cached_activities', JSON.stringify(AppState.activities));
+              } catch (e) {}
+              populateActivityDropdowns();
+              renderActivityManageModal();
+              showToast(res.message, 'success');
+            } else {
+              showToast(res.message, 'error');
+            }
+          })
+          .withFailureHandler(function(err) {
+            showToast('เกิดข้อผิดพลาดในการลบ: ' + err.message, 'error');
+          })
+          .deleteActivity(name);
+      } else {
+        var list = AppState.activities || [];
+        var filtered = [];
+        for (var i = 0; i < list.length; i++) {
+          if (list[i].name.toLowerCase() !== name.toLowerCase()) {
+            filtered.push(list[i]);
+          }
+        }
+        AppState.activities = filtered;
+        try {
+          localStorage.setItem('gas_cached_activities', JSON.stringify(filtered));
+        } catch (e) {}
+        populateActivityDropdowns();
+        renderActivityManageModal();
+        showToast('ลบ ' + name + ' เรียบร้อยแล้ว', 'success');
+      }
+    }
+
+    function bindActivityManageEvents() {
+      var tabSub = document.getElementById('tab-manage-subjects');
+      var tabAct = document.getElementById('tab-manage-activities');
+      var pnlSub = document.getElementById('panel-manage-subjects');
+      var pnlAct = document.getElementById('panel-manage-activities');
+
+      if (tabSub && tabAct && pnlSub && pnlAct) {
+        tabSub.addEventListener('click', function() {
+          tabSub.classList.add('active');
+          tabAct.classList.remove('active');
+          pnlSub.style.display = 'block';
+          pnlAct.style.display = 'none';
+        });
+
+        tabAct.addEventListener('click', function() {
+          tabAct.classList.add('active');
+          tabSub.classList.remove('active');
+          pnlAct.style.display = 'block';
+          pnlSub.style.display = 'none';
+        });
+      }
+
+      var formAddSub = document.getElementById('form-add-subject');
+      if (formAddSub) {
+        formAddSub.addEventListener('submit', function(e) {
+          e.preventDefault();
+          var input = document.getElementById('input-new-subject-name');
+          if (!input) return;
+          var val = input.value.trim();
+          if (val) {
+            addActivityHandler(val, 'subject');
+            input.value = '';
+          }
+        });
+      }
+
+      var formAddAct = document.getElementById('form-add-activity');
+      if (formAddAct) {
+        formAddAct.addEventListener('submit', function(e) {
+          e.preventDefault();
+          var input = document.getElementById('input-new-activity-name');
+          if (!input) return;
+          var val = input.value.trim();
+          if (val) {
+            addActivityHandler(val, 'activity');
+            input.value = '';
+          }
+        });
+      }
+
+      var btns = ['btn-dash-manage-activities', 'btn-projector-manage-act', 'btn-att-manage-act'];
+      for (var b = 0; b < btns.length; b++) {
+        var btn = document.getElementById(btns[b]);
+        if (btn) {
+          btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            renderActivityManageModal();
+            openModal('modal-activity-manage');
+          });
+        }
       }
     }
 
@@ -6349,6 +6974,18 @@
     // =========================================================================
     function renderDashboard() {
       showLoadingPopup('กำลังโหลดข้อมูลแดชบอร์ด...', 'กำลังดึงสถิติการมาเรียนล่าสุด');
+
+      var dateInput = document.getElementById('dash-date-filter');
+      var classInput = document.getElementById('dash-class-filter');
+      var actInput = document.getElementById('dash-activity-filter');
+
+      var targetDate = (dateInput && dateInput.value) ? dateInput.value : AppState.selectedDate;
+      var targetClass = (classInput && classInput.value) ? classInput.value : 'all';
+      var targetAct = (actInput && actInput.value) ? actInput.value : 'all';
+
+      if (dateInput && dateInput.value !== targetDate) dateInput.value = targetDate;
+      AppState.selectedDate = targetDate;
+
       if (isGASAvailable()) {
         google.script.run
           .withSuccessHandler(function(data) {
@@ -6357,32 +6994,56 @@
           })
           .withFailureHandler(function(err) {
             hideLoadingPopup();
-            showToast('เกิดข้อผิดพลาดในการโหลดแดชบอร์ด', 'error');
+            showToast('เกิดข้อผิดพลาดในการโหลดแดชบอร์ด: ' + (err ? err.message : ''), 'error');
           })
-          .getDashboardData(AppState.selectedDate);
+          .getDashboardData(targetDate, targetClass, targetAct);
       } else {
-        var dateStr = AppState.selectedDate;
         var allAtt = getLocalStorageAttendance();
         var todayRecords = {};
+        var activityStatsMap = {};
+
         for (var i = 0; i < allAtt.length; i++) {
-          if (allAtt[i].date === dateStr) {
-            todayRecords[allAtt[i].studentId] = allAtt[i].status;
+          var rec = allAtt[i];
+          if (rec.date === targetDate) {
+            var rowAct = rec.activityName || 'เช็คชื่อมาเรียน';
+            if (!activityStatsMap[rowAct]) {
+              activityStatsMap[rowAct] = { name: rowAct, total: 0, present: 0, absent: 0, sick: 0, leave: 0, late: 0 };
+            }
+            activityStatsMap[rowAct].total++;
+            if (rec.status === 'Present' || rec.status === 'มาเรียน') activityStatsMap[rowAct].present++;
+            else if (rec.status === 'Absent' || rec.status === 'ขาดเรียน') activityStatsMap[rowAct].absent++;
+            else if (rec.status === 'Sick' || rec.status === 'ลาป่วย') activityStatsMap[rowAct].sick++;
+            else if (rec.status === 'Leave' || rec.status === 'ลากิจ') activityStatsMap[rowAct].leave++;
+            else if (rec.status === 'Late' || rec.status === 'มาสาย') activityStatsMap[rowAct].late++;
+
+            if (targetAct === 'all' || rowAct === targetAct) {
+              if (!todayRecords[rec.studentId] || rec.status === 'Present' || rec.status === 'มาเรียน') {
+                todayRecords[rec.studentId] = rec.status;
+              }
+            }
+          }
+        }
+
+        var filteredStudents = [];
+        for (var s = 0; s < AppState.students.length; s++) {
+          if (targetClass === 'all' || AppState.students[s].className === targetClass) {
+            filteredStudents.push(AppState.students[s]);
           }
         }
         
-        var total = AppState.students.length;
+        var total = filteredStudents.length;
         var present = 0, absent = 0, sick = 0, leave = 0, late = 0;
         
         var classMap = {};
-        for (var j = 0; j < AppState.students.length; j++) {
-          var s = AppState.students[j];
-          var cName = s.className;
+        for (var j = 0; j < filteredStudents.length; j++) {
+          var stObj = filteredStudents[j];
+          var cName = stObj.className;
           if (!classMap[cName]) {
             classMap[cName] = { className: cName, total: 0, present: 0, absent: 0, sick: 0, leave: 0, late: 0, unchecked: 0 };
           }
           classMap[cName].total++;
           
-          var st = todayRecords[s.studentId] || 'Unchecked';
+          var st = todayRecords[stObj.studentId] || 'Unchecked';
           if (st === 'Present' || st === 'มาเรียน') { present++; classMap[cName].present++; }
           else if (st === 'Absent' || st === 'ขาดเรียน') { absent++; classMap[cName].absent++; }
           else if (st === 'Sick' || st === 'ลาป่วย') { sick++; classMap[cName].sick++; }
@@ -6397,10 +7058,34 @@
           item.rate = item.total > 0 ? ((item.present / item.total) * 100).toFixed(1) : '0';
           classSummary.push(item);
         }
+        classSummary.sort(function(a, b) {
+          var diff = parseFloat(b.rate) - parseFloat(a.rate);
+          if (diff !== 0) return diff;
+          return a.className.localeCompare(b.className, 'th');
+        });
+
+        var activitySummary = [];
+        for (var aKey in activityStatsMap) {
+          var aItem = activityStatsMap[aKey];
+          var aRate = aItem.total > 0 ? ((aItem.present / aItem.total) * 100).toFixed(1) : '0';
+          activitySummary.push({
+            name: aItem.name,
+            total: aItem.total,
+            present: aItem.present,
+            absent: aItem.absent,
+            sick: aItem.sick,
+            leave: aItem.leave,
+            late: aItem.late,
+            rate: aRate
+          });
+        }
+        activitySummary.sort(function(a, b) { return parseFloat(b.rate) - parseFloat(a.rate); });
         
         hideLoadingPopup();
         updateDashboardUI({
-          date: dateStr,
+          date: targetDate,
+          filterClass: targetClass,
+          filterActivity: targetAct,
           totalStudents: total,
           present: present,
           absent: absent,
@@ -6408,7 +7093,8 @@
           leave: leave,
           late: late,
           unchecked: total - (present + absent + sick + leave + late),
-          classSummary: classSummary
+          classSummary: classSummary,
+          activitySummary: activitySummary
         });
       }
     }
@@ -6421,6 +7107,7 @@
       document.getElementById('dash-leave-today').textContent = data.leave || 0;
       document.getElementById('dash-late-today').textContent = data.late || 0;
 
+      // 1. Classroom Summary Table (Prioritizing 'มาเรียน' as #1 Column & Sorting)
       var tbody = document.getElementById('dash-class-table-body');
       if (tbody) {
         tbody.innerHTML = '';
@@ -6432,14 +7119,41 @@
         } else {
           for (var i = 0; i < list.length; i++) {
             var row = document.createElement('tr');
-            row.innerHTML = '<td style="font-weight:700; color:#FFF;">' + list[i].className + '</td>' +
+            row.innerHTML = '<td style="font-weight:700; color:#FFF;"><i class="fas fa-chalkboard" style="color:var(--orange-400); margin-right:6px;"></i> ' + list[i].className + '</td>' +
                             '<td>' + list[i].total + ' คน</td>' +
-                            '<td><span class="badge-glass badge-present">' + list[i].present + ' คน</span></td>' +
+                            '<td><span class="badge-glass badge-present" style="font-weight:700; font-size:12.5px;"><i class="fas fa-circle-check"></i> ' + list[i].present + ' คน</span></td>' +
                             '<td>' + (list[i].absent > 0 ? '<span class="badge-glass badge-absent">' + list[i].absent + ' คน</span>' : '-') + '</td>' +
                             '<td>' + ((list[i].sick + list[i].leave) > 0 ? '<span class="badge-glass badge-sick">' + (list[i].sick + list[i].leave) + ' คน</span>' : '-') + '</td>' +
                             '<td>' + (list[i].late > 0 ? '<span class="badge-glass badge-late">' + list[i].late + ' คน</span>' : '-') + '</td>' +
-                            '<td style="font-weight:800; color:#FF6B00;">' + list[i].rate + '%</td>';
+                            '<td style="font-weight:800; color:#FF6B00; font-size:13.5px;">' + list[i].rate + '%</td>';
             tbody.appendChild(row);
+          }
+        }
+      }
+
+      // 2. Activity & Subject Breakdown Table
+      var tbodyAct = document.getElementById('dash-activity-table-body');
+      if (tbodyAct) {
+        tbodyAct.innerHTML = '';
+        var actList = data.activitySummary || [];
+        if (actList.length === 0) {
+          var trEmptyAct = document.createElement('tr');
+          trEmptyAct.innerHTML = '<td colspan="6" style="text-align:center; color:var(--text-muted); padding:24px;">ยังไม่มีการบันทึกการเช็คชื่อตามกิจกรรมหรือรายวิชาในวันที่เลือก</td>';
+          tbodyAct.appendChild(trEmptyAct);
+        } else {
+          for (var a = 0; a < actList.length; a++) {
+            var aItem = actList[a];
+            var aRow = document.createElement('tr');
+            var isSub = (aItem.name.indexOf('วิชา') > -1 || aItem.name.indexOf('คณิต') > -1 || aItem.name.indexOf('ภาษา') > -1 || aItem.name.indexOf('วิทย') > -1 || aItem.name.indexOf('เขียนโปรแกรม') > -1);
+            var tagBadge = isSub ? '<span class="badge-glass badge-info" style="font-size:11px;"><i class="fas fa-book-open"></i> รายวิชา</span>' : (aItem.name === 'เช็คชื่อเข้าแถว' ? '<span class="badge-glass badge-warning" style="font-size:11px;"><i class="fas fa-flag"></i> เข้าแถว</span>' : '<span class="badge-glass badge-purple" style="font-size:11px;"><i class="fas fa-trophy"></i> กิจกรรม</span>');
+            
+            aRow.innerHTML = '<td style="font-weight:700; color:#FFF;">' + aItem.name + '</td>' +
+                             '<td>' + tagBadge + '</td>' +
+                             '<td><span class="badge-glass badge-present" style="font-weight:700;"><i class="fas fa-circle-check"></i> ' + aItem.present + ' คน</span></td>' +
+                             '<td>' + (aItem.absent > 0 ? '<span class="badge-glass badge-absent">' + aItem.absent + ' คน</span>' : '-') + '</td>' +
+                             '<td>' + ((aItem.sick + aItem.leave + aItem.late) > 0 ? '<span class="badge-glass badge-sick">' + (aItem.sick + aItem.leave + aItem.late) + ' คน</span>' : '-') + '</td>' +
+                             '<td style="font-weight:800; color:#00F0FF; font-size:13.5px;">' + aItem.rate + '%</td>';
+            tbodyAct.appendChild(aRow);
           }
         }
       }
@@ -6486,7 +7200,7 @@
         for (var i = 0; i < list.length; i++) {
           labels.push(list[i].className);
           presentData.push(list[i].present);
-          absentData.push(list[i].absent + list[i].sick + list[i].leave);
+          absentData.push(list[i].absent + list[i].sick + list[i].leave + list[i].late);
         }
 
         AppState.charts.classBar = new Chart(ctxClassBar, {
@@ -6494,8 +7208,8 @@
           data: {
             labels: labels,
             datasets: [
-              { label: 'มาเรียน', data: presentData, backgroundColor: '#FF6B00', borderRadius: 8 },
-              { label: 'ขาด / ลา', data: absentData, backgroundColor: '#EF4444', borderRadius: 8 }
+              { label: 'มาเรียน (Present)', data: presentData, backgroundColor: '#10B981', borderRadius: 8 },
+              { label: 'ขาด / ลา / สาย', data: absentData, backgroundColor: 'rgba(239, 68, 68, 0.75)', borderRadius: 8 }
             ]
           },
           options: {
