@@ -24,6 +24,9 @@
   <!-- html2pdf.js CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
+  <!-- html2canvas CDN (High-res JPG Image Export) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
   <!-- SheetJS CDN (Excel Export & Import) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
@@ -1002,30 +1005,37 @@
       object-fit: cover;
     }
 
-    /* Student Attendance Card */
+    /* Student Attendance Card (Compact Single Row per student) */
     .student-att-card {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 16px 20px;
+      padding: 9px 14px;
       background: var(--bg-surface-card);
       border: 1px solid var(--border-glass);
-      border-radius: var(--radius-md);
-      margin-bottom: 12px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 7px;
       transition: all 0.2s ease;
-      gap: 14px;
+      gap: 10px;
+    }
+
+    .student-att-card:hover {
+      border-color: rgba(255, 107, 0, 0.35);
+      background: rgba(20, 26, 40, 0.95);
     }
 
     .student-meta-block {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 10px;
+      min-width: 0;
+      flex: 1;
     }
 
     .student-no-pill {
-      width: 40px;
-      height: 40px;
-      border-radius: var(--radius-sm);
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-xs);
       background: var(--orange-subtle);
       color: var(--orange-500);
       border: 1px solid var(--border-orange-glow);
@@ -1033,27 +1043,61 @@
       align-items: center;
       justify-content: center;
       font-weight: 800;
-      font-size: 15px;
+      font-size: 13px;
       flex-shrink: 0;
     }
 
+    .student-name-container {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
     .student-name-link {
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 600;
       color: #FFFFFF;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .student-name-link:hover {
+      color: var(--orange-400);
+      text-decoration: underline;
+    }
+
+    .student-selfie-inline-thumb {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 1.5px solid var(--orange-500);
+      box-shadow: 0 0 6px rgba(255, 107, 0, 0.4);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: transform 0.15s ease;
+    }
+
+    .student-selfie-inline-thumb:hover {
+      transform: scale(1.18);
+      border-color: #FFF;
     }
 
     .student-sub-info {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--text-secondary);
-      margin-top: 2px;
+      margin-top: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .status-pill-group {
       display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
+      gap: 4px;
+      flex-wrap: nowrap;
     }
 
     .status-radio-option input[type="radio"] {
@@ -1063,10 +1107,10 @@
     .status-chip {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 8px 12px;
-      border-radius: var(--radius-sm);
-      font-size: 12.5px;
+      gap: 4px;
+      padding: 6px 9px;
+      border-radius: var(--radius-xs);
+      font-size: 11.5px;
       font-weight: 600;
       cursor: pointer;
       background: rgba(20, 26, 40, 0.8);
@@ -1074,6 +1118,7 @@
       color: var(--text-secondary);
       transition: all 0.15s ease;
       touch-action: manipulation;
+      white-space: nowrap;
     }
 
     .status-radio-option input[type="radio"]:checked + .chip-present { background: var(--status-present); color: #FFF; border-color: var(--status-present); }
@@ -1086,9 +1131,10 @@
     .student-controls-wrapper {
       display: flex;
       align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
+      gap: 8px;
+      flex-wrap: nowrap;
       justify-content: flex-end;
+      flex-shrink: 0;
     }
 
     .student-note-block {
@@ -1096,23 +1142,26 @@
       align-items: center;
       background: rgba(10, 14, 22, 0.75);
       border: 1px solid var(--border-glass);
-      border-radius: var(--radius-sm);
-      padding: 0 10px;
-      gap: 8px;
-      height: 38px;
-      min-width: 200px;
-      max-width: 260px;
+      border-radius: var(--radius-xs);
+      padding: 0 6px;
+      gap: 5px;
+      height: 30px;
+      width: 110px;
+      min-width: 90px;
+      max-width: 130px;
       transition: all 0.2s ease;
+      flex-shrink: 0;
     }
 
     .student-note-block:focus-within {
       border-color: var(--orange-500);
-      box-shadow: 0 0 12px rgba(255, 107, 0, 0.25);
+      box-shadow: 0 0 8px rgba(255, 107, 0, 0.25);
       background: rgba(14, 18, 28, 0.95);
+      width: 140px;
     }
 
     .student-note-block .note-icon {
-      font-size: 12px;
+      font-size: 10.5px;
       color: #64748B;
       flex-shrink: 0;
     }
@@ -1122,14 +1171,14 @@
       border: none;
       outline: none;
       color: #F1F5F9;
-      font-size: 12.5px;
+      font-size: 11px;
       font-family: inherit;
       width: 100%;
     }
 
     .student-att-note-input::placeholder {
       color: #64748B;
-      font-size: 11.5px;
+      font-size: 10.5px;
     }
 
     /* Form Controls */
@@ -2519,25 +2568,58 @@
         </section>
 
         <!-- ============================================================= -->
-        <!-- VIEW: REPORTS (PDF / EXCEL) -->
+        <!-- VIEW: REPORTS (PDF / EXCEL / JPG) -->
         <!-- ============================================================= -->
         <section class="view-section" id="view-reports">
           <div class="glass-card" style="margin-bottom: 24px;">
             <div class="card-header-flex">
-              <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-                <select class="select-glass" id="report-type-select" style="min-width: 170px;">
-                  <option value="daily">รายงานประจำวัน</option>
-                  <option value="monthly">รายงานประจำเดือน</option>
-                  <option value="term">รายงานสถิติประจำภาคเรียน</option>
-                </select>
-                <select class="select-glass" id="report-class-select" style="min-width: 170px;"></select>
-                <input type="date" class="input-glass" id="report-date-select" style="min-width: 160px;" />
+              <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <div class="form-group-glass" style="margin-bottom: 0; min-width: 140px;">
+                  <label style="font-size: 11px; margin-bottom: 2px;"><i class="fas fa-file-lines"></i> รูปแบบรายงาน</label>
+                  <select class="select-glass" id="report-type-select" style="min-width: 140px;">
+                    <option value="daily">รายงานประจำวัน</option>
+                    <option value="monthly">รายงานประจำเดือน</option>
+                    <option value="term">รายงานสถิติประจำภาคเรียน</option>
+                  </select>
+                </div>
+                <div class="form-group-glass" style="margin-bottom: 0; min-width: 130px;">
+                  <label style="font-size: 11px; margin-bottom: 2px;"><i class="fas fa-chalkboard-user"></i> ห้องเรียน</label>
+                  <select class="select-glass" id="report-class-select" style="min-width: 130px;"></select>
+                </div>
+                <div class="form-group-glass" style="margin-bottom: 0; min-width: 160px;">
+                  <label style="font-size: 11px; margin-bottom: 2px;"><i class="fas fa-tags"></i> กิจกรรม / รายวิชา</label>
+                  <select class="select-glass" id="report-activity-select" style="min-width: 160px;"></select>
+                </div>
+                <div class="form-group-glass" style="margin-bottom: 0; min-width: 120px;">
+                  <label style="font-size: 11px; margin-bottom: 2px;"><i class="fas fa-filter"></i> สถานะ</label>
+                  <select class="select-glass" id="report-status-select" style="min-width: 120px;">
+                    <option value="all">🌟 ทุกสถานะ</option>
+                    <option value="Present">✅ มาเรียน</option>
+                    <option value="Absent">❌ ขาดเรียน</option>
+                    <option value="Sick">🏥 ลาป่วย</option>
+                    <option value="Leave">✉️ ลากิจ</option>
+                    <option value="Late">⏰ มาสาย</option>
+                  </select>
+                </div>
+                <div class="form-group-glass" style="margin-bottom: 0; min-width: 130px;">
+                  <label style="font-size: 11px; margin-bottom: 2px;"><i class="fas fa-calendar-day"></i> วันที่</label>
+                  <input type="date" class="input-glass" id="report-date-select" style="min-width: 130px;" />
+                </div>
               </div>
 
-              <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-print-report"><i class="fas fa-print"></i> พิมพ์</button>
-                <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-export-excel"><i class="fas fa-file-excel"></i> Export Excel</button>
-                <button type="button" class="btn-glass btn-orange btn-sm-glass" id="btn-download-pdf"><i class="fas fa-file-pdf"></i> Download PDF</button>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-print-report" title="พิมพ์รายงาน">
+                  <i class="fas fa-print"></i> พิมพ์
+                </button>
+                <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-export-excel" title="ส่งออกไฟล์ Excel (.xlsx)">
+                  <i class="fas fa-file-excel"></i> Excel
+                </button>
+                <button type="button" class="btn-glass btn-emerald btn-sm-glass" id="btn-download-jpg" title="ดาวน์โหลดรายงานเป็นไฟล์ภาพ .JPG">
+                  <i class="fas fa-image"></i> โหลดภาพ JPG
+                </button>
+                <button type="button" class="btn-glass btn-orange btn-sm-glass" id="btn-download-pdf" title="ดาวน์โหลดรายงานเป็นไฟล์ PDF">
+                  <i class="fas fa-file-pdf"></i> โหลด PDF
+                </button>
               </div>
             </div>
           </div>
@@ -4675,6 +4757,70 @@
             if (prevValDC === cName) optDC.selected = true;
             dashClassSelect.appendChild(optDC);
           }
+        }
+      }
+
+      // 5. Reports Activity Select
+      var repActSelect = document.getElementById('report-activity-select');
+      if (repActSelect) {
+        var prevValR = repActSelect.value || 'all';
+        repActSelect.innerHTML = '';
+
+        var optRepAll = document.createElement('option');
+        optRepAll.value = 'all';
+        optRepAll.textContent = '🌟 ทุกกิจกรรม / ทุกรายวิชา / ทุกคาบ';
+        repActSelect.appendChild(optRepAll);
+
+        if (generals.length > 0) {
+          var grpGenR = document.createElement('optgroup');
+          grpGenR.label = '📋 เช็คชื่อประจำวัน';
+          for (var gr = 0; gr < generals.length; gr++) {
+            var optGR = document.createElement('option');
+            optGR.value = generals[gr];
+            optGR.textContent = generals[gr];
+            if (generals[gr] === prevValR) optGR.selected = true;
+            grpGenR.appendChild(optGR);
+          }
+          repActSelect.appendChild(grpGenR);
+        }
+
+        if (periods.length > 0) {
+          var grpPerR = document.createElement('optgroup');
+          grpPerR.label = '⏰ คาบเรียน';
+          for (var pr = 0; pr < periods.length; pr++) {
+            var optPR = document.createElement('option');
+            optPR.value = periods[pr];
+            optPR.textContent = periods[pr];
+            if (periods[pr] === prevValR) optPR.selected = true;
+            grpPerR.appendChild(optPR);
+          }
+          repActSelect.appendChild(grpPerR);
+        }
+
+        if (subjects.length > 0) {
+          var grpSubR = document.createElement('optgroup');
+          grpSubR.label = '📖 รายวิชา (เช็คชื่อรายคาบ)';
+          for (var sr = 0; sr < subjects.length; sr++) {
+            var optSR = document.createElement('option');
+            optSR.value = subjects[sr];
+            optSR.textContent = 'วิชา' + subjects[sr];
+            if (subjects[sr] === prevValR) optSR.selected = true;
+            grpSubR.appendChild(optSR);
+          }
+          repActSelect.appendChild(grpSubR);
+        }
+
+        if (activities.length > 0) {
+          var grpActR = document.createElement('optgroup');
+          grpActR.label = '🏆 กิจกรรม / พิเศษ';
+          for (var ar = 0; ar < activities.length; ar++) {
+            var optAR = document.createElement('option');
+            optAR.value = activities[ar];
+            optAR.textContent = activities[ar];
+            if (activities[ar] === prevValR) optAR.selected = true;
+            grpActR.appendChild(optAR);
+          }
+          repActSelect.appendChild(grpActR);
         }
       }
     }
@@ -8125,6 +8271,9 @@
         var textGroup = document.createElement('div');
         textGroup.className = 'student-text-group';
         
+        var nameContainer = document.createElement('div');
+        nameContainer.className = 'student-name-container';
+
         var nameLink = document.createElement('div');
         nameLink.className = 'student-name-link';
         nameLink.textContent = student.name;
@@ -8133,7 +8282,40 @@
             openStudentDetailModal(sId);
           });
         })(student.studentId);
-        textGroup.appendChild(nameLink);
+        nameContainer.appendChild(nameLink);
+
+        // Display small selfie/photo thumbnail right after name if student has selfie
+        if (rec && typeof rec === 'object' && rec.selfiePhoto) {
+          (function(photoUrl, sName, sClass, cTime) {
+            var thumbImg = document.createElement('img');
+            thumbImg.className = 'student-selfie-inline-thumb';
+            thumbImg.src = photoUrl;
+            thumbImg.alt = 'Selfie ' + sName;
+            thumbImg.title = 'คลิกเพื่อดูรูปภาพเช็คชื่อ (' + sName + ')';
+            
+            thumbImg.addEventListener('mouseenter', function(e) {
+              if (typeof showLiveSelfieHoverPreview === 'function') {
+                showLiveSelfieHoverPreview(e, photoUrl, sName, sClass, cTime || 'เช็คชื่อสำเร็จ');
+              }
+            });
+            thumbImg.addEventListener('mouseleave', function() {
+              if (typeof hideLiveSelfieHoverPreview === 'function') {
+                hideLiveSelfieHoverPreview();
+              }
+            });
+            thumbImg.addEventListener('click', function(e) {
+              e.stopPropagation();
+              if (typeof openSelfieProofModal === 'function') {
+                openSelfieProofModal(photoUrl, sName, sClass, cTime || 'เช็คชื่อสำเร็จ');
+              } else if (typeof openStudentDetailModal === 'function') {
+                openStudentDetailModal(student.studentId);
+              }
+            });
+            nameContainer.appendChild(thumbImg);
+          })(rec.selfiePhoto, student.name, student.className, rec.checkinTime);
+        }
+
+        textGroup.appendChild(nameContainer);
         
         var subInfo = document.createElement('div');
         subInfo.className = 'student-sub-info';
@@ -8141,9 +8323,6 @@
         if (rec && typeof rec === 'object') {
           if (rec.activityName) {
             infoText += ' • 🏷️ ' + rec.activityName;
-          }
-          if (rec.selfiePhoto) {
-            infoText += ' • 📸 มีรูปเซลฟี่';
           }
           if (rec.distanceMeters) {
             infoText += ' • 📍 ' + rec.distanceMeters + ' ม.';
@@ -8813,41 +8992,125 @@
       
       var btnPdf = document.getElementById('btn-download-pdf');
       if (btnPdf) {
-        btnPdf.addEventListener('click', function() {
+        btnPdf.onclick = function() {
           downloadPDFReport();
-        });
+        };
+      }
+
+      var btnJpg = document.getElementById('btn-download-jpg');
+      if (btnJpg) {
+        btnJpg.onclick = function() {
+          downloadJPGReport();
+        };
       }
 
       var btnExcel = document.getElementById('btn-export-excel');
       if (btnExcel) {
-        btnExcel.addEventListener('click', function() {
+        btnExcel.onclick = function() {
           exportExcelReport();
-        });
+        };
       }
 
       var btnPrint = document.getElementById('btn-print-report');
       if (btnPrint) {
-        btnPrint.addEventListener('click', function() {
+        btnPrint.onclick = function() {
           window.print();
-        });
+        };
       }
 
       var reportTypeSelect = document.getElementById('report-type-select');
       if (reportTypeSelect) {
-        reportTypeSelect.addEventListener('change', function() {
+        reportTypeSelect.onchange = function() {
           generateReportPreview();
-        });
+        };
+      }
+
+      var reportClassSelect = document.getElementById('report-class-select');
+      if (reportClassSelect) {
+        reportClassSelect.onchange = function() {
+          generateReportPreview();
+        };
+      }
+
+      var reportActivitySelect = document.getElementById('report-activity-select');
+      if (reportActivitySelect) {
+        reportActivitySelect.onchange = function() {
+          generateReportPreview();
+        };
+      }
+
+      var reportStatusSelect = document.getElementById('report-status-select');
+      if (reportStatusSelect) {
+        reportStatusSelect.onchange = function() {
+          generateReportPreview();
+        };
+      }
+
+      var reportDateSelect = document.getElementById('report-date-select');
+      if (reportDateSelect) {
+        reportDateSelect.onchange = function() {
+          generateReportPreview();
+        };
       }
     }
 
+    function getAttendanceMapFromLocalStorage(dateStr, activityName) {
+      var allAtt = getLocalStorageAttendance();
+      var map = {};
+      for (var i = 0; i < allAtt.length; i++) {
+        var it = allAtt[i];
+        if (it.date === dateStr) {
+          var act = it.activityName || 'เช็คชื่อมาเรียน';
+          if (activityName === 'all' || act === activityName || (!it.activityName && activityName === 'เช็คชื่อมาเรียน')) {
+            map[it.studentId] = {
+              status: it.status,
+              selfiePhoto: it.selfiePhoto || '',
+              distanceMeters: it.distanceMeters || 0,
+              activityName: act,
+              checkinTime: it.checkinTime || '',
+              note: it.note || ''
+            };
+          }
+        }
+      }
+      return map;
+    }
+
     function generateReportPreview() {
-      var reportType = document.getElementById('report-type-select').value || 'daily';
-      var dateStr = document.getElementById('report-date-select').value || getTodayDateString();
-      var className = document.getElementById('report-class-select').value || 'all';
+      var reportType = (document.getElementById('report-type-select') && document.getElementById('report-type-select').value) || 'daily';
+      var dateStr = (document.getElementById('report-date-select') && document.getElementById('report-date-select').value) || getTodayDateString();
+      var className = (document.getElementById('report-class-select') && document.getElementById('report-class-select').value) || 'all';
+      var repActSelect = document.getElementById('report-activity-select');
+      var activityName = (repActSelect && repActSelect.value) ? repActSelect.value : 'all';
+      var repStatSelect = document.getElementById('report-status-select');
+      var statusFilter = (repStatSelect && repStatSelect.value) ? repStatSelect.value : 'all';
 
       var container = document.getElementById('report-preview-container');
       if (!container) return;
+      container.innerHTML = '<div style="padding: 30px; text-align: center; color: var(--text-secondary);"><i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #FF6B00; margin-bottom: 10px; display: block;"></i>กำลังโหลดข้อมูลรายงานและรูปภาพ...</div>';
+
+      if (isGASAvailable()) {
+        google.script.run
+          .withSuccessHandler(function(recordsMap) {
+            renderReportDocument(reportType, dateStr, className, activityName, statusFilter, recordsMap || {});
+          })
+          .withFailureHandler(function(err) {
+            console.warn('Error fetching report records from GAS:', err);
+            var localRecords = getAttendanceMapFromLocalStorage(dateStr, activityName);
+            renderReportDocument(reportType, dateStr, className, activityName, statusFilter, localRecords);
+          })
+          .getAttendanceRecords(dateStr, className, activityName);
+      } else {
+        var localRecords = getAttendanceMapFromLocalStorage(dateStr, activityName);
+        renderReportDocument(reportType, dateStr, className, activityName, statusFilter, localRecords);
+      }
+    }
+
+    function renderReportDocument(reportType, dateStr, className, activityName, statusFilter, recordsMap) {
+      var container = document.getElementById('report-preview-container');
+      if (!container) return;
       container.innerHTML = '';
+      recordsMap = recordsMap || {};
 
       var paper = document.createElement('div');
       paper.style.padding = '24px';
@@ -8860,16 +9123,21 @@
       header.style.marginBottom = '20px';
       
       var hTitle = document.createElement('div');
-      hTitle.style.fontSize = '18px';
+      hTitle.style.fontSize = '19px';
       hTitle.style.fontWeight = '700';
-      hTitle.style.color = '#FFF';
-      hTitle.textContent = 'รายงานสรุปการมาเรียนของนักเรียน (Attendance Summary Report)';
+      hTitle.style.color = '#FFFFFF';
+      hTitle.innerHTML = '<i class="fas fa-graduation-cap" style="color: #FF6B00; margin-right: 8px;"></i>รายงานสรุปการเช็คชื่อนักเรียน (Student Attendance Report)';
       header.appendChild(hTitle);
 
       var hSub = document.createElement('div');
-      hSub.style.fontSize = '13px';
+      hSub.style.fontSize = '13.5px';
       hSub.style.color = 'var(--orange-400)';
-      hSub.textContent = (reportType === 'daily' ? 'รายงานสรุปการมาเรียนประจำวัน' : (reportType === 'monthly' ? 'รายงานสรุปการมาเรียนประจำเดือน' : 'รายงานสรุปสถิติประจำภาคเรียน'));
+      hSub.style.marginTop = '4px';
+      var subText = (reportType === 'daily' ? 'รายงานสรุปการเช็คชื่อประจำวัน' : (reportType === 'monthly' ? 'รายงานสรุปการเช็คชื่อประจำเดือน' : 'รายงานสรุปสถิติประจำภาคเรียน'));
+      if (activityName && activityName !== 'all') {
+        subText += ' • กิจกรรม/วิชา: ' + activityName;
+      }
+      hSub.textContent = subText;
       header.appendChild(hSub);
 
       paper.appendChild(header);
@@ -8880,64 +9148,246 @@
       metaRow.style.fontSize = '13px';
       metaRow.style.color = 'var(--text-secondary)';
       metaRow.style.marginBottom = '14px';
-      metaRow.innerHTML = '<span><strong>วันที่:</strong> ' + formatThaiDate(dateStr) + '</span><span><strong>ห้องเรียน:</strong> ' + (className === 'all' ? 'ทุกห้องเรียน' : className) + '</span>';
+      metaRow.style.paddingBottom = '10px';
+      metaRow.style.borderBottom = '1px solid var(--border-glass)';
+      metaRow.style.flexWrap = 'wrap';
+      metaRow.style.gap = '8px';
+
+      var statFilterLabel = statusFilter === 'all' ? 'ทุกสถานะ' : (statusFilter === 'Present' ? 'เฉพาะมาเรียน' : (statusFilter === 'Absent' ? 'เฉพาะขาดเรียน' : (statusFilter === 'Sick' ? 'เฉพาะลาป่วย' : (statusFilter === 'Leave' ? 'เฉพาะลากิจ' : 'เฉพาะมาสาย'))));
+      metaRow.innerHTML = '<span><strong>📅 วันที่:</strong> ' + formatThaiDate(dateStr) + '</span>' +
+                          '<span><strong>🏫 ห้องเรียน:</strong> ' + (className === 'all' ? 'ทุกห้องเรียน' : className) + '</span>' +
+                          '<span><strong>🏷️ กิจกรรม/วิชา:</strong> ' + (activityName === 'all' ? 'ทั้งหมด' : activityName) + '</span>' +
+                          '<span><strong>🔍 ตัวกรอง:</strong> ' + statFilterLabel + '</span>';
       paper.appendChild(metaRow);
 
-      var table = document.createElement('table');
-      table.className = 'glass-table';
-      var thead = document.createElement('thead');
-      thead.innerHTML = '<tr><th>เลขที่</th><th>ชื่อ - นามสกุล</th><th>ห้องเรียน</th><th>สถานะการมาเรียน</th><th>หมายเหตุ</th></tr>';
-      table.appendChild(thead);
+      var countPresent = 0;
+      var countAbsent = 0;
+      var countSick = 0;
+      var countLeave = 0;
+      var countLate = 0;
+      var totalStudentsInFilter = 0;
 
-      var tbody = document.createElement('tbody');
-      var allAtt = getLocalStorageAttendance();
-      var attMap = {};
-      var noteMap = {};
-      for (var i = 0; i < allAtt.length; i++) {
-        if (allAtt[i].date === dateStr) {
-          attMap[allAtt[i].studentId] = allAtt[i].status;
-          noteMap[allAtt[i].studentId] = allAtt[i].note || '';
+      var rowsToRender = [];
+      var studentList = AppState.students || [];
+
+      for (var j = 0; j < studentList.length; j++) {
+        var s = studentList[j];
+        if (className !== 'all' && s.className !== className) continue;
+
+        var cleanId = String(s.studentId).trim().toLowerCase();
+        var rec = recordsMap[s.studentId] || recordsMap[cleanId];
+        var status = 'Absent';
+        var note = '';
+        var selfiePhoto = '';
+        var actName = activityName !== 'all' ? activityName : 'เช็คชื่อมาเรียน';
+        var cTime = '-';
+        var dist = 0;
+
+        if (rec !== undefined && rec !== null) {
+          if (typeof rec === 'object') {
+            status = rec.status || 'Present';
+            note = rec.note || '';
+            selfiePhoto = rec.selfiePhoto || '';
+            actName = rec.activityName || actName;
+            cTime = rec.checkinTime || '-';
+            dist = rec.distanceMeters || 0;
+          } else {
+            status = String(rec);
+          }
+        }
+
+        if (status === 'Present' || status === 'มาเรียน') countPresent++;
+        else if (status === 'Absent' || status === 'ขาด' || status === 'ขาดเรียน') countAbsent++;
+        else if (status === 'Sick' || status === 'ลาป่วย') countSick++;
+        else if (status === 'Leave' || status === 'ลากิจ') countLeave++;
+        else if (status === 'Late' || status === 'มาสาย') countLate++;
+
+        var isMatchFilter = true;
+        if (statusFilter !== 'all') {
+          if (statusFilter === 'Present' && !(status === 'Present' || status === 'มาเรียน')) isMatchFilter = false;
+          else if (statusFilter === 'Absent' && !(status === 'Absent' || status === 'ขาด' || status === 'ขาดเรียน')) isMatchFilter = false;
+          else if (statusFilter === 'Sick' && !(status === 'Sick' || status === 'ลาป่วย')) isMatchFilter = false;
+          else if (statusFilter === 'Leave' && !(status === 'Leave' || status === 'ลากิจ')) isMatchFilter = false;
+          else if (statusFilter === 'Late' && !(status === 'Late' || status === 'มาสาย')) isMatchFilter = false;
+        }
+
+        if (isMatchFilter) {
+          totalStudentsInFilter++;
+          rowsToRender.push({
+            student: s,
+            status: status,
+            note: note,
+            selfiePhoto: selfiePhoto,
+            activityName: actName,
+            checkinTime: cTime,
+            distanceMeters: dist
+          });
         }
       }
 
-      var count = 0;
-      for (var j = 0; j < AppState.students.length; j++) {
-        var s = AppState.students[j];
-        if (className !== 'all' && s.className !== className) continue;
-        count++;
+      var totalAll = countPresent + countAbsent + countSick + countLeave + countLate;
+      var attRate = totalAll > 0 ? (((countPresent + countLate) / totalAll) * 100).toFixed(1) : '100.0';
 
-        var status = attMap[s.studentId] || 'Present';
-        var note = noteMap[s.studentId] || '';
-        var tr = document.createElement('tr');
-        
-        var td1 = document.createElement('td'); td1.textContent = s.studentNo; tr.appendChild(td1);
-        var td2 = document.createElement('td'); td2.textContent = s.name; tr.appendChild(td2);
-        var td3 = document.createElement('td'); td3.textContent = s.className; tr.appendChild(td3);
-        
-        var td4 = document.createElement('td');
-        var stLabel = status === 'Present' ? 'มาเรียน' : (status === 'Absent' ? 'ขาดเรียน' : (status === 'Sick' ? 'ลาป่วย' : (status === 'Leave' ? 'ลากิจ' : 'มาสาย')));
-        var stClass = status === 'Present' ? 'badge-present' : (status === 'Absent' ? 'badge-absent' : 'badge-sick');
-        td4.innerHTML = '<span class="badge-glass ' + stClass + '">' + stLabel + '</span>';
-        tr.appendChild(td4);
+      // Summary Stats Cards Bar
+      var statsBar = document.createElement('div');
+      statsBar.style.display = 'grid';
+      statsBar.style.gridTemplateColumns = 'repeat(auto-fit, minmax(110px, 1fr))';
+      statsBar.style.gap = '8px';
+      statsBar.style.marginBottom = '16px';
 
-        var td5 = document.createElement('td');
-        td5.style.color = '#94A3B8';
-        td5.style.fontSize = '12px';
-        td5.textContent = note || '-';
-        tr.appendChild(td5);
+      statsBar.innerHTML = '<div style="background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); border-radius: 8px; padding: 8px; text-align: center;">' +
+                             '<div style="font-size: 11px; color: #10B981; font-weight: 600;">มาเรียน</div>' +
+                             '<div style="font-size: 18px; font-weight: 800; color: #10B981;">' + countPresent + '</div>' +
+                           '</div>' +
+                           '<div style="background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; padding: 8px; text-align: center;">' +
+                             '<div style="font-size: 11px; color: #EF4444; font-weight: 600;">ขาดเรียน</div>' +
+                             '<div style="font-size: 18px; font-weight: 800; color: #EF4444;">' + countAbsent + '</div>' +
+                           '</div>' +
+                           '<div style="background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3); border-radius: 8px; padding: 8px; text-align: center;">' +
+                             '<div style="font-size: 11px; color: #F59E0B; font-weight: 600;">ลาป่วย</div>' +
+                             '<div style="font-size: 18px; font-weight: 800; color: #F59E0B;">' + countSick + '</div>' +
+                           '</div>' +
+                           '<div style="background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.3); border-radius: 8px; padding: 8px; text-align: center;">' +
+                             '<div style="font-size: 11px; color: #8B5CF6; font-weight: 600;">ลากิจ</div>' +
+                             '<div style="font-size: 18px; font-weight: 800; color: #8B5CF6;">' + countLeave + '</div>' +
+                           '</div>' +
+                           '<div style="background: rgba(236,72,153,0.15); border: 1px solid rgba(236,72,153,0.3); border-radius: 8px; padding: 8px; text-align: center;">' +
+                             '<div style="font-size: 11px; color: #EC4899; font-weight: 600;">มาสาย</div>' +
+                             '<div style="font-size: 18px; font-weight: 800; color: #EC4899;">' + countLate + '</div>' +
+                           '</div>' +
+                           '<div style="background: rgba(255,107,0,0.15); border: 1px solid rgba(255,107,0,0.3); border-radius: 8px; padding: 8px; text-align: center;">' +
+                             '<div style="font-size: 11px; color: #FF6B00; font-weight: 600;">รวมทั้งหมด</div>' +
+                             '<div style="font-size: 18px; font-weight: 800; color: #FF6B00;">' + totalAll + ' (' + attRate + '%)</div>' +
+                           '</div>';
+      paper.appendChild(statsBar);
 
-        tbody.appendChild(tr);
-      }
+      // Report Table
+      var table = document.createElement('table');
+      table.className = 'glass-table';
+      var thead = document.createElement('thead');
+      thead.innerHTML = '<tr>' +
+                          '<th style="width: 50px; text-align: center;">เลขที่</th>' +
+                          '<th style="width: 100px;">รหัสนักศึกษา</th>' +
+                          '<th>ชื่อ - นามสกุล</th>' +
+                          '<th style="width: 80px;">ห้องเรียน</th>' +
+                          '<th style="width: 130px;">กิจกรรม/วิชา</th>' +
+                          '<th style="width: 90px; text-align: center;">สถานะ</th>' +
+                          '<th style="width: 85px; text-align: center;">เวลา</th>' +
+                          '<th style="width: 110px; text-align: center;">รูปถ่ายเช็คชื่อ</th>' +
+                          '<th>หมายเหตุ</th>' +
+                        '</tr>';
+      table.appendChild(thead);
 
-      if (count === 0) {
+      var tbody = document.createElement('tbody');
+
+      if (rowsToRender.length === 0) {
         var trNone = document.createElement('tr');
-        trNone.innerHTML = '<td colspan="5" style="text-align:center; padding:24px; color:var(--text-muted);">ไม่พบข้อมูลนักเรียนในรายงานนี้</td>';
+        trNone.innerHTML = '<td colspan="9" style="text-align:center; padding:32px; color:var(--text-muted); font-size:14px;"><i class="fas fa-folder-open" style="font-size:28px; color:#FF6B00; display:block; margin-bottom:8px;"></i>ไม่พบข้อมูลนักเรียนที่ตรงตามเงื่อนไขตัวกรอง</td>';
         tbody.appendChild(trNone);
+      } else {
+        for (var r = 0; r < rowsToRender.length; r++) {
+          var item = rowsToRender[r];
+          var st = item.status;
+          var tr = document.createElement('tr');
+
+          var tdNo = document.createElement('td');
+          tdNo.style.textAlign = 'center';
+          tdNo.style.fontWeight = '700';
+          tdNo.textContent = item.student.studentNo || (r + 1);
+          tr.appendChild(tdNo);
+
+          var tdId = document.createElement('td');
+          tdId.style.fontSize = '12px';
+          tdId.style.color = 'var(--text-secondary)';
+          tdId.textContent = item.student.studentId;
+          tr.appendChild(tdId);
+
+          var tdName = document.createElement('td');
+          tdName.style.fontWeight = '600';
+          tdName.style.color = '#FFFFFF';
+          tdName.textContent = item.student.name;
+          tr.appendChild(tdName);
+
+          var tdClass = document.createElement('td');
+          tdClass.textContent = item.student.className;
+          tr.appendChild(tdClass);
+
+          var tdAct = document.createElement('td');
+          tdAct.style.fontSize = '12px';
+          tdAct.textContent = item.activityName;
+          tr.appendChild(tdAct);
+
+          var tdStatus = document.createElement('td');
+          tdStatus.style.textAlign = 'center';
+          var stLabel = (st === 'Present' || st === 'มาเรียน') ? 'มาเรียน' : ((st === 'Absent' || st === 'ขาด' || st === 'ขาดเรียน') ? 'ขาดเรียน' : ((st === 'Sick' || st === 'ลาป่วย') ? 'ลาป่วย' : ((st === 'Leave' || st === 'ลากิจ') ? 'ลากิจ' : 'มาสาย')));
+          var stClass = (st === 'Present' || st === 'มาเรียน') ? 'badge-present' : ((st === 'Absent' || st === 'ขาด' || st === 'ขาดเรียน') ? 'badge-absent' : ((st === 'Late' || st === 'มาสาย') ? 'badge-late' : 'badge-sick'));
+          tdStatus.innerHTML = '<span class="badge-glass ' + stClass + '">' + stLabel + '</span>';
+          tr.appendChild(tdStatus);
+
+          var tdTime = document.createElement('td');
+          tdTime.style.textAlign = 'center';
+          tdTime.style.fontSize = '11.5px';
+          tdTime.style.color = 'var(--text-secondary)';
+          tdTime.textContent = item.checkinTime || '-';
+          tr.appendChild(tdTime);
+
+          // Attached Selfie / Check-in Photo Column
+          var tdPhoto = document.createElement('td');
+          tdPhoto.style.textAlign = 'center';
+          if (item.selfiePhoto && item.selfiePhoto.length > 50) {
+            (function(pUrl, sN, sC, cT) {
+              var imgEl = document.createElement('img');
+              imgEl.src = pUrl;
+              imgEl.alt = 'Selfie ' + sN;
+              imgEl.style.width = '42px';
+              imgEl.style.height = '42px';
+              imgEl.style.borderRadius = '6px';
+              imgEl.style.objectFit = 'cover';
+              imgEl.style.border = '1.5px solid #FF6B00';
+              imgEl.style.display = 'block';
+              imgEl.style.margin = '0 auto';
+              imgEl.style.cursor = 'pointer';
+              imgEl.style.boxShadow = '0 2px 6px rgba(0,0,0,0.4)';
+              imgEl.title = 'คลิกเพื่อดูรูปขนาดเต็ม (' + sN + ')';
+
+              imgEl.addEventListener('mouseenter', function(e) {
+                if (typeof showLiveSelfieHoverPreview === 'function') {
+                  showLiveSelfieHoverPreview(e, pUrl, sN, sC, cT || 'เช็คชื่อสำเร็จ');
+                }
+              });
+              imgEl.addEventListener('mouseleave', function() {
+                if (typeof hideLiveSelfieHoverPreview === 'function') {
+                  hideLiveSelfieHoverPreview();
+                }
+              });
+              imgEl.addEventListener('click', function() {
+                if (typeof openSelfieProofModal === 'function') {
+                  openSelfieProofModal(pUrl, sN, sC, cT || 'เช็คชื่อสำเร็จ');
+                }
+              });
+              tdPhoto.appendChild(imgEl);
+            })(item.selfiePhoto, item.student.name, item.student.className, item.checkinTime);
+          } else {
+            var noPhotoSpan = document.createElement('span');
+            noPhotoSpan.style.fontSize = '11px';
+            noPhotoSpan.style.color = '#64748B';
+            noPhotoSpan.textContent = 'ไม่มีรูป';
+            tdPhoto.appendChild(noPhotoSpan);
+          }
+          tr.appendChild(tdPhoto);
+
+          var tdNote = document.createElement('td');
+          tdNote.style.color = '#94A3B8';
+          tdNote.style.fontSize = '12px';
+          tdNote.textContent = item.note || '-';
+          tr.appendChild(tdNote);
+
+          tbody.appendChild(tr);
+        }
       }
 
       table.appendChild(tbody);
       paper.appendChild(table);
-
       container.appendChild(paper);
     }
 
@@ -8948,18 +9398,70 @@
         return;
       }
 
+      var dateStr = (document.getElementById('report-date-select') && document.getElementById('report-date-select').value) || getTodayDateString();
+      var className = (document.getElementById('report-class-select') && document.getElementById('report-class-select').value) || 'all';
+
       if (typeof html2pdf !== 'undefined') {
+        showToast('กำลังประมวลผลและสร้างไฟล์ PDF...', 'info');
         var opt = {
-          margin:       10,
-          filename:     'รายงานการมาเรียน_' + getTodayDateString() + '.pdf',
+          margin:       [8, 8, 8, 8],
+          filename:     'รายงานการเช็คชื่อ_' + dateStr + '_' + (className === 'all' ? 'ทุกห้อง' : className) + '.pdf',
           image:        { type: 'jpeg', quality: 0.98 },
-          html2canvas:  { scale: 2 },
+          html2canvas:  { scale: 2, useCORS: true, logging: false },
           jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
-        html2pdf().set(opt).from(element).save();
-        showToast('กำลังดาวน์โหลดไฟล์ PDF...', 'success');
+        html2pdf().set(opt).from(element).save().then(function() {
+          showToast('ดาวน์โหลดไฟล์ PDF เรียบร้อยแล้ว', 'success');
+        });
       } else {
         window.print();
+      }
+    }
+
+    function downloadJPGReport() {
+      var element = document.getElementById('printable-report-area');
+      if (!element) {
+        showToast('ไม่พบข้อมูลรายงานสำหรับส่งออกรูปภาพ', 'error');
+        return;
+      }
+
+      var dateStr = (document.getElementById('report-date-select') && document.getElementById('report-date-select').value) || getTodayDateString();
+      var className = (document.getElementById('report-class-select') && document.getElementById('report-class-select').value) || 'all';
+      var filename = 'รายงานการเช็คชื่อ_' + dateStr + '_' + (className === 'all' ? 'ทุกห้อง' : className) + '.jpg';
+
+      showLoadingPopup('กำลังสร้างภาพรายงาน...', 'กำลังแปลงตารางรายงานและรูปถ่ายเป็นภาพความละเอียดสูง (.JPG)');
+
+      function doCapture(h2c) {
+        h2c(element, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#0F1523',
+          logging: false
+        }).then(function(canvas) {
+          hideLoadingPopup();
+          var imgData = canvas.toDataURL('image/jpeg', 0.95);
+          var link = document.createElement('a');
+          link.download = filename;
+          link.href = imgData;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          showToast('ดาวน์โหลดรายงานเป็นไฟล์ภาพ .JPG เรียบร้อยแล้ว', 'success');
+        }).catch(function(err) {
+          hideLoadingPopup();
+          console.error('Error generating JPG report:', err);
+          showToast('เกิดข้อผิดพลาดในการสร้างภาพ: ' + (err.message || String(err)), 'error');
+        });
+      }
+
+      if (typeof html2canvas !== 'undefined') {
+        doCapture(html2canvas);
+      } else if (typeof window.html2canvas !== 'undefined') {
+        doCapture(window.html2canvas);
+      } else {
+        hideLoadingPopup();
+        showToast('ไลบรารี html2canvas ยังไม่พร้อมใช้งาน', 'error');
       }
     }
 
@@ -8969,41 +9471,103 @@
         return;
       }
 
-      var dateStr = document.getElementById('report-date-select').value || getTodayDateString();
-      var allAtt = getLocalStorageAttendance();
-      var attMap = {};
-      var noteMap = {};
-      for (var i = 0; i < allAtt.length; i++) {
-        if (allAtt[i].date === dateStr) {
-          attMap[allAtt[i].studentId] = allAtt[i].status;
-          noteMap[allAtt[i].studentId] = allAtt[i].note || '';
+      var dateStr = (document.getElementById('report-date-select') && document.getElementById('report-date-select').value) || getTodayDateString();
+      var className = (document.getElementById('report-class-select') && document.getElementById('report-class-select').value) || 'all';
+      var repActSelect = document.getElementById('report-activity-select');
+      var activityName = (repActSelect && repActSelect.value) ? repActSelect.value : 'all';
+      var repStatSelect = document.getElementById('report-status-select');
+      var statusFilter = (repStatSelect && repStatSelect.value) ? repStatSelect.value : 'all';
+
+      showLoadingPopup('กำลังส่งออกข้อมูล Excel...', 'กำลังรวบรวมข้อมูลและสร้างไฟล์ .xlsx');
+
+      function doExcelExport(recordsMap) {
+        hideLoadingPopup();
+        recordsMap = recordsMap || {};
+        var exportData = [];
+        var studentList = AppState.students || [];
+
+        for (var j = 0; j < studentList.length; j++) {
+          var s = studentList[j];
+          if (className !== 'all' && s.className !== className) continue;
+
+          var cleanId = String(s.studentId).trim().toLowerCase();
+          var rec = recordsMap[s.studentId] || recordsMap[cleanId];
+          var status = 'Absent';
+          var note = '';
+          var hasPhoto = 'ไม่มี';
+          var actName = activityName !== 'all' ? activityName : 'เช็คชื่อมาเรียน';
+          var cTime = '-';
+          var dist = 0;
+
+          if (rec !== undefined && rec !== null) {
+            if (typeof rec === 'object') {
+              status = rec.status || 'Present';
+              note = rec.note || '';
+              if (rec.selfiePhoto && rec.selfiePhoto.length > 50) hasPhoto = 'มีรูปเซลฟี่';
+              actName = rec.activityName || actName;
+              cTime = rec.checkinTime || '-';
+              dist = rec.distanceMeters || 0;
+            } else {
+              status = String(rec);
+            }
+          }
+
+          var isMatchFilter = true;
+          if (statusFilter !== 'all') {
+            if (statusFilter === 'Present' && !(status === 'Present' || status === 'มาเรียน')) isMatchFilter = false;
+            else if (statusFilter === 'Absent' && !(status === 'Absent' || status === 'ขาด' || status === 'ขาดเรียน')) isMatchFilter = false;
+            else if (statusFilter === 'Sick' && !(status === 'Sick' || status === 'ลาป่วย')) isMatchFilter = false;
+            else if (statusFilter === 'Leave' && !(status === 'Leave' || status === 'ลากิจ')) isMatchFilter = false;
+            else if (statusFilter === 'Late' && !(status === 'Late' || status === 'มาสาย')) isMatchFilter = false;
+          }
+
+          if (!isMatchFilter) continue;
+
+          var stLabel = (status === 'Present' || status === 'มาเรียน') ? 'มาเรียน' : ((status === 'Absent' || status === 'ขาด' || status === 'ขาดเรียน') ? 'ขาดเรียน' : ((status === 'Sick' || status === 'ลาป่วย') ? 'ลาป่วย' : ((status === 'Leave' || status === 'ลากิจ') ? 'ลากิจ' : 'มาสาย')));
+
+          exportData.push({
+            'วันที่': dateStr,
+            'เลขที่': s.studentNo,
+            'รหัสนักเรียน': s.studentId,
+            'ชื่อ-นามสกุล': s.name,
+            'ห้องเรียน': s.className,
+            'กิจกรรม/รายวิชา': actName,
+            'สถานะการมาเรียน': stLabel,
+            'เวลาเช็คชื่อ': cTime,
+            'รูปถ่ายเซลฟี่': hasPhoto,
+            'ระยะทาง GPS (เมตร)': dist,
+            'หมายเหตุ': note
+          });
         }
+
+        if (exportData.length === 0) {
+          showToast('ไม่พบข้อมูลตามเงื่อนไขตัวกรองสำหรับส่งออก Excel', 'error');
+          return;
+        }
+
+        var ws = XLSX.utils.json_to_sheet(exportData);
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'AttendanceReport');
+        var outFilename = 'Student_Attendance_' + dateStr + '_' + (className === 'all' ? 'ทุกห้อง' : className) + '.xlsx';
+        XLSX.writeFile(wb, outFilename);
+        showToast('ส่งออกไฟล์ Excel เรียบร้อยแล้ว (' + exportData.length + ' รายการ)', 'success');
       }
 
-      var exportData = [];
-      for (var j = 0; j < AppState.students.length; j++) {
-        var s = AppState.students[j];
-        var status = attMap[s.studentId] || 'Present';
-        var note = noteMap[s.studentId] || '';
-        var stLabel = status === 'Present' ? 'มาเรียน' : (status === 'Absent' ? 'ขาดเรียน' : (status === 'Sick' ? 'ลาป่วย' : (status === 'Leave' ? 'ลากิจ' : 'มาสาย')));
-        
-        exportData.push({
-          'วันที่': dateStr,
-          'รหัสนักเรียน': s.studentId,
-          'เลขที่': s.studentNo,
-          'ชื่อ-นามสกุล': s.name,
-          'ห้องเรียน': s.className,
-          'สถานะการมาเรียน': stLabel,
-          'หมายเหตุ': note
-        });
+      if (isGASAvailable()) {
+        google.script.run
+          .withSuccessHandler(function(recordsMap) {
+            doExcelExport(recordsMap);
+          })
+          .withFailureHandler(function(err) {
+            console.warn('Error fetching report records for Excel:', err);
+            var localRecords = getAttendanceMapFromLocalStorage(dateStr, activityName);
+            doExcelExport(localRecords);
+          })
+          .getAttendanceRecords(dateStr, className, activityName);
+      } else {
+        var localRecords = getAttendanceMapFromLocalStorage(dateStr, activityName);
+        doExcelExport(localRecords);
       }
-
-      var ws = XLSX.utils.json_to_sheet(exportData);
-      var wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'AttendanceSummary');
-      XLSX.writeFile(wb, 'Student_Attendance_' + dateStr + '.xlsx');
-      
-      showToast('ส่งออกไฟล์ Excel เรียบร้อยแล้ว', 'success');
     }
 
     function renderSettingsPage() {
