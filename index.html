@@ -2175,15 +2175,50 @@
                   </div>
                 </div>
 
-                <!-- SECTION 2: CLASSROOM & TIME SETTINGS -->
-                <div class="grid-2">
-                  <div class="form-group-glass">
-                    <label><i class="fas fa-chalkboard-user"></i> 2. เลือกห้องเรียนที่เปิดเช็คชื่อ</label>
-                    <select class="select-glass" id="session-class-select"></select>
+                <!-- SECTION 2: MULTI-CLASSROOM SELECTION (เลือกหลายห้องพร้อมกัน หรือกำหนดห้องเอง) -->
+                <div style="background: rgba(0, 240, 255, 0.03); border: 1px solid rgba(0, 240, 255, 0.2); border-radius: var(--radius-md); padding: 16px 18px; margin-bottom: 20px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+                    <label style="font-size: 14px; font-weight: 700; color: #FFF; margin: 0; display: flex; align-items: center; gap: 8px;">
+                      <i class="fas fa-chalkboard-user" style="color: var(--cyan-400);"></i> 2. เลือกห้องเรียนที่เปิดเช็คชื่อ (เลือกพร้อมกันหลายห้องได้)
+                    </label>
+                    <div style="display: flex; gap: 6px; align-items: center;">
+                      <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-session-select-all-classes" style="font-size: 11.5px; padding: 4px 10px;" title="เลือกทุกห้องเรียน">
+                        <i class="fas fa-check-double"></i> เลือกทุกห้อง
+                      </button>
+                      <button type="button" class="btn-glass btn-danger-glass btn-sm-glass" id="btn-session-clear-all-classes" style="font-size: 11.5px; padding: 4px 10px;" title="ล้างการเลือกทั้งหมด">
+                        <i class="fas fa-rotate-left"></i> ล้างการเลือก
+                      </button>
+                    </div>
                   </div>
 
+                  <div style="font-size: 11.5px; color: var(--text-muted); margin-bottom: 8px;">
+                    แตะเลือกห้องเรียนที่ต้องการเช็คชื่อร่วมกันในคาบนี้ (เลือกได้มากกว่า 1 ห้อง):
+                  </div>
+
+                  <!-- Multi-Select Class Chips Container -->
+                  <div id="session-class-chips-container" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; max-height: 140px; overflow-y: auto; padding: 4px 0;"></div>
+
+                  <!-- Custom Classroom Input -->
+                  <div style="display: flex; gap: 8px; align-items: center; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 10px; flex-wrap: wrap;">
+                    <input type="text" class="input-glass" id="input-session-custom-class" placeholder="พิมพ์กำหนดชื่อห้องเรียนเอง (เช่น ม.1/1 หรือหลายห้องคั่นด้วยจุลภาค เช่น ม.1/1, ม.1/2)..." style="flex: 1; min-width: 220px; font-size: 12.5px;" />
+                    <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-session-add-custom-class" style="white-space: nowrap; font-weight: 700; padding: 7px 14px;">
+                      <i class="fas fa-plus"></i> + เพิ่มห้องนี้
+                    </button>
+                  </div>
+
+                  <!-- Live Selected Classes Summary Banner -->
+                  <div id="session-selected-classes-summary" style="margin-top: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; background: rgba(0,240,255,0.06); border: 1px solid rgba(0,240,255,0.3); padding: 9px 14px; border-radius: 8px;">
+                    <div style="font-size: 13px; color: #FFF; font-weight: 600;">
+                      🏫 ห้องที่เปิดรับเช็คชื่อ: <span id="session-selected-classes-text" style="color: var(--cyan-400); font-weight: 800; font-size: 14px;">ทุกห้องเรียน (All)</span>
+                    </div>
+                    <span class="badge-glass badge-present" id="session-selected-classes-count-badge" style="font-size: 11.5px;">ทุกห้องเรียน</span>
+                  </div>
+                </div>
+
+                <!-- SECTION 3: TIME & SECURITY SETTINGS -->
+                <div class="grid-2">
                   <div class="form-group-glass">
-                    <label><i class="fas fa-clock"></i> ระยะเวลาเปิดรับเช็คชื่อ (นาที / ชั่วโมง)</label>
+                    <label><i class="fas fa-clock"></i> 3. ระยะเวลาเปิดรับเช็คชื่อ (นาที / ชั่วโมง)</label>
                     <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                       <select class="select-glass" id="session-duration-select" style="flex: 1.2; min-width: 140px;">
                         <option value="5">5 นาที</option>
@@ -2207,7 +2242,6 @@
                       </div>
                     </div>
                   </div>
-                </div>
 
                 <div class="grid-2">
                   <div class="form-group-glass">
@@ -3058,6 +3092,7 @@
       activities: [],
       charts: {},
       parsedExcelStudents: [],
+      projectorSelectedClasses: ['all'],
       
       // Anti-Cheat & Session State
       activeSession: null,
@@ -3773,8 +3808,22 @@
       }
     }
 
+    function isClassMatch(filter, studentClass) {
+      if (!filter || filter === 'all' || filter === 'ทุกห้องเรียน' || filter === 'undefined') return true;
+      var sClass = String(studentClass || '').trim().toLowerCase();
+      if (!sClass) return false;
+      var parts = String(filter).split(',');
+      for (var p = 0; p < parts.length; p++) {
+        var item = parts[p].trim().toLowerCase();
+        if (item === 'all' || item === 'ทุกห้องเรียน' || item === sClass) {
+          return true;
+        }
+      }
+      return false;
+    }
+
     function populateClassDropdowns() {
-      var dropdownIds = ['att-class-select', 'student-class-filter', 'report-class-select', 'session-class-select', 'self-checkin-class', 'form-student-class'];
+      var dropdownIds = ['att-class-select', 'student-class-filter', 'report-class-select', 'self-checkin-class', 'form-student-class'];
       
       for (var d = 0; d < dropdownIds.length; d++) {
         var select = document.getElementById(dropdownIds[d]);
@@ -3783,7 +3832,7 @@
         var prevVal = select.value;
         select.innerHTML = '';
         
-        if (dropdownIds[d] === 'student-class-filter' || dropdownIds[d] === 'report-class-select' || dropdownIds[d] === 'session-class-select') {
+        if (dropdownIds[d] === 'student-class-filter' || dropdownIds[d] === 'report-class-select') {
           var optAll = document.createElement('option');
           optAll.value = 'all';
           optAll.textContent = 'ทุกห้องเรียน';
@@ -3847,10 +3896,142 @@
         AppState.selectedClass = '';
       }
 
+      // Render Projector Multi-Classroom Selector
+      renderProjectorClassSelector();
+
       // Immediately sync student dropdown
       var selfCheckinSelect = document.getElementById('self-checkin-class');
       if (selfCheckinSelect && selfCheckinSelect.value) {
         populateStudentSelectForClass(selfCheckinSelect.value);
+      }
+    }
+
+    function renderProjectorClassSelector() {
+      var container = document.getElementById('session-class-chips-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      var selectedList = AppState.projectorSelectedClasses || ['all'];
+      if (!Array.isArray(selectedList)) selectedList = [String(selectedList)];
+      var isAll = (selectedList.indexOf('all') > -1 || selectedList.indexOf('ทุกห้องเรียน') > -1);
+
+      // 1. "🌟 ทุกห้องเรียน (All)" Special Chip
+      var allChip = document.createElement('button');
+      allChip.type = 'button';
+      allChip.className = 'btn-glass btn-sm-glass session-class-chip' + (isAll ? ' active-chip' : '');
+      allChip.style.cssText = 'font-size: 12px; padding: 5px 12px; border-radius: 20px; transition: all 0.2s; cursor: pointer;' + 
+        (isAll 
+          ? ' border: 1.5px solid var(--cyan-400); background: rgba(0,240,255,0.22); color: #FFF; font-weight: 700; box-shadow: 0 0 10px rgba(0,240,255,0.35);' 
+          : ' border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); color: var(--text-secondary);');
+
+      var allIcon = document.createElement('i');
+      allIcon.className = isAll ? 'fas fa-circle-check' : 'far fa-circle';
+      allIcon.style.cssText = 'margin-right: 5px; color: ' + (isAll ? 'var(--cyan-400)' : 'var(--text-muted)') + ';';
+      allChip.appendChild(allIcon);
+      allChip.appendChild(document.createTextNode('🌟 ทุกห้องเรียน (All)'));
+
+      allChip.addEventListener('click', function(e) {
+        e.preventDefault();
+        AppState.projectorSelectedClasses = ['all'];
+        renderProjectorClassSelector();
+      });
+      container.appendChild(allChip);
+
+      // 2. Individual Classroom Chips
+      var rawClasses = AppState.classes || [];
+      var classNames = [];
+      var seenMap = {};
+
+      for (var c = 0; c < rawClasses.length; c++) {
+        var rawItem = rawClasses[c];
+        var cName = (typeof rawItem === 'object' && rawItem) ? (rawItem.name || rawItem.className || '') : String(rawItem || '');
+        cName = cName.trim();
+        if (cName && cName !== 'undefined' && !seenMap[cName.toLowerCase()]) {
+          seenMap[cName.toLowerCase()] = true;
+          classNames.push(cName);
+        }
+      }
+
+      // Also include any custom classes in selectedList that aren't in AppState.classes
+      for (var s = 0; s < selectedList.length; s++) {
+        var selC = String(selectedList[s]).trim();
+        if (selC && selC !== 'all' && selC !== 'ทุกห้องเรียน' && !seenMap[selC.toLowerCase()]) {
+          seenMap[selC.toLowerCase()] = true;
+          classNames.push(selC);
+        }
+      }
+
+      for (var i = 0; i < classNames.length; i++) {
+        (function(cName) {
+          var isSelected = !isAll && (selectedList.indexOf(cName) > -1);
+
+          var chip = document.createElement('button');
+          chip.type = 'button';
+          chip.className = 'btn-glass btn-sm-glass session-class-chip' + (isSelected ? ' active-chip' : '');
+          chip.style.cssText = 'font-size: 12px; padding: 5px 12px; border-radius: 20px; transition: all 0.2s; cursor: pointer;' + 
+            (isSelected 
+              ? ' border: 1.5px solid var(--orange-500); background: rgba(255,107,0,0.25); color: #FFF; font-weight: 700; box-shadow: 0 0 10px rgba(255,107,0,0.3);' 
+              : ' border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); color: var(--text-secondary);');
+
+          var checkIcon = document.createElement('i');
+          checkIcon.className = isSelected ? 'fas fa-square-check' : 'far fa-square';
+          checkIcon.style.cssText = 'margin-right: 5px; color: ' + (isSelected ? 'var(--orange-400)' : 'var(--text-muted)') + ';';
+          chip.appendChild(checkIcon);
+          chip.appendChild(document.createTextNode('ห้อง ' + cName));
+
+          chip.addEventListener('click', function(e) {
+            e.preventDefault();
+            var curSelected = (AppState.projectorSelectedClasses || []).slice();
+            if (curSelected.indexOf('all') > -1 || curSelected.indexOf('ทุกห้องเรียน') > -1) {
+              curSelected = [];
+            }
+
+            var idx = curSelected.indexOf(cName);
+            if (idx > -1) {
+              curSelected.splice(idx, 1);
+            } else {
+              curSelected.push(cName);
+            }
+
+            if (curSelected.length === 0) {
+              curSelected = ['all'];
+            }
+            AppState.projectorSelectedClasses = curSelected;
+            renderProjectorClassSelector();
+          });
+
+          container.appendChild(chip);
+        })(classNames[i]);
+      }
+
+      updateProjectorSelectedClassesSummary();
+    }
+
+    function updateProjectorSelectedClassesSummary() {
+      var summaryText = document.getElementById('session-selected-classes-text');
+      var summaryBadge = document.getElementById('session-selected-classes-count-badge');
+      if (!summaryText || !summaryBadge) return;
+
+      var selectedList = AppState.projectorSelectedClasses || ['all'];
+      var isAll = (selectedList.indexOf('all') > -1 || selectedList.indexOf('ทุกห้องเรียน') > -1 || selectedList.length === 0);
+
+      var students = AppState.students || [];
+      var totalStudentsInSession = 0;
+
+      if (isAll) {
+        summaryText.textContent = 'ทุกห้องเรียน (All Classes)';
+        totalStudentsInSession = students.length;
+        summaryBadge.textContent = 'ทุกห้องเรียน (' + totalStudentsInSession + ' คน)';
+        summaryBadge.className = 'badge-glass badge-present';
+      } else {
+        summaryText.textContent = selectedList.join(', ');
+        for (var s = 0; s < students.length; s++) {
+          if (students[s] && isClassMatch(selectedList.join(','), students[s].className)) {
+            totalStudentsInSession++;
+          }
+        }
+        summaryBadge.textContent = selectedList.length + ' ห้องเรียน (' + totalStudentsInSession + ' คน)';
+        summaryBadge.className = 'badge-glass badge-cyan';
       }
     }
 
@@ -5858,14 +6039,65 @@
         });
       }
 
-      var otpSelect = document.getElementById('session-otp-interval-select');
-      var customOtpBox = document.getElementById('session-custom-otp-box');
-      if (otpSelect && customOtpBox) {
-        otpSelect.addEventListener('change', function() {
-          if (this.value === 'custom') {
-            customOtpBox.style.display = 'flex';
-          } else {
-            customOtpBox.style.display = 'none';
+      // Multi-Classroom Selection Controls
+      var btnSelectAllCls = document.getElementById('btn-session-select-all-classes');
+      if (btnSelectAllCls) {
+        btnSelectAllCls.addEventListener('click', function(e) {
+          e.preventDefault();
+          AppState.projectorSelectedClasses = ['all'];
+          renderProjectorClassSelector();
+          showToast('เลือกทุกห้องเรียนเรียบร้อย', 'success');
+        });
+      }
+
+      var btnClearAllCls = document.getElementById('btn-session-clear-all-classes');
+      if (btnClearAllCls) {
+        btnClearAllCls.addEventListener('click', function(e) {
+          e.preventDefault();
+          AppState.projectorSelectedClasses = [];
+          renderProjectorClassSelector();
+          showToast('ล้างการเลือกห้องเรียนแล้ว กรุณาเลือกห้องที่ต้องการ', 'info');
+        });
+      }
+
+      var btnAddCustomCls = document.getElementById('btn-session-add-custom-class');
+      var inputCustomCls = document.getElementById('input-session-custom-class');
+      if (btnAddCustomCls && inputCustomCls) {
+        function addCustomClassesHandler() {
+          var val = inputCustomCls.value.trim();
+          if (!val) {
+            showToast('กรุณากรอกชื่อห้องเรียนที่ต้องการเพิ่มก่อน', 'error');
+            return;
+          }
+          var parts = val.split(',');
+          var curSelected = (AppState.projectorSelectedClasses || []).slice();
+          if (curSelected.indexOf('all') > -1 || curSelected.indexOf('ทุกห้องเรียน') > -1) {
+            curSelected = [];
+          }
+          var addedCount = 0;
+          for (var p = 0; p < parts.length; p++) {
+            var item = parts[p].trim();
+            if (item && curSelected.indexOf(item) === -1) {
+              curSelected.push(item);
+              addedCount++;
+            }
+          }
+          if (addedCount > 0) {
+            AppState.projectorSelectedClasses = curSelected;
+            renderProjectorClassSelector();
+            showToast('เพิ่มห้องเรียน ' + val + ' เรียบร้อย', 'success');
+          }
+          inputCustomCls.value = '';
+        }
+
+        btnAddCustomCls.addEventListener('click', function(e) {
+          e.preventDefault();
+          addCustomClassesHandler();
+        });
+        inputCustomCls.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            addCustomClassesHandler();
           }
         });
       }
@@ -5951,7 +6183,13 @@
     }
 
     function startNewProjectorSession() {
-      var className = document.getElementById('session-class-select').value;
+      var selectedClasses = AppState.projectorSelectedClasses || ['all'];
+      var className = 'all';
+      if (selectedClasses.indexOf('all') > -1 || selectedClasses.indexOf('ทุกห้องเรียน') > -1 || selectedClasses.length === 0) {
+        className = 'all';
+      } else {
+        className = selectedClasses.join(', ');
+      }
       
       var activityName = AppState.projectorSelectedActivity;
       var sessSelect = document.getElementById('session-activity-select');
@@ -6092,7 +6330,16 @@
         classNameStr = 'ทุกห้องเรียน';
       }
       var classText = document.getElementById('proj-active-class-text');
-      if (classText) classText.textContent = 'ห้อง ' + classNameStr;
+      if (classText) {
+        if (classNameStr.indexOf(',') > -1) {
+          var countRooms = classNameStr.split(',').length;
+          classText.textContent = 'ห้อง ' + classNameStr + ' (' + countRooms + ' ห้อง)';
+        } else if (classNameStr === 'ทุกห้องเรียน') {
+          classText.textContent = 'ห้อง ทุกห้องเรียน (All)';
+        } else {
+          classText.textContent = 'ห้อง ' + classNameStr;
+        }
+      }
 
       var actText = document.getElementById('proj-active-activity-text');
       var curAct = sess.activityName || 'เช็คชื่อมาเรียน';
@@ -6214,24 +6461,30 @@
         var allAtt = getLocalStorageAttendance();
         var students = AppState.students;
         var stdMap = {};
+        var targetStudents = [];
         for (var s = 0; s < students.length; s++) {
           stdMap[students[s].studentId] = students[s];
+          if (isClassMatch(sess.className, students[s].className)) {
+            targetStudents.push(students[s]);
+          }
         }
 
         var list = [];
         for (var i = 0; i < allAtt.length; i++) {
           var item = allAtt[i];
           if (item.date === sess.date && stdMap[item.studentId] && (item.status === 'Present' || item.status === 'มาเรียน')) {
-            list.push({
-              studentId: item.studentId,
-              studentNo: stdMap[item.studentId].studentNo,
-              name: stdMap[item.studentId].name,
-              className: stdMap[item.studentId].className,
-              checkinTime: item.checkinTime || '10:00',
-              distanceMeters: item.distanceMeters || 8,
-              selfiePhoto: item.selfiePhoto || '',
-              checkinType: item.checkinType || 'Self Check-in'
-            });
+            if (isClassMatch(sess.className, stdMap[item.studentId].className)) {
+              list.push({
+                studentId: item.studentId,
+                studentNo: stdMap[item.studentId].studentNo,
+                name: stdMap[item.studentId].name,
+                className: stdMap[item.studentId].className,
+                checkinTime: item.checkinTime || '10:00',
+                distanceMeters: item.distanceMeters || 8,
+                selfiePhoto: item.selfiePhoto || '',
+                checkinType: item.checkinType || 'Self Check-in'
+              });
+            }
           }
         }
         list.reverse();
@@ -6239,7 +6492,7 @@
         updateProjectorLiveUI({
           list: list,
           count: list.length,
-          total: students.length
+          total: targetStudents.length
         });
       }
     }
@@ -7101,9 +7354,22 @@
 
       var classSelect = document.getElementById('self-checkin-class');
       if (classSelect) {
-        // If active session belongs to a specific class, auto select it
+        // If active session belongs to specific class(es), auto select if valid
         if (sess && sess.className && sess.className !== 'all' && sess.className !== 'undefined') {
-          classSelect.value = sess.className;
+          if (sess.className.indexOf(',') > -1) {
+            var rooms = sess.className.split(',');
+            var matchedRoom = '';
+            for (var r = 0; r < rooms.length; r++) {
+              var roomName = rooms[r].trim();
+              if (roomName && classSelect.querySelector('option[value="' + roomName + '"]')) {
+                matchedRoom = roomName;
+                break;
+              }
+            }
+            if (matchedRoom) classSelect.value = matchedRoom;
+          } else {
+            classSelect.value = sess.className;
+          }
         } else if (!classSelect.value && AppState.classes && AppState.classes.length > 0) {
           var fClass = AppState.classes[0];
           var fName = (typeof fClass === 'object' && fClass) ? (fClass.name || fClass.className || '') : String(fClass || '');
