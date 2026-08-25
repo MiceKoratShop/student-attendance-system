@@ -2243,7 +2243,6 @@
                     </div>
                   </div>
 
-                <div class="grid-2">
                   <div class="form-group-glass">
                     <label><i class="fas fa-arrows-to-circle"></i> รัศมี Geofencing ที่อนุญาต (เมตร)</label>
                     <select class="select-glass" id="session-radius-select">
@@ -2254,7 +2253,9 @@
                       <option value="500">500 เมตร (บริเวณสถานศึกษา)</option>
                     </select>
                   </div>
+                </div>
 
+                <div class="grid-2">
                   <div class="form-group-glass">
                     <label><i class="fas fa-rotate"></i> รอบเวลาเปลี่ยน Dynamic OTP / QR Code</label>
                     <div style="display: flex; gap: 8px; flex-wrap: wrap;">
@@ -2280,16 +2281,16 @@
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <div class="form-group-glass" style="margin-bottom: 14px;">
-                  <label><i class="fas fa-location-dot"></i> พิกัด GPS ละติจูด / ลองจิจูด</label>
-                  <div style="display: flex; gap: 8px;">
-                    <input type="text" class="input-glass" id="session-lat-input" placeholder="Latitude" value="13.7563" />
-                    <input type="text" class="input-glass" id="session-lng-input" placeholder="Longitude" value="100.5018" />
-                    <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-get-teacher-gps" title="ดึงพิกัดห้องเรียนปัจจุบัน">
-                      <i class="fas fa-location-crosshairs"></i> ดึงพิกัด
-                    </button>
+                  <div class="form-group-glass">
+                    <label><i class="fas fa-location-dot"></i> พิกัด GPS ละติจูด / ลองจิจูด</label>
+                    <div style="display: flex; gap: 8px;">
+                      <input type="text" class="input-glass" id="session-lat-input" placeholder="Latitude" value="13.7563" />
+                      <input type="text" class="input-glass" id="session-lng-input" placeholder="Longitude" value="100.5018" />
+                      <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-get-teacher-gps" title="ดึงพิกัดห้องเรียนปัจจุบัน">
+                        <i class="fas fa-location-crosshairs"></i> ดึงพิกัด
+                      </button>
+                    </div>
                   </div>
                 </div>
 
@@ -6183,244 +6184,272 @@
     }
 
     function startNewProjectorSession() {
-      var selectedClasses = AppState.projectorSelectedClasses || ['all'];
-      var className = 'all';
-      if (selectedClasses.indexOf('all') > -1 || selectedClasses.indexOf('ทุกห้องเรียน') > -1 || selectedClasses.length === 0) {
-        className = 'all';
-      } else {
-        className = selectedClasses.join(', ');
-      }
-      
-      var activityName = AppState.projectorSelectedActivity;
-      var sessSelect = document.getElementById('session-activity-select');
-      if (sessSelect && sessSelect.value) {
-        activityName = sessSelect.value;
-      }
-      if (!activityName) {
-        var customActInput = document.getElementById('input-session-quick-add');
-        if (customActInput && customActInput.value.trim()) {
-          activityName = customActInput.value.trim();
+      try {
+        var selectedClasses = AppState.projectorSelectedClasses || ['all'];
+        var className = 'all';
+        if (selectedClasses.indexOf('all') > -1 || selectedClasses.indexOf('ทุกห้องเรียน') > -1 || selectedClasses.length === 0) {
+          className = 'all';
         } else {
-          activityName = 'เช็คชื่อมาเรียน';
+          className = selectedClasses.join(', ');
         }
-      }
+        
+        var activityName = AppState.projectorSelectedActivity;
+        var sessSelect = document.getElementById('session-activity-select');
+        if (sessSelect && sessSelect.value) {
+          activityName = sessSelect.value;
+        }
+        if (!activityName) {
+          var customActInput = document.getElementById('input-session-quick-add');
+          if (customActInput && customActInput.value.trim()) {
+            activityName = customActInput.value.trim();
+          } else {
+            activityName = 'เช็คชื่อมาเรียน';
+          }
+        }
 
-      var durationPreset = document.getElementById('session-duration-select').value;
-      var duration = 15;
-      if (durationPreset === 'custom') {
-        var customVal = parseFloat(document.getElementById('session-duration-custom-val').value) || 15;
-        var unit = document.getElementById('session-duration-custom-unit').value;
-        if (unit === 'hours') {
-          duration = Math.round(customVal * 60);
+        var durSelect = document.getElementById('session-duration-select');
+        var durationPreset = durSelect ? durSelect.value : '15';
+        var duration = 15;
+        if (durationPreset === 'custom') {
+          var customValEl = document.getElementById('session-duration-custom-val');
+          var customVal = customValEl ? parseFloat(customValEl.value) : 15;
+          var unitEl = document.getElementById('session-duration-custom-unit');
+          var unit = unitEl ? unitEl.value : 'minutes';
+          if (unit === 'hours') {
+            duration = Math.round((customVal || 1) * 60);
+          } else {
+            duration = Math.round(customVal || 15);
+          }
         } else {
-          duration = Math.round(customVal);
+          duration = parseInt(durationPreset, 10) || 15;
         }
-      } else {
-        duration = parseInt(durationPreset, 10) || 15;
-      }
-      if (duration < 1) duration = 1;
+        if (duration < 1) duration = 1;
 
-      var otpPreset = document.getElementById('session-otp-interval-select').value;
-      var otpInterval = 15;
-      if (otpPreset === 'custom') {
-        var customOtpVal = parseFloat(document.getElementById('session-otp-custom-val').value) || 15;
-        var otpUnit = document.getElementById('session-otp-custom-unit').value;
-        if (otpUnit === 'hours') {
-          otpInterval = Math.round(customOtpVal * 3600);
-        } else if (otpUnit === 'minutes') {
-          otpInterval = Math.round(customOtpVal * 60);
+        var otpSelect = document.getElementById('session-otp-interval-select');
+        var otpPreset = otpSelect ? otpSelect.value : '15';
+        var otpInterval = 15;
+        if (otpPreset === 'custom') {
+          var customOtpValEl = document.getElementById('session-otp-custom-val');
+          var customOtpVal = customOtpValEl ? parseFloat(customOtpValEl.value) : 15;
+          var otpUnitEl = document.getElementById('session-otp-custom-unit');
+          var otpUnit = otpUnitEl ? otpUnitEl.value : 'seconds';
+          if (otpUnit === 'hours') {
+            otpInterval = Math.round((customOtpVal || 1) * 3600);
+          } else if (otpUnit === 'minutes') {
+            otpInterval = Math.round((customOtpVal || 1) * 60);
+          } else {
+            otpInterval = Math.round(customOtpVal || 15);
+          }
         } else {
-          otpInterval = Math.round(customOtpVal);
+          otpInterval = parseInt(otpPreset, 10) || 15;
         }
-      } else {
-        otpInterval = parseInt(otpPreset, 10) || 15;
-      }
-      if (otpInterval < 5) otpInterval = 5;
+        if (otpInterval < 5) otpInterval = 5;
 
-      var lat = parseFloat(document.getElementById('session-lat-input').value) || 0;
-      var lng = parseFloat(document.getElementById('session-lng-input').value) || 0;
-      var radius = parseInt(document.getElementById('session-radius-select').value, 10) || 50;
-      
-      var reqOtp = document.getElementById('check-opt-otp').checked;
-      var reqGps = document.getElementById('check-opt-gps').checked;
-      var reqDevice = document.getElementById('check-opt-device').checked;
-      var reqSelfie = document.getElementById('check-opt-selfie').checked;
+        var latInput = document.getElementById('session-lat-input');
+        var lat = latInput ? (parseFloat(latInput.value) || 0) : 0;
+        var lngInput = document.getElementById('session-lng-input');
+        var lng = lngInput ? (parseFloat(lngInput.value) || 0) : 0;
+        var radSelect = document.getElementById('session-radius-select');
+        var radius = radSelect ? (parseInt(radSelect.value, 10) || 50) : 50;
+        
+        var chkOtp = document.getElementById('check-opt-otp');
+        var reqOtp = chkOtp ? chkOtp.checked : true;
+        var chkGps = document.getElementById('check-opt-gps');
+        var reqGps = chkGps ? chkGps.checked : true;
+        var chkDev = document.getElementById('check-opt-device');
+        var reqDevice = chkDev ? chkDev.checked : true;
+        var chkSlf = document.getElementById('check-opt-selfie');
+        var reqSelfie = chkSlf ? chkSlf.checked : true;
 
-      var config = {
-        className: className,
-        activityName: activityName,
-        durationMinutes: duration,
-        otpIntervalSeconds: otpInterval,
-        lat: lat,
-        lng: lng,
-        radiusMeters: radius,
-        requireOTP: reqOtp,
-        requireGPS: reqGps,
-        requireDeviceBinding: reqDevice,
-        requireSelfie: reqSelfie
-      };
-
-      showLoadingPopup('กำลังเปิดคาบเช็คชื่อ...', 'กำลังสร้างรหัส Dynamic OTP และเริ่มเปิดรับข้อมูล');
-
-      if (isGASAvailable()) {
-        google.script.run
-          .withSuccessHandler(function(res) {
-            hideLoadingPopup();
-            if (res && res.status === 'success' && res.session) {
-              AppState.activeSession = res.session;
-              try {
-                localStorage.setItem('gas_student_active_session', JSON.stringify(res.session));
-              } catch (e) {}
-              showActiveProjectorScreen();
-              showToast('เปิดคาบเช็คชื่อ (' + activityName + ') เรียบร้อยแล้ว!', 'success');
-            } else {
-              showToast((res && res.message) ? res.message : 'ไม่สามารถสร้างคาบเช็คชื่อได้', 'error');
-            }
-          })
-          .withFailureHandler(function(err) {
-            hideLoadingPopup();
-            showToast('เกิดข้อผิดพลาดในการเปิดคาบ: ' + ((err && err.message) ? err.message : String(err)), 'error');
-          })
-          .createCheckinSession(config);
-      } else {
-        hideLoadingPopup();
-        var nowMs = Date.now();
-        var expiresAtMs = nowMs + (duration * 60 * 1000);
-        var sessionId = 'SES' + String(nowMs).slice(-6);
-        var secretSeed = 'SEC_' + Math.random().toString(36).substring(2, 10).toUpperCase();
-
-        var mockSession = {
-          sessionId: sessionId,
-          className: className || 'all',
+        var config = {
+          className: className,
           activityName: activityName,
-          date: getTodayDateString(),
-          createdAt: new Date(nowMs).toISOString(),
-          expiresAt: new Date(expiresAtMs).toISOString(),
+          durationMinutes: duration,
+          otpIntervalSeconds: otpInterval,
           lat: lat,
           lng: lng,
           radiusMeters: radius,
-          secretSeed: secretSeed,
-          otpIntervalSeconds: otpInterval,
-          requireSelfie: reqSelfie,
+          requireOTP: reqOtp,
           requireGPS: reqGps,
           requireDeviceBinding: reqDevice,
-          status: 'Active'
+          requireSelfie: reqSelfie
         };
 
-        AppState.activeSession = mockSession;
-        try {
-          localStorage.setItem('gas_student_active_session', JSON.stringify(mockSession));
-        } catch (e) {}
-        showActiveProjectorScreen();
-        showToast('เปิดคาบเช็คชื่อ (' + activityName + ') เรียบร้อยแล้ว!', 'success');
+        showLoadingPopup('กำลังเปิดคาบเช็คชื่อ...', 'กำลังสร้างรหัส Dynamic OTP และเริ่มเปิดรับข้อมูล');
+
+        if (isGASAvailable()) {
+          google.script.run
+            .withSuccessHandler(function(res) {
+              hideLoadingPopup();
+              if (res && res.status === 'success' && res.session) {
+                AppState.activeSession = res.session;
+                try {
+                  localStorage.setItem('gas_student_active_session', JSON.stringify(res.session));
+                } catch (e) {}
+                showActiveProjectorScreen();
+                showToast('เปิดคาบเช็คชื่อ (' + activityName + ') เรียบร้อยแล้ว!', 'success');
+              } else {
+                showToast((res && res.message) ? res.message : 'ไม่สามารถสร้างคาบเช็คชื่อได้', 'error');
+              }
+            })
+            .withFailureHandler(function(err) {
+              hideLoadingPopup();
+              showToast('เกิดข้อผิดพลาดในการเปิดคาบ: ' + ((err && err.message) ? err.message : String(err)), 'error');
+            })
+            .createCheckinSession(config);
+        } else {
+          hideLoadingPopup();
+          var nowMs = Date.now();
+          var expiresAtMs = nowMs + (duration * 60 * 1000);
+          var sessionId = 'SES' + String(nowMs).slice(-6);
+          var secretSeed = 'SEC_' + Math.random().toString(36).substring(2, 10).toUpperCase();
+
+          var mockSession = {
+            sessionId: sessionId,
+            className: className || 'all',
+            activityName: activityName,
+            date: getTodayDateString(),
+            createdAt: new Date(nowMs).toISOString(),
+            expiresAt: new Date(expiresAtMs).toISOString(),
+            lat: lat,
+            lng: lng,
+            radiusMeters: radius,
+            secretSeed: secretSeed,
+            otpIntervalSeconds: otpInterval,
+            requireSelfie: reqSelfie,
+            requireGPS: reqGps,
+            requireDeviceBinding: reqDevice,
+            status: 'Active'
+          };
+
+          AppState.activeSession = mockSession;
+          try {
+            localStorage.setItem('gas_student_active_session', JSON.stringify(mockSession));
+          } catch (e) {}
+          showActiveProjectorScreen();
+          showToast('เปิดคาบเช็คชื่อ (' + activityName + ') เรียบร้อยแล้ว!', 'success');
+        }
+      } catch (err) {
+        hideLoadingPopup();
+        console.error('Error starting session:', err);
+        showToast('เกิดข้อผิดพลาดในการเปิดคาบ: ' + (err.message || String(err)), 'error');
       }
     }
 
     function showActiveProjectorScreen() {
-      var setupCard = document.getElementById('projector-setup-card');
-      var activePanel = document.getElementById('projector-active-panel');
-      if (setupCard) setupCard.style.display = 'none';
-      if (activePanel) activePanel.style.display = 'block';
+      try {
+        var setupCard = document.getElementById('projector-setup-card');
+        var activePanel = document.getElementById('projector-active-panel');
+        if (setupCard) setupCard.style.display = 'none';
+        if (activePanel) activePanel.style.display = 'block';
 
-      var sess = AppState.activeSession;
-      if (!sess) return;
+        var sess = AppState.activeSession;
+        if (!sess) return;
 
-      var classNameStr = sess.className;
-      if (!classNameStr || classNameStr === 'undefined' || classNameStr === 'all') {
-        classNameStr = 'ทุกห้องเรียน';
-      }
-      var classText = document.getElementById('proj-active-class-text');
-      if (classText) {
-        if (classNameStr.indexOf(',') > -1) {
-          var countRooms = classNameStr.split(',').length;
-          classText.textContent = 'ห้อง ' + classNameStr + ' (' + countRooms + ' ห้อง)';
-        } else if (classNameStr === 'ทุกห้องเรียน') {
-          classText.textContent = 'ห้อง ทุกห้องเรียน (All)';
-        } else {
-          classText.textContent = 'ห้อง ' + classNameStr;
+        var classNameStr = sess.className;
+        if (!classNameStr || classNameStr === 'undefined' || classNameStr === 'all') {
+          classNameStr = 'ทุกห้องเรียน';
         }
-      }
-
-      var actText = document.getElementById('proj-active-activity-text');
-      var curAct = sess.activityName || 'เช็คชื่อมาเรียน';
-      if (actText) actText.textContent = curAct;
-
-      if (AppState.sessionTimer) clearInterval(AppState.sessionTimer);
-      if (AppState.totpTimer) clearInterval(AppState.totpTimer);
-      if (AppState.liveFeedTimer) clearInterval(AppState.liveFeedTimer);
-
-      AppState.sessionTimer = setInterval(function() {
-        var diffMs = new Date(sess.expiresAt).getTime() - Date.now();
-        if (diffMs <= 0) {
-          clearInterval(AppState.sessionTimer);
-          clearInterval(AppState.totpTimer);
-          clearInterval(AppState.liveFeedTimer);
-          document.getElementById('proj-time-remaining').textContent = 'หมดเวลา';
-          showToast('คาบเช็คชื่อนี้หมดเวลาแล้ว', 'error');
-          endProjectorSession();
-          return;
+        var classText = document.getElementById('proj-active-class-text');
+        if (classText) {
+          if (classNameStr.indexOf(',') > -1) {
+            var countRooms = classNameStr.split(',').length;
+            classText.textContent = 'ห้อง ' + classNameStr + ' (' + countRooms + ' ห้อง)';
+          } else if (classNameStr === 'ทุกห้องเรียน') {
+            classText.textContent = 'ห้อง ทุกห้องเรียน (All)';
+          } else {
+            classText.textContent = 'ห้อง ' + classNameStr;
+          }
         }
-        var totalSec = Math.floor(diffMs / 1000);
-        var hours = Math.floor(totalSec / 3600);
-        var mins = Math.floor((totalSec % 3600) / 60);
-        var secs = totalSec % 60;
-        var timeStr = '';
-        if (hours > 0) {
-          timeStr = (hours < 10 ? '0' + hours : hours) + ':' + (mins < 10 ? '0' + mins : mins) + ':' + (secs < 10 ? '0' + secs : secs);
-        } else {
-          timeStr = (mins < 10 ? '0' + mins : mins) + ':' + (secs < 10 ? '0' + secs : secs);
-        }
-        document.getElementById('proj-time-remaining').textContent = timeStr;
-      }, 1000);
 
-      updateProjectorTOTPDisplay();
-      AppState.totpTimer = setInterval(function() {
+        var actText = document.getElementById('proj-active-activity-text');
+        var curAct = sess.activityName || 'เช็คชื่อมาเรียน';
+        if (actText) actText.textContent = curAct;
+
+        if (AppState.sessionTimer) clearInterval(AppState.sessionTimer);
+        if (AppState.totpTimer) clearInterval(AppState.totpTimer);
+        if (AppState.liveFeedTimer) clearInterval(AppState.liveFeedTimer);
+
+        AppState.sessionTimer = setInterval(function() {
+          var diffMs = new Date(sess.expiresAt).getTime() - Date.now();
+          var timeRemainingEl = document.getElementById('proj-time-remaining');
+          if (diffMs <= 0) {
+            clearInterval(AppState.sessionTimer);
+            clearInterval(AppState.totpTimer);
+            clearInterval(AppState.liveFeedTimer);
+            if (timeRemainingEl) timeRemainingEl.textContent = 'หมดเวลา';
+            showToast('คาบเช็คชื่อนี้หมดเวลาแล้ว', 'error');
+            endProjectorSession();
+            return;
+          }
+          var totalSec = Math.floor(diffMs / 1000);
+          var hours = Math.floor(totalSec / 3600);
+          var mins = Math.floor((totalSec % 3600) / 60);
+          var secs = totalSec % 60;
+          var timeStr = '';
+          if (hours > 0) {
+            timeStr = (hours < 10 ? '0' + hours : hours) + ':' + (mins < 10 ? '0' + mins : mins) + ':' + (secs < 10 ? '0' + secs : secs);
+          } else {
+            timeStr = (mins < 10 ? '0' + mins : mins) + ':' + (secs < 10 ? '0' + secs : secs);
+          }
+          if (timeRemainingEl) timeRemainingEl.textContent = timeStr;
+        }, 1000);
+
         updateProjectorTOTPDisplay();
-      }, 1000);
+        AppState.totpTimer = setInterval(function() {
+          updateProjectorTOTPDisplay();
+        }, 1000);
 
-      fetchProjectorLiveFeed();
-      AppState.liveFeedTimer = setInterval(function() {
         fetchProjectorLiveFeed();
-      }, 3500);
+        AppState.liveFeedTimer = setInterval(function() {
+          fetchProjectorLiveFeed();
+        }, 3500);
+      } catch (err) {
+        console.error('Error in showActiveProjectorScreen:', err);
+      }
     }
 
     function updateProjectorTOTPDisplay() {
-      var sess = AppState.activeSession;
-      if (!sess) return;
+      try {
+        var sess = AppState.activeSession;
+        if (!sess) return;
 
-      var intervalSeconds = parseInt(sess.otpIntervalSeconds, 10) || 15;
-      if (intervalSeconds < 5) intervalSeconds = 15;
+        var intervalSeconds = parseInt(sess.otpIntervalSeconds, 10) || 15;
+        if (intervalSeconds < 5) intervalSeconds = 15;
 
-      var nowMs = Date.now();
-      var secLeft = intervalSeconds - (Math.floor(nowMs / 1000) % intervalSeconds);
-      
-      var secSpan = document.getElementById('projector-sec-left');
-      if (secSpan) {
-        if (intervalSeconds >= 3600) {
-          var hrs = Math.floor(secLeft / 3600);
-          var m = Math.floor((secLeft % 3600) / 60);
-          var s = secLeft % 60;
-          secSpan.textContent = (hrs > 0 ? hrs + ' ชม. ' : '') + m + ' นาที ' + s + ' วินาที';
-        } else if (intervalSeconds >= 60) {
-          var m = Math.floor(secLeft / 60);
-          var s = secLeft % 60;
-          secSpan.textContent = (m > 0 ? m + ' นาที ' : '') + s + ' วินาที';
-        } else {
-          secSpan.textContent = secLeft + ' วินาที';
+        var nowMs = Date.now();
+        var secLeft = intervalSeconds - (Math.floor(nowMs / 1000) % intervalSeconds);
+        
+        var secSpan = document.getElementById('projector-sec-left');
+        if (secSpan) {
+          if (intervalSeconds >= 3600) {
+            var hrs = Math.floor(secLeft / 3600);
+            var m = Math.floor((secLeft % 3600) / 60);
+            var s = secLeft % 60;
+            secSpan.textContent = (hrs > 0 ? hrs + ' ชม. ' : '') + m + ' นาที ' + s + ' วินาที';
+          } else if (intervalSeconds >= 60) {
+            var m = Math.floor(secLeft / 60);
+            var s = secLeft % 60;
+            secSpan.textContent = (m > 0 ? m + ' นาที ' : '') + s + ' วินาที';
+          } else {
+            secSpan.textContent = secLeft + ' วินาที';
+          }
         }
-      }
 
-      var bar = document.getElementById('projector-countdown-bar');
-      if (bar) {
-        var pct = ((secLeft) / intervalSeconds) * 100;
-        bar.style.width = pct + '%';
-      }
+        var bar = document.getElementById('projector-countdown-bar');
+        if (bar) {
+          var pct = ((secLeft) / intervalSeconds) * 100;
+          bar.style.width = pct + '%';
+        }
 
-      var currentOtp = generateClientTOTP(sess.secretSeed, intervalSeconds, nowMs);
-      var otpDisplay = document.getElementById('projector-otp-text');
-      if (otpDisplay && otpDisplay.textContent !== currentOtp) {
-        otpDisplay.textContent = currentOtp;
-        renderDynamicQRCode(currentOtp);
+        var currentOtp = generateClientTOTP(sess.secretSeed, intervalSeconds, nowMs);
+        var otpDisplay = document.getElementById('projector-otp-text');
+        if (otpDisplay && otpDisplay.textContent !== currentOtp) {
+          otpDisplay.textContent = currentOtp;
+          renderDynamicQRCode(currentOtp);
+        }
+      } catch (err) {
+        console.error('Error in updateProjectorTOTPDisplay:', err);
       }
     }
 
@@ -6432,6 +6461,7 @@
       var sess = AppState.activeSession;
       var qrPayload = window.location.href.split('?')[0].split('#')[0] + '#checkin=' + (sess ? sess.sessionId : '') + '&otp=' + otpCode;
 
+      var qrSuccess = false;
       try {
         if (typeof QRCode !== 'undefined') {
           new QRCode(target, {
@@ -6439,11 +6469,27 @@
             width: 220,
             height: 220,
             colorDark : "#0A0D14",
-            colorLight : "#FFFFFF",
-            correctLevel : QRCode.CorrectLevel.M
+            colorLight : "#FFFFFF"
           });
+          qrSuccess = true;
         }
-      } catch (e) {}
+      } catch (e) {
+        qrSuccess = false;
+      }
+
+      if (!qrSuccess) {
+        try {
+          var qrImg = document.createElement('img');
+          qrImg.style.width = '220px';
+          qrImg.style.height = '220px';
+          qrImg.style.borderRadius = '8px';
+          qrImg.style.background = '#FFF';
+          qrImg.style.padding = '8px';
+          qrImg.alt = 'QR Code';
+          qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + encodeURIComponent(qrPayload);
+          target.appendChild(qrImg);
+        } catch (err) {}
+      }
     }
 
     function fetchProjectorLiveFeed() {
