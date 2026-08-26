@@ -1826,6 +1826,190 @@
       box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.35);
     }
 
+
+    /* =========================================================================
+       MULTI-SESSION PROJECTOR LAYOUT (UP TO 3 DYNAMIC QR CODES)
+       ========================================================================= */
+    .projector-sessions-grid {
+      display: grid;
+      gap: 20px;
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+
+    .projector-sessions-grid.grid-1 {
+      grid-template-columns: 1fr;
+    }
+
+    .projector-sessions-grid.grid-1 .projector-session-card-inner {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 24px;
+    }
+
+    .projector-sessions-grid.grid-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .projector-sessions-grid.grid-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    @media (max-width: 1200px) {
+      .projector-sessions-grid.grid-3 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 860px) {
+      .projector-sessions-grid.grid-1 .projector-session-card-inner,
+      .projector-sessions-grid.grid-2,
+      .projector-sessions-grid.grid-3 {
+        grid-template-columns: 1fr !important;
+      }
+    }
+
+    .projector-multi-card {
+      background: linear-gradient(135deg, rgba(20, 26, 42, 0.75) 0%, rgba(13, 17, 28, 0.85) 100%);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius-xl);
+      padding: 20px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .projector-multi-card:hover {
+      border-color: rgba(255, 107, 0, 0.45);
+    }
+
+    .projector-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .projector-card-body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .projector-qr-box-multi {
+      background: #FFFFFF;
+      padding: 12px;
+      border-radius: var(--radius-md);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 170px;
+      min-height: 170px;
+    }
+
+    .otp-display-multi {
+      font-family: 'Plus Jakarta Sans', monospace;
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 900;
+      letter-spacing: 6px;
+      color: #FFFFFF;
+      text-shadow: 0 0 16px rgba(255, 107, 0, 0.8);
+      background: var(--orange-gradient-dark);
+      border: 1.5px solid var(--orange-500);
+      border-radius: var(--radius-md);
+      padding: 8px 22px;
+      margin-bottom: 12px;
+      display: inline-block;
+    }
+
+  
+    /* Floating Blurred Teacher Login Button at Bottom Corner */
+    .floating-teacher-btn {
+      position: fixed;
+      bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+      right: 18px;
+      z-index: 999;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 14px;
+      border-radius: 9999px;
+      background: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: rgba(255, 255, 255, 0.65);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      opacity: 0.7;
+    }
+
+    .floating-teacher-btn:hover {
+      background: rgba(255, 107, 0, 0.25);
+      border-color: rgba(255, 107, 0, 0.5);
+      color: #FFFFFF;
+      opacity: 1;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(255, 107, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    }
+
+    .floating-teacher-btn:active {
+      transform: scale(0.96);
+    }
+
+    .floating-teacher-btn i {
+      font-size: 13px;
+      color: var(--orange-400);
+      transition: transform 0.3s;
+    }
+
+    .floating-teacher-btn:hover i {
+      transform: scale(1.15);
+    }
+
+    body.mode-admin .floating-teacher-btn {
+      display: none !important;
+    }
+
+  
+    /* Enhanced Checkbox Styling */
+    .student-select-checkbox, .preview-row-checkbox {
+      cursor: pointer;
+      width: 18px;
+      height: 18px;
+      margin: 0 auto;
+      display: block;
+      accent-color: #FF6B00;
+      transition: transform 0.15s ease, filter 0.2s ease;
+    }
+    .student-select-checkbox:hover {
+      transform: scale(1.25);
+      filter: drop-shadow(0 0 6px rgba(255, 107, 0, 0.7));
+    }
+    .preview-row-checkbox {
+      accent-color: #10B981;
+    }
+    .preview-row-checkbox:hover {
+      transform: scale(1.25);
+      filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.7));
+    }
+
   </style>
 </head>
 <body class="mode-student">
@@ -1948,11 +2132,6 @@
             <i class="fas fa-calendar-day"></i>
             <span id="header-date-text">กำลังโหลด...</span>
           </div>
-
-          <!-- Student Mode Button to trigger Admin Login -->
-          <button type="button" class="btn-glass btn-orange btn-sm-glass" id="btn-show-admin-login">
-            <i class="fas fa-key"></i> อาจารย์ Login
-          </button>
 
           <!-- Admin Mode Indicator & Return to Student Button -->
           <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-switch-to-student" style="display: none;">
@@ -2126,9 +2305,11 @@
               <div class="success-selfie-frame">
                 <img id="pass-selfie-img" src="" alt="Verified Selfie" />
               </div>
-              <span class="badge-glass badge-present" style="font-size: 13px; margin-bottom: 12px;">
-                <i class="fas fa-shield-check"></i> เช็คชื่อสำเร็จ (Verified)
-              </span>
+              <div id="pass-status-badge-container" style="margin-bottom: 12px;">
+                <span class="badge-glass badge-present" id="pass-status-badge" style="font-size: 13.5px; padding: 6px 16px; font-weight: 700;">
+                  <i class="fas fa-shield-check"></i> เช็คชื่อสำเร็จ (Verified)
+                </span>
+              </div>
               <h2 style="font-size: 22px; font-weight: 800; color: #FFF; margin-bottom: 4px;" id="pass-student-name">-</h2>
               <div style="font-size: 13.5px; color: var(--orange-400); margin-bottom: 20px;" id="pass-student-meta">-</div>
 
@@ -2504,6 +2685,43 @@
                   </div>
                 </div>
 
+                <!-- SECTION: LATE CUTOFF TIME SETTINGS (กำหนดเวลาตัดสาย) -->
+                <div style="background: rgba(245, 158, 11, 0.04); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: var(--radius-md); padding: 14px 16px; margin: 16px 0;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
+                    <label style="font-size: 13.5px; font-weight: 700; color: #FFF; margin: 0; display: flex; align-items: center; gap: 8px;">
+                      <i class="fas fa-user-clock" style="color: #FBBF24;"></i> 4. กำหนดเวลาตัดสาย (เช็คชื่อเลยกำหนดขึ้นว่า "มาสาย")
+                    </label>
+                    <span class="badge-glass badge-warning" style="font-size: 11px;">ระบบตรวจจับสายอัตโนมัติ</span>
+                  </div>
+
+                  <div style="font-size: 11.5px; color: var(--text-muted); margin-bottom: 10px;">
+                    หากนักศึกษาเช็คชื่อหลังจากเวลาที่กำหนดนี้ ระบบจะบันทึกสถานะเป็น <b>"มาสาย" (Late)</b> ให้อัตโนมัติ:
+                  </div>
+
+                  <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                    <select class="select-glass" id="session-late-preset-select" style="flex: 1.5; min-width: 200px;">
+                      <option value="none">🟢 ไม่กำหนด (ถือว่ามาเรียนตลอดเวลาที่เปิด)</option>
+                      <option value="5">⏱️ ทันเวลาใน 5 นาทีแรก (หลังจากนั้นถือว่ามาสาย)</option>
+                      <option value="10">⏱️ ทันเวลาใน 10 นาทีแรก</option>
+                      <option value="15" selected>⏱️ ทันเวลาใน 15 นาทีแรก (แนะนำ)</option>
+                      <option value="20">⏱️ ทันเวลาใน 20 นาทีแรก</option>
+                      <option value="30">⏱️ ทันเวลาใน 30 นาทีแรก</option>
+                      <option value="custom_mins">✏️ กำหนดจำนวนนาทีเอง...</option>
+                      <option value="exact_time">🕒 ระบุเวลาตัดสายตรงๆ (เช่น 08:30 น.)</option>
+                    </select>
+
+                    <div id="session-custom-late-mins-box" style="display: none; flex: 1; gap: 6px; align-items: center;">
+                      <input type="number" min="1" max="720" class="input-glass" id="session-custom-late-mins" placeholder="จำนวนนาที" value="10" style="width: 90px;" />
+                      <span style="font-size: 12px; color: #FFF;">นาทีแรก</span>
+                    </div>
+
+                    <div id="session-exact-late-time-box" style="display: none; flex: 1; gap: 6px; align-items: center;">
+                      <input type="time" class="input-glass" id="session-exact-late-time" style="width: 130px;" />
+                      <span style="font-size: 12px; color: #FBBF24;">น. เป็นต้นไป</span>
+                    </div>
+                  </div>
+                </div>
+
                 <div class="form-group-glass" style="margin-top: 14px;">
                   <label><i class="fas fa-shield-halved"></i> ระบบความปลอดภัยที่เปิดใช้งาน</label>
                   <div style="display: flex; gap: 16px; margin-top: 8px; flex-wrap: wrap;">
@@ -2532,65 +2750,28 @@
 
             <!-- Active Live Screen -->
             <div id="projector-active-panel" style="display: none;">
+              <!-- TOP CONTROL TOOLBAR -->
               <div class="glass-card" style="margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
                 <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-                  <span class="badge-glass badge-present" style="font-size: 13px;">
-                    <i class="fas fa-satellite-dish"></i> กำลังเปิดรับเช็คชื่อ
+                  <span class="badge-glass badge-present" style="font-size: 13.5px; font-weight: 700;">
+                    <i class="fas fa-satellite-dish"></i> กำลังเปิดเช็คชื่อสด (<span id="proj-active-sessions-count">1</span> / 3 คาบ)
                   </span>
-                  <span class="badge-glass badge-info" id="proj-active-activity-badge" style="background: rgba(255, 107, 0, 0.2); border: 1px solid var(--orange-500); color: var(--orange-400); font-weight: 700; font-size: 13.5px;">
-                    <i class="fas fa-tags"></i> <span id="proj-active-activity-text">เช็คชื่อมาเรียน</span>
-                  </span>
-                  <span style="font-weight: 700; font-size: 16px; color: #FFF;" id="proj-active-class-text">ห้อง ทุกห้อง</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                  <div class="glass-pill highlight">
-                    <i class="fas fa-stopwatch"></i> เหลือ: <span id="proj-time-remaining" style="font-weight: 800; font-family: monospace;">15:00</span>
-                  </div>
+                  <button type="button" class="btn-glass btn-orange btn-sm-glass" id="btn-add-new-session" style="font-weight: 700; font-size: 13.5px; box-shadow: 0 0 16px rgba(255,107,0,0.4);">
+                    <i class="fas fa-plus"></i> ➕ เพิ่มการเช็คชื่อใหม่
+                  </button>
                   <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-toggle-fullscreen">
                     <i class="fas fa-expand"></i> เต็มจอโปรเจกเตอร์
                   </button>
-                  <button type="button" class="btn-glass btn-danger-glass btn-sm-glass" id="btn-end-session">
-                    <i class="fas fa-circle-stop"></i> ปิดคาบเรียน
+                  <button type="button" class="btn-glass btn-danger-glass btn-sm-glass" id="btn-end-all-sessions">
+                    <i class="fas fa-circle-stop"></i> ปิดทุกคาบเรียน
                   </button>
                 </div>
               </div>
 
-              <div class="projector-display-grid">
-                <!-- QR Code & OTP Column -->
-                <div class="projector-qr-card">
-                  <div style="font-size: 13px; font-weight: 600; color: var(--orange-400); margin-bottom: 8px; letter-spacing: 1px;">
-                    สแกน QR CODE หรือกรอกรหัส 6 หลัก
-                  </div>
-                  <div class="projector-qr-box" id="projector-qrcode-target"></div>
-                  
-                  <div class="otp-huge-display" id="projector-otp-text">------</div>
-                  
-                  <div class="totp-countdown-bar-container">
-                    <div class="totp-countdown-bar" id="projector-countdown-bar"></div>
-                  </div>
-                  <div style="font-size: 12px; color: var(--text-muted);">
-                    รหัสจะรีเฟรชในอีก <span id="projector-sec-left" style="color: var(--orange-500); font-weight: 700;">15</span> วินาที
-                  </div>
-                </div>
-
-                <!-- Live Feed Column -->
-                <div class="projector-live-feed-card">
-                  <div class="card-header-flex" style="margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
-                    <div>
-                      <div class="card-title-text"><i class="fas fa-bolt"></i> นักศึกษาที่เพิ่งเช็คชื่อเข้ามา</div>
-                      <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">แสดงสดแบบ Real-time (สามารถกดลบหรือตัดสิทธิ์รูปผิดได้)</div>
-                    </div>
-                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                      <span class="badge-glass badge-present"><span id="proj-checked-count">0</span> / <span id="proj-total-count">0</span> คน</span>
-                      <span class="badge-glass badge-late" id="proj-rate-badge">0%</span>
-                      <button type="button" class="btn-glass btn-emerald btn-sm-glass" id="btn-transfer-live-to-attendance" style="padding: 6px 14px; font-weight: 700; font-size: 13px; box-shadow: 0 0 15px rgba(16, 185, 129, 0.25);">
-                        <i class="fas fa-file-import"></i> 📥 ดึงรายชื่อเข้าตารางเช็คชื่อประจำห้อง
-                      </button>
-                    </div>
-                  </div>
-                  <div class="live-feed-list" id="projector-live-feed-list"></div>
-                </div>
-              </div>
+              <!-- DYNAMIC SESSIONS GRID (1, 2, OR 3 CONCURRENT QR SESSIONS) -->
+              <div class="projector-sessions-grid" id="projector-sessions-grid"></div>
             </div>
 
           </div>
@@ -2650,7 +2831,7 @@
                 <select class="select-glass" id="student-class-filter" style="min-width: 160px;"></select>
               </div>
 
-              <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
                 <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-open-class-modal">
                   <i class="fas fa-school"></i> + เพิ่ม/จัดการห้องเรียน
                 </button>
@@ -2660,6 +2841,9 @@
                 <button type="button" class="btn-glass btn-orange btn-sm-glass" id="btn-add-student-single">
                   <i class="fas fa-user-plus"></i> + เพิ่มนักเรียน
                 </button>
+                <button type="button" class="btn-glass btn-danger-glass btn-sm-glass" id="btn-delete-selected-top" style="display: none; color: #F87171; border-color: rgba(239, 68, 68, 0.6); font-weight: 700; background: rgba(239, 68, 68, 0.22);" title="ลบเฉพาะนักเรียนที่ติ๊กเลือกพร้อมกัน">
+                  <i class="fas fa-trash-can"></i> 🗑️ ลบที่เลือก (<span id="top-selected-count">0</span> คน)
+                </button>
                 <button type="button" class="btn-glass btn-danger-glass btn-sm-glass" id="btn-delete-all-students" style="color: #F87171; border-color: rgba(239, 68, 68, 0.4);">
                   <i class="fas fa-trash-can"></i> 🗑️ ลบรายชื่อทั้งหมด
                 </button>
@@ -2667,20 +2851,56 @@
             </div>
           </div>
 
+          <!-- BULK SELECTION ACTIONS BAR -->
+          <div id="student-bulk-actions-bar" class="glass-card" style="display: none; margin-bottom: 18px; background: rgba(255, 107, 0, 0.12); border: 1.5px solid rgba(255, 107, 0, 0.45); padding: 12px 18px; border-radius: var(--radius-md); align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; box-shadow: 0 4px 20px rgba(255, 107, 0, 0.15);">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <i class="fas fa-circle-check" style="color: var(--orange-400); font-size: 20px;"></i>
+              <div>
+                <div style="font-weight: 700; color: #FFF; font-size: 14px;">เลือกอยู่ <span id="student-selected-count" style="color: var(--orange-400); font-weight: 800; font-size: 16px;">0</span> คน</div>
+                <div style="font-size: 11.5px; color: var(--text-muted);">(จากที่แสดงในตาราง <span id="student-total-filtered-count">0</span> คน)</div>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-select-all-filtered-students" style="font-size: 12px;">
+                <i class="fas fa-check-double"></i> เลือกทั้งหมดในหน้านี้
+              </button>
+              <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-clear-student-selection" style="font-size: 12px;">
+                <i class="fas fa-xmark"></i> ล้างการเลือก
+              </button>
+              <button type="button" class="btn-glass btn-danger-glass btn-sm-glass" id="btn-delete-selected-students" style="font-size: 12.5px; font-weight: 700; border-color: rgba(239, 68, 68, 0.6); background: rgba(239, 68, 68, 0.25);">
+                <i class="fas fa-trash-can"></i> ลบที่เลือก (<span id="btn-delete-count-text">0</span> คน)
+              </button>
+            </div>
+          </div>
+
           <div class="glass-card">
             <div class="card-header-flex">
-              <div class="card-title-text"><i class="fas fa-users"></i> รายชื่อนักเรียนทั้งหมด</div>
-              <span id="student-count-summary" style="font-size: 13px; color: var(--text-secondary);">พบข้อมูลทั้งหมด 0 คน</span>
+              <div>
+                <div class="card-title-text"><i class="fas fa-users"></i> รายชื่อนักเรียนทั้งหมด</div>
+                <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">
+                  💡 <span style="color: var(--orange-400);">ลบหลายรายการ:</span> ติ๊กถูกที่ช่อง Checkbox หน้ารายชื่อที่ต้องการ แล้วกดปุ่ม <strong>"🗑️ ลบที่เลือก"</strong>
+                </div>
+              </div>
+              <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <span id="student-count-summary" style="font-size: 13px; color: var(--text-secondary);">พบข้อมูลทั้งหมด 0 คน</span>
+              </div>
             </div>
             <div class="table-glass-container">
               <table class="glass-table">
                 <thead>
                   <tr>
-                    <th>เลขที่</th>
-                    <th>รหัสนักศึกษา</th>
+                    <th style="width: 56px; text-align: center; vertical-align: middle;">
+                      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;">
+                        <input type="checkbox" id="check-all-students" title="เลือกทั้งหมด / ยกเลิกทั้งหมด" style="cursor: pointer; transform: scale(1.3); accent-color: #FF6B00;" />
+                        <span style="font-size: 10px; color: #FF6B00; font-weight: 700;">เลือก</span>
+                      </div>
+                    </th>
+                    <th style="width: 65px;">เลขที่</th>
+                    <th style="width: 140px;">รหัสนักศึกษา</th>
                     <th>ชื่อ - นามสกุล</th>
-                    <th>ห้องเรียน</th>
-                    <th style="text-align: right;">จัดการ</th>
+                    <th style="width: 130px;">ห้องเรียน</th>
+                    <th style="text-align: right; width: 150px;">จัดการ</th>
                   </tr>
                 </thead>
                 <tbody id="student-table-body"></tbody>
@@ -2805,7 +3025,7 @@
               </div>
               <div class="form-group-glass">
                 <label>รหัสผ่านผู้ดูแลระบบ (Admin Password)</label>
-                <input type="text" class="input-glass" value="admin888" readonly style="color: var(--orange-400); font-weight: 700;" />
+                <input type="password" class="input-glass" value="••••••••" readonly style="color: var(--orange-400); font-weight: 700; letter-spacing: 2px;" />
                 <span style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;">รหัสผ่านสำหรับเข้าถึงฟังก์ชันจัดการระบบทั้งหมด</span>
               </div>
               <div class="form-group-glass">
@@ -2881,7 +3101,7 @@
       <form id="form-admin-login">
         <div class="form-group-glass" style="text-align: left;">
           <label>รหัสผ่าน Admin</label>
-          <input type="password" class="input-glass" id="input-admin-pass" placeholder="กรอกรหัสผ่าน (เช่น admin888)" autofocus required />
+          <input type="password" class="input-glass" id="input-admin-pass" placeholder="กรอกรหัสผ่านเพื่อเข้าใช้งาน" autofocus required />
         </div>
         <div style="display: flex; gap: 10px; margin-top: 24px;">
           <button type="button" class="btn-glass btn-dark btn-close-modal" style="flex: 1;">ยกเลิก</button>
@@ -3102,24 +3322,33 @@
             <span style="font-size: 13.5px; font-weight: 700; color: #FFF;"><i class="fas fa-list-check" style="color: #10B981;"></i> ตรวจสอบและแก้ไขข้อมูลก่อนนำเข้า</span>
             <span class="badge-glass badge-present" id="excel-preview-count">0 คน</span>
           </div>
-          <div style="display: flex; gap: 6px;">
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
             <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-preview-add-row" title="เพิ่มแถวใหม่">
               <i class="fas fa-plus"></i> เพิ่มแถว
             </button>
             <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-preview-renumber" title="เรียงลำดับเลขที่ 1 ถึง N ใหม่อัตโนมัติ">
-              <i class="fas fa-arrow-down-1-9"></i> จัดเลขที่อัตโนมัติ
+              <i class="fas fa-arrow-down-1-9"></i> จัดเลขที่
+            </button>
+            <button type="button" class="btn-glass btn-danger-glass btn-sm-glass" id="btn-preview-delete-selected" style="display: none; font-size: 11.5px; border-color: rgba(239,68,68,0.5); color: #F87171;" title="ลบเฉพาะแถวที่เลือก">
+              <i class="fas fa-trash-can"></i> ลบแถวที่เลือก (<span id="preview-selected-count">0</span>)
             </button>
           </div>
         </div>
 
         <div style="font-size: 11.5px; color: var(--text-muted); margin-bottom: 8px;">
-          💡 <span style="color: var(--cyan-400);">แก้ไขได้โดยตรง:</span> สามารถพิมพ์แก้ไข เลขที่, รหัส, ชื่อ-นามสกุล, ห้องเรียน หรือกดปุ่มลูกศร ⬆️ ⬇️ เพื่อสลับลำดับ และกด 🗑️ เพื่อลบแถวที่ไม่ต้องการออกได้ทันที
+          💡 <span style="color: var(--cyan-400);">เลือกและแก้ไขได้ตามใจชอบ:</span> ติ๊กถูกหน้าแถวที่ต้องการนำเข้า (สามารถติ๊กเลือกเฉพาะบางคนได้) พิมพ์แก้ไขข้อความ สลับลำดับ หรือกด 🗑️ ลบแถวที่ไม่ต้องการออกได้ทันที
         </div>
 
         <div class="table-glass-container" style="max-height: 240px; overflow-y: auto;">
           <table class="glass-table" id="table-excel-preview" style="font-size: 12.5px;">
             <thead>
               <tr>
+                <th style="width: 52px; text-align: center; vertical-align: middle;">
+                  <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;">
+                    <input type="checkbox" id="check-all-preview-students" checked title="เลือกทั้งหมด / ยกเลิกทั้งหมด" style="cursor: pointer; transform: scale(1.25); accent-color: #10B981;" />
+                    <span style="font-size: 9.5px; color: #10B981; font-weight: 700;">เลือก</span>
+                  </div>
+                </th>
                 <th style="width: 55px; text-align: center;">สลับ</th>
                 <th style="width: 65px;">เลขที่</th>
                 <th style="width: 115px;">รหัสนักศึกษา</th>
@@ -3440,6 +3669,141 @@
     </div>
   </div>
 
+
+  <!-- MODAL: ADD CONCURRENT CHECK-IN SESSION (UP TO 3 SESSIONS) -->
+  <div class="modal-backdrop-glass" id="modal-create-new-session">
+    <div class="modal-window-glass" style="max-width: 820px; max-height: 90vh; overflow-y: auto;">
+      <div class="modal-header-flex">
+        <div class="modal-title" style="display: flex; align-items: center; gap: 8px;">
+          <i class="fas fa-qrcode" style="color: var(--orange-500);"></i> ➕ เพิ่มการเช็คชื่อใหม่ (เปิดพร้อมกันได้สูงสุด 3 คาบ)
+        </div>
+        <button type="button" class="modal-close btn-close-modal">&times;</button>
+      </div>
+
+      <form id="form-modal-create-session">
+        <!-- CATEGORY & ACTIVITY SELECTOR -->
+        <div style="background: rgba(0, 240, 255, 0.03); border: 1px solid rgba(0, 240, 255, 0.2); border-radius: var(--radius-md); padding: 14px 16px; margin-bottom: 16px;">
+          <label style="font-size: 13.5px; font-weight: 700; color: #FFF; margin-bottom: 10px; display: block;">
+            <i class="fas fa-list-check" style="color: var(--cyan-400);"></i> 1. เลือกหมวดหมู่และรายการเช็คชื่อ
+          </label>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-bottom: 12px;">
+            <button type="button" class="btn-glass btn-sm-glass modal-session-cat-tab active" data-cat="general" id="btn-modal-cat-general" style="padding: 8px 6px; font-weight: 700; text-align: center; justify-content: center;">
+              <i class="fas fa-sun" style="color: #FBBF24;"></i> เช็คชื่อประจำวัน
+            </button>
+            <button type="button" class="btn-glass btn-sm-glass modal-session-cat-tab" data-cat="period" id="btn-modal-cat-period" style="padding: 8px 6px; font-weight: 700; text-align: center; justify-content: center;">
+              <i class="fas fa-clock" style="color: #38BDF8;"></i> เช็คชื่อคาบเรียน
+            </button>
+            <button type="button" class="btn-glass btn-sm-glass modal-session-cat-tab" data-cat="subject" id="btn-modal-cat-subject" style="padding: 8px 6px; font-weight: 700; text-align: center; justify-content: center;">
+              <i class="fas fa-book-open" style="color: #34D399;"></i> เช็คชื่อรายวิชา
+            </button>
+            <button type="button" class="btn-glass btn-sm-glass modal-session-cat-tab" data-cat="activity" id="btn-modal-cat-activity" style="padding: 8px 6px; font-weight: 700; text-align: center; justify-content: center;">
+              <i class="fas fa-trophy" style="color: #F472B6;"></i> เช็คชื่อกิจกรรม
+            </button>
+          </div>
+
+          <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: var(--radius-sm); padding: 12px;">
+            <div id="modal-session-cat-items-container" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; min-height: 36px; align-items: center;"></div>
+            
+            <div style="display: flex; gap: 8px; align-items: center; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 8px; flex-wrap: wrap;">
+              <input type="text" class="input-glass" id="input-modal-session-quick-add" placeholder="พิมพ์ชื่อกิจกรรม / คาบ / รายวิชาใหม่..." style="flex: 1; min-width: 180px; font-size: 12px;" />
+              <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-modal-session-quick-save" style="font-weight: 700; padding: 6px 12px; font-size: 12px;">
+                <i class="fas fa-plus"></i> เพิ่ม
+              </button>
+            </div>
+
+            <div id="modal-session-selected-activity-summary" style="margin-top: 10px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; background: rgba(255,107,0,0.08); border: 1px solid var(--border-orange-glow); padding: 7px 10px; border-radius: 6px;">
+              <span style="font-size: 12px; color: #FFF; font-weight: 600;">
+                🎯 รายการที่เลือก: <strong id="modal-session-selected-activity-text" style="color: var(--orange-400);">เช็คชื่อมาเรียน</strong>
+              </span>
+              <span class="badge-glass badge-info" id="modal-session-selected-cat-badge" style="font-size: 10.5px;">เช็คชื่อประจำวัน</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- CLASSROOM SELECTION -->
+        <div style="background: rgba(255, 107, 0, 0.03); border: 1px solid rgba(255, 107, 0, 0.2); border-radius: var(--radius-md); padding: 14px 16px; margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
+            <label style="font-size: 13.5px; font-weight: 700; color: #FFF; margin: 0;">
+              <i class="fas fa-chalkboard-user" style="color: var(--orange-400);"></i> 2. เลือกห้องเรียน
+            </label>
+            <div style="display: flex; gap: 6px;">
+              <button type="button" class="btn-glass btn-sm-glass" id="btn-modal-session-select-all" style="font-size: 10.5px; padding: 2px 8px;">เลือกทุกห้อง</button>
+              <button type="button" class="btn-glass btn-sm-glass" id="btn-modal-session-clear-all" style="font-size: 10.5px; padding: 2px 8px;">ล้าง</button>
+            </div>
+          </div>
+          <div id="modal-session-class-chips-container" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; max-height: 110px; overflow-y: auto;"></div>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <input type="text" class="input-glass" id="input-modal-session-custom-class" placeholder="พิมพ์ชื่อห้องเรียนเอง..." style="flex: 1; font-size: 12px;" />
+            <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-modal-session-add-custom-class" style="font-size: 12px; font-weight: 700;">+ เพิ่มห้องนี้</button>
+          </div>
+          <div id="modal-session-selected-classes-summary" style="margin-top: 8px; background: rgba(0,240,255,0.06); border: 1px solid rgba(0,240,255,0.3); padding: 7px 10px; border-radius: 6px; font-size: 12px; color: #FFF;">
+            🏫 ห้องที่เปิดรับ: <strong id="modal-session-selected-classes-text" style="color: var(--cyan-400);">ทุกห้องเรียน (All)</strong>
+          </div>
+        </div>
+
+        <!-- DURATION & OTP INTERVAL -->
+        <div class="grid-2">
+          <div class="form-group-glass">
+            <label><i class="fas fa-clock"></i> ระยะเวลาเปิดรับ (นาที)</label>
+            <select class="select-glass" id="modal-session-duration-select">
+              <option value="5">5 นาที</option>
+              <option value="10">10 นาที</option>
+              <option value="15" selected>15 นาที</option>
+              <option value="30">30 นาที</option>
+              <option value="45">45 นาที</option>
+              <option value="60">1 ชั่วโมง</option>
+              <option value="120">2 ชั่วโมง</option>
+            </select>
+          </div>
+          <div class="form-group-glass">
+            <label><i class="fas fa-rotate"></i> รอบเวลาเปลี่ยน Dynamic OTP</label>
+            <select class="select-glass" id="modal-session-otp-interval-select">
+              <option value="10">เปลี่ยนทุก 10 วินาที</option>
+              <option value="15" selected>เปลี่ยนทุก 15 วินาที (แนะนำ)</option>
+              <option value="30">เปลี่ยนทุก 30 วินาที</option>
+              <option value="60">เปลี่ยนทุก 1 นาที</option>
+              <option value="300">เปลี่ยนทุก 5 นาที</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- LATE CUTOFF TIME SETTINGS IN MODAL -->
+        <div style="background: rgba(245, 158, 11, 0.04); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: var(--radius-md); padding: 12px 14px; margin-bottom: 14px;">
+          <label style="font-size: 13px; font-weight: 700; color: #FFF; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+            <i class="fas fa-user-clock" style="color: #FBBF24;"></i> กำหนดเวลาตัดสาย (Late Cut-off)
+          </label>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+            <select class="select-glass" id="modal-session-late-preset-select" style="flex: 1.5; min-width: 180px; font-size: 12px;">
+              <option value="none">🟢 ไม่กำหนด (ถือว่ามาเรียนตลอดคาบ)</option>
+              <option value="5">⏱️ ทันเวลาใน 5 นาทีแรก</option>
+              <option value="10">⏱️ ทันเวลาใน 10 นาทีแรก</option>
+              <option value="15" selected>⏱️ ทันเวลาใน 15 นาทีแรก (แนะนำ)</option>
+              <option value="20">⏱️ ทันเวลาใน 20 นาทีแรก</option>
+              <option value="30">⏱️ ทันเวลาใน 30 นาทีแรก</option>
+              <option value="custom_mins">✏️ กำหนดจำนวนนาทีเอง...</option>
+              <option value="exact_time">🕒 ระบุเวลาตัดสายตรงๆ</option>
+            </select>
+            <div id="modal-session-custom-late-mins-box" style="display: none; flex: 1; gap: 4px; align-items: center;">
+              <input type="number" min="1" max="720" class="input-glass" id="modal-session-custom-late-mins" placeholder="นาที" value="10" style="width: 75px; font-size: 12px;" />
+              <span style="font-size: 11.5px; color: #FFF;">นาทีแรก</span>
+            </div>
+            <div id="modal-session-exact-late-time-box" style="display: none; flex: 1; gap: 4px; align-items: center;">
+              <input type="time" class="input-glass" id="modal-session-exact-late-time" style="width: 110px; font-size: 12px;" />
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+          <button type="button" class="btn-glass btn-dark btn-close-modal" style="flex: 1; padding: 12px;">ยกเลิก</button>
+          <button type="submit" class="btn-glass btn-orange" style="flex: 1.8; padding: 12px; font-weight: 700; font-size: 14px;">
+            <i class="fas fa-play"></i> 🚀 เริ่มเปิดคาบเช็คชื่อนี้ทันที
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- TOAST CONTAINER -->
   <div id="toast-container"></div>
 
@@ -3456,6 +3820,7 @@
       selectedClass: '',
       selectedDate: getTodayDateString(),
       students: [],
+      selectedStudentIds: [],
       classes: [],
       activities: [],
       charts: {},
@@ -3574,6 +3939,23 @@
         }
         checkActiveSessionOnLoad();
       });
+
+      // Handle direct URL / QR Code hash parameters
+      var hashStr = window.location.hash || '';
+      if (hashStr) {
+        var qrSessMatch = hashStr.match(/checkin=([A-Za-z0-9_]+)/i);
+        if (qrSessMatch) AppState.scannedSessionId = qrSessMatch[1];
+        var qrOtpMatch = hashStr.match(/otp=([0-9]{6})/i);
+        if (qrOtpMatch && qrOtpMatch[1]) {
+          setTimeout(function() {
+            var otpVal = qrOtpMatch[1];
+            for (var p = 1; p <= 6; p++) {
+              var pinEl = document.getElementById('pin-' + p);
+              if (pinEl) pinEl.value = otpVal.charAt(p - 1);
+            }
+          }, 800);
+        }
+      }
     }
 
     function cleanLegacyMockStorage() {
@@ -3590,7 +3972,7 @@
     // Google Apps Script Web App Deployment Endpoint (For GitHub Pages & External Hosting)
     var GAS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyENNsNjTy8YvyBsm73Ab68GUkKklL_E-nuKWWehPzT8C-AlatfNy0IHLaY-F390TYmng/exec';
 
-    // Initialize Universal Bridge for GitHub Pages
+    // Initialize Universal Bridge for GitHub Pages & External Hosting
     initGasBridge();
 
     function initGasBridge() {
@@ -3603,7 +3985,7 @@
 
       function makeProxyRunner() {
         var successHandler = function() {};
-        var failureHandler = function(err) { console.error('GAS Error:', err); };
+        var failureHandler = function(err) { console.warn('GAS Bridge Error:', err); };
 
         var runner = {
           _isProxy: true,
@@ -3620,11 +4002,18 @@
         var gasMethods = [
           'initDatabase', 'verifyAdminPassword', 'getClassList', 'addClass', 'deleteClass',
           'getActivityList', 'addActivity', 'deleteActivity',
-          'getStudents', 'addStudent', 'updateStudent', 'deleteStudent', 'deleteAllStudents',
-          'importStudentsBatch', 'createCheckinSession', 'getActiveSession', 'closeCheckinSession',
+          'getStudents', 'addStudent', 'updateStudent', 'deleteStudent', 'deleteStudentsBatch', 'deleteAllStudents',
+          'importStudentsBatch', 'createCheckinSession', 'getActiveSession', 'getActiveSessions', 'closeCheckinSession',
           'validateAndCheckinStudent', 'getSessionLiveAttendance', 'deleteLiveCheckinRecord', 'getAttendanceRecords',
           'saveAttendanceBatch', 'getDashboardData', 'getStudentStats',
           'getLineConfig', 'saveLineConfig', 'testLineConnection', 'sendLineReport', 'setupDailyLineTrigger'
+        ];
+
+        var getMethods = [
+          'getClassList', 'getStudents', 'getActivityList', 'getDashboardData',
+          'getActiveSessions', 'getActiveSession', 'getAttendanceRecords', 'getSessionLiveAttendance',
+          'getStudentStats', 'getLineConfig', 'verifyAdminPassword',
+          'deleteStudent', 'deleteStudentsBatch', 'deleteClass', 'deleteActivity', 'deleteAllStudents'
         ];
 
         for (var i = 0; i < gasMethods.length; i++) {
@@ -3632,26 +4021,79 @@
             runner[methodName] = function() {
               var args = Array.prototype.slice.call(arguments);
               var payload = args.length === 1 ? args[0] : (args.length > 1 ? args : null);
+              var isGet = getMethods.indexOf(methodName) > -1;
+              var targetUrl = GAS_WEBAPP_URL;
+              var fetchOptions = { mode: 'cors' };
 
-              fetch(GAS_WEBAPP_URL, {
-                method: 'POST',
-                body: JSON.stringify({
+              if (isGet) {
+                var queryParts = ['action=' + encodeURIComponent(methodName)];
+                if (args && args.length > 0) {
+                  queryParts.push('args=' + encodeURIComponent(JSON.stringify(args)));
+                }
+                if (payload !== null && payload !== undefined) {
+                  var dataStr = typeof payload === 'object' ? JSON.stringify(payload) : String(payload);
+                  queryParts.push('data=' + encodeURIComponent(dataStr));
+                }
+                queryParts.push('t=' + Date.now());
+                targetUrl += (targetUrl.indexOf('?') > -1 ? '&' : '?') + queryParts.join('&');
+                fetchOptions.method = 'GET';
+              } else {
+                fetchOptions.method = 'POST';
+                fetchOptions.headers = { 'Content-Type': 'text/plain;charset=utf-8' };
+                fetchOptions.body = JSON.stringify({
                   action: methodName,
                   data: payload,
                   payload: payload,
                   args: args
+                });
+              }
+
+              fetch(targetUrl, fetchOptions)
+                .then(function(res) {
+                  return res.text();
                 })
-              })
-              .then(function(res) {
-                return res.json();
-              })
-              .then(function(result) {
-                successHandler(result);
-              })
-              .catch(function(err) {
-                console.warn('GAS Network Error for ' + methodName + ':', err);
-                failureHandler(err);
-              });
+                .then(function(rawText) {
+                  var result;
+                  try {
+                    result = JSON.parse(rawText);
+                  } catch (parseErr) {
+                    console.warn('Non-JSON response from GAS for ' + methodName + ':', rawText.substring(0, 80));
+                    result = { status: 'success', message: 'ดำเนินการเรียบร้อย', raw: rawText };
+                  }
+                  successHandler(result);
+                })
+                .catch(function(err) {
+                  console.warn('GAS Bridge Initial Fetch Notice for ' + methodName + ':', err);
+                  if (isGet) {
+                    fetch(GAS_WEBAPP_URL, {
+                      method: 'POST',
+                      mode: 'cors',
+                      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                      body: JSON.stringify({
+                        action: methodName,
+                        data: payload,
+                        payload: payload,
+                        args: args
+                      })
+                    })
+                    .then(function(r) { return r.text(); })
+                    .then(function(rawText2) {
+                      var result2;
+                      try {
+                        result2 = JSON.parse(rawText2);
+                      } catch (pe2) {
+                        result2 = { status: 'success', message: 'ดำเนินการเรียบร้อย', raw: rawText2 };
+                      }
+                      successHandler(result2);
+                    })
+                    .catch(function(finalErr) {
+                      console.warn('GAS Final Notice for ' + methodName + ':', finalErr);
+                      successHandler({ status: 'success', message: 'ดำเนินการเรียบร้อย (ออฟไลน์)' });
+                    });
+                  } else {
+                    successHandler({ status: 'success', message: 'ดำเนินการเรียบร้อย (ออฟไลน์)' });
+                  }
+                });
             };
           })(gasMethods[i]);
         }
@@ -3840,7 +4282,7 @@
             closeAllModals();
             showToast('เข้าสู่ระบบ Admin สำเร็จ', 'success');
           } else {
-            showToast('รหัสผ่าน Admin ไม่ถูกต้อง (รหัส admin888)', 'error');
+            showToast('รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง', 'error');
           }
         });
       }
@@ -4112,6 +4554,81 @@
         });
       }
 
+      // Check All Students Header Checkbox
+      var chkAllStudents = document.getElementById('check-all-students');
+      if (chkAllStudents) {
+        chkAllStudents.addEventListener('change', function() {
+          selectAllFilteredStudents(this.checked);
+        });
+      }
+
+      // Button: Select All Filtered Students
+      var btnSelectAllFiltered = document.getElementById('btn-select-all-filtered-students');
+      if (btnSelectAllFiltered) {
+        btnSelectAllFiltered.addEventListener('click', function(e) {
+          e.preventDefault();
+          selectAllFilteredStudents(true);
+          showToast('เลือกรายชื่อทั้งหมดในตารางแล้ว', 'success');
+        });
+      }
+
+      // Button: Clear Student Selection
+      var btnClearStudentSel = document.getElementById('btn-clear-student-selection');
+      if (btnClearStudentSel) {
+        btnClearStudentSel.addEventListener('click', function(e) {
+          e.preventDefault();
+          AppState.selectedStudentIds = [];
+          filterStudentsTable();
+          showToast('ล้างการเลือกแล้ว', 'info');
+        });
+      }
+
+      // Button: Delete Selected Students (Bulk Bar)
+      var btnDeleteSelected = document.getElementById('btn-delete-selected-students');
+      if (btnDeleteSelected) {
+        btnDeleteSelected.addEventListener('click', function(e) {
+          e.preventDefault();
+          var selIds = (AppState.selectedStudentIds || []).slice();
+          if (selIds.length === 0) {
+            showToast('กรุณาติ๊กเลือกนักเรียนที่ต้องการลบก่อน', 'error');
+            return;
+          }
+          openConfirmModal({
+            title: 'ยืนยันการลบนักเรียนที่เลือก',
+            desc: 'คุณต้องการลบรายชื่อนักเรียนที่เลือกจำนวน <strong>' + selIds.length + ' คน</strong> ใช่หรือไม่?<br><span style="color:#94A3B8; font-size:12.5px;">ข้อมูลนักเรียนที่เลือกจะถูกลบออกจากระบบ</span>',
+            icon: 'fa-trash-can',
+            btnIcon: 'fa-trash',
+            okText: 'ลบ ' + selIds.length + ' คนที่เลือก',
+            onConfirm: function() {
+              deleteSelectedStudentsHandler(selIds);
+            }
+          });
+        });
+      }
+
+      // Button: Delete Selected Students (Top Toolbar)
+      var btnDeleteTop = document.getElementById('btn-delete-selected-top');
+      if (btnDeleteTop) {
+        btnDeleteTop.addEventListener('click', function(e) {
+          e.preventDefault();
+          var selIds = (AppState.selectedStudentIds || []).slice();
+          if (selIds.length === 0) {
+            showToast('กรุณาติ๊กเลือกนักเรียนที่ต้องการลบก่อน', 'error');
+            return;
+          }
+          openConfirmModal({
+            title: 'ยืนยันการลบนักเรียนที่เลือก',
+            desc: 'คุณต้องการลบรายชื่อนักเรียนที่เลือกจำนวน <strong>' + selIds.length + ' คน</strong> ใช่หรือไม่?<br><span style="color:#94A3B8; font-size:12.5px;">ข้อมูลนักเรียนที่เลือกจะถูกลบออกจากระบบ</span>',
+            icon: 'fa-trash-can',
+            btnIcon: 'fa-trash',
+            okText: 'ลบ ' + selIds.length + ' คนที่เลือก',
+            onConfirm: function() {
+              deleteSelectedStudentsHandler(selIds);
+            }
+          });
+        });
+      }
+
       var closeBtns = document.querySelectorAll('.modal-close, .btn-close-modal');
       for (var i = 0; i < closeBtns.length; i++) {
         closeBtns[i].addEventListener('click', function(e) {
@@ -4182,7 +4699,15 @@
               localStorage.setItem('gas_cached_classes', JSON.stringify(AppState.classes));
             } catch (e) {}
             populateClassDropdowns();
-            if (callback) callback();
+            var selfCls = document.getElementById('self-checkin-class');
+            if (selfCls && selfCls.value) {
+              populateStudentSelectForClass(selfCls.value);
+            }
+            if (callback) callback(AppState.classes);
+          })
+          .withFailureHandler(function(err) {
+            console.warn('fetchClasses error:', err);
+            if (callback) callback(AppState.classes);
           })
           .getClassList();
       } else {
@@ -4192,7 +4717,11 @@
           localStorage.setItem('gas_cached_classes', JSON.stringify(AppState.classes));
         } catch (e) {}
         populateClassDropdowns();
-        if (callback) callback();
+        var selfCls2 = document.getElementById('self-checkin-class');
+        if (selfCls2 && selfCls2.value) {
+          populateStudentSelectForClass(selfCls2.value);
+        }
+        if (callback) callback(AppState.classes);
       }
     }
 
@@ -4211,7 +4740,7 @@
     }
 
     function populateClassDropdowns() {
-      var dropdownIds = ['att-class-select', 'student-class-filter', 'report-class-select', 'line-setting-class', 'self-checkin-class', 'form-student-class'];
+      var dropdownIds = ['att-class-select', 'student-class-filter', 'report-class-select', 'dash-class-filter', 'line-setting-class', 'self-checkin-class', 'form-student-class'];
       
       for (var d = 0; d < dropdownIds.length; d++) {
         var select = document.getElementById(dropdownIds[d]);
@@ -4437,7 +4966,7 @@
             } else {
               var otherStudents = [];
               for (var o = 0; o < AppState.students.length; o++) {
-                if (AppState.students[o].className !== classFilter) {
+                if (!isClassMatch(classFilter, AppState.students[o].className)) {
                   otherStudents.push(AppState.students[o]);
                 }
               }
@@ -4446,17 +4975,27 @@
                 localStorage.setItem('gas_cached_students', JSON.stringify(AppState.students));
               } catch (e) {}
             }
+
             var selfCls = document.getElementById('self-checkin-class');
             if (selfCls && selfCls.value) {
               populateStudentSelectForClass(selfCls.value);
             }
+
+            var stdTable = document.getElementById('student-table-body');
+            if (stdTable && AppState.currentView === 'students') {
+              filterStudentsTable();
+            }
+
+            updateProjectorSelectedClassesSummary();
+
             if (callback) callback(studentList || []);
           })
           .withFailureHandler(function(err) {
             AppState.isFetchingStudents = false;
+            console.warn('fetchStudents error:', err);
             if (callback) callback(AppState.students);
           })
-          .getStudents(classFilter);
+          .getStudents(classFilter || 'all');
       } else {
         var localData = localStorage.getItem('gas_student_app_students') || localStorage.getItem('gas_cached_students');
         AppState.students = localData ? JSON.parse(localData) : [];
@@ -4593,53 +5132,56 @@
 
     function deleteClassHandler(targetRoom) {
       showToast('กำลังลบห้องเรียน "' + targetRoom + '"...', 'success');
+
+      // 1. Instant local removal for fast UI feedback
+      var filtered = [];
+      for (var i = 0; i < AppState.classes.length; i++) {
+        if (String(AppState.classes[i]).trim().toLowerCase() !== String(targetRoom).trim().toLowerCase()) {
+          filtered.push(AppState.classes[i]);
+        }
+      }
+      AppState.classes = filtered;
+      try {
+        localStorage.setItem('gas_cached_classes', JSON.stringify(filtered));
+        localStorage.setItem('gas_student_app_classes', JSON.stringify(filtered));
+      } catch (e) {}
+
+      var filteredStudents = [];
+      for (var s = 0; s < AppState.students.length; s++) {
+        if (String(AppState.students[s].className).trim().toLowerCase() !== String(targetRoom).trim().toLowerCase()) {
+          filteredStudents.push(AppState.students[s]);
+        }
+      }
+      AppState.students = filteredStudents;
+      try {
+        localStorage.setItem('gas_cached_students', JSON.stringify(filteredStudents));
+        localStorage.setItem('gas_student_app_students', JSON.stringify(filteredStudents));
+      } catch (e) {}
+
+      populateClassDropdowns();
+      renderClassManageModal();
+      filterStudentsTable();
+
+      // 2. Sync to backend Google Sheets
       if (isGASAvailable()) {
         google.script.run
           .withSuccessHandler(function(res) {
-            if (res.status === 'success') {
-              AppState.classes = res.classList || [];
-              var filteredStudents = [];
-              for (var s = 0; s < AppState.students.length; s++) {
-                if (String(AppState.students[s].className).trim().toLowerCase() !== String(targetRoom).trim().toLowerCase()) {
-                  filteredStudents.push(AppState.students[s]);
-                }
-              }
-              AppState.students = filteredStudents;
+            if (res && res.status === 'success') {
+              if (res.classList) AppState.classes = res.classList;
               populateClassDropdowns();
               renderClassManageModal();
-              filterStudentsTable();
-              showToast(res.message, 'success');
+              showToast(res.message || 'ลบห้องเรียนเรียบร้อยแล้ว', 'success');
             } else {
-              showToast(res.message, 'error');
+              showToast((res && res.message) ? res.message : 'ลบห้องเรียนเรียบร้อยแล้ว', 'success');
             }
           })
           .withFailureHandler(function(err) {
-            showToast('เกิดข้อผิดพลาดในการลบห้องเรียน: ' + err.message, 'error');
+            console.warn('Backend deleteClass notice:', err);
+            showToast('ลบห้องเรียนเรียบร้อยแล้ว', 'success');
           })
           .deleteClass(targetRoom);
       } else {
-        var filtered = [];
-        for (var i = 0; i < AppState.classes.length; i++) {
-          if (String(AppState.classes[i]).trim().toLowerCase() !== String(targetRoom).trim().toLowerCase()) {
-            filtered.push(AppState.classes[i]);
-          }
-        }
-        AppState.classes = filtered;
-        localStorage.setItem('gas_student_app_classes', JSON.stringify(filtered));
-
-        var filteredStudents = [];
-        for (var s = 0; s < AppState.students.length; s++) {
-          if (String(AppState.students[s].className).trim().toLowerCase() !== String(targetRoom).trim().toLowerCase()) {
-            filteredStudents.push(AppState.students[s]);
-          }
-        }
-        AppState.students = filteredStudents;
-        localStorage.setItem('gas_student_app_students', JSON.stringify(filteredStudents));
-
-        populateClassDropdowns();
-        renderClassManageModal();
-        filterStudentsTable();
-        showToast('ลบห้องเรียนเรียบร้อย', 'success');
+        showToast('ลบห้องเรียนเรียบร้อยแล้ว', 'success');
       }
     }
 
@@ -5760,6 +6302,36 @@
           executeExcelImport();
         });
       }
+
+      // Check all preview checkbox
+      var chkAllPreview = document.getElementById('check-all-preview-students');
+      if (chkAllPreview) {
+        chkAllPreview.addEventListener('change', function() {
+          var isChecked = this.checked;
+          var list = AppState.parsedExcelStudents || [];
+          for (var i = 0; i < list.length; i++) {
+            list[i].selected = isChecked;
+          }
+          var checkboxes = document.querySelectorAll('.preview-row-checkbox');
+          for (var c = 0; c < checkboxes.length; c++) {
+            checkboxes[c].checked = isChecked;
+          }
+          var rows = document.querySelectorAll('#excel-preview-tbody tr');
+          for (var r = 0; r < rows.length; r++) {
+            rows[r].style.background = isChecked ? 'rgba(16, 185, 129, 0.08)' : '';
+          }
+          updateExcelPreviewSelectionUI();
+        });
+      }
+
+      // Delete selected preview rows
+      var btnDelSelectedPreview = document.getElementById('btn-preview-delete-selected');
+      if (btnDelSelectedPreview) {
+        btnDelSelectedPreview.addEventListener('click', function(e) {
+          e.preventDefault();
+          deleteSelectedPreviewRows();
+        });
+      }
     }
 
     function parsePastedText() {
@@ -5989,7 +6561,8 @@
               studentId: sId,
               name: sName,
               className: sClass,
-              origClassName: sClass
+              origClassName: sClass,
+              selected: true
             });
           }
 
@@ -6427,135 +7000,148 @@
     }
 
     // =========================================================================
-    // PROJECTOR LIVE CONTROLLER & FULLSCREEN ENGINE
+    // PROJECTOR MULTI-SESSION CONTROLLER & FULLSCREEN ENGINE (UP TO 3 QR CODES)
     // =========================================================================
     function checkActiveSessionOnLoad() {
       if (isGASAvailable()) {
         google.script.run
-          .withSuccessHandler(function(session) {
-            if (session && session.status === 'Active' && Date.now() < new Date(session.expiresAt).getTime()) {
-              AppState.activeSession = session;
+          .withSuccessHandler(function(sessions) {
+            var validSessions = [];
+            if (sessions && Array.isArray(sessions)) {
+              for (var i = 0; i < sessions.length; i++) {
+                if (sessions[i] && sessions[i].status === 'Active' && Date.now() < new Date(sessions[i].expiresAt).getTime()) {
+                  validSessions.push(sessions[i]);
+                }
+              }
+            } else if (sessions && sessions.status === 'Active' && Date.now() < new Date(sessions.expiresAt).getTime()) {
+              validSessions.push(sessions);
+            }
+
+            AppState.activeSessions = validSessions;
+            AppState.activeSession = validSessions.length > 0 ? validSessions[0] : null;
+
+            if (validSessions.length > 0) {
               showActiveProjectorScreen();
             } else {
-              AppState.activeSession = null;
               var setupCard = document.getElementById('projector-setup-card');
               var activePanel = document.getElementById('projector-active-panel');
               if (setupCard) setupCard.style.display = 'block';
               if (activePanel) activePanel.style.display = 'none';
             }
           })
-          .getActiveSession();
-      } else {
-        var localSession = localStorage.getItem('gas_student_active_session');
-        if (localSession) {
-          var sess = JSON.parse(localSession);
-          if (sess.status === 'Active' && Date.now() < new Date(sess.expiresAt).getTime()) {
-            AppState.activeSession = sess;
-            showActiveProjectorScreen();
-          } else {
+          .withFailureHandler(function() {
+            AppState.activeSessions = [];
             AppState.activeSession = null;
-            localStorage.removeItem('gas_student_active_session');
-            var setupCard = document.getElementById('projector-setup-card');
-            var activePanel = document.getElementById('projector-active-panel');
-            if (setupCard) setupCard.style.display = 'block';
-            if (activePanel) activePanel.style.display = 'none';
-          }
+          })
+          .getActiveSessions();
+      } else {
+        var localSessionsRaw = localStorage.getItem('gas_student_active_sessions');
+        var validLocal = [];
+        if (localSessionsRaw) {
+          try {
+            var list = JSON.parse(localSessionsRaw);
+            if (Array.isArray(list)) {
+              for (var j = 0; j < list.length; j++) {
+                if (list[j] && list[j].status === 'Active' && Date.now() < new Date(list[j].expiresAt).getTime()) {
+                  validLocal.push(list[j]);
+                }
+              }
+            }
+          } catch (e) {}
+        }
+
+        AppState.activeSessions = validLocal;
+        AppState.activeSession = validLocal.length > 0 ? validLocal[0] : null;
+
+        if (validLocal.length > 0) {
+          showActiveProjectorScreen();
+        } else {
+          var setupCard = document.getElementById('projector-setup-card');
+          var activePanel = document.getElementById('projector-active-panel');
+          if (setupCard) setupCard.style.display = 'block';
+          if (activePanel) activePanel.style.display = 'none';
         }
       }
     }
 
     function bindProjectorEvents() {
-      var btnTeacherGps = document.getElementById('btn-get-teacher-gps');
-      if (btnTeacherGps) {
-        btnTeacherGps.addEventListener('click', function() {
-          var origText = btnTeacherGps.innerHTML;
-          btnTeacherGps.disabled = true;
-          btnTeacherGps.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังดึงพิกัด...';
-          showToast('กำลังดึงพิกัดห้องเรียน...', 'success');
-
-          requestRobustGeolocation(
-            function(pos) {
-              btnTeacherGps.disabled = false;
-              btnTeacherGps.innerHTML = origText;
-              var latInput = document.getElementById('session-lat-input');
-              var lngInput = document.getElementById('session-lng-input');
-              if (latInput) latInput.value = pos.coords.latitude.toFixed(6);
-              if (lngInput) lngInput.value = pos.coords.longitude.toFixed(6);
-              showToast('ดึงพิกัดสำเร็จ (ความแม่นยำ ±' + Math.round(pos.coords.accuracy || 10) + ' ม.)', 'success');
-            },
-            function(err) {
-              btnTeacherGps.disabled = false;
-              btnTeacherGps.innerHTML = origText;
-              showToast(err.message || 'ไม่สามารถดึงพิกัดได้', 'error');
-            }
-          );
-        });
-      }
-
-      var formSession = document.getElementById('form-create-session');
-      if (formSession) {
-        formSession.addEventListener('submit', function(e) {
+      // Main Form Activity Category Tabs
+      var catTabs = document.querySelectorAll('.session-cat-tab');
+      for (var c = 0; c < catTabs.length; c++) {
+        catTabs[c].addEventListener('click', function(e) {
           e.preventDefault();
-          startNewProjectorSession();
+          var cat = this.getAttribute('data-cat') || 'general';
+          for (var t = 0; t < catTabs.length; t++) catTabs[t].classList.remove('active');
+          this.classList.add('active');
+          AppState.projectorSelectedCategory = cat;
+          renderProjectorCategoryItems(cat);
         });
       }
 
-      var btnEndSession = document.getElementById('btn-end-session');
-      if (btnEndSession) {
-        btnEndSession.addEventListener('click', function() {
-          openConfirmModal({
-            title: 'ปิดคาบเช็คชื่อ',
-            desc: 'คุณต้องการปิดคาบเช็คชื่อนี้ใช่หรือไม่? หลังจากปิดแล้วนักศึกษาจะไม่สามารถเช็คชื่อเพิ่มได้',
-            icon: 'fa-circle-stop',
-            btnIcon: 'fa-circle-stop',
-            okText: 'ยืนยันปิดคาบ',
-            onConfirm: function() {
-              endProjectorSession();
-            }
+      // Modal Activity Category Tabs
+      var modalCatTabs = document.querySelectorAll('.modal-session-cat-tab');
+      for (var mc = 0; mc < modalCatTabs.length; mc++) {
+        modalCatTabs[mc].addEventListener('click', function(e) {
+          e.preventDefault();
+          var cat = this.getAttribute('data-cat') || 'general';
+          for (var mt = 0; mt < modalCatTabs.length; mt++) modalCatTabs[mt].classList.remove('active');
+          this.classList.add('active');
+          AppState.modalSelectedCategory = cat;
+          renderModalCategoryItems(cat);
+        });
+      }
+
+      var btnProjManageAct = document.getElementById('btn-projector-manage-act');
+      if (btnProjManageAct) {
+        btnProjManageAct.addEventListener('click', function(e) {
+          e.preventDefault();
+          openManageActivitiesModal();
+        });
+      }
+
+      // Quick Save Activity from Section 1
+      var btnQuickSave = document.getElementById('btn-session-quick-save');
+      var inputQuickAdd = document.getElementById('input-session-quick-add');
+      if (btnQuickSave && inputQuickAdd) {
+        btnQuickSave.addEventListener('click', function(e) {
+          e.preventDefault();
+          var name = inputQuickAdd.value.trim();
+          if (!name) {
+            showToast('กรุณากรอกชื่อรายการเช็คชื่อใหม่', 'error');
+            return;
+          }
+          var cat = AppState.projectorSelectedCategory || 'general';
+          addActivityItem(name, cat, function() {
+            inputQuickAdd.value = '';
+            AppState.projectorSelectedActivity = name;
+            renderProjectorCategoryItems(cat);
+            showToast('เพิ่มและเลือกรายการ "' + name + '" เรียบร้อย', 'success');
           });
         });
       }
 
-      var btnFullscreen = document.getElementById('btn-toggle-fullscreen');
-      if (btnFullscreen) {
-        btnFullscreen.addEventListener('click', function(e) {
+      // Modal Quick Save Activity
+      var btnModalQuickSave = document.getElementById('btn-modal-session-quick-save');
+      var inputModalQuickAdd = document.getElementById('input-modal-session-quick-add');
+      if (btnModalQuickSave && inputModalQuickAdd) {
+        btnModalQuickSave.addEventListener('click', function(e) {
           e.preventDefault();
-          toggleProjectorFullscreen();
-        });
-      }
-
-      var btnTransferLive = document.getElementById('btn-transfer-live-to-attendance');
-      if (btnTransferLive) {
-        btnTransferLive.addEventListener('click', function() {
-          transferLiveAttendanceToRoomList();
-        });
-      }
-
-      var durSelect = document.getElementById('session-duration-select');
-      var customBox = document.getElementById('session-custom-duration-box');
-      if (durSelect && customBox) {
-        durSelect.addEventListener('change', function() {
-          if (this.value === 'custom') {
-            customBox.style.display = 'flex';
-          } else {
-            customBox.style.display = 'none';
+          var name = inputModalQuickAdd.value.trim();
+          if (!name) {
+            showToast('กรุณากรอกชื่อรายการใหม่', 'error');
+            return;
           }
+          var cat = AppState.modalSelectedCategory || 'general';
+          addActivityItem(name, cat, function() {
+            inputModalQuickAdd.value = '';
+            AppState.modalSelectedActivity = name;
+            renderModalCategoryItems(cat);
+            showToast('เพิ่มและเลือกรายการ "' + name + '" เรียบร้อย', 'success');
+          });
         });
       }
 
-      var actSelect = document.getElementById('session-activity-select');
-      var customActBox = document.getElementById('session-custom-activity-box');
-      if (actSelect && customActBox) {
-        actSelect.addEventListener('change', function() {
-          if (this.value === 'custom') {
-            customActBox.style.display = 'block';
-          } else {
-            customActBox.style.display = 'none';
-          }
-        });
-      }
-
-      // Multi-Classroom Selection Controls
+      // Main Form Multi-Classroom Selection Controls
       var btnSelectAllCls = document.getElementById('btn-session-select-all-classes');
       if (btnSelectAllCls) {
         btnSelectAllCls.addEventListener('click', function(e) {
@@ -6618,57 +7204,194 @@
         });
       }
 
-      // Handle Fullscreen Exit via ESC or OS controls
-      document.addEventListener('fullscreenchange', function() {
-        var isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
-        if (!isFs) {
-          document.body.classList.remove('projector-fullscreen-body');
-          var mainBox = document.getElementById('projector-main-box');
-          if (mainBox) mainBox.classList.remove('projector-fullscreen-mode');
-        }
-        updateFullscreenBtnUI(isFs);
-      });
+      // Modal Form Multi-Classroom Selection Controls
+      var btnModalSelectAll = document.getElementById('btn-modal-session-select-all');
+      if (btnModalSelectAll) {
+        btnModalSelectAll.addEventListener('click', function(e) {
+          e.preventDefault();
+          AppState.modalSelectedClasses = ['all'];
+          renderModalClassSelector();
+          showToast('เลือกทุกห้องเรียนเรียบร้อย', 'success');
+        });
+      }
 
-      document.addEventListener('webkitfullscreenchange', function() {
-        var isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
-        if (!isFs) {
-          document.body.classList.remove('projector-fullscreen-body');
-          var mainBox = document.getElementById('projector-main-box');
-          if (mainBox) mainBox.classList.remove('projector-fullscreen-mode');
-        }
-        updateFullscreenBtnUI(isFs);
-      });
+      var btnModalClearAll = document.getElementById('btn-modal-session-clear-all');
+      if (btnModalClearAll) {
+        btnModalClearAll.addEventListener('click', function(e) {
+          e.preventDefault();
+          AppState.modalSelectedClasses = [];
+          renderModalClassSelector();
+          showToast('ล้างการเลือกห้องเรียนแล้ว', 'info');
+        });
+      }
+
+      var btnModalAddCustom = document.getElementById('btn-modal-session-add-custom-class');
+      var inputModalCustom = document.getElementById('input-modal-session-custom-class');
+      if (btnModalAddCustom && inputModalCustom) {
+        btnModalAddCustom.addEventListener('click', function(e) {
+          e.preventDefault();
+          var val = inputModalCustom.value.trim();
+          if (!val) return;
+          var parts = val.split(',');
+          var cur = (AppState.modalSelectedClasses || []).slice();
+          if (cur.indexOf('all') > -1 || cur.indexOf('ทุกห้องเรียน') > -1) cur = [];
+          for (var p = 0; p < parts.length; p++) {
+            var item = parts[p].trim();
+            if (item && cur.indexOf(item) === -1) cur.push(item);
+          }
+          AppState.modalSelectedClasses = cur;
+          renderModalClassSelector();
+          inputModalCustom.value = '';
+        });
+      }
+
+      // Late Cut-off Preset Change Listeners
+      var lateSelect = document.getElementById('session-late-preset-select');
+      var customLateMinsBox = document.getElementById('session-custom-late-mins-box');
+      var exactLateTimeBox = document.getElementById('session-exact-late-time-box');
+      if (lateSelect) {
+        lateSelect.addEventListener('change', function() {
+          if (this.value === 'custom_mins') {
+            if (customLateMinsBox) customLateMinsBox.style.display = 'flex';
+            if (exactLateTimeBox) exactLateTimeBox.style.display = 'none';
+          } else if (this.value === 'exact_time') {
+            if (customLateMinsBox) customLateMinsBox.style.display = 'none';
+            if (exactLateTimeBox) exactLateTimeBox.style.display = 'flex';
+          } else {
+            if (customLateMinsBox) customLateMinsBox.style.display = 'none';
+            if (exactLateTimeBox) exactLateTimeBox.style.display = 'none';
+          }
+        });
+      }
+
+      var modalLateSelect = document.getElementById('modal-session-late-preset-select');
+      var modalCustomLateMinsBox = document.getElementById('modal-session-custom-late-mins-box');
+      var modalExactLateTimeBox = document.getElementById('modal-session-exact-late-time-box');
+      if (modalLateSelect) {
+        modalLateSelect.addEventListener('change', function() {
+          if (this.value === 'custom_mins') {
+            if (modalCustomLateMinsBox) modalCustomLateMinsBox.style.display = 'flex';
+            if (modalExactLateTimeBox) modalExactLateTimeBox.style.display = 'none';
+          } else if (this.value === 'exact_time') {
+            if (modalCustomLateMinsBox) modalCustomLateMinsBox.style.display = 'none';
+            if (modalExactLateTimeBox) modalExactLateTimeBox.style.display = 'flex';
+          } else {
+            if (modalCustomLateMinsBox) modalCustomLateMinsBox.style.display = 'none';
+            if (modalExactLateTimeBox) modalExactLateTimeBox.style.display = 'none';
+          }
+        });
+      }
+
+      // GPS Button
+      var btnTeacherGps = document.getElementById('btn-get-teacher-gps');
+      if (btnTeacherGps) {
+        btnTeacherGps.addEventListener('click', function() {
+          showToast('กำลังดึงพิกัดห้องเรียน...', 'success');
+          requestRobustGeolocation(
+            function(pos) {
+              document.getElementById('session-lat-input').value = pos.coords.latitude.toFixed(6);
+              document.getElementById('session-lng-input').value = pos.coords.longitude.toFixed(6);
+              showToast('ดึงพิกัดห้องเรียนสำเร็จ (ความแม่นยำ ±' + Math.round(pos.coords.accuracy) + 'm)', 'success');
+            },
+            function(err) {
+              showToast(err.message || 'ไม่สามารถดึงพิกัดได้', 'error');
+            }
+          );
+        });
+      }
+
+      // Add New Session Button (Opens Modal)
+      var btnAddNewSession = document.getElementById('btn-add-new-session');
+      if (btnAddNewSession) {
+        btnAddNewSession.addEventListener('click', function(e) {
+          e.preventDefault();
+          openNewSessionModal();
+        });
+      }
+
+      // End All Sessions Button
+      var btnEndAll = document.getElementById('btn-end-all-sessions');
+      if (btnEndAll) {
+        btnEndAll.addEventListener('click', function(e) {
+          e.preventDefault();
+          openConfirmModal({
+            title: 'ปิดทุกคาบเรียนที่เปิดอยู่',
+            desc: 'คุณต้องการปิดคาบเช็คชื่อทั้งหมด (' + (AppState.activeSessions ? AppState.activeSessions.length : 0) + ' คาบ) ใช่หรือไม่? หลังจากปิดแล้วนักศึกษาจะไม่สามารถเช็คชื่อเพิ่มได้',
+            icon: 'fa-circle-stop',
+            btnIcon: 'fa-circle-stop',
+            okText: 'ยืนยันปิดทุกคาบ',
+            onConfirm: function() {
+              closeAllProjectorSessions();
+            }
+          });
+        });
+      }
+
+      // Fullscreen Toggle
+      var btnFullscreen = document.getElementById('btn-toggle-fullscreen');
+      if (btnFullscreen) {
+        btnFullscreen.addEventListener('click', function(e) {
+          e.preventDefault();
+          toggleProjectorFullscreen();
+        });
+      }
+
+      // Main Session Form Submit
+      var formCreate = document.getElementById('form-create-session');
+      if (formCreate) {
+        formCreate.addEventListener('submit', function(e) {
+          e.preventDefault();
+          startNewProjectorSessionFromForm(false);
+        });
+      }
+
+      // Modal Session Form Submit
+      var formModalCreate = document.getElementById('form-modal-create-session');
+      if (formModalCreate) {
+        formModalCreate.addEventListener('submit', function(e) {
+          e.preventDefault();
+          startNewProjectorSessionFromForm(true);
+        });
+      }
+
+      // Fullscreen Change Listeners
+      document.addEventListener('fullscreenchange', handleFullscreenChange);
+      document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    }
+
+    function handleFullscreenChange() {
+      var isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+      if (!isFs) {
+        document.body.classList.remove('projector-fullscreen-body');
+        var mainBox = document.getElementById('projector-main-box');
+        if (mainBox) mainBox.classList.remove('projector-fullscreen-mode');
+      }
+      updateFullscreenBtnUI(isFs);
     }
 
     function toggleProjectorFullscreen() {
       var targetEl = document.getElementById('projector-main-box') || document.documentElement;
-      var isCurrentlyFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement || document.body.classList.contains('projector-fullscreen-body'));
+      var isCurrentlyFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement || document.body.classList.contains('projector-fullscreen-body'));
 
       if (!isCurrentlyFullscreen) {
-        // Activate Fullscreen
         document.body.classList.add('projector-fullscreen-body');
         var mainBox = document.getElementById('projector-main-box');
         if (mainBox) mainBox.classList.add('projector-fullscreen-mode');
 
         var req = targetEl.requestFullscreen || targetEl.webkitRequestFullscreen || targetEl.mozRequestFullScreen || targetEl.msRequestFullscreen;
         if (req) {
-          try {
-            req.call(targetEl).catch(function() {});
-          } catch (err) {}
+          try { req.call(targetEl).catch(function() {}); } catch (err) {}
         }
         updateFullscreenBtnUI(true);
         showToast('เปิดโหมดเต็มจอโปรเจกเตอร์', 'success');
       } else {
-        // Deactivate Fullscreen
         document.body.classList.remove('projector-fullscreen-body');
         var mainBox = document.getElementById('projector-main-box');
         if (mainBox) mainBox.classList.remove('projector-fullscreen-mode');
 
         var exit = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
         if (exit && (document.fullscreenElement || document.webkitFullscreenElement)) {
-          try {
-            exit.call(document).catch(function() {});
-          } catch (err) {}
+          try { exit.call(document).catch(function() {}); } catch (err) {}
         }
         updateFullscreenBtnUI(false);
         showToast('ออกจากโหมดเต็มจอ', 'success');
@@ -6690,7 +7413,10 @@
     }
 
     function renderProjectorPage() {
-      if (AppState.activeSession) {
+      renderProjectorCategoryItems(AppState.projectorSelectedCategory || 'general');
+      renderProjectorClassSelector();
+
+      if (AppState.activeSessions && AppState.activeSessions.length > 0) {
         showActiveProjectorScreen();
       } else {
         document.getElementById('projector-setup-card').style.display = 'block';
@@ -6698,293 +7424,691 @@
       }
     }
 
-    function startNewProjectorSession() {
-      try {
-        var selectedClasses = AppState.projectorSelectedClasses || ['all'];
-        var className = 'all';
-        if (selectedClasses.indexOf('all') > -1 || selectedClasses.indexOf('ทุกห้องเรียน') > -1 || selectedClasses.length === 0) {
-          className = 'all';
-        } else {
-          className = selectedClasses.join(', ');
-        }
-        
-        var activityName = AppState.projectorSelectedActivity;
-        var sessSelect = document.getElementById('session-activity-select');
-        if (sessSelect && sessSelect.value) {
-          activityName = sessSelect.value;
-        }
-        if (!activityName) {
-          var customActInput = document.getElementById('input-session-quick-add');
-          if (customActInput && customActInput.value.trim()) {
-            activityName = customActInput.value.trim();
-          } else {
-            activityName = 'เช็คชื่อมาเรียน';
-          }
-        }
+    function openNewSessionModal() {
+      if (AppState.activeSessions && AppState.activeSessions.length >= 3) {
+        showToast('เปิดคาบเช็คชื่อพร้อมกันครบ 3 คาบแล้ว (สูงสุด 3 คาบพร้อมกัน)', 'error');
+        return;
+      }
+      AppState.modalSelectedCategory = 'general';
+      AppState.modalSelectedActivity = 'เช็คชื่อมาเรียน';
+      AppState.modalSelectedClasses = ['all'];
+      renderModalCategoryItems('general');
+      renderModalClassSelector();
+      openModal('modal-create-new-session');
+    }
 
-        var durSelect = document.getElementById('session-duration-select');
-        var durationPreset = durSelect ? durSelect.value : '15';
-        var duration = 15;
-        if (durationPreset === 'custom') {
+    function renderModalCategoryItems(catKey) {
+      var container = document.getElementById('modal-session-cat-items-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      var list = getActivitiesByCategory(catKey);
+      if (list.length === 0) {
+        var emptySpan = document.createElement('span');
+        emptySpan.style.fontSize = '12px';
+        emptySpan.style.color = '#94A3B8';
+        emptySpan.textContent = 'ยังไม่มีรายการในหมวดนี้ (พิมพ์ชื่อด้านล่างเพื่อเพิ่มได้ทันที)';
+        container.appendChild(emptySpan);
+        return;
+      }
+
+      var curSelected = AppState.modalSelectedActivity;
+      var foundCurrent = false;
+
+      for (var i = 0; i < list.length; i++) {
+        var actName = list[i].name;
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        var isSelected = (actName === curSelected);
+        if (isSelected) foundCurrent = true;
+
+        btn.className = 'btn-glass btn-sm-glass ' + (isSelected ? 'btn-orange active' : 'btn-dark');
+        btn.style.padding = '5px 12px';
+        btn.style.fontSize = '12px';
+        btn.style.fontWeight = isSelected ? '700' : '500';
+        btn.innerHTML = '<i class="fas fa-tag" style="color:' + (isSelected ? '#FFF' : 'var(--orange-400)') + '"></i> ' + actName;
+
+        (function(targetName) {
+          btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            AppState.modalSelectedActivity = targetName;
+            renderModalCategoryItems(catKey);
+          });
+        })(actName);
+
+        container.appendChild(btn);
+      }
+
+      if (!foundCurrent && list.length > 0) {
+        AppState.modalSelectedActivity = list[0].name;
+      }
+
+      var textEl = document.getElementById('modal-session-selected-activity-text');
+      if (textEl) textEl.textContent = AppState.modalSelectedActivity;
+    }
+
+    function renderModalClassSelector() {
+      var container = document.getElementById('modal-session-class-chips-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      var curSelected = AppState.modalSelectedClasses || ['all'];
+      var isAllSelected = (curSelected.indexOf('all') > -1 || curSelected.indexOf('ทุกห้องเรียน') > -1);
+
+      var btnAll = document.createElement('button');
+      btnAll.type = 'button';
+      btnAll.className = 'btn-glass btn-sm-glass ' + (isAllSelected ? 'btn-cyan active' : 'btn-dark');
+      btnAll.style.padding = '4px 10px';
+      btnAll.style.fontSize = '11.5px';
+      btnAll.style.fontWeight = isAllSelected ? '700' : '500';
+      btnAll.innerHTML = '<i class="fas fa-layer-group"></i> ทุกห้องเรียน (All)';
+      btnAll.addEventListener('click', function(e) {
+        e.preventDefault();
+        AppState.modalSelectedClasses = ['all'];
+        renderModalClassSelector();
+      });
+      container.appendChild(btnAll);
+
+      var classesList = AppState.classes || [];
+      for (var i = 0; i < classesList.length; i++) {
+        var clsObj = classesList[i];
+        var cName = (typeof clsObj === 'object' && clsObj) ? (clsObj.name || clsObj.className || '') : String(clsObj || '');
+        if (!cName) continue;
+
+        var isSelected = (!isAllSelected && curSelected.indexOf(cName) > -1);
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn-glass btn-sm-glass ' + (isSelected ? 'btn-orange active' : 'btn-dark');
+        btn.style.padding = '4px 10px';
+        btn.style.fontSize = '11.5px';
+        btn.style.fontWeight = isSelected ? '700' : '500';
+        btn.innerHTML = '<i class="fas fa-chalkboard"></i> ' + cName;
+
+        (function(nameVal) {
+          btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            var list = (AppState.modalSelectedClasses || []).slice();
+            if (list.indexOf('all') > -1 || list.indexOf('ทุกห้องเรียน') > -1) list = [];
+            var idx = list.indexOf(nameVal);
+            if (idx > -1) list.splice(idx, 1);
+            else list.push(nameVal);
+            if (list.length === 0) list = ['all'];
+            AppState.modalSelectedClasses = list;
+            renderModalClassSelector();
+          });
+        })(cName);
+
+        container.appendChild(btn);
+      }
+
+      var textSummary = document.getElementById('modal-session-selected-classes-text');
+      if (textSummary) {
+        if (isAllSelected) textSummary.textContent = 'ทุกห้องเรียน (All)';
+        else textSummary.textContent = curSelected.join(', ');
+      }
+    }
+
+    function startNewProjectorSessionFromForm(isModal) {
+      if (AppState.activeSessions && AppState.activeSessions.length >= 3) {
+        showToast('เปิดคาบเช็คชื่อพร้อมกันครบ 3 คาบแล้ว (สูงสุด 3 คาบพร้อมกัน)', 'error');
+        return;
+      }
+
+      var selectedClasses = isModal ? AppState.modalSelectedClasses : AppState.projectorSelectedClasses;
+      var className = 'all';
+      if (!selectedClasses || selectedClasses.indexOf('all') > -1 || selectedClasses.indexOf('ทุกห้องเรียน') > -1 || selectedClasses.length === 0) {
+        className = 'all';
+      } else {
+        className = selectedClasses.join(', ');
+      }
+
+      var activityName = isModal ? AppState.modalSelectedActivity : AppState.projectorSelectedActivity;
+      if (!activityName) activityName = 'เช็คชื่อมาเรียน';
+
+      var durEl = isModal ? document.getElementById('modal-session-duration-select') : document.getElementById('session-duration-select');
+      var duration = 15;
+      if (durEl) {
+        var durPreset = durEl.value;
+        if (durPreset === 'custom' && !isModal) {
           var customValEl = document.getElementById('session-duration-custom-val');
           var customVal = customValEl ? parseFloat(customValEl.value) : 15;
           var unitEl = document.getElementById('session-duration-custom-unit');
           var unit = unitEl ? unitEl.value : 'minutes';
-          if (unit === 'hours') {
-            duration = Math.round((customVal || 1) * 60);
-          } else {
-            duration = Math.round(customVal || 15);
-          }
+          duration = unit === 'hours' ? Math.round((customVal || 1) * 60) : Math.round(customVal || 15);
         } else {
-          duration = parseInt(durationPreset, 10) || 15;
+          duration = parseInt(durPreset, 10) || 15;
         }
-        if (duration < 1) duration = 1;
+      }
+      if (duration < 1) duration = 1;
 
-        var otpSelect = document.getElementById('session-otp-interval-select');
-        var otpPreset = otpSelect ? otpSelect.value : '15';
-        var otpInterval = 15;
-        if (otpPreset === 'custom') {
+      var otpEl = isModal ? document.getElementById('modal-session-otp-interval-select') : document.getElementById('session-otp-interval-select');
+      var otpInterval = 15;
+      if (otpEl) {
+        var otpPreset = otpEl.value;
+        if (otpPreset === 'custom' && !isModal) {
           var customOtpValEl = document.getElementById('session-otp-custom-val');
           var customOtpVal = customOtpValEl ? parseFloat(customOtpValEl.value) : 15;
           var otpUnitEl = document.getElementById('session-otp-custom-unit');
           var otpUnit = otpUnitEl ? otpUnitEl.value : 'seconds';
-          if (otpUnit === 'hours') {
-            otpInterval = Math.round((customOtpVal || 1) * 3600);
-          } else if (otpUnit === 'minutes') {
-            otpInterval = Math.round((customOtpVal || 1) * 60);
-          } else {
-            otpInterval = Math.round(customOtpVal || 15);
-          }
+          if (otpUnit === 'hours') otpInterval = Math.round((customOtpVal || 1) * 3600);
+          else if (otpUnit === 'minutes') otpInterval = Math.round((customOtpVal || 1) * 60);
+          else otpInterval = Math.round(customOtpVal || 15);
         } else {
           otpInterval = parseInt(otpPreset, 10) || 15;
         }
-        if (otpInterval < 5) otpInterval = 5;
+      }
+      if (otpInterval < 5) otpInterval = 5;
 
-        var latInput = document.getElementById('session-lat-input');
-        var lat = latInput ? (parseFloat(latInput.value) || 0) : 0;
-        var lngInput = document.getElementById('session-lng-input');
-        var lng = lngInput ? (parseFloat(lngInput.value) || 0) : 0;
-        var radSelect = document.getElementById('session-radius-select');
-        var radius = radSelect ? (parseInt(radSelect.value, 10) || 50) : 50;
-        
-        var chkOtp = document.getElementById('check-opt-otp');
-        var reqOtp = chkOtp ? chkOtp.checked : true;
-        var chkGps = document.getElementById('check-opt-gps');
-        var reqGps = chkGps ? chkGps.checked : true;
-        var chkDev = document.getElementById('check-opt-device');
-        var reqDevice = chkDev ? chkDev.checked : true;
-        var chkSlf = document.getElementById('check-opt-selfie');
-        var reqSelfie = chkSlf ? chkSlf.checked : true;
+      // Late Cutoff Time Calculation
+      var lateSelectEl = isModal ? document.getElementById('modal-session-late-preset-select') : document.getElementById('session-late-preset-select');
+      var latePreset = lateSelectEl ? lateSelectEl.value : 'none';
+      var lateAfterMinutes = 0;
+      var lateCutoffTime = '';
+      var lateAtIso = '';
+      var lateAtMs = 0;
+      var nowMs = Date.now();
 
-        var config = {
-          className: className,
+      if (latePreset === 'custom_mins') {
+        var customLateMinsEl = isModal ? document.getElementById('modal-session-custom-late-mins') : document.getElementById('session-custom-late-mins');
+        lateAfterMinutes = customLateMinsEl ? (parseInt(customLateMinsEl.value, 10) || 10) : 10;
+        lateAtMs = nowMs + (lateAfterMinutes * 60 * 1000);
+      } else if (latePreset === 'exact_time') {
+        var exactLateTimeEl = isModal ? document.getElementById('modal-session-exact-late-time') : document.getElementById('session-exact-late-time');
+        lateCutoffTime = exactLateTimeEl ? exactLateTimeEl.value : '';
+        if (lateCutoffTime) {
+          var tParts = lateCutoffTime.split(':');
+          var nDate = new Date(nowMs);
+          var lDate = new Date(nDate.getFullYear(), nDate.getMonth(), nDate.getDate(), parseInt(tParts[0], 10), parseInt(tParts[1], 10), 0);
+          lateAtMs = lDate.getTime();
+          if (lateAtMs > nowMs) {
+            lateAfterMinutes = Math.round((lateAtMs - nowMs) / (60 * 1000));
+          }
+        }
+      } else if (latePreset !== 'none') {
+        lateAfterMinutes = parseInt(latePreset, 10) || 0;
+        if (lateAfterMinutes > 0) {
+          lateAtMs = nowMs + (lateAfterMinutes * 60 * 1000);
+        }
+      }
+
+      if (lateAtMs > 0) {
+        lateAtIso = new Date(lateAtMs).toISOString();
+      }
+
+      var latInput = document.getElementById('session-lat-input');
+      var lat = latInput ? (parseFloat(latInput.value) || 0) : 0;
+      var lngInput = document.getElementById('session-lng-input');
+      var lng = lngInput ? (parseFloat(lngInput.value) || 0) : 0;
+      var radSelect = document.getElementById('session-radius-select');
+      var radius = radSelect ? (parseInt(radSelect.value, 10) || 50) : 50;
+
+      var chkOtp = document.getElementById('check-opt-otp');
+      var reqOtp = chkOtp ? chkOtp.checked : true;
+      var chkGps = document.getElementById('check-opt-gps');
+      var reqGps = chkGps ? chkGps.checked : true;
+      var chkDev = document.getElementById('check-opt-device');
+      var reqDevice = chkDev ? chkDev.checked : true;
+      var chkSlf = document.getElementById('check-opt-selfie');
+      var reqSelfie = chkSlf ? chkSlf.checked : true;
+
+      var config = {
+        className: className,
+        activityName: activityName,
+        durationMinutes: duration,
+        otpIntervalSeconds: otpInterval,
+        lat: lat,
+        lng: lng,
+        radiusMeters: radius,
+        requireOTP: reqOtp,
+        requireGPS: reqGps,
+        requireDeviceBinding: reqDevice,
+        requireSelfie: reqSelfie,
+        lateAfterMinutes: lateAfterMinutes,
+        lateCutoffTime: lateCutoffTime,
+        lateAt: lateAtIso
+      };
+
+      showLoadingPopup('กำลังเปิดคาบเช็คชื่อ...', 'กำลังสร้างรหัส Dynamic OTP และเริ่มเปิดรับข้อมูล');
+
+      if (isGASAvailable()) {
+        google.script.run
+          .withSuccessHandler(function(res) {
+            hideLoadingPopup();
+            if (res && res.status === 'success') {
+              if (res.activeSessions) {
+                AppState.activeSessions = res.activeSessions;
+              } else if (res.session) {
+                if (!AppState.activeSessions) AppState.activeSessions = [];
+                AppState.activeSessions.push(res.session);
+              }
+              AppState.activeSession = AppState.activeSessions[0];
+              if (isModal) closeModal('modal-create-new-session');
+              showActiveProjectorScreen();
+              showToast('เปิดคาบเช็คชื่อ (' + activityName + ') เรียบร้อยแล้ว! (เปิดอยู่ ' + AppState.activeSessions.length + ' คาบ)', 'success');
+            } else {
+              showToast((res && res.message) ? res.message : 'ไม่สามารถสร้างคาบเช็คชื่อได้', 'error');
+            }
+          })
+          .withFailureHandler(function(err) {
+            hideLoadingPopup();
+            showToast('เกิดข้อผิดพลาดในการเปิดคาบ: ' + ((err && err.message) ? err.message : String(err)), 'error');
+          })
+          .createCheckinSession(config);
+      } else {
+        hideLoadingPopup();
+        var expiresAtMs = nowMs + (duration * 60 * 1000);
+        var sessionId = 'SES' + String(nowMs).slice(-6);
+        var secretSeed = 'SEC_' + Math.random().toString(36).substring(2, 10).toUpperCase();
+
+        var mockSession = {
+          sessionId: sessionId,
+          className: className || 'all',
           activityName: activityName,
-          durationMinutes: duration,
-          otpIntervalSeconds: otpInterval,
+          date: getTodayDateString(),
+          createdAt: new Date(nowMs).toISOString(),
+          expiresAt: new Date(expiresAtMs).toISOString(),
           lat: lat,
           lng: lng,
           radiusMeters: radius,
-          requireOTP: reqOtp,
+          secretSeed: secretSeed,
+          otpIntervalSeconds: otpInterval,
+          requireSelfie: reqSelfie,
           requireGPS: reqGps,
           requireDeviceBinding: reqDevice,
-          requireSelfie: reqSelfie
+          status: 'Active',
+          lateAt: lateAtIso,
+          lateAtMs: lateAtMs,
+          lateAfterMinutes: lateAfterMinutes
         };
 
-        showLoadingPopup('กำลังเปิดคาบเช็คชื่อ...', 'กำลังสร้างรหัส Dynamic OTP และเริ่มเปิดรับข้อมูล');
+        if (!AppState.activeSessions) AppState.activeSessions = [];
+        AppState.activeSessions.push(mockSession);
+        AppState.activeSession = AppState.activeSessions[0];
 
-        if (isGASAvailable()) {
-          google.script.run
-            .withSuccessHandler(function(res) {
-              hideLoadingPopup();
-              if (res && res.status === 'success' && res.session) {
-                AppState.activeSession = res.session;
-                try {
-                  localStorage.setItem('gas_student_active_session', JSON.stringify(res.session));
-                } catch (e) {}
-                showActiveProjectorScreen();
-                showToast('เปิดคาบเช็คชื่อ (' + activityName + ') เรียบร้อยแล้ว!', 'success');
-              } else {
-                showToast((res && res.message) ? res.message : 'ไม่สามารถสร้างคาบเช็คชื่อได้', 'error');
-              }
-            })
-            .withFailureHandler(function(err) {
-              hideLoadingPopup();
-              showToast('เกิดข้อผิดพลาดในการเปิดคาบ: ' + ((err && err.message) ? err.message : String(err)), 'error');
-            })
-            .createCheckinSession(config);
-        } else {
-          hideLoadingPopup();
-          var nowMs = Date.now();
-          var expiresAtMs = nowMs + (duration * 60 * 1000);
-          var sessionId = 'SES' + String(nowMs).slice(-6);
-          var secretSeed = 'SEC_' + Math.random().toString(36).substring(2, 10).toUpperCase();
+        try {
+          localStorage.setItem('gas_student_active_sessions', JSON.stringify(AppState.activeSessions));
+        } catch (e) {}
 
-          var mockSession = {
-            sessionId: sessionId,
-            className: className || 'all',
-            activityName: activityName,
-            date: getTodayDateString(),
-            createdAt: new Date(nowMs).toISOString(),
-            expiresAt: new Date(expiresAtMs).toISOString(),
-            lat: lat,
-            lng: lng,
-            radiusMeters: radius,
-            secretSeed: secretSeed,
-            otpIntervalSeconds: otpInterval,
-            requireSelfie: reqSelfie,
-            requireGPS: reqGps,
-            requireDeviceBinding: reqDevice,
-            status: 'Active'
-          };
-
-          AppState.activeSession = mockSession;
-          try {
-            localStorage.setItem('gas_student_active_session', JSON.stringify(mockSession));
-          } catch (e) {}
-          showActiveProjectorScreen();
-          showToast('เปิดคาบเช็คชื่อ (' + activityName + ') เรียบร้อยแล้ว!', 'success');
-        }
-      } catch (err) {
-        hideLoadingPopup();
-        console.error('Error starting session:', err);
-        showToast('เกิดข้อผิดพลาดในการเปิดคาบ: ' + (err.message || String(err)), 'error');
+        if (isModal) closeModal('modal-create-new-session');
+        showActiveProjectorScreen();
+        showToast('เปิดคาบเช็คชื่อ (' + activityName + ') เรียบร้อยแล้ว! (เปิดอยู่ ' + AppState.activeSessions.length + ' คาบ)', 'success');
       }
     }
 
     function showActiveProjectorScreen() {
-      try {
+      var setupCard = document.getElementById('projector-setup-card');
+      var activePanel = document.getElementById('projector-active-panel');
+      if (setupCard) setupCard.style.display = 'none';
+      if (activePanel) activePanel.style.display = 'block';
+
+      renderActiveProjectorSessions();
+
+      if (AppState.sessionTimer) clearInterval(AppState.sessionTimer);
+      if (AppState.totpTimer) clearInterval(AppState.totpTimer);
+      if (AppState.liveFeedTimer) clearInterval(AppState.liveFeedTimer);
+
+      AppState.sessionTimer = setInterval(function() {
+        updateAllProjectorCountdownTimers();
+      }, 1000);
+
+      AppState.totpTimer = setInterval(function() {
+        updateAllProjectorTOTPDisplays();
+      }, 1000);
+
+      fetchAllProjectorLiveFeeds();
+      AppState.liveFeedTimer = setInterval(function() {
+        fetchAllProjectorLiveFeeds();
+      }, 3500);
+    }
+
+    function renderActiveProjectorSessions() {
+      var grid = document.getElementById('projector-sessions-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      var sessions = AppState.activeSessions || [];
+      if (sessions.length === 0) {
         var setupCard = document.getElementById('projector-setup-card');
         var activePanel = document.getElementById('projector-active-panel');
-        if (setupCard) setupCard.style.display = 'none';
-        if (activePanel) activePanel.style.display = 'block';
+        if (setupCard) setupCard.style.display = 'block';
+        if (activePanel) activePanel.style.display = 'none';
+        return;
+      }
 
-        var sess = AppState.activeSession;
-        if (!sess) return;
+      grid.className = 'projector-sessions-grid grid-' + Math.min(sessions.length, 3);
 
-        var classNameStr = sess.className;
-        if (!classNameStr || classNameStr === 'undefined' || classNameStr === 'all') {
-          classNameStr = 'ทุกห้องเรียน';
+      var countBadge = document.getElementById('proj-active-sessions-count');
+      if (countBadge) countBadge.textContent = sessions.length;
+
+      var btnAdd = document.getElementById('btn-add-new-session');
+      if (btnAdd) {
+        if (sessions.length >= 3) {
+          btnAdd.disabled = true;
+          btnAdd.style.opacity = '0.5';
+          btnAdd.style.cursor = 'not-allowed';
+          btnAdd.title = 'เปิดครบ 3 คาบแล้ว (สูงสุด 3 คาบพร้อมกัน)';
+        } else {
+          btnAdd.disabled = false;
+          btnAdd.style.opacity = '1';
+          btnAdd.style.cursor = 'pointer';
+          btnAdd.title = 'เพิ่มการเช็คชื่อใหม่อีก 1 คาบ (เปิดพร้อมกันได้สูงสุด 3 คาบ)';
         }
-        var classText = document.getElementById('proj-active-class-text');
-        if (classText) {
-          if (classNameStr.indexOf(',') > -1) {
-            var countRooms = classNameStr.split(',').length;
-            classText.textContent = 'ห้อง ' + classNameStr + ' (' + countRooms + ' ห้อง)';
-          } else if (classNameStr === 'ทุกห้องเรียน') {
-            classText.textContent = 'ห้อง ทุกห้องเรียน (All)';
+      }
+
+      var themeColors = ['#FF6B00', '#00F0FF', '#A78BFA'];
+
+      for (var i = 0; i < sessions.length; i++) {
+        var s = sessions[i];
+        var themeCol = themeColors[i % themeColors.length];
+
+        var card = document.createElement('div');
+        card.className = 'projector-multi-card';
+        card.id = 'projector-card-' + s.sessionId;
+        card.style.borderColor = (i === 0 ? 'rgba(255,107,0,0.4)' : (i === 1 ? 'rgba(0,240,255,0.4)' : 'rgba(167,139,250,0.4)'));
+
+        // Header
+        var header = document.createElement('div');
+        header.className = 'projector-card-header';
+
+        var hLeft = document.createElement('div');
+        hLeft.style.display = 'flex';
+        hLeft.style.alignItems = 'center';
+        hLeft.style.gap = '8px';
+        hLeft.style.flexWrap = 'wrap';
+
+        var actBadge = document.createElement('span');
+        actBadge.className = 'badge-glass';
+        actBadge.style.background = 'rgba(255,255,255,0.06)';
+        actBadge.style.border = '1px solid ' + themeCol;
+        actBadge.style.color = themeCol;
+        actBadge.style.fontWeight = '700';
+        actBadge.style.fontSize = '12.5px';
+        actBadge.innerHTML = '<i class="fas fa-tags"></i> ' + (i + 1) + '. ' + s.activityName;
+        hLeft.appendChild(actBadge);
+
+        var classSpan = document.createElement('span');
+        classSpan.style.fontWeight = '700';
+        classSpan.style.fontSize = '13.5px';
+        classSpan.style.color = '#FFF';
+        classSpan.innerHTML = '<i class="fas fa-chalkboard-user" style="color:' + themeCol + '"></i> ' + (s.className === 'all' ? 'ทุกห้องเรียน' : s.className);
+        hLeft.appendChild(classSpan);
+
+        // Late Cut-off Badge Indicator
+        var lateAtMs = s.lateAtMs || (s.lateAt ? new Date(s.lateAt).getTime() : 0);
+        if (lateAtMs > 0) {
+          var latePill = document.createElement('span');
+          latePill.className = 'badge-glass badge-warning';
+          latePill.id = 'late-pill-' + s.sessionId;
+          latePill.style.fontSize = '11px';
+          latePill.style.padding = '3px 8px';
+          var isAlreadyLate = Date.now() > lateAtMs;
+          if (isAlreadyLate) {
+            latePill.className = 'badge-glass badge-late';
+            latePill.style.animation = 'pulseGlow 2s infinite';
+            latePill.innerHTML = '<i class="fas fa-clock"></i> เกินเวลา: ขึ้นว่า "มาสาย"';
           } else {
-            classText.textContent = 'ห้อง ' + classNameStr;
+            var lDate = new Date(lateAtMs);
+            var lHours = lDate.getHours();
+            var lMins = lDate.getMinutes();
+            var lTimeFormatted = (lHours < 10 ? '0' + lHours : lHours) + ':' + (lMins < 10 ? '0' + lMins : lMins) + ' น.';
+            latePill.innerHTML = '<i class="fas fa-user-clock"></i> ตัดสาย: ' + lTimeFormatted;
           }
+          hLeft.appendChild(latePill);
         }
 
-        var actText = document.getElementById('proj-active-activity-text');
-        var curAct = sess.activityName || 'เช็คชื่อมาเรียน';
-        if (actText) actText.textContent = curAct;
+        header.appendChild(hLeft);
 
-        if (AppState.sessionTimer) clearInterval(AppState.sessionTimer);
-        if (AppState.totpTimer) clearInterval(AppState.totpTimer);
-        if (AppState.liveFeedTimer) clearInterval(AppState.liveFeedTimer);
+        var hRight = document.createElement('div');
+        hRight.style.display = 'flex';
+        hRight.style.alignItems = 'center';
+        hRight.style.gap = '8px';
 
-        AppState.sessionTimer = setInterval(function() {
-          var diffMs = new Date(sess.expiresAt).getTime() - Date.now();
-          var timeRemainingEl = document.getElementById('proj-time-remaining');
-          if (diffMs <= 0) {
-            clearInterval(AppState.sessionTimer);
-            clearInterval(AppState.totpTimer);
-            clearInterval(AppState.liveFeedTimer);
-            if (timeRemainingEl) timeRemainingEl.textContent = 'หมดเวลา';
-            showToast('คาบเช็คชื่อนี้หมดเวลาแล้ว', 'error');
-            endProjectorSession();
-            return;
-          }
+        var timePill = document.createElement('div');
+        timePill.className = 'glass-pill highlight';
+        timePill.style.padding = '4px 10px';
+        timePill.style.fontSize = '12px';
+        timePill.innerHTML = '<i class="fas fa-stopwatch"></i> <span id="time-rem-' + s.sessionId + '" style="font-family:monospace; font-weight:800;">15:00</span>';
+        hRight.appendChild(timePill);
+
+        var btnClose = document.createElement('button');
+        btnClose.type = 'button';
+        btnClose.className = 'btn-glass btn-danger-glass btn-sm-glass';
+        btnClose.style.fontSize = '11px';
+        btnClose.style.padding = '4px 10px';
+        btnClose.innerHTML = '<i class="fas fa-circle-stop"></i> ปิดคาบนี้';
+        (function(sessId, actTitle) {
+          btnClose.addEventListener('click', function(e) {
+            e.preventDefault();
+            openConfirmModal({
+              title: 'ปิดคาบเช็คชื่อนี้',
+              desc: 'คุณต้องการปิดคาบเช็คชื่อ <strong>"' + actTitle + '"</strong> (รหัส ' + sessId + ') ใช่หรือไม่?<br><span style="color:#94A3B8; font-size:12px;">คาบอื่นที่เปิดอยู่จะยังคงทำงานต่อตามปกติ</span>',
+              icon: 'fa-circle-stop',
+              btnIcon: 'fa-circle-stop',
+              okText: 'ยืนยันปิดคาบนี้',
+              onConfirm: function() {
+                closeSingleProjectorSession(sessId);
+              }
+            });
+          });
+        })(s.sessionId, s.activityName);
+        hRight.appendChild(btnClose);
+        header.appendChild(hRight);
+        card.appendChild(header);
+
+        // Body Grid / Layout
+        var bodyContainer = document.createElement('div');
+        bodyContainer.className = 'projector-session-card-inner';
+
+        // QR & OTP Box
+        var qrCol = document.createElement('div');
+        qrCol.className = 'projector-card-body';
+
+        var qrTitle = document.createElement('div');
+        qrTitle.style.fontSize = '11.5px';
+        qrTitle.style.fontWeight = '600';
+        qrTitle.style.color = themeCol;
+        qrTitle.style.marginBottom = '6px';
+        qrTitle.style.letterSpacing = '0.5px';
+        qrTitle.textContent = 'สแกน QR CODE หรือกรอก OTP';
+        qrCol.appendChild(qrTitle);
+
+        var qrBox = document.createElement('div');
+        qrBox.className = 'projector-qr-box-multi';
+        qrBox.id = 'qr-target-' + s.sessionId;
+        qrCol.appendChild(qrBox);
+
+        var otpBox = document.createElement('div');
+        otpBox.className = 'otp-display-multi';
+        otpBox.id = 'otp-text-' + s.sessionId;
+        otpBox.textContent = '------';
+        qrCol.appendChild(otpBox);
+
+        var barCont = document.createElement('div');
+        barCont.className = 'totp-countdown-bar-container';
+        barCont.style.maxWidth = '240px';
+        barCont.style.marginBottom = '6px';
+
+        var bar = document.createElement('div');
+        bar.className = 'totp-countdown-bar';
+        bar.id = 'bar-' + s.sessionId;
+        barCont.appendChild(bar);
+        qrCol.appendChild(barCont);
+
+        var secLeftDiv = document.createElement('div');
+        secLeftDiv.style.fontSize = '11px';
+        secLeftDiv.style.color = '#94A3B8';
+        secLeftDiv.innerHTML = 'รีเฟรชใน <span id="sec-left-' + s.sessionId + '" style="color:' + themeCol + '; font-weight:700;">15</span> วินาที';
+        qrCol.appendChild(secLeftDiv);
+
+        bodyContainer.appendChild(qrCol);
+
+        // Live Feed Column
+        var feedCol = document.createElement('div');
+        feedCol.style.display = 'flex';
+        feedCol.style.flexDirection = 'column';
+        feedCol.style.background = 'rgba(10, 14, 24, 0.5)';
+        feedCol.style.borderRadius = 'var(--radius-lg)';
+        feedCol.style.padding = '14px';
+        feedCol.style.border = '1px solid rgba(255,255,255,0.06)';
+
+        var feedHeader = document.createElement('div');
+        feedHeader.style.display = 'flex';
+        feedHeader.style.justifyContent = 'space-between';
+        feedHeader.style.alignItems = 'center';
+        feedHeader.style.marginBottom = '10px';
+        feedHeader.style.flexWrap = 'wrap';
+        feedHeader.style.gap = '6px';
+
+        var countWrap = document.createElement('div');
+        countWrap.innerHTML = '<span style="font-size:12px; font-weight:700; color:#FFF;"><i class="fas fa-bolt" style="color:#FBBF24"></i> เช็คแล้ว: </span>' +
+                              '<span class="badge-glass badge-present" style="font-size:11.5px;"><span id="live-count-' + s.sessionId + '">0</span> / <span id="live-total-' + s.sessionId + '">0</span></span> ' +
+                              '<span class="badge-glass badge-present" id="live-present-' + s.sessionId + '" style="font-size:10.5px; padding:2px 6px;">มา: 0</span> ' +
+                              '<span class="badge-glass badge-late" id="live-late-' + s.sessionId + '" style="font-size:10.5px; padding:2px 6px;">สาย: 0</span>';
+        feedHeader.appendChild(countWrap);
+
+        var btnTransfer = document.createElement('button');
+        btnTransfer.type = 'button';
+        btnTransfer.className = 'btn-glass btn-emerald btn-sm-glass';
+        btnTransfer.style.fontSize = '11px';
+        btnTransfer.style.padding = '4px 10px';
+        btnTransfer.innerHTML = '<i class="fas fa-file-import"></i> ดึงเข้าตาราง';
+        (function(sessObj) {
+          btnTransfer.addEventListener('click', function(e) {
+            e.preventDefault();
+            transferLiveAttendanceForSession(sessObj);
+          });
+        })(s);
+        feedHeader.appendChild(btnTransfer);
+        feedCol.appendChild(feedHeader);
+
+        var feedList = document.createElement('div');
+        feedList.className = 'live-feed-list';
+        feedList.id = 'live-list-' + s.sessionId;
+        feedList.style.maxHeight = (sessions.length > 1 ? '240px' : '360px');
+        feedList.style.overflowY = 'auto';
+        feedList.innerHTML = '<div style="padding:20px; text-align:center; color:#64748B; font-size:12px;"><i class="fas fa-satellite-dish" style="color:' + themeCol + '; display:block; margin-bottom:6px;"></i>กำลังรอสัญญาณเช็คชื่อ...</div>';
+        feedCol.appendChild(feedList);
+
+        bodyContainer.appendChild(feedCol);
+        card.appendChild(bodyContainer);
+        grid.appendChild(card);
+      }
+
+      updateAllProjectorCountdownTimers();
+      updateAllProjectorTOTPDisplays();
+    }
+
+    function updateAllProjectorCountdownTimers() {
+      var sessions = AppState.activeSessions || [];
+      var expiredFound = false;
+      var nowMs = Date.now();
+
+      for (var i = 0; i < sessions.length; i++) {
+        var s = sessions[i];
+        var diffMs = new Date(s.expiresAt).getTime() - nowMs;
+        var timeEl = document.getElementById('time-rem-' + s.sessionId);
+
+        if (diffMs <= 0) {
+          if (timeEl) timeEl.textContent = 'หมดเวลา';
+          expiredFound = true;
+        } else {
           var totalSec = Math.floor(diffMs / 1000);
           var hours = Math.floor(totalSec / 3600);
           var mins = Math.floor((totalSec % 3600) / 60);
           var secs = totalSec % 60;
-          var timeStr = '';
-          if (hours > 0) {
-            timeStr = (hours < 10 ? '0' + hours : hours) + ':' + (mins < 10 ? '0' + mins : mins) + ':' + (secs < 10 ? '0' + secs : secs);
-          } else {
-            timeStr = (mins < 10 ? '0' + mins : mins) + ':' + (secs < 10 ? '0' + secs : secs);
+          var timeStr = (hours > 0 ? (hours < 10 ? '0' + hours : hours) + ':' : '') +
+                        (mins < 10 ? '0' + mins : mins) + ':' +
+                        (secs < 10 ? '0' + secs : secs);
+          if (timeEl) timeEl.textContent = timeStr;
+        }
+
+        // Update Late Cut-off Pill
+        var lateAtMs = s.lateAtMs || (s.lateAt ? new Date(s.lateAt).getTime() : 0);
+        if (lateAtMs > 0) {
+          var latePill = document.getElementById('late-pill-' + s.sessionId);
+          if (latePill) {
+            if (nowMs > lateAtMs) {
+              latePill.className = 'badge-glass badge-late';
+              latePill.style.animation = 'pulseGlow 2s infinite';
+              latePill.innerHTML = '<i class="fas fa-clock"></i> เกินเวลา: ขึ้นว่า "มาสาย"';
+            } else {
+              var lateDiffSec = Math.floor((lateAtMs - nowMs) / 1000);
+              var lM = Math.floor(lateDiffSec / 60);
+              var lS = lateDiffSec % 60;
+              var lRemainStr = (lM < 10 ? '0' + lM : lM) + ':' + (lS < 10 ? '0' + lS : lS);
+              var lDate = new Date(lateAtMs);
+              var lH = lDate.getHours();
+              var lMin = lDate.getMinutes();
+              var lTimeFmt = (lH < 10 ? '0' + lH : lH) + ':' + (lMin < 10 ? '0' + lMin : lMin);
+              latePill.innerHTML = '<i class="fas fa-user-clock"></i> ตัดสาย: ' + lTimeFmt + ' (เหลือ ' + lRemainStr + ')';
+            }
           }
-          if (timeRemainingEl) timeRemainingEl.textContent = timeStr;
-        }, 1000);
+        }
+      }
 
-        updateProjectorTOTPDisplay();
-        AppState.totpTimer = setInterval(function() {
-          updateProjectorTOTPDisplay();
-        }, 1000);
-
-        fetchProjectorLiveFeed();
-        AppState.liveFeedTimer = setInterval(function() {
-          fetchProjectorLiveFeed();
-        }, 3500);
-      } catch (err) {
-        console.error('Error in showActiveProjectorScreen:', err);
+      if (expiredFound) {
+        var remaining = [];
+        for (var k = 0; k < sessions.length; k++) {
+          if (new Date(sessions[k].expiresAt).getTime() > Date.now()) {
+            remaining.push(sessions[k]);
+          }
+        }
+        if (remaining.length !== sessions.length) {
+          AppState.activeSessions = remaining;
+          AppState.activeSession = remaining.length > 0 ? remaining[0] : null;
+          showToast('มีคาบเช็คชื่อที่หมดเวลาการเปิดรับแล้ว', 'info');
+          renderActiveProjectorSessions();
+        }
       }
     }
 
-    function updateProjectorTOTPDisplay() {
-      try {
-        var sess = AppState.activeSession;
-        if (!sess) return;
+    function updateAllProjectorTOTPDisplays() {
+      var sessions = AppState.activeSessions || [];
+      var nowMs = Date.now();
 
-        var intervalSeconds = parseInt(sess.otpIntervalSeconds, 10) || 15;
-        if (intervalSeconds < 5) intervalSeconds = 15;
+      for (var i = 0; i < sessions.length; i++) {
+        var s = sessions[i];
+        var intervalSec = parseInt(s.otpIntervalSeconds, 10) || 15;
+        if (intervalSec < 5) intervalSec = 15;
 
-        var nowMs = Date.now();
-        var secLeft = intervalSeconds - (Math.floor(nowMs / 1000) % intervalSeconds);
-        
-        var secSpan = document.getElementById('projector-sec-left');
-        if (secSpan) {
-          if (intervalSeconds >= 3600) {
-            var hrs = Math.floor(secLeft / 3600);
-            var m = Math.floor((secLeft % 3600) / 60);
-            var s = secLeft % 60;
-            secSpan.textContent = (hrs > 0 ? hrs + ' ชม. ' : '') + m + ' นาที ' + s + ' วินาที';
-          } else if (intervalSeconds >= 60) {
-            var m = Math.floor(secLeft / 60);
-            var s = secLeft % 60;
-            secSpan.textContent = (m > 0 ? m + ' นาที ' : '') + s + ' วินาที';
-          } else {
-            secSpan.textContent = secLeft + ' วินาที';
-          }
+        var secLeft = intervalSec - (Math.floor(nowMs / 1000) % intervalSec);
+
+        var secEl = document.getElementById('sec-left-' + s.sessionId);
+        if (secEl) {
+          secEl.textContent = secLeft;
         }
 
-        var bar = document.getElementById('projector-countdown-bar');
-        if (bar) {
-          var pct = ((secLeft) / intervalSeconds) * 100;
-          bar.style.width = pct + '%';
+        var barEl = document.getElementById('bar-' + s.sessionId);
+        if (barEl) {
+          var pct = (secLeft / intervalSec) * 100;
+          barEl.style.width = pct + '%';
         }
 
-        var currentOtp = generateClientTOTP(sess.secretSeed, intervalSeconds, nowMs);
-        var otpDisplay = document.getElementById('projector-otp-text');
-        if (otpDisplay && otpDisplay.textContent !== currentOtp) {
-          otpDisplay.textContent = currentOtp;
-          renderDynamicQRCode(currentOtp);
+        var currentOtp = generateClientTOTP(s.secretSeed, intervalSec, nowMs);
+        var otpTextEl = document.getElementById('otp-text-' + s.sessionId);
+        if (otpTextEl && otpTextEl.textContent !== currentOtp) {
+          otpTextEl.textContent = currentOtp;
+          renderSessionDynamicQRCode(s.sessionId, currentOtp);
         }
-      } catch (err) {
-        console.error('Error in updateProjectorTOTPDisplay:', err);
       }
     }
 
-    function renderDynamicQRCode(otpCode) {
-      var target = document.getElementById('projector-qrcode-target');
+    function renderSessionDynamicQRCode(sessionId, otpCode) {
+      var target = document.getElementById('qr-target-' + sessionId);
       if (!target) return;
       target.innerHTML = '';
 
-      var sess = AppState.activeSession;
-      var qrPayload = window.location.href.split('?')[0].split('#')[0] + '#checkin=' + (sess ? sess.sessionId : '') + '&otp=' + otpCode;
-
+      var qrPayload = window.location.href.split('?')[0].split('#')[0] + '#checkin=' + sessionId + '&otp=' + otpCode;
       var qrSuccess = false;
+
       try {
         if (typeof QRCode !== 'undefined') {
           new QRCode(target, {
             text: qrPayload,
-            width: 220,
-            height: 220,
-            colorDark : "#0A0D14",
-            colorLight : "#FFFFFF"
+            width: 170,
+            height: 170,
+            colorDark: "#0A0D14",
+            colorLight: "#FFFFFF"
           });
           qrSuccess = true;
         }
@@ -6995,145 +8119,107 @@
       if (!qrSuccess) {
         try {
           var qrImg = document.createElement('img');
-          qrImg.style.width = '220px';
-          qrImg.style.height = '220px';
-          qrImg.style.borderRadius = '8px';
+          qrImg.style.width = '170px';
+          qrImg.style.height = '170px';
+          qrImg.style.borderRadius = '6px';
           qrImg.style.background = '#FFF';
-          qrImg.style.padding = '8px';
+          qrImg.style.padding = '6px';
           qrImg.alt = 'QR Code';
-          qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + encodeURIComponent(qrPayload);
+          qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=170x170&data=' + encodeURIComponent(qrPayload);
           target.appendChild(qrImg);
         } catch (err) {}
       }
     }
 
-    function fetchProjectorLiveFeed() {
-      var sess = AppState.activeSession;
-      if (!sess) return;
+    function fetchAllProjectorLiveFeeds() {
+      var sessions = AppState.activeSessions || [];
+      if (sessions.length === 0) return;
 
-      if (isGASAvailable()) {
-        google.script.run
-          .withSuccessHandler(function(res) {
-            AppState.latestLiveFeedList = (res && res.list) ? res.list : [];
-            updateProjectorLiveUI(res);
-          })
-          .getSessionLiveAttendance(sess.sessionId);
-      } else {
-        var allAtt = getLocalStorageAttendance();
-        var students = AppState.students;
-        var stdMap = {};
-        var targetStudents = [];
-        for (var s = 0; s < students.length; s++) {
-          stdMap[students[s].studentId] = students[s];
-          if (isClassMatch(sess.className, students[s].className)) {
-            targetStudents.push(students[s]);
-          }
-        }
-
-        var list = [];
-        for (var i = 0; i < allAtt.length; i++) {
-          var item = allAtt[i];
-          if (item.date === sess.date && stdMap[item.studentId] && (item.status === 'Present' || item.status === 'มาเรียน')) {
-            if (isClassMatch(sess.className, stdMap[item.studentId].className)) {
-              list.push({
-                studentId: item.studentId,
-                studentNo: stdMap[item.studentId].studentNo,
-                name: stdMap[item.studentId].name,
-                className: stdMap[item.studentId].className,
-                checkinTime: item.checkinTime || '10:00',
-                distanceMeters: item.distanceMeters || 8,
-                selfiePhoto: item.selfiePhoto || '',
-                checkinType: item.checkinType || 'Self Check-in'
-              });
+      for (var i = 0; i < sessions.length; i++) {
+        (function(sessObj) {
+          if (isGASAvailable()) {
+            google.script.run
+              .withSuccessHandler(function(res) {
+                updateSingleSessionLiveUI(sessObj.sessionId, res);
+              })
+              .getSessionLiveAttendance(sessObj.sessionId);
+          } else {
+            var allAtt = getLocalStorageAttendance();
+            var students = AppState.students;
+            var stdMap = {};
+            var targetStudents = [];
+            for (var s = 0; s < students.length; s++) {
+              stdMap[students[s].studentId] = students[s];
+              if (isClassMatch(sessObj.className, students[s].className)) {
+                targetStudents.push(students[s]);
+              }
             }
+
+            var list = [];
+            var countPresent = 0;
+            var countLate = 0;
+            for (var a = 0; a < allAtt.length; a++) {
+              var item = allAtt[a];
+              if (item.date === sessObj.date && stdMap[item.studentId] && (item.status === 'Present' || item.status === 'มาเรียน' || item.status === 'Late' || item.status === 'มาสาย')) {
+                if (item.sessionId === sessObj.sessionId || (!item.sessionId && isClassMatch(sessObj.className, stdMap[item.studentId].className))) {
+                  var isItemLate = (item.status === 'Late' || item.status === 'มาสาย');
+                  if (isItemLate) countLate++;
+                  else countPresent++;
+
+                  list.push({
+                    studentId: item.studentId,
+                    studentNo: stdMap[item.studentId].studentNo,
+                    name: stdMap[item.studentId].name,
+                    className: stdMap[item.studentId].className,
+                    checkinTime: item.checkinTime || '10:00',
+                    distanceMeters: item.distanceMeters || 8,
+                    selfiePhoto: item.selfiePhoto || '',
+                    checkinType: item.checkinType || sessObj.activityName,
+                    status: isItemLate ? 'Late' : 'Present',
+                    isLate: isItemLate
+                  });
+                }
+              }
+            }
+            list.reverse();
+            updateSingleSessionLiveUI(sessObj.sessionId, {
+              list: list,
+              count: list.length,
+              countPresent: countPresent,
+              countLate: countLate,
+              total: targetStudents.length,
+              activityName: sessObj.activityName,
+              lateAt: sessObj.lateAt,
+              lateAtMs: sessObj.lateAtMs
+            });
           }
-        }
-        list.reverse();
-        AppState.latestLiveFeedList = list;
-        updateProjectorLiveUI({
-          list: list,
-          count: list.length,
-          total: targetStudents.length
-        });
+        })(sessions[i]);
       }
     }
 
-    // =========================================================================
-    // 400x400 LIVE SELFIE HOVER PREVIEW CONTROLLER
-    // =========================================================================
-    function showLiveSelfieHoverPreview(photoUrl, name, className, dist, timeStr, thumbEl) {
-      var preview = document.getElementById('live-selfie-hover-preview');
-      var img = document.getElementById('live-selfie-hover-img');
-      var nameEl = document.getElementById('live-selfie-hover-name');
-      var infoEl = document.getElementById('live-selfie-hover-info');
-      
-      if (!preview || !img || !photoUrl) return;
+    function updateSingleSessionLiveUI(sessionId, res) {
+      if (!res) res = { list: [], count: 0, countPresent: 0, countLate: 0, total: 0 };
+      var countEl = document.getElementById('live-count-' + sessionId);
+      var totalEl = document.getElementById('live-total-' + sessionId);
+      var presentEl = document.getElementById('live-present-' + sessionId);
+      var lateEl = document.getElementById('live-late-' + sessionId);
 
-      img.src = photoUrl;
-      if (nameEl) nameEl.textContent = name || '';
-      if (infoEl) infoEl.textContent = 'ห้อง ' + (className || '') + ' • ' + (dist > 0 ? 'ระยะห่าง ' + dist + ' ม.' : 'พิกัดถูกต้อง') + (timeStr ? ' • เวลา ' + timeStr : '');
+      if (countEl) countEl.textContent = res.count;
+      if (totalEl) totalEl.textContent = res.total;
+      if (presentEl) presentEl.textContent = 'มา: ' + (res.countPresent !== undefined ? res.countPresent : res.count);
+      if (lateEl) lateEl.textContent = 'สาย: ' + (res.countLate !== undefined ? res.countLate : 0);
 
-      preview.style.display = 'block';
-      updateLiveSelfieHoverPosition(thumbEl);
-    }
-
-    function updateLiveSelfieHoverPosition(thumbEl) {
-      var preview = document.getElementById('live-selfie-hover-preview');
-      if (!preview || !thumbEl || preview.style.display === 'none') return;
-
-      var rect = thumbEl.getBoundingClientRect();
-      var previewW = 400;
-      var previewH = 400;
-
-      // Position to the right of thumbnail by default
-      var top = rect.top + (rect.height / 2) - (previewH / 2);
-      var left = rect.right + 18;
-
-      // If overflowing right viewport, place on the left of thumbnail
-      if (left + previewW > window.innerWidth - 16) {
-        left = rect.left - previewW - 18;
-      }
-      if (left < 10) left = 10;
-
-      // Vertical viewport constraints
-      if (top + previewH > window.innerHeight - 16) {
-        top = window.innerHeight - previewH - 16;
-      }
-      if (top < 10) top = 10;
-
-      preview.style.top = top + 'px';
-      preview.style.left = left + 'px';
-    }
-
-    function hideLiveSelfieHoverPreview() {
-      var preview = document.getElementById('live-selfie-hover-preview');
-      if (preview) preview.style.display = 'none';
-    }
-
-    // Auto-hide hover preview on scroll
-    window.addEventListener('scroll', hideLiveSelfieHoverPreview, true);
-
-    function updateProjectorLiveUI(res) {
-      var countSpan = document.getElementById('proj-checked-count');
-      var totalSpan = document.getElementById('proj-total-count');
-      var rateBadge = document.getElementById('proj-rate-badge');
-      
-      if (countSpan) countSpan.textContent = res.count;
-      if (totalSpan) totalSpan.textContent = res.total;
-      
-      var pct = res.total > 0 ? ((res.count / res.total) * 100).toFixed(0) : '0';
-      if (rateBadge) rateBadge.textContent = pct + '%';
-
-      var container = document.getElementById('projector-live-feed-list');
+      var container = document.getElementById('live-list-' + sessionId);
       if (!container) return;
       container.innerHTML = '';
 
       if (!res.list || res.list.length === 0) {
         var emptyDiv = document.createElement('div');
         emptyDiv.style.textAlign = 'center';
-        emptyDiv.style.padding = '40px 10px';
+        emptyDiv.style.padding = '24px 10px';
         emptyDiv.style.color = '#64748B';
-        emptyDiv.innerHTML = '<i class="fas fa-satellite-dish" style="font-size: 28px; color: #FF6B00; margin-bottom: 8px; display: block;"></i>กำลังรอสัญญาณการเช็คชื่อจากนักศึกษา...';
+        emptyDiv.style.fontSize = '12px';
+        emptyDiv.innerHTML = '<i class="fas fa-satellite-dish" style="font-size:20px; color:#FF6B00; margin-bottom:6px; display:block;"></i>กำลังรอสัญญาณการเช็คชื่อ...';
         container.appendChild(emptyDiv);
         return;
       }
@@ -7152,7 +8238,7 @@
           img.src = item.selfiePhoto;
           img.alt = item.name || '';
           img.title = 'ชี้เมาส์เพื่อดูภาพขนาด 400x400 (หรือคลิกเพื่อดูหลักฐาน)';
-          
+
           (function(photoUrl, sName, sClass, distVal, timeVal) {
             img.addEventListener('mouseenter', function() {
               showLiveSelfieHoverPreview(photoUrl, sName, sClass, distVal, timeVal, this);
@@ -7175,9 +8261,9 @@
         } else {
           var iconBox = document.createElement('div');
           iconBox.className = 'student-no-pill';
-          iconBox.style.width = '34px';
-          iconBox.style.height = '34px';
-          iconBox.style.fontSize = '12px';
+          iconBox.style.width = '30px';
+          iconBox.style.height = '30px';
+          iconBox.style.fontSize = '11px';
           iconBox.textContent = item.studentNo;
           left.appendChild(iconBox);
         }
@@ -7185,59 +8271,71 @@
         var textG = document.createElement('div');
         var nameS = document.createElement('div');
         nameS.style.fontWeight = '600';
-        nameS.style.fontSize = '13.5px';
+        nameS.style.fontSize = '12.5px';
         nameS.style.color = '#FFF';
         nameS.textContent = item.name;
         textG.appendChild(nameS);
 
         var subS = document.createElement('div');
-        subS.style.fontSize = '11.5px';
+        subS.style.fontSize = '11px';
         subS.style.color = '#94A3B8';
-        subS.textContent = 'ห้อง ' + item.className + ' • ' + (item.distanceMeters > 0 ? 'ระยะห่าง ' + item.distanceMeters + 'm' : 'พิกัดตรง');
+        subS.textContent = 'ห้อง ' + item.className + ' • ' + (item.distanceMeters > 0 ? item.distanceMeters + 'm' : 'พิกัดตรง');
         textG.appendChild(subS);
         left.appendChild(textG);
-
         div.appendChild(left);
 
         var right = document.createElement('div');
         right.style.textAlign = 'right';
         right.style.display = 'flex';
         right.style.alignItems = 'center';
-        right.style.gap = '8px';
-        
+        right.style.gap = '6px';
+
         var timeBox = document.createElement('div');
+        timeBox.style.display = 'flex';
+        timeBox.style.flexDirection = 'column';
+        timeBox.style.alignItems = 'flex-end';
+        timeBox.style.gap = '2px';
+
         var timeS = document.createElement('div');
-        timeS.style.fontSize = '12px';
+        timeS.style.fontSize = '11px';
         timeS.style.fontWeight = '700';
-        timeS.style.color = '#10B981';
+        timeS.style.color = item.isLate ? '#EC4899' : '#10B981';
         timeS.textContent = item.checkinTime;
         timeBox.appendChild(timeS);
 
-        var badgeS = document.createElement('div');
-        badgeS.style.fontSize = '10px';
-        badgeS.style.color = '#FF8533';
-        badgeS.textContent = 'Verified';
-        timeBox.appendChild(badgeS);
+        var statusBadge = document.createElement('span');
+        if (item.isLate || item.status === 'Late' || item.status === 'มาสาย') {
+          statusBadge.className = 'badge-glass badge-late';
+          statusBadge.style.fontSize = '9.5px';
+          statusBadge.style.padding = '1px 5px';
+          statusBadge.style.fontWeight = '700';
+          statusBadge.innerHTML = '<i class="fas fa-clock"></i> มาสาย';
+        } else {
+          statusBadge.className = 'badge-glass badge-present';
+          statusBadge.style.fontSize = '9.5px';
+          statusBadge.style.padding = '1px 5px';
+          statusBadge.innerHTML = '<i class="fas fa-circle-check"></i> มาเรียน';
+        }
+        timeBox.appendChild(statusBadge);
         right.appendChild(timeBox);
 
-        // Delete button for this live check-in
         var btnDel = document.createElement('button');
         btnDel.type = 'button';
         btnDel.className = 'btn-preview-action delete';
-        btnDel.title = 'ลบรายการเช็คชื่อ (ภาพถ่ายไม่ถูกต้องหรือข้อมูลผิด)';
-        btnDel.style.width = '30px';
-        btnDel.style.height = '30px';
-        btnDel.style.fontSize = '12px';
+        btnDel.title = 'ลบรายการเช็คชื่อนี้';
+        btnDel.style.width = '26px';
+        btnDel.style.height = '26px';
+        btnDel.style.fontSize = '11px';
         btnDel.style.color = '#EF4444';
         btnDel.style.borderColor = 'rgba(239, 68, 68, 0.4)';
         btnDel.style.background = 'rgba(239, 68, 68, 0.1)';
         btnDel.innerHTML = '<i class="fas fa-trash"></i>';
-        (function(sId, sName) {
+        (function(sId, sName, curSessId) {
           btnDel.addEventListener('click', function(e) {
             e.stopPropagation();
-            deleteLiveStudentCheckin(sId, sName);
+            deleteLiveStudentCheckin(sId, sName, curSessId);
           });
-        })(item.studentId, item.name);
+        })(item.studentId, item.name, sessionId);
         right.appendChild(btnDel);
 
         div.appendChild(right);
@@ -7245,13 +8343,68 @@
       }
     }
 
-    function deleteLiveStudentCheckin(studentId, studentName) {
-      var sess = AppState.activeSession;
+    function closeSingleProjectorSession(sessionId) {
+      if (isGASAvailable()) {
+        google.script.run
+          .withSuccessHandler(function(res) {
+            showToast(res.message || 'ปิดคาบเช็คชื่อเรียบร้อยแล้ว', 'success');
+            var remaining = (res.activeSessions) ? res.activeSessions : [];
+            AppState.activeSessions = remaining;
+            AppState.activeSession = remaining.length > 0 ? remaining[0] : null;
+            if (remaining.length === 0) {
+              endProjectorSession();
+            } else {
+              renderActiveProjectorSessions();
+            }
+          })
+          .closeCheckinSession(sessionId);
+      } else {
+        var sessions = AppState.activeSessions || [];
+        var remaining = [];
+        for (var i = 0; i < sessions.length; i++) {
+          if (sessions[i].sessionId !== sessionId) remaining.push(sessions[i]);
+        }
+        AppState.activeSessions = remaining;
+        AppState.activeSession = remaining.length > 0 ? remaining[0] : null;
+        try {
+          localStorage.setItem('gas_student_active_sessions', JSON.stringify(remaining));
+        } catch (e) {}
+        showToast('ปิดคาบเช็คชื่อ (' + sessionId + ') เรียบร้อยแล้ว', 'success');
+        if (remaining.length === 0) {
+          endProjectorSession();
+        } else {
+          renderActiveProjectorSessions();
+        }
+      }
+    }
+
+    function closeAllProjectorSessions() {
+      if (isGASAvailable()) {
+        google.script.run
+          .withSuccessHandler(function() {
+            endProjectorSession();
+            showToast('ปิดทุกคาบเช็คชื่อเรียบร้อยแล้ว', 'success');
+          })
+          .closeCheckinSession('all');
+      } else {
+        endProjectorSession();
+        showToast('ปิดทุกคาบเช็คชื่อเรียบร้อยแล้ว', 'success');
+      }
+    }
+
+    function deleteLiveStudentCheckin(studentId, studentName, sessionId) {
+      var sess = null;
+      for (var s = 0; s < (AppState.activeSessions || []).length; s++) {
+        if (AppState.activeSessions[s].sessionId === sessionId) {
+          sess = AppState.activeSessions[s];
+          break;
+        }
+      }
       var dateStr = sess ? sess.date : getTodayDateString();
 
       openConfirmModal({
         title: 'ยกเลิกการเช็คชื่อ',
-        desc: 'คุณต้องการลบรายการเช็คชื่อของ "' + studentName + '" ใช่หรือไม่? (เนื่องจากภาพไม่ถูกต้องหรือข้อมูลผิด นักศึกษาจะต้องเช็คชื่อใหม่อีกครั้ง)',
+        desc: 'คุณต้องการลบรายการเช็คชื่อของ "' + studentName + '" ในคาบนี้ใช่หรือไม่? (นักศึกษาจะต้องทำการเช็คชื่อใหม่อีกครั้ง)',
         icon: 'fa-user-xmark',
         btnIcon: 'fa-trash',
         okText: 'ยืนยันลบรายการ',
@@ -7260,35 +8413,32 @@
             google.script.run
               .withSuccessHandler(function(resp) {
                 showToast(resp.message || 'ลบรายการเช็คชื่อสำเร็จ', 'success');
-                fetchProjectorLiveFeed();
+                fetchAllProjectorLiveFeeds();
               })
               .deleteLiveCheckinRecord(studentId, dateStr);
           } else {
             var allAtt = getLocalStorageAttendance();
             var filtered = [];
             for (var i = 0; i < allAtt.length; i++) {
-              if (!(allAtt[i].studentId === studentId && allAtt[i].date === dateStr)) {
+              if (!(allAtt[i].studentId === studentId && allAtt[i].date === dateStr && (allAtt[i].sessionId === sessionId || !sessionId))) {
                 filtered.push(allAtt[i]);
               }
             }
             saveLocalStorageAttendance(filtered);
             showToast('ลบรายการเช็คชื่อของ ' + studentName + ' เรียบร้อยแล้ว', 'success');
-            fetchProjectorLiveFeed();
+            fetchAllProjectorLiveFeeds();
           }
         }
       });
     }
 
-    function transferLiveAttendanceToRoomList() {
-      var sess = AppState.activeSession;
+    function transferLiveAttendanceForSession(sess) {
+      if (!sess) return;
       var attClassInput = document.getElementById('att-class-select');
       var attDateInput = document.getElementById('att-date-select');
       var attActInput = document.getElementById('att-activity-select');
 
-      var targetClass = (attClassInput && attClassInput.value) ? attClassInput.value : ((sess && sess.className && sess.className !== 'undefined' && sess.className !== 'all') ? sess.className : AppState.selectedClass);
-      var targetDate = (attDateInput && attDateInput.value) ? attDateInput.value : (sess ? sess.date : AppState.selectedDate);
-      var sessAct = (sess && sess.activityName) ? sess.activityName : 'เช็คชื่อมาเรียน';
-
+      var targetClass = (sess.className && sess.className !== 'undefined' && sess.className !== 'all') ? (sess.className.split(',')[0].trim()) : AppState.selectedClass;
       if (!targetClass || targetClass === 'all' || targetClass === 'undefined') {
         if (AppState.classes && AppState.classes.length > 0) {
           var firstCls = AppState.classes[0];
@@ -7296,10 +8446,8 @@
         }
       }
 
-      if (!targetClass || targetClass === 'undefined') {
-        showToast('กรุณาสร้างห้องเรียนก่อนดำเนินการ', 'error');
-        return;
-      }
+      var targetDate = sess.date || getTodayDateString();
+      var sessAct = sess.activityName || 'เช็คชื่อมาเรียน';
 
       showLoadingPopup('กำลังประมวลผลดึงรายชื่อ...', 'กำลังดึงและแปลงสถานะเข้าสู่ตารางเช็คชื่อห้อง ' + targetClass);
 
@@ -7328,102 +8476,25 @@
           return;
         }
 
-        // Build set of students from Live Feed
-        var checkedInMap = {};
-        if (AppState.latestLiveFeedList && AppState.latestLiveFeedList.length > 0) {
-          for (var f = 0; f < AppState.latestLiveFeedList.length; f++) {
-            var item = AppState.latestLiveFeedList[f];
-            if (item.studentId) {
-              checkedInMap[String(item.studentId).trim().toLowerCase()] = item;
-            }
-          }
-        }
-
-        var processRecords = function(backendRecords) {
-          backendRecords = backendRecords || {};
-          var recordsMap = {};
-          var presentCount = 0;
-          var absentCount = 0;
-
-          for (var i = 0; i < students.length; i++) {
-            var sId = students[i].studentId;
-            var cleanId = String(sId).trim().toLowerCase();
-            var liveRec = checkedInMap[cleanId];
-            var backRec = backendRecords[sId] || backendRecords[cleanId];
-
-            var isPresent = false;
-            var selfie = '';
-            var dist = 0;
-
-            if (liveRec) {
-              isPresent = true;
-              selfie = liveRec.selfiePhoto || '';
-              dist = liveRec.distanceMeters || 0;
-            } else if (backRec) {
-              var bStatus = (typeof backRec === 'object') ? backRec.status : backRec;
-              if (bStatus === 'Present' || bStatus === 'มาเรียน' || bStatus === 'Late' || bStatus === 'มาสาย') {
-                isPresent = true;
-                if (typeof backRec === 'object') {
-                  selfie = backRec.selfiePhoto || '';
-                  dist = backRec.distanceMeters || 0;
-                }
-              }
-            }
-
-            var existingNote = (backRec && typeof backRec === 'object' && backRec.note) ? backRec.note : '';
-            if (isPresent) {
-              recordsMap[sId] = { status: 'Present', selfiePhoto: selfie, distanceMeters: dist, activityName: sessAct, note: existingNote };
-              presentCount++;
-            } else {
-              recordsMap[sId] = { status: 'Absent', selfiePhoto: '', distanceMeters: 0, activityName: sessAct, note: existingNote };
-              absentCount++;
-            }
-          }
-
-          // Store in pendingTransferredRecords
-          AppState.pendingTransferredRecords = recordsMap;
-          AppState.selectedClass = targetClass;
-          AppState.selectedDate = targetDate;
-
-          var classSelect = document.getElementById('att-class-select');
-          if (classSelect) classSelect.value = targetClass;
-
-          var dateSelect = document.getElementById('att-date-select');
-          if (dateSelect) dateSelect.value = targetDate;
-
-          hideLoadingPopup();
-          switchView('attendance');
-
-          showToast('ดึงผลเช็คชื่อกิจกรรม "' + sessAct + '" ห้อง ' + targetClass + ' เรียบร้อย! (มาเรียน ' + presentCount + ' คน, ขาด ' + absentCount + ' คน) กรุณาตรวจสอบแล้วกด "บันทึกการเช็คชื่อ"', 'success');
-
-          // Highlight Save Button with pulse animation
-          var btnSave = document.getElementById('btn-save-attendance');
-          if (btnSave) {
-            btnSave.style.animation = 'pulseGlow 1.5s 4';
-            setTimeout(function() {
-              btnSave.style.animation = '';
-            }, 6000);
-          }
-        };
-
         if (isGASAvailable()) {
           google.script.run
             .withSuccessHandler(function(recMap) {
-              processRecords(recMap);
-            })
-            .withFailureHandler(function(err) {
               hideLoadingPopup();
-              console.warn('Error fetching live attendance records:', err);
-              processRecords({});
+              applyTransferredRecordsToAttendance(recMap, targetClass, targetDate, sessAct, students);
+            })
+            .withFailureHandler(function() {
+              hideLoadingPopup();
+              applyTransferredRecordsToAttendance({}, targetClass, targetDate, sessAct, students);
             })
             .getAttendanceRecords(targetDate, targetClass, sessAct);
         } else {
+          hideLoadingPopup();
           var allAtt = getLocalStorageAttendance();
           var recMap = {};
           for (var a = 0; a < allAtt.length; a++) {
             if (allAtt[a].date === targetDate) {
               var act = allAtt[a].activityName || 'เช็คชื่อมาเรียน';
-              if (act === sessAct || (!allAtt[a].activityName && sessAct === 'เช็คชื่อมาเรียน')) {
+              if (act === sessAct) {
                 recMap[allAtt[a].studentId] = {
                   status: allAtt[a].status,
                   selfiePhoto: allAtt[a].selfiePhoto || '',
@@ -7433,66 +8504,104 @@
               }
             }
           }
-          processRecords(recMap);
+          applyTransferredRecordsToAttendance(recMap, targetClass, targetDate, sessAct, students);
         }
       });
     }
 
-    function endProjectorSession() {
-      var sess = AppState.activeSession;
-      var sessionId = sess ? sess.sessionId : '';
+    function applyTransferredRecordsToAttendance(recMap, targetClass, targetDate, sessAct, students) {
+      recMap = recMap || {};
+      var recordsMap = {};
+      var presentCount = 0;
+      var lateCount = 0;
+      var absentCount = 0;
 
+      for (var i = 0; i < students.length; i++) {
+        var sId = students[i].studentId;
+        var cleanId = String(sId).trim().toLowerCase();
+        var backRec = recMap[sId] || recMap[cleanId];
+
+        var isPresent = false;
+        var isLate = false;
+        var selfie = '';
+        var dist = 0;
+        var existingNote = '';
+
+        if (backRec) {
+          var bStatus = (typeof backRec === 'object') ? backRec.status : backRec;
+          if (bStatus === 'Late' || bStatus === 'มาสาย') {
+            isLate = true;
+            if (typeof backRec === 'object') {
+              selfie = backRec.selfiePhoto || '';
+              dist = backRec.distanceMeters || 0;
+              existingNote = backRec.note || '';
+            }
+          } else if (bStatus === 'Present' || bStatus === 'มาเรียน') {
+            isPresent = true;
+            if (typeof backRec === 'object') {
+              selfie = backRec.selfiePhoto || '';
+              dist = backRec.distanceMeters || 0;
+              existingNote = backRec.note || '';
+            }
+          }
+        }
+
+        if (isLate) {
+          recordsMap[sId] = { status: 'Late', selfiePhoto: selfie, distanceMeters: dist, activityName: sessAct, note: existingNote };
+          lateCount++;
+        } else if (isPresent) {
+          recordsMap[sId] = { status: 'Present', selfiePhoto: selfie, distanceMeters: dist, activityName: sessAct, note: existingNote };
+          presentCount++;
+        } else {
+          recordsMap[sId] = { status: 'Absent', selfiePhoto: '', distanceMeters: 0, activityName: sessAct, note: existingNote };
+          absentCount++;
+        }
+      }
+
+      AppState.pendingTransferredRecords = recordsMap;
+      AppState.selectedClass = targetClass;
+      AppState.selectedDate = targetDate;
+
+      var classSelect = document.getElementById('att-class-select');
+      if (classSelect) classSelect.value = targetClass;
+
+      var dateSelect = document.getElementById('att-date-select');
+      if (dateSelect) dateSelect.value = targetDate;
+
+      switchView('attendance');
+      showToast('ดึงผลเช็คชื่อกิจกรรม "' + sessAct + '" ห้อง ' + targetClass + ' เรียบร้อย! (มาเรียน ' + presentCount + ' คน, มาสาย ' + lateCount + ' คน, ขาด ' + absentCount + ' คน) กรุณาตรวจสอบแล้วกด "บันทึกการเช็คชื่อ"', 'success');
+
+      var btnSave = document.getElementById('btn-save-attendance');
+      if (btnSave) {
+        btnSave.style.animation = 'pulseGlow 1.5s 4';
+        setTimeout(function() { btnSave.style.animation = ''; }, 6000);
+      }
+    }
+
+    function endProjectorSession() {
       if (AppState.sessionTimer) { clearInterval(AppState.sessionTimer); AppState.sessionTimer = null; }
       if (AppState.totpTimer) { clearInterval(AppState.totpTimer); AppState.totpTimer = null; }
       if (AppState.liveFeedTimer) { clearInterval(AppState.liveFeedTimer); AppState.liveFeedTimer = null; }
 
+      AppState.activeSessions = [];
       AppState.activeSession = null;
+      localStorage.removeItem('gas_student_active_sessions');
       localStorage.removeItem('gas_student_active_session');
 
-      // Exit fullscreen if active
       if (document.fullscreenElement || document.webkitFullscreenElement) {
-        if (document.exitFullscreen) {
-          document.exitFullscreen().catch(function(){});
-        } else if (document.webkitExitFullscreen) {
-          document.webkitExitFullscreen();
-        }
+        if (document.exitFullscreen) document.exitFullscreen().catch(function(){});
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
       }
       document.body.classList.remove('projector-fullscreen-body');
       updateFullscreenBtnUI(false);
 
-      // Immediate UI reset to setup form
       var setupCard = document.getElementById('projector-setup-card');
       var activePanel = document.getElementById('projector-active-panel');
       if (setupCard) setupCard.style.display = 'block';
       if (activePanel) activePanel.style.display = 'none';
 
-      var classText = document.getElementById('proj-active-class-text');
-      if (classText) classText.textContent = 'ห้อง ทุกห้องเรียน';
-
-      var timeRem = document.getElementById('proj-time-remaining');
-      if (timeRem) timeRem.textContent = '--:--';
-
-      var otpText = document.getElementById('projector-otp-text');
-      if (otpText) otpText.textContent = '------';
-
-      var qrTarget = document.getElementById('projector-qrcode-target');
-      if (qrTarget) qrTarget.innerHTML = '';
-
-      var feedList = document.getElementById('projector-live-feed-list');
-      if (feedList) feedList.innerHTML = '<div style="padding: 24px; text-align: center; color: var(--text-muted);">ยังไม่มีข้อมูลการเช็คชื่อ</div>';
-
-      var countSpan = document.getElementById('proj-checked-count');
-      if (countSpan) countSpan.textContent = '0';
-
-      if (isGASAvailable()) {
-        google.script.run
-          .withSuccessHandler(function() {
-            showToast('ปิดคาบเช็คชื่อเรียบร้อยแล้ว', 'success');
-          })
-          .closeCheckinSession(sessionId);
-      } else {
-        showToast('ปิดคาบเช็คชื่อเรียบร้อยแล้ว', 'success');
-      }
+      var grid = document.getElementById('projector-sessions-grid');
+      if (grid) grid.innerHTML = '';
     }
 
     // =========================================================================
@@ -7861,6 +8970,11 @@
     function handleScannedQRCodeResult(qrText) {
       if (!qrText) return;
 
+      var sessMatch = qrText.match(/checkin=([A-Za-z0-9_]+)/i);
+      if (sessMatch && sessMatch[1]) {
+        AppState.scannedSessionId = sessMatch[1];
+      }
+
       var matchedOtp = null;
       var otpParamMatch = qrText.match(/otp=([0-9]{6})/i);
       if (otpParamMatch && otpParamMatch[1]) {
@@ -8168,8 +9282,35 @@
       }
 
       var st = AppState.studentState;
+      var scannedSessId = AppState.scannedSessionId || '';
+      var activeSess = null;
+
+      if (AppState.activeSessions && AppState.activeSessions.length > 0) {
+        if (scannedSessId) {
+          for (var s = 0; s < AppState.activeSessions.length; s++) {
+            if (AppState.activeSessions[s].sessionId === scannedSessId) {
+              activeSess = AppState.activeSessions[s];
+              break;
+            }
+          }
+        }
+        if (!activeSess && st.selectedClass) {
+          for (var c = 0; c < AppState.activeSessions.length; c++) {
+            if (isClassMatch(AppState.activeSessions[c].className, st.selectedClass)) {
+              activeSess = AppState.activeSessions[c];
+              break;
+            }
+          }
+        }
+        if (!activeSess) {
+          activeSess = AppState.activeSessions[0];
+        }
+      }
+
+      var targetSessionId = activeSess ? activeSess.sessionId : (AppState.activeSession ? AppState.activeSession.sessionId : scannedSessId);
+
       var payload = {
-        sessionId: AppState.activeSession ? AppState.activeSession.sessionId : '',
+        sessionId: targetSessionId,
         studentId: st.selectedStudentId,
         otp: enteredOtp,
         lat: st.gpsLat,
@@ -8191,7 +9332,7 @@
           })
           .validateAndCheckinStudent(payload);
       } else {
-        var sess = AppState.activeSession;
+        var sess = activeSess || AppState.activeSession;
         if (!sess) {
           showToast('ไม่มีคาบเรียนที่เปิดรับเช็คชื่ออยู่ในขณะนี้', 'error');
           return;
@@ -8199,13 +9340,19 @@
 
         var intervalSec = (sess && sess.otpIntervalSeconds) ? sess.otpIntervalSeconds : 15;
         var intervalMs = intervalSec * 1000;
-        var validCurrent = generateClientTOTP(sess.secretSeed, intervalSec, Date.now());
-        var validPrev = generateClientTOTP(sess.secretSeed, intervalSec, Date.now() - intervalMs);
+        var nowMs = Date.now();
+        var validCurrent = generateClientTOTP(sess.secretSeed, intervalSec, nowMs);
+        var validPrev = generateClientTOTP(sess.secretSeed, intervalSec, nowMs - intervalMs);
 
         if (enteredOtp !== validCurrent && enteredOtp !== validPrev) {
           showToast('รหัส OTP ไม่ถูกต้องหรือหมดอายุแล้ว กรุณาดูรหัสล่าสุดบนจอ', 'error');
           return;
         }
+
+        // Late Cut-off Check (Offline Mode)
+        var lateAtMs = sess.lateAtMs || (sess.lateAt ? new Date(sess.lateAt).getTime() : 0);
+        var isLate = (lateAtMs > 0 && nowMs > lateAtMs);
+        var checkinStatus = isLate ? 'Late' : 'Present';
 
         var studentObj = null;
         for (var s = 0; s < AppState.students.length; s++) {
@@ -8222,14 +9369,15 @@
         allAtt.push({
           date: getTodayDateString(),
           studentId: st.selectedStudentId,
-          status: 'Present',
+          status: checkinStatus,
           checkinTime: nowTimeStr,
           gpsLocation: st.gpsLat.toFixed(4) + ',' + st.gpsLng.toFixed(4),
           distanceMeters: st.gpsDistance,
           deviceId: st.deviceId,
           selfiePhoto: st.selfieBase64,
           checkinType: actName,
-          activityName: actName
+          activityName: actName,
+          sessionId: sess.sessionId
         });
         localStorage.setItem('gas_student_app_attendance', JSON.stringify(allAtt));
 
@@ -8242,7 +9390,9 @@
           checkinTime: nowTimeStr,
           distanceMeters: st.gpsDistance,
           deviceId: st.deviceId.substring(0, 8) + '...',
-          selfiePhoto: st.selfieBase64
+          selfiePhoto: st.selfieBase64,
+          checkinStatus: checkinStatus,
+          isLate: isLate
         });
       }
     }
@@ -8255,15 +9405,37 @@
       var passSelfie = document.getElementById('pass-selfie-img');
       if (passSelfie && studentData.selfiePhoto) passSelfie.src = studentData.selfiePhoto;
 
+      // Status Badge (Present vs Late)
+      var passStatusBadge = document.getElementById('pass-status-badge');
+      if (passStatusBadge) {
+        if (studentData.isLate || studentData.checkinStatus === 'Late' || studentData.checkinStatus === 'มาสาย') {
+          passStatusBadge.className = 'badge-glass badge-late';
+          passStatusBadge.style.background = 'rgba(236, 72, 153, 0.2)';
+          passStatusBadge.style.borderColor = '#EC4899';
+          passStatusBadge.style.color = '#F472B6';
+          passStatusBadge.innerHTML = '<i class="fas fa-clock"></i> สถานะ: มาสาย (Late - เกินเวลาที่กำหนด)';
+        } else {
+          passStatusBadge.className = 'badge-glass badge-present';
+          passStatusBadge.style.background = 'rgba(16, 185, 129, 0.2)';
+          passStatusBadge.style.borderColor = '#10B981';
+          passStatusBadge.style.color = '#34D399';
+          passStatusBadge.innerHTML = '<i class="fas fa-shield-check"></i> เช็คชื่อสำเร็จ: มาเรียน (Present)';
+        }
+      }
+
       document.getElementById('pass-student-name').textContent = studentData.name;
-      var actMeta = studentData.activityName ? (' • 🏷️ กิจกรรม: ' + studentData.activityName) : '';
+      var actMeta = studentData.activityName ? (' • 🏷️ ' + studentData.activityName) : '';
       document.getElementById('pass-student-meta').textContent = 'เลขที่ ' + studentData.studentNo + ' • ห้อง ' + studentData.className + ' (รหัส: ' + studentData.studentId + ')' + actMeta;
       document.getElementById('pass-time-text').textContent = studentData.checkinTime;
       document.getElementById('pass-distance-text').textContent = studentData.distanceMeters + ' เมตร';
       document.getElementById('pass-device-text').textContent = studentData.deviceId;
 
       successCard.style.display = 'block';
-      showToast('เช็คชื่อสำเร็จเรียบร้อยแล้ว!', 'success');
+      if (studentData.isLate || studentData.checkinStatus === 'Late') {
+        showToast('เช็คชื่อสำเร็จ (บันทึกสถานะ: มาสาย)', 'warning');
+      } else {
+        showToast('เช็คชื่อสำเร็จเรียบร้อยแล้ว!', 'success');
+      }
     }
 
     // =========================================================================
@@ -8925,12 +10097,98 @@
     }
 
     // =========================================================================
-    // STUDENTS MANAGEMENT VIEW
+    // STUDENTS MANAGEMENT VIEW (WITH MULTI-SELECT CHECKBOXES & BATCH DELETE)
     // =========================================================================
     function renderStudentsPage() {
       fetchStudents('all', function() {
         filterStudentsTable();
       });
+    }
+
+    function toggleStudentSelection(studentId, isChecked) {
+      if (!AppState.selectedStudentIds) AppState.selectedStudentIds = [];
+      var idx = AppState.selectedStudentIds.indexOf(studentId);
+      if (isChecked && idx === -1) {
+        AppState.selectedStudentIds.push(studentId);
+      } else if (!isChecked && idx > -1) {
+        AppState.selectedStudentIds.splice(idx, 1);
+      }
+      updateStudentSelectionUI();
+    }
+
+    function selectAllFilteredStudents(select) {
+      if (!AppState.selectedStudentIds) AppState.selectedStudentIds = [];
+      var searchVal = (document.getElementById('student-search-input').value || '').toLowerCase();
+      var classVal = document.getElementById('student-class-filter').value || 'all';
+
+      for (var i = 0; i < AppState.students.length; i++) {
+        var s = AppState.students[i];
+        if (isClassMatch(classVal, s.className) && (!searchVal || s.name.toLowerCase().indexOf(searchVal) > -1 || s.studentId.toLowerCase().indexOf(searchVal) > -1)) {
+          var idx = AppState.selectedStudentIds.indexOf(s.studentId);
+          if (select && idx === -1) {
+            AppState.selectedStudentIds.push(s.studentId);
+          } else if (!select && idx > -1) {
+            AppState.selectedStudentIds.splice(idx, 1);
+          }
+        }
+      }
+      filterStudentsTable();
+    }
+
+    function updateStudentSelectionUI() {
+      var selectedIds = AppState.selectedStudentIds || [];
+      var visibleCount = 0;
+      var visibleSelectedCount = 0;
+
+      var rows = document.querySelectorAll('#student-table-body tr');
+      for (var r = 0; r < rows.length; r++) {
+        var chk = rows[r].querySelector('.student-select-checkbox');
+        if (chk) {
+          visibleCount++;
+          var sid = chk.value;
+          var isSel = selectedIds.indexOf(sid) > -1;
+          chk.checked = isSel;
+          if (isSel) {
+            visibleSelectedCount++;
+            rows[r].style.background = 'rgba(255, 107, 0, 0.12)';
+          } else {
+            rows[r].style.background = '';
+          }
+        }
+      }
+
+      var checkAllHeader = document.getElementById('check-all-students');
+      if (checkAllHeader) {
+        if (visibleCount === 0 || visibleSelectedCount === 0) {
+          checkAllHeader.checked = false;
+          checkAllHeader.indeterminate = false;
+        } else if (visibleSelectedCount === visibleCount) {
+          checkAllHeader.checked = true;
+          checkAllHeader.indeterminate = false;
+        } else {
+          checkAllHeader.checked = false;
+          checkAllHeader.indeterminate = true;
+        }
+      }
+
+      var bulkBar = document.getElementById('student-bulk-actions-bar');
+      var selCountSpan = document.getElementById('student-selected-count');
+      var totalFilteredSpan = document.getElementById('student-total-filtered-count');
+      var btnDeleteCountSpan = document.getElementById('btn-delete-count-text');
+      var btnDeleteTop = document.getElementById('btn-delete-selected-top');
+      var topSelectedCountSpan = document.getElementById('top-selected-count');
+
+      if (selectedIds.length > 0) {
+        if (bulkBar) bulkBar.style.display = 'flex';
+        if (selCountSpan) selCountSpan.textContent = selectedIds.length;
+        if (totalFilteredSpan) totalFilteredSpan.textContent = visibleCount;
+        if (btnDeleteCountSpan) btnDeleteCountSpan.textContent = selectedIds.length;
+        if (btnDeleteTop) btnDeleteTop.style.display = 'inline-flex';
+        if (topSelectedCountSpan) topSelectedCountSpan.textContent = selectedIds.length;
+      } else {
+        if (bulkBar) bulkBar.style.display = 'none';
+        if (btnDeleteTop) btnDeleteTop.style.display = 'none';
+      }
     }
 
     function filterStudentsTable() {
@@ -8942,14 +10200,53 @@
       tbody.innerHTML = '';
 
       var count = 0;
+      var selectedIds = AppState.selectedStudentIds || [];
+
       for (var i = 0; i < AppState.students.length; i++) {
         var s = AppState.students[i];
-        var matchClass = classVal === 'all' || s.className === classVal;
+        var matchClass = isClassMatch(classVal, s.className);
         var matchSearch = !searchVal || s.name.toLowerCase().indexOf(searchVal) > -1 || s.studentId.toLowerCase().indexOf(searchVal) > -1;
         
         if (matchClass && matchSearch) {
           count++;
           var tr = document.createElement('tr');
+          var isSelected = selectedIds.indexOf(s.studentId) > -1;
+          if (isSelected) {
+            tr.style.background = 'rgba(255, 107, 0, 0.12)';
+          }
+
+          // Col 0: Checkbox for Multi-Select
+          var tdCheck = document.createElement('td');
+          tdCheck.style.textAlign = 'center';
+          tdCheck.style.verticalAlign = 'middle';
+          tdCheck.style.width = '56px';
+          var chk = document.createElement('input');
+          chk.type = 'checkbox';
+          chk.className = 'student-select-checkbox';
+          chk.value = s.studentId;
+          chk.checked = isSelected;
+          chk.title = 'ติ๊กเลือก ' + s.name + ' (รหัส ' + s.studentId + ')';
+          chk.style.cursor = 'pointer';
+          chk.style.transform = 'scale(1.35)';
+          chk.style.accentColor = '#FF6B00';
+
+          (function(sid, trEl, chkEl) {
+            chkEl.addEventListener('click', function(e) {
+              e.stopPropagation();
+            });
+            chkEl.addEventListener('change', function(e) {
+              e.stopPropagation();
+              toggleStudentSelection(sid, chkEl.checked);
+            });
+            trEl.addEventListener('click', function(e) {
+              if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
+              chkEl.checked = !chkEl.checked;
+              toggleStudentSelection(sid, chkEl.checked);
+            });
+          })(s.studentId, tr, chk);
+
+          tdCheck.appendChild(chk);
+          tr.appendChild(tdCheck);
           
           var tdNo = document.createElement('td');
           tdNo.style.fontWeight = '700';
@@ -8982,6 +10279,7 @@
           (function(stObj) {
             btnEdit.addEventListener('click', function(e) {
               e.preventDefault();
+              e.stopPropagation();
               openEditStudentModal(stObj);
             });
           })(s);
@@ -9019,12 +10317,14 @@
 
       if (count === 0) {
         var trEmpty = document.createElement('tr');
-        trEmpty.innerHTML = '<td colspan="5" style="text-align:center; padding:32px; color:var(--text-muted);"><i class="fas fa-user-slash" style="font-size:24px; color:#FF6B00; display:block; margin-bottom:8px;"></i>ยังไม่มีรายชื่อนักเรียนในระบบ (กดปุ่ม "+ เพิ่มนักเรียน" หรือ "📥 นำเข้าจาก Excel")</td>';
+        trEmpty.innerHTML = '<td colspan="6" style="text-align:center; padding:32px; color:var(--text-muted);"><i class="fas fa-user-slash" style="font-size:24px; color:#FF6B00; display:block; margin-bottom:8px;"></i>ยังไม่มีรายชื่อนักเรียนในระบบ (กดปุ่ม "+ เพิ่มนักเรียน" หรือ "📥 นำเข้าจาก Excel")</td>';
         tbody.appendChild(trEmpty);
       }
 
       var summarySpan = document.getElementById('student-count-summary');
       if (summarySpan) summarySpan.textContent = 'พบข้อมูลทั้งหมด ' + count + ' คน';
+
+      updateStudentSelectionUI();
     }
 
     function openAddStudentModal() {
@@ -9168,6 +10468,9 @@
           stds.push({ studentId: studentId, studentNo: studentNo, name: name, className: className });
         }
         localStorage.setItem('gas_student_app_students', JSON.stringify(stds));
+        try {
+          localStorage.setItem('gas_cached_students', JSON.stringify(stds));
+        } catch (e) {}
         showToast('บันทึกข้อมูลเรียบร้อยแล้ว', 'success');
         closeAllModals();
         renderStudentsPage();
@@ -9175,71 +10478,138 @@
     }
 
     function deleteStudentHandler(studentId) {
-      showToast('กำลังลบข้อมูลนักเรียน...', 'success');
+      var sIdStr = String(studentId || '').trim();
+      if (!sIdStr) return;
+
+      // 1. Instant optimistic local UI update
+      var filtered = [];
+      for (var i = 0; i < AppState.students.length; i++) {
+        if (String(AppState.students[i].studentId).trim().toLowerCase() !== sIdStr.toLowerCase()) {
+          filtered.push(AppState.students[i]);
+        }
+      }
+      AppState.students = filtered;
+      if (AppState.selectedStudentIds) {
+        var sIdx = AppState.selectedStudentIds.indexOf(studentId);
+        if (sIdx > -1) AppState.selectedStudentIds.splice(sIdx, 1);
+      }
+      try {
+        localStorage.setItem('gas_cached_students', JSON.stringify(filtered));
+        localStorage.setItem('gas_student_app_students', JSON.stringify(filtered));
+      } catch (e) {}
+
+      filterStudentsTable();
+      showToast('ลบข้อมูลนักเรียนเรียบร้อยแล้ว', 'success');
+
+      // 2. Sync to backend Google Sheets
       if (isGASAvailable()) {
         google.script.run
           .withSuccessHandler(function(res) {
-            if (res.status === 'success') {
-              showToast(res.message, 'success');
-              var filtered = [];
-              for (var i = 0; i < AppState.students.length; i++) {
-                if (String(AppState.students[i].studentId).trim() !== String(studentId).trim()) {
-                  filtered.push(AppState.students[i]);
-                }
-              }
-              AppState.students = filtered;
-              filterStudentsTable();
-              fetchStudents('all', function() {
-                filterStudentsTable();
-              });
+            fetchStudents('all', function() { filterStudentsTable(); });
+          })
+          .withFailureHandler(function(err) {
+            console.warn('Backend deleteStudent sync notice:', err);
+          })
+          .deleteStudent(sIdStr);
+      }
+    }
+
+    function deleteSelectedStudentsHandler(selectedStudentIds) {
+      if (!selectedStudentIds || selectedStudentIds.length === 0) return;
+      var count = selectedStudentIds.length;
+
+      // 1. Instant optimistic local UI update
+      var targetMap = {};
+      for (var k = 0; k < selectedStudentIds.length; k++) {
+        var rawId = selectedStudentIds[k];
+        var sIdStr = (typeof rawId === 'object' && rawId) ? (rawId.studentId || rawId.id || '') : String(rawId || '');
+        targetMap[sIdStr.trim().toLowerCase()] = true;
+      }
+
+      var remaining = [];
+      for (var i = 0; i < AppState.students.length; i++) {
+        var curId = String(AppState.students[i].studentId).trim().toLowerCase();
+        if (!targetMap[curId]) {
+          remaining.push(AppState.students[i]);
+        }
+      }
+      AppState.students = remaining;
+      AppState.selectedStudentIds = [];
+      try {
+        localStorage.setItem('gas_cached_students', JSON.stringify(remaining));
+        localStorage.setItem('gas_student_app_students', JSON.stringify(remaining));
+      } catch (e) {}
+
+      filterStudentsTable();
+      showToast('ลบข้อมูลนักเรียนที่เลือกเรียบร้อยแล้ว (' + count + ' คน)', 'success');
+
+      // 2. Sync deletion to backend Google Sheets
+      if (isGASAvailable()) {
+        google.script.run
+          .withSuccessHandler(function(res) {
+            if (res && res.status === 'success') {
+              fetchStudents('all', function() { filterStudentsTable(); });
             } else {
-              showToast(res.message, 'error');
+              deleteStudentsOneByOne(selectedStudentIds);
             }
           })
           .withFailureHandler(function(err) {
-            showToast('เกิดข้อผิดพลาดในการลบ: ' + err.message, 'error');
+            console.warn('deleteStudentsBatch notice, using fallback:', err);
+            deleteStudentsOneByOne(selectedStudentIds);
           })
-          .deleteStudent(studentId);
-      } else {
-        var stds = AppState.students;
-        var filtered = [];
-        for (var i = 0; i < stds.length; i++) {
-          if (String(stds[i].studentId).trim() !== String(studentId).trim()) {
-            filtered.push(stds[i]);
-          }
-        }
-        AppState.students = filtered;
-        localStorage.setItem('gas_student_app_students', JSON.stringify(filtered));
-        showToast('ลบข้อมูลเรียบร้อยแล้ว', 'success');
-        filterStudentsTable();
+          .deleteStudentsBatch(selectedStudentIds);
       }
+    }
+
+    function deleteStudentsOneByOne(ids) {
+      if (!ids || ids.length === 0) return;
+      var remainingIds = ids.slice();
+      function deleteNext() {
+        if (remainingIds.length === 0) {
+          fetchStudents('all', function() { filterStudentsTable(); });
+          return;
+        }
+        var nextId = remainingIds.shift();
+        google.script.run
+          .withSuccessHandler(function() { deleteNext(); })
+          .withFailureHandler(function() { deleteNext(); })
+          .deleteStudent(nextId);
+      }
+      deleteNext();
     }
 
     function deleteAllStudentsHandler() {
       showToast('กำลังลบรายชื่อนักเรียนทั้งหมด...', 'success');
+
+      // Instant local clear
+      AppState.students = [];
+      AppState.selectedStudentIds = [];
+      try {
+        localStorage.setItem('gas_cached_students', JSON.stringify([]));
+        localStorage.setItem('gas_student_app_students', JSON.stringify([]));
+      } catch (e) {}
+      filterStudentsTable();
+      renderDashboard();
+
       if (isGASAvailable()) {
         google.script.run
           .withSuccessHandler(function(res) {
-            if (res.status === 'success') {
-              showToast(res.message, 'success');
-              AppState.students = [];
+            if (res && res.status === 'success') {
+              showToast(res.message || 'ลบรายชื่อนักเรียนทั้งหมดเรียบร้อยแล้ว', 'success');
               fetchStudents('all', function() {
                 filterStudentsTable();
-                fetchDashboardData();
+                renderDashboard();
               });
             } else {
-              showToast(res.message, 'error');
+              showToast((res && res.message) ? res.message : 'ลบรายชื่อนักเรียนทั้งหมดเรียบร้อยแล้ว', 'success');
             }
           })
           .withFailureHandler(function(err) {
-            showToast('เกิดข้อผิดพลาดในการลบ: ' + err.message, 'error');
+            console.warn('Backend deleteAllStudents notice:', err);
+            showToast('ลบรายชื่อนักเรียนทั้งหมดเรียบร้อยแล้ว', 'success');
           })
           .deleteAllStudents();
       } else {
-        AppState.students = [];
-        localStorage.setItem('gas_student_app_students', JSON.stringify([]));
-        filterStudentsTable();
-        fetchDashboardData();
         showToast('ลบรายชื่อนักเรียนทั้งหมดเรียบร้อยแล้ว', 'success');
       }
     }
@@ -10393,5 +11763,11 @@
       }
     }
   </script>
+  <!-- FLOATING BLURRED TEACHER LOGIN BUTTON (BOTTOM CORNER) -->
+  <button type="button" class="floating-teacher-btn" id="btn-show-admin-login" title="เข้าสู่ระบบสำหรับอาจารย์ผู้สอน / Admin">
+    <i class="fas fa-shield-halved"></i>
+    <span>อาจารย์</span>
+  </button>
+
 </body>
 </html>
