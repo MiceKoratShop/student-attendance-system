@@ -3065,11 +3065,11 @@
   </div>
 
   <!-- FLOATING 400x400 LIVE SELFIE HOVER PREVIEW -->
-  <div id="live-selfie-hover-preview" style="display: none; position: fixed; z-index: 999999; pointer-events: none; width: 400px; height: 400px; border-radius: var(--radius-md); overflow: hidden; border: 2.5px solid var(--orange-500); box-shadow: 0 16px 48px rgba(0, 0, 0, 0.9), 0 0 30px rgba(255, 107, 0, 0.4); background: #0b0f19; animation: zoomPreview 0.2s cubic-bezier(0.16, 1, 0.3, 1);">
-    <img id="live-selfie-hover-img" src="" alt="Selfie Preview" style="width: 400px; height: 400px; object-fit: cover; display: block;" />
-    <div id="live-selfie-hover-caption" style="position: absolute; bottom: 0; left: 0; right: 0; padding: 12px 16px; background: linear-gradient(0deg, rgba(5,7,12,0.95) 0%, rgba(5,7,12,0.65) 70%, transparent 100%); color: #FFF; font-size: 13px; font-weight: 600; text-shadow: 0 1px 3px rgba(0,0,0,0.8);">
+  <div id="live-selfie-hover-preview" style="display: none; position: fixed; z-index: 9999999; pointer-events: none; width: 400px; height: 400px; border-radius: 16px; overflow: hidden; border: 2.5px solid #FF6B00; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.95), 0 0 35px rgba(255, 107, 0, 0.45); background: #0b0f19; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); animation: zoomPreview 0.18s cubic-bezier(0.16, 1, 0.3, 1);">
+    <img id="live-selfie-hover-img" src="" alt="Selfie Preview" style="width: 400px; height: 400px; min-width: 400px; min-height: 400px; max-width: 400px; max-height: 400px; object-fit: cover; display: block;" />
+    <div id="live-selfie-hover-caption" style="position: absolute; bottom: 0; left: 0; right: 0; padding: 14px 18px; background: linear-gradient(0deg, rgba(5,7,12,0.95) 0%, rgba(5,7,12,0.7) 65%, transparent 100%); color: #FFF; font-size: 13px; font-weight: 600; text-shadow: 0 1px 3px rgba(0,0,0,0.8);">
       <div id="live-selfie-hover-name" style="font-size: 15px; font-weight: 700; color: #FFF;"></div>
-      <div id="live-selfie-hover-info" style="font-size: 12px; color: var(--orange-400); margin-top: 2px;"></div>
+      <div id="live-selfie-hover-info" style="font-size: 12px; color: #FF8533; margin-top: 2px;"></div>
     </div>
   </div>
 
@@ -3573,17 +3573,22 @@
         <button type="button" class="modal-close btn-close-modal">&times;</button>
       </div>
 
-      <div style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.25); border-radius: var(--radius-sm); padding: 12px 16px; margin-bottom: 18px; font-size: 12.5px; color: #E2E8F0; line-height: 1.5;">
-        <div style="font-weight: 700; color: #4ADE80; margin-bottom: 4px;"><i class="fas fa-circle-info"></i> วิธีเชื่อมต่อกลุ่ม LINE (LINE Notify / Webhook):</div>
-        1. ออก Token จาก <a href="https://notify-bot.line.me/" target="_blank" style="color: #60A5FA; text-decoration: underline;">LINE Notify</a> แล้วเลือกกลุ่มที่ต้องการ<br>
-        2. เชิญบัญชี <strong>@LineNotify</strong> เข้ากลุ่ม LINE นั้น<br>
-        3. นำ Token มาวางในช่องด้านล่าง แล้วกด <strong>"ทดสอบการเชื่อมต่อ"</strong>
+      <div style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.25); border-radius: var(--radius-sm); padding: 12px 16px; margin-bottom: 18px; font-size: 12.5px; color: #E2E8F0; line-height: 1.6;">
+        <div style="font-weight: 700; color: #4ADE80; margin-bottom: 4px;"><i class="fas fa-circle-info"></i> วิธีเชื่อมต่อ LINE Messaging API (LINE Official Account) หรือ Webhook:</div>
+        1. สร้าง Channel ฟรีที่ <a href="https://developers.line.biz/console/" target="_blank" style="color: #60A5FA; text-decoration: underline; font-weight: 600;">LINE Developers Console</a> ➔ เลือก <strong>Messaging API</strong><br>
+        2. ไปที่แท็บ <strong>Messaging API</strong> ➔ เลื่อนลงล่างสุดกด <strong>Issue</strong> เพื่อคัดลอก <strong>Channel access token (long-lived)</strong><br>
+        3. นำ Token มาวางในช่องด้านล่าง แล้วกด <strong>"🔔 ทดสอบการเชื่อมต่อ"</strong> (หรือใช้ Webhook เช่น Discord / Make ได้ทันที)
       </div>
 
       <form id="form-line-settings">
         <div class="form-group-glass">
-          <label><i class="fab fa-line" style="color: #22C55E;"></i> LINE Notify Token</label>
-          <input type="password" class="input-glass" id="input-line-token" placeholder="วาง LINE Notify Token ที่นี่..." autocomplete="off" />
+          <label><i class="fab fa-line" style="color: #22C55E;"></i> LINE Channel Access Token / Token</label>
+          <input type="password" class="input-glass" id="input-line-token" placeholder="วาง Channel access token จาก LINE Developers ที่นี่..." autocomplete="off" />
+        </div>
+
+        <div class="form-group-glass">
+          <label><i class="fas fa-users" style="color: #38BDF8;"></i> Group ID / User ID (ไม่บังคับ - หากต้องการระบุกลุ่มเฉพาะ เช่น Cxxxxxx)</label>
+          <input type="text" class="input-glass" id="input-line-group-id" placeholder="เว้นว่างไว้สำหรับส่ง Broadcast ไปยังผู้ติดตามทุกคน หรือใส่ Group ID..." />
         </div>
 
         <div class="form-group-glass">
@@ -3591,18 +3596,35 @@
           <input type="text" class="input-glass" id="input-line-webhook" placeholder="https://..." />
         </div>
 
-        <div class="grid-2">
-          <div class="form-group-glass">
-            <label><i class="fas fa-chalkboard-user"></i> ตัวกรองห้องเรียนเริ่มต้น</label>
-            <select class="select-glass" id="line-setting-class"></select>
+        <!-- MULTI-CLASSROOM FILTER -->
+        <div class="form-group-glass">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 6px;">
+            <label style="margin: 0; display: flex; align-items: center; gap: 6px; font-weight: 700;">
+              <i class="fas fa-chalkboard-user" style="color: var(--orange-400);"></i> 
+              <span>ตัวกรองห้องเรียนเริ่มต้น (<span style="color: var(--orange-400);">เลือกได้มากกว่า 1 ห้อง</span>)</span>
+            </label>
+            <div style="display: flex; gap: 6px;">
+              <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-line-select-all-classes" style="font-size: 11px; padding: 2px 8px;">
+                <i class="fas fa-check-double"></i> เลือกทุกห้อง
+              </button>
+              <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-line-clear-classes" style="font-size: 11px; padding: 2px 8px;">
+                <i class="fas fa-xmark"></i> ล้างการเลือก
+              </button>
+            </div>
           </div>
-          <div class="form-group-glass">
-            <label><i class="fas fa-tags"></i> ตัวกรองกิจกรรม/วิชา</label>
-            <select class="select-glass" id="line-setting-activity"></select>
+          <div id="line-setting-class-checkboxes" style="max-height: 140px; overflow-y: auto; background: rgba(15, 23, 42, 0.65); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); padding: 10px 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px;">
+            <!-- Populated dynamically -->
+          </div>
+          <div id="line-selected-classes-summary" style="font-size: 11.5px; color: var(--orange-400); font-weight: 600; margin-top: 5px;">
+            <i class="fas fa-check-circle"></i> เลือกแล้ว: ทุกห้องเรียน
           </div>
         </div>
 
         <div class="grid-2">
+          <div class="form-group-glass">
+            <label><i class="fas fa-tags"></i> ตัวกรองกิจกรรม/วิชา</label>
+            <select class="select-glass" id="line-setting-activity"></select>
+          </div>
           <div class="form-group-glass">
             <label><i class="fas fa-filter"></i> ตัวกรองสถานะที่ต้องการแจ้ง</label>
             <select class="select-glass" id="line-setting-status">
@@ -3611,14 +3633,15 @@
               <option value="present_only">✅ แจ้งเฉพาะผู้ที่ มาเรียน</option>
             </select>
           </div>
-          <div class="form-group-glass">
-            <label><i class="fas fa-align-left"></i> รูปแบบข้อความ (Message Template)</label>
-            <select class="select-glass" id="line-setting-style">
-              <option value="formal" selected>📊 แบบสรุปภาพรวมทางการ (แนะนำ)</option>
-              <option value="compact">📢 แบบกระชับ (ยอดสรุปตัวเลขสั้นๆ)</option>
-              <option value="detailed">📋 แบบรายงานละเอียดรายบุคคล</option>
-            </select>
-          </div>
+        </div>
+
+        <div class="form-group-glass">
+          <label><i class="fas fa-align-left"></i> รูปแบบข้อความ (Message Template)</label>
+          <select class="select-glass" id="line-setting-style">
+            <option value="formal" selected>📊 แบบสรุปภาพรวมทางการ (แนะนำ)</option>
+            <option value="compact">📢 แบบกระชับ (ยอดสรุปตัวเลขสั้นๆ)</option>
+            <option value="detailed">📋 แบบรายงานละเอียดรายบุคคล</option>
+          </select>
         </div>
 
         <!-- AUTO-SEND SCHEDULE -->
@@ -4108,6 +4131,137 @@
         configurable: true
       });
     }
+
+    
+    /* ============================================================= */
+    /* GLOBAL 400x400 IMAGE HOVER PREVIEW SYSTEM */
+    /* ============================================================= */
+    function showLiveSelfieHoverPreview(eOrUrl, photoUrlOrName, sNameOrClass, sClassOrInfo, timeVal, targetEl) {
+      var photoUrl = '';
+      var name = '';
+      var info = '';
+      var target = null;
+      var mouseEvent = null;
+
+      if (eOrUrl && (eOrUrl.clientX !== undefined || eOrUrl.pageX !== undefined)) {
+        mouseEvent = eOrUrl;
+        photoUrl = photoUrlOrName || '';
+        name = sNameOrClass || '';
+        info = (sClassOrInfo ? 'ห้อง ' + sClassOrInfo : '') + (timeVal ? ' • ' + timeVal : '');
+        target = eOrUrl.target;
+      } else if (typeof eOrUrl === 'string') {
+        photoUrl = eOrUrl;
+        name = photoUrlOrName || '';
+        info = (sNameOrClass ? 'ห้อง ' + sNameOrClass : '') + (sClassOrInfo ? ' • ' + sClassOrInfo + 'm' : '') + (timeVal ? ' • ' + timeVal : '');
+        target = targetEl || null;
+      }
+
+      if (!photoUrl || photoUrl.length < 20) return;
+
+      var previewBox = document.getElementById('live-selfie-hover-preview');
+      var previewImg = document.getElementById('live-selfie-hover-img');
+      var previewName = document.getElementById('live-selfie-hover-name');
+      var previewInfo = document.getElementById('live-selfie-hover-info');
+
+      if (!previewBox || !previewImg) return;
+
+      previewImg.src = photoUrl;
+      if (previewName) previewName.textContent = name || 'รูปถ่ายเช็คชื่อนักศึกษา';
+      if (previewInfo) previewInfo.textContent = info || 'ขนาด 400x400px';
+
+      previewBox.style.display = 'block';
+      positionLiveSelfieHoverPreview(mouseEvent, target);
+    }
+
+    function updateLiveSelfieHoverPosition(eOrTarget) {
+      var mouseEvent = null;
+      var target = null;
+      if (eOrTarget && (eOrTarget.clientX !== undefined || eOrTarget.pageX !== undefined)) {
+        mouseEvent = eOrTarget;
+      } else if (eOrTarget && eOrTarget.getBoundingClientRect) {
+        target = eOrTarget;
+      }
+      positionLiveSelfieHoverPreview(mouseEvent, target);
+    }
+
+    function positionLiveSelfieHoverPreview(e, targetEl) {
+      var previewBox = document.getElementById('live-selfie-hover-preview');
+      if (!previewBox || previewBox.style.display === 'none') return;
+
+      var boxW = 400;
+      var boxH = 400;
+      var margin = 18;
+      var posX = 0;
+      var posY = 0;
+
+      var winW = window.innerWidth;
+      var winH = window.innerHeight;
+
+      if (e && e.clientX !== undefined) {
+        posX = e.clientX + margin;
+        posY = e.clientY - (boxH / 2);
+      } else if (targetEl && targetEl.getBoundingClientRect) {
+        var rect = targetEl.getBoundingClientRect();
+        posX = rect.right + margin;
+        posY = rect.top + (rect.height / 2) - (boxH / 2);
+      } else {
+        posX = (winW - boxW) / 2;
+        posY = (winH - boxH) / 2;
+      }
+
+      if (posX + boxW > winW - margin) {
+        if (e && e.clientX !== undefined) {
+          posX = e.clientX - boxW - margin;
+        } else if (targetEl && targetEl.getBoundingClientRect) {
+          posX = targetEl.getBoundingClientRect().left - boxW - margin;
+        } else {
+          posX = winW - boxW - margin;
+        }
+      }
+      if (posX < margin) posX = margin;
+
+      if (posY + boxH > winH - margin) {
+        posY = winH - boxH - margin;
+      }
+      if (posY < margin) posY = margin;
+
+      previewBox.style.left = posX + 'px';
+      previewBox.style.top = posY + 'px';
+    }
+
+    function hideLiveSelfieHoverPreview() {
+      var previewBox = document.getElementById('live-selfie-hover-preview');
+      if (previewBox) {
+        previewBox.style.display = 'none';
+      }
+    }
+
+    // Global Event Delegation for 400x400 Image Zoom Hover
+    document.addEventListener('mouseover', function(e) {
+      var target = e.target.closest('.live-student-selfie-thumb, .student-selfie-inline-thumb, .report-selfie-thumb, #detail-selfie-img, #pass-selfie-img, .success-selfie-frame img');
+      if (target) {
+        var src = target.src || target.getAttribute('data-hover-selfie');
+        var name = target.alt || target.getAttribute('data-hover-name') || '';
+        var info = target.getAttribute('data-hover-info') || '';
+        if (src && src.length > 30 && src.indexOf('data:image/svg') === -1) {
+          showLiveSelfieHoverPreview(e, src, name, info);
+        }
+      }
+    });
+
+    document.addEventListener('mousemove', function(e) {
+      var previewBox = document.getElementById('live-selfie-hover-preview');
+      if (previewBox && previewBox.style.display === 'block') {
+        updateLiveSelfieHoverPosition(e);
+      }
+    });
+
+    document.addEventListener('mouseout', function(e) {
+      var target = e.target.closest('.live-student-selfie-thumb, .student-selfie-inline-thumb, .report-selfie-thumb, #detail-selfie-img, #pass-selfie-img, .success-selfie-frame img');
+      if (target) {
+        hideLiveSelfieHoverPreview();
+      }
+    });
 
     function isGASAvailable() {
       return (typeof google !== 'undefined' && google.script && google.script.run) || (GAS_WEBAPP_URL && GAS_WEBAPP_URL.length > 10);
@@ -11443,6 +11597,43 @@
         });
       }
 
+      var btnSelAllCls = document.getElementById('btn-line-select-all-classes');
+      if (btnSelAllCls) {
+        btnSelAllCls.addEventListener('click', function(e) {
+          e.preventDefault();
+          var allChk = document.getElementById('chk-line-class-all');
+          if (allChk) {
+            allChk.checked = true;
+            allChk.dispatchEvent(new Event('change'));
+          }
+        });
+      }
+
+      var btnClearCls = document.getElementById('btn-line-clear-classes');
+      if (btnClearCls) {
+        btnClearCls.addEventListener('click', function(e) {
+          e.preventDefault();
+          var allChk = document.getElementById('chk-line-class-all');
+          if (allChk) {
+            allChk.checked = false;
+            allChk.dispatchEvent(new Event('change'));
+          }
+          var container = document.getElementById('line-setting-class-checkboxes');
+          if (container) {
+            var itemChks = container.querySelectorAll('input[type="checkbox"]');
+            for (var i = 0; i < itemChks.length; i++) {
+              itemChks[i].checked = false;
+              if (itemChks[i].parentElement) {
+                itemChks[i].parentElement.style.background = 'transparent';
+                itemChks[i].parentElement.style.color = 'var(--text-secondary)';
+              }
+            }
+          }
+          updateLineSelectedClassesSummary();
+          updateLineMessagePreview();
+        });
+      }
+
       var styleSelect = document.getElementById('line-setting-style');
       if (styleSelect) {
         styleSelect.addEventListener('change', updateLineMessagePreview);
@@ -11468,11 +11659,172 @@
       }
     }
 
+
+    function renderLineClassCheckboxes(selectedClassesStr) {
+      var container = document.getElementById('line-setting-class-checkboxes');
+      if (!container) return;
+      container.innerHTML = '';
+
+      var classes = (AppState.classes || []).slice();
+      var uniqueClasses = [];
+      for (var c = 0; c < classes.length; c++) {
+        var cName = (typeof classes[c] === 'object' ? classes[c].name : classes[c]) || '';
+        cName = String(cName).trim();
+        if (cName && uniqueClasses.indexOf(cName) === -1) {
+          uniqueClasses.push(cName);
+        }
+      }
+
+      var selectedList = [];
+      if (!selectedClassesStr || selectedClassesStr === 'all' || selectedClassesStr === 'ทุกห้องเรียน') {
+        selectedList = ['all'];
+      } else if (Array.isArray(selectedClassesStr)) {
+        selectedList = selectedClassesStr;
+      } else {
+        selectedList = String(selectedClassesStr).split(',').map(function(s) { return s.trim(); });
+      }
+
+      var isAllSelected = selectedList.indexOf('all') > -1 || selectedList.indexOf('ทุกห้องเรียน') > -1;
+
+      // 1. "ทุกห้องเรียน" Option
+      var allLabel = document.createElement('label');
+      allLabel.style.display = 'flex';
+      allLabel.style.alignItems = 'center';
+      allLabel.style.gap = '6px';
+      allLabel.style.cursor = 'pointer';
+      allLabel.style.padding = '6px 8px';
+      allLabel.style.borderRadius = '6px';
+      allLabel.style.background = isAllSelected ? 'rgba(255, 107, 0, 0.22)' : 'transparent';
+      allLabel.style.color = isAllSelected ? '#FFF' : 'var(--text-secondary)';
+      allLabel.style.fontSize = '12px';
+      allLabel.style.fontWeight = '700';
+
+      var allChk = document.createElement('input');
+      allChk.type = 'checkbox';
+      allChk.value = 'all';
+      allChk.id = 'chk-line-class-all';
+      allChk.checked = isAllSelected;
+      allChk.style.accentColor = '#FF6B00';
+      allChk.style.cursor = 'pointer';
+      allChk.style.transform = 'scale(1.15)';
+
+      allChk.addEventListener('change', function() {
+        var itemChks = container.querySelectorAll('.line-class-item-chk');
+        for (var i = 0; i < itemChks.length; i++) {
+          itemChks[i].checked = allChk.checked;
+          if (itemChks[i].parentElement) {
+            itemChks[i].parentElement.style.background = allChk.checked ? 'rgba(255, 107, 0, 0.15)' : 'transparent';
+            itemChks[i].parentElement.style.color = allChk.checked ? '#FFF' : 'var(--text-secondary)';
+          }
+        }
+        allLabel.style.background = allChk.checked ? 'rgba(255, 107, 0, 0.22)' : 'transparent';
+        allLabel.style.color = allChk.checked ? '#FFF' : 'var(--text-secondary)';
+        updateLineSelectedClassesSummary();
+        updateLineMessagePreview();
+      });
+
+      allLabel.appendChild(allChk);
+      var allSpan = document.createElement('span');
+      allSpan.textContent = '🌟 ทุกห้องเรียน';
+      allLabel.appendChild(allSpan);
+      container.appendChild(allLabel);
+
+      // 2. Individual Class Checkboxes
+      for (var k = 0; k < uniqueClasses.length; k++) {
+        var clsName = uniqueClasses[k];
+        var isChecked = isAllSelected || selectedList.indexOf(clsName) > -1;
+
+        var lbl = document.createElement('label');
+        lbl.style.display = 'flex';
+        lbl.style.alignItems = 'center';
+        lbl.style.gap = '6px';
+        lbl.style.cursor = 'pointer';
+        lbl.style.padding = '6px 8px';
+        lbl.style.borderRadius = '6px';
+        lbl.style.background = isChecked ? 'rgba(255, 107, 0, 0.15)' : 'transparent';
+        lbl.style.color = isChecked ? '#FFF' : 'var(--text-secondary)';
+        lbl.style.fontSize = '12px';
+
+        var chk = document.createElement('input');
+        chk.type = 'checkbox';
+        chk.className = 'line-class-item-chk';
+        chk.value = clsName;
+        chk.checked = isChecked;
+        chk.style.accentColor = '#FF6B00';
+        chk.style.cursor = 'pointer';
+        chk.style.transform = 'scale(1.15)';
+
+        (function(curChk, curLbl) {
+          curChk.addEventListener('change', function() {
+            curLbl.style.background = curChk.checked ? 'rgba(255, 107, 0, 0.15)' : 'transparent';
+            curLbl.style.color = curChk.checked ? '#FFF' : 'var(--text-secondary)';
+
+            var allItemChks = container.querySelectorAll('.line-class-item-chk');
+            var allChecked = true;
+            for (var j = 0; j < allItemChks.length; j++) {
+              if (!allItemChks[j].checked) {
+                allChecked = false;
+                break;
+              }
+            }
+            allChk.checked = allChecked;
+            allLabel.style.background = allChecked ? 'rgba(255, 107, 0, 0.22)' : 'transparent';
+            allLabel.style.color = allChecked ? '#FFF' : 'var(--text-secondary)';
+
+            updateLineSelectedClassesSummary();
+            updateLineMessagePreview();
+          });
+        })(chk, lbl);
+
+        lbl.appendChild(chk);
+        var span = document.createElement('span');
+        span.textContent = clsName;
+        lbl.appendChild(span);
+        container.appendChild(lbl);
+      }
+
+      updateLineSelectedClassesSummary();
+    }
+
+    function getLineSelectedClasses() {
+      var allChk = document.getElementById('chk-line-class-all');
+      var container = document.getElementById('line-setting-class-checkboxes');
+      if (!container) return 'all';
+
+      if (allChk && allChk.checked) {
+        return 'all';
+      }
+
+      var itemChks = container.querySelectorAll('.line-class-item-chk:checked');
+      if (itemChks.length === 0) return 'all';
+
+      var allItemChks = container.querySelectorAll('.line-class-item-chk');
+      if (itemChks.length === allItemChks.length && allItemChks.length > 0) return 'all';
+
+      var res = [];
+      for (var i = 0; i < itemChks.length; i++) {
+        res.push(itemChks[i].value);
+      }
+      return res.join(', ');
+    }
+
+    function updateLineSelectedClassesSummary() {
+      var summaryEl = document.getElementById('line-selected-classes-summary');
+      if (!summaryEl) return;
+      var sel = getLineSelectedClasses();
+      if (sel === 'all' || sel === 'ทุกห้องเรียน') {
+        summaryEl.innerHTML = '<i class="fas fa-check-circle" style="color:#10B981;"></i> เลือกแล้ว: <strong>ทุกห้องเรียน</strong>';
+      } else {
+        var parts = sel.split(',');
+        summaryEl.innerHTML = '<i class="fas fa-check-circle" style="color:#10B981;"></i> เลือกแล้ว <strong>' + parts.length + ' ห้อง:</strong> ' + sel;
+      }
+    }
+
     function openLineSettingsModal() {
       var cfg = getLineConfigLocal();
       var tokenInput = document.getElementById('input-line-token');
+      var groupIdInput = document.getElementById('input-line-group-id');
       var webhookInput = document.getElementById('input-line-webhook');
-      var classSelect = document.getElementById('line-setting-class');
       var actSelect = document.getElementById('line-setting-activity');
       var statSelect = document.getElementById('line-setting-status');
       var styleSelect = document.getElementById('line-setting-style');
@@ -11480,8 +11832,11 @@
       var hourSelect = document.getElementById('line-setting-autosend-hour');
 
       if (tokenInput) tokenInput.value = cfg.lineToken || '';
+      if (groupIdInput) groupIdInput.value = cfg.lineGroupId || '';
       if (webhookInput) webhookInput.value = cfg.webhookUrl || '';
-      if (classSelect && cfg.targetClass) classSelect.value = cfg.targetClass;
+      
+      renderLineClassCheckboxes(cfg.targetClass || 'all');
+      
       if (actSelect && cfg.targetActivity) actSelect.value = cfg.targetActivity;
       if (statSelect && cfg.statusFilter) statSelect.value = cfg.statusFilter;
       if (styleSelect && cfg.messageStyle) styleSelect.value = cfg.messageStyle;
@@ -11501,7 +11856,7 @@
       if (!previewBox) return;
 
       var style = (document.getElementById('line-setting-style') && document.getElementById('line-setting-style').value) || 'formal';
-      var cls = (document.getElementById('line-setting-class') && document.getElementById('line-setting-class').value) || 'all';
+      var cls = getLineSelectedClasses();
       var act = (document.getElementById('line-setting-activity') && document.getElementById('line-setting-activity').value) || 'all';
       var today = getTodayDateString();
 
@@ -11510,7 +11865,7 @@
 
       var text = '';
       if (style === 'compact') {
-        text = '\n📢 [สรุปการเช็คชื่อ] ' + classLabel + '\n' +
+        text = '📢 [สรุปการเช็คชื่อ] ' + classLabel + '\n' +
                '📅 วันที่: ' + today + '\n' +
                '🏷️ รายการ: ' + actLabel + '\n' +
                '------------------------\n' +
@@ -11522,7 +11877,7 @@
                '❌ รายชื่อนักเรียนขาดเรียน (1 คน):\n' +
                '• เลขที่ 12 นายสมชาย ใจดี (ไม่แจ้งสาเหตุ)';
       } else if (style === 'detailed') {
-        text = '\n📋 รายงานการเช็คชื่อนักเรียนฉบับละเอียด\n' +
+        text = '📋 รายงานการเช็คชื่อนักเรียนฉบับละเอียด\n' +
                '🏫 ' + classLabel + ' • ' + actLabel + '\n' +
                '📅 วันที่: ' + today + '\n' +
                '------------------------\n' +
@@ -11533,7 +11888,7 @@
                '3. 🟡 นางสาวชัญญานุช มีสุข - ลาป่วย (มีใบรับรองแพทย์)\n' +
                '... (แสดงรายชื่อครบทุกคน)';
       } else {
-        text = '\n📊 รายงานสรุปการเช็คชื่อนักเรียน\n' +
+        text = '📊 รายงานสรุปการเช็คชื่อนักเรียน\n' +
                '🏫 ห้องเรียน: ' + classLabel + '\n' +
                '🏷️ กิจกรรม/วิชา: ' + actLabel + '\n' +
                '📅 วันที่: ' + today + '\n' +
@@ -11593,8 +11948,9 @@
 
     function saveLineSettingsHandler() {
       var token = (document.getElementById('input-line-token') && document.getElementById('input-line-token').value) || '';
+      var groupId = (document.getElementById('input-line-group-id') && document.getElementById('input-line-group-id').value) || '';
       var webhook = (document.getElementById('input-line-webhook') && document.getElementById('input-line-webhook').value) || '';
-      var cls = (document.getElementById('line-setting-class') && document.getElementById('line-setting-class').value) || 'all';
+      var cls = getLineSelectedClasses();
       var act = (document.getElementById('line-setting-activity') && document.getElementById('line-setting-activity').value) || 'all';
       var stat = (document.getElementById('line-setting-status') && document.getElementById('line-setting-status').value) || 'all';
       var style = (document.getElementById('line-setting-style') && document.getElementById('line-setting-style').value) || 'formal';
@@ -11603,6 +11959,7 @@
 
       var config = {
         lineToken: token.trim(),
+        lineGroupId: groupId.trim(),
         webhookUrl: webhook.trim(),
         targetClass: cls,
         targetActivity: act,
