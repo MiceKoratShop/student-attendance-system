@@ -3108,9 +3108,24 @@
           <div class="glass-card" style="margin-bottom: 24px;">
             <div class="card-header-flex">
               <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-                <div class="form-group-glass" style="margin-bottom: 0; min-width: 160px;">
-                  <label><i class="fas fa-chalkboard-user"></i> เลือกห้องเรียน</label>
-                  <select class="select-glass" id="att-class-select"></select>
+                <div class="form-group-glass" id="fg-att-class-container" style="margin-bottom: 0; min-width: 190px; position: relative;">
+                  <label style="font-size: 11.5px; margin-bottom: 3px; font-weight: 700; color: #FFF;">
+                    <i class="fas fa-chalkboard-user" style="color: var(--cyan-400);"></i> ห้องเรียน (<span style="color: var(--orange-400);">เลือกได้หลายห้อง</span>)
+                  </label>
+                  <button type="button" class="select-glass" id="btn-att-class-multi" style="width: 100%; text-align: left; display: flex; align-items: center; justify-content: space-between; cursor: pointer; padding: 7px 12px; height: 38px;">
+                    <span id="att-class-selected-label" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;">🌟 ทุกห้องเรียน</span>
+                    <i class="fas fa-chevron-down" style="font-size: 10px; color: var(--cyan-400); margin-left: 6px;"></i>
+                  </button>
+                  <div id="popover-att-class" class="filter-popover-glass">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px;">
+                      <span style="font-size: 11.5px; font-weight: 700; color: #FFF;">เลือกห้องเรียน:</span>
+                      <div style="display: flex; gap: 4px;">
+                        <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-att-select-all-classes" style="font-size: 10px; padding: 2px 7px;">ทุกห้อง</button>
+                        <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-att-clear-classes" style="font-size: 10px; padding: 2px 7px;">ล้าง</button>
+                      </div>
+                    </div>
+                    <div id="att-class-checkbox-list" style="display: flex; flex-direction: column; gap: 6px; max-height: 230px; overflow-y: auto;"></div>
+                  </div>
                 </div>
                 <div class="form-group-glass" style="margin-bottom: 0; min-width: 150px;">
                   <label><i class="fas fa-calendar-day"></i> เลือกวันที่</label>
@@ -5640,12 +5655,55 @@
     }
 
     function bindActionEvents() {
-      var attClassSelect = document.getElementById('att-class-select');
-      if (attClassSelect) {
-        attClassSelect.addEventListener('change', function() {
-          AppState.selectedClass = this.value;
+      var btnAttClassMulti = document.getElementById('btn-att-class-multi');
+      var popAttClass = document.getElementById('popover-att-class');
+      var fgAttClass = document.getElementById('fg-att-class-container');
+      var btnAttClassAll = document.getElementById('btn-att-select-all-classes');
+      var btnAttClassClear = document.getElementById('btn-att-clear-classes');
+
+      if (btnAttClassMulti && popAttClass) {
+        btnAttClassMulti.onclick = function(e) {
+          e.stopPropagation();
+          var isShown = popAttClass.style.display === 'block';
+          popAttClass.style.display = isShown ? 'none' : 'block';
+          if (fgAttClass) {
+            if (popAttClass.style.display === 'block') fgAttClass.classList.add('has-popover-open');
+            else fgAttClass.classList.remove('has-popover-open');
+          }
+        };
+        popAttClass.onclick = function(e) {
+          e.stopPropagation();
+        };
+      }
+
+      if (btnAttClassAll) {
+        btnAttClassAll.onclick = function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          var container = document.getElementById('att-class-checkbox-list');
+          if (!container) return;
+          var allChk = document.getElementById('chk-att-class-all');
+          if (allChk) allChk.checked = true;
+          var itemChks = container.querySelectorAll('.att-class-item-chk');
+          for (var i = 0; i < itemChks.length; i++) itemChks[i].checked = true;
+          updateAttendanceClassBtnLabel();
           loadAttendanceDataForSelectedDate();
-        });
+        };
+      }
+
+      if (btnAttClassClear) {
+        btnAttClassClear.onclick = function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          var container = document.getElementById('att-class-checkbox-list');
+          if (!container) return;
+          var allChk = document.getElementById('chk-att-class-all');
+          if (allChk) allChk.checked = false;
+          var itemChks = container.querySelectorAll('.att-class-item-chk');
+          for (var i = 0; i < itemChks.length; i++) itemChks[i].checked = false;
+          updateAttendanceClassBtnLabel();
+          loadAttendanceDataForSelectedDate();
+        };
       }
 
       var attDateSelect = document.getElementById('att-date-select');
@@ -5968,7 +6026,7 @@
         var prevVal = select.value;
         select.innerHTML = '';
         
-        if (dropdownIds[d] === 'student-class-filter' || dropdownIds[d] === 'report-class-select' || dropdownIds[d] === 'line-setting-class') {
+        if (dropdownIds[d] === 'student-class-filter' || dropdownIds[d] === 'report-class-select' || dropdownIds[d] === 'line-setting-class' || dropdownIds[d] === 'dash-class-filter') {
           var optAll = document.createElement('option');
           optAll.value = 'all';
           optAll.textContent = '🌟 ทุกห้องเรียน (All Classes)';
@@ -12222,12 +12280,17 @@
       var classInput = document.getElementById('dash-class-filter');
       var actInput = document.getElementById('dash-activity-filter');
 
-      var targetDate = (dateInput && dateInput.value) ? dateInput.value : AppState.selectedDate;
+      var todayStr = getTodayDateString();
+      var targetDate = (dateInput && dateInput.value) ? dateInput.value : todayStr;
+      if (dateInput && !dateInput.value) dateInput.value = todayStr;
+      
+      // Default to All Classes and All Activities
       var targetClass = (classInput && classInput.value) ? classInput.value : 'all';
       var targetAct = (actInput && actInput.value) ? actInput.value : 'all';
 
-      if (dateInput && dateInput.value !== targetDate) dateInput.value = targetDate;
       AppState.selectedDate = targetDate;
+      var headerDateLabel = document.getElementById('header-date-text');
+      if (headerDateLabel) headerDateLabel.textContent = formatThaiDate(targetDate);
 
       if (isGASAvailable()) {
         google.script.run
@@ -12523,73 +12586,172 @@
       }
     }
 
+    function getSelectedAttendanceClasses() {
+      var container = document.getElementById('att-class-checkbox-list');
+      var allChk = document.getElementById('chk-att-class-all');
+      if (allChk && allChk.checked) return 'all';
+      if (!container) return 'all';
+
+      var checked = container.querySelectorAll('.att-class-item-chk:checked');
+      if (checked.length === 0) return 'all';
+
+      var allItemChks = container.querySelectorAll('.att-class-item-chk');
+      if (checked.length === allItemChks.length && allItemChks.length > 0) return 'all';
+
+      var res = [];
+      for (var i = 0; i < checked.length; i++) {
+        res.push(checked[i].value);
+      }
+      return res.join(', ');
+    }
+
+    function updateAttendanceClassBtnLabel() {
+      var lbl = document.getElementById('att-class-selected-label');
+      if (!lbl) return;
+      var sel = getSelectedAttendanceClasses();
+      if (sel === 'all' || sel === 'ทุกห้องเรียน') {
+        lbl.textContent = '🌟 ทุกห้องเรียน';
+      } else {
+        var parts = sel.split(',');
+        if (parts.length === 1) {
+          lbl.textContent = 'ห้อง ' + parts[0].trim();
+        } else {
+          lbl.textContent = 'เลือก ' + parts.length + ' ห้อง';
+        }
+      }
+    }
+
+    function populateAttendanceClassCheckboxes() {
+      var classListContainer = document.getElementById('att-class-checkbox-list');
+      if (!classListContainer) return;
+      classListContainer.innerHTML = '';
+
+      var classes = (AppState.classes || []).slice();
+      var uniqueClasses = [];
+      for (var c = 0; c < classes.length; c++) {
+        var cName = (typeof classes[c] === 'object' ? classes[c].name : classes[c]) || '';
+        cName = String(cName).trim();
+        if (cName && uniqueClasses.indexOf(cName) === -1) uniqueClasses.push(cName);
+      }
+
+      var allLbl = document.createElement('label');
+      allLbl.style.cssText = 'display:flex; align-items:center; gap:6px; cursor:pointer; font-size:12px; font-weight:700; color:#FFF; padding:5px 8px; border-radius:4px; background:rgba(0,240,255,0.18);';
+      var allChk = document.createElement('input');
+      allChk.type = 'checkbox';
+      allChk.id = 'chk-att-class-all';
+      allChk.checked = true;
+      allChk.style.accentColor = '#00F0FF';
+      allChk.style.cursor = 'pointer';
+      allChk.addEventListener('change', function() {
+        var itemChks = classListContainer.querySelectorAll('.att-class-item-chk');
+        for (var i = 0; i < itemChks.length; i++) {
+          itemChks[i].checked = allChk.checked;
+        }
+        updateAttendanceClassBtnLabel();
+        loadAttendanceDataForSelectedDate();
+      });
+      allLbl.appendChild(allChk);
+      var allSpan = document.createElement('span');
+      allSpan.textContent = '🌟 ทุกห้องเรียน';
+      allLbl.appendChild(allSpan);
+      classListContainer.appendChild(allLbl);
+
+      for (var k = 0; k < uniqueClasses.length; k++) {
+        var cls = uniqueClasses[k];
+        var lbl = document.createElement('label');
+        lbl.style.cssText = 'display:flex; align-items:center; gap:6px; cursor:pointer; font-size:12px; color:var(--text-secondary); padding:4px 8px; border-radius:4px;';
+        var chk = document.createElement('input');
+        chk.type = 'checkbox';
+        chk.className = 'att-class-item-chk';
+        chk.value = cls;
+        chk.checked = true;
+        chk.style.accentColor = '#00F0FF';
+        chk.style.cursor = 'pointer';
+        chk.addEventListener('change', function() {
+          var allItemChks = classListContainer.querySelectorAll('.att-class-item-chk');
+          var allChecked = true;
+          for (var j = 0; j < allItemChks.length; j++) {
+            if (!allItemChks[j].checked) { allChecked = false; break; }
+          }
+          allChk.checked = allChecked;
+          updateAttendanceClassBtnLabel();
+          loadAttendanceDataForSelectedDate();
+        });
+        lbl.appendChild(chk);
+        var sp = document.createElement('span');
+        sp.textContent = cls;
+        lbl.appendChild(sp);
+        classListContainer.appendChild(lbl);
+      }
+
+      updateAttendanceClassBtnLabel();
+    }
+
     function renderAttendancePage() {
+      populateAttendanceClassCheckboxes();
       loadAttendanceDataForSelectedDate();
     }
 
     function loadAttendanceDataForSelectedDate() {
-      var attClassSelect = document.getElementById('att-class-select');
-      var targetClass = (attClassSelect && attClassSelect.value) ? attClassSelect.value : AppState.selectedClass;
-      if (!targetClass && AppState.classes && AppState.classes.length > 0) {
-        var fClass = AppState.classes[0];
-        targetClass = (typeof fClass === 'object' && fClass) ? (fClass.name || fClass.className || '') : String(fClass || '');
-      }
+      var targetClass = getSelectedAttendanceClasses();
       AppState.selectedClass = targetClass;
-      if (attClassSelect && targetClass && attClassSelect.value !== targetClass) {
-        attClassSelect.value = targetClass;
-      }
 
-      var targetDate = AppState.selectedDate || getTodayDateString();
+      var attDateEl = document.getElementById('att-date-select');
+      var targetDate = (attDateEl && attDateEl.value) ? attDateEl.value : (AppState.selectedDate || getTodayDateString());
+      AppState.selectedDate = targetDate;
+      if (attDateEl && !attDateEl.value) attDateEl.value = targetDate;
+
+      var headerDateLabel = document.getElementById('header-date-text');
+      if (headerDateLabel) headerDateLabel.textContent = formatThaiDate(targetDate);
+
       var attActSelect = document.getElementById('att-activity-select');
       var targetActivity = attActSelect ? attActSelect.value : 'all';
 
-      // Show popup indicator immediately so the user knows data is loading!
-      showLoadingPopup('กำลังโหลดข้อมูลห้อง ' + (targetClass || 'ทุกห้องเรียน'), 'กำลังดึงรายชื่อและสถานะการเช็คชื่อจากฐานข้อมูล...');
+      var classDisplay = (targetClass === 'all' || targetClass === 'ทุกห้องเรียน') ? 'ทุกห้องเรียน' : ('ห้อง ' + targetClass);
+      showLoadingPopup('กำลังโหลดข้อมูล ' + classDisplay, 'กำลังดึงรายชื่อและสถานะการเช็คชื่อจากฐานข้อมูล...');
 
       // If we just transferred live attendance results, render them directly
       if (AppState.pendingTransferredRecords) {
         var transferred = AppState.pendingTransferredRecords;
         AppState.pendingTransferredRecords = null;
-        fetchStudents(targetClass, function(students) {
+        fetchStudents('all', function(allStudents) {
           hideLoadingPopup();
-          renderAttendanceList(students, transferred);
+          var matchedStudents = [];
+          for (var ms = 0; ms < (allStudents || []).length; ms++) {
+            if (isClassMatch(targetClass, allStudents[ms].className)) {
+              matchedStudents.push(allStudents[ms]);
+            }
+          }
+          renderAttendanceList(matchedStudents, transferred);
         });
         return;
       }
 
-      fetchStudents(targetClass, function(students) {
+      fetchStudents('all', function(allStudents) {
+        var matchedStudents = [];
+        for (var ms = 0; ms < (allStudents || []).length; ms++) {
+          if (isClassMatch(targetClass, allStudents[ms].className)) {
+            matchedStudents.push(allStudents[ms]);
+          }
+        }
+
         if (isGASAvailable()) {
           google.script.run
             .withSuccessHandler(function(recordsMap) {
               hideLoadingPopup();
-              renderAttendanceList(students, recordsMap);
+              renderAttendanceList(matchedStudents, recordsMap || {});
             })
             .withFailureHandler(function(err) {
               hideLoadingPopup();
               console.warn('Error loading attendance records:', err);
-              renderAttendanceList(students, {});
+              var localRecords = getAttendanceMapFromLocalStorage(targetDate, targetActivity);
+              renderAttendanceList(matchedStudents, localRecords);
             })
             .getAttendanceRecords(targetDate, targetClass, targetActivity);
         } else {
-          var allAtt = getLocalStorageAttendance();
-          var recordsMap = {};
-          for (var i = 0; i < allAtt.length; i++) {
-            if (allAtt[i].date === targetDate) {
-              var act = allAtt[i].activityName || 'เช็คชื่อมาเรียน';
-              if (targetActivity === 'all' || act === targetActivity || (!allAtt[i].activityName && targetActivity === 'เช็คชื่อมาเรียน')) {
-                recordsMap[allAtt[i].studentId] = {
-                  status: allAtt[i].status,
-                  selfiePhoto: allAtt[i].selfiePhoto || '',
-                  distanceMeters: allAtt[i].distanceMeters || 0,
-                  activityName: act,
-                  checkinTime: allAtt[i].checkinTime || '',
-                  note: allAtt[i].note || ''
-                };
-              }
-            }
-          }
+          var localRecords = getAttendanceMapFromLocalStorage(targetDate, targetActivity);
           hideLoadingPopup();
-          renderAttendanceList(students, recordsMap);
+          renderAttendanceList(matchedStudents, localRecords);
         }
       });
     }
@@ -12645,6 +12807,12 @@
         var nameLink = document.createElement('div');
         nameLink.className = 'student-name-link';
         nameLink.textContent = student.name;
+
+        var clsBadge = document.createElement('span');
+        clsBadge.className = 'badge-glass';
+        clsBadge.style.cssText = 'font-size:11px; margin-left:6px; color:#38BDF8; background:rgba(56,189,248,0.15); border-color:rgba(56,189,248,0.35); padding:2px 6px; font-weight:600;';
+        clsBadge.textContent = student.className;
+        nameContainer.appendChild(clsBadge);
         (function(sId) {
           nameLink.addEventListener('click', function() {
             openStudentDetailModal(sId);
@@ -15238,14 +15406,27 @@
     
     function formatTimeString(val) {
       if (!val || val === '-' || val === 'null' || val === 'undefined') return '-';
+      if (typeof val === 'object' && val instanceof Date) {
+        var h = String(val.getHours());
+        if (h.length < 2) h = '0' + h;
+        var m = String(val.getMinutes());
+        if (m.length < 2) m = '0' + m;
+        return h + ':' + m;
+      }
       var str = String(val).trim();
-      if (!str || str === '-') return '-';
+      if (!str || str === '-' || str === 'undefined' || str === 'null') return '-';
 
-      var timeMatch = str.match(/(\d{1,2}):(\d{2})(?::\d{2})?/);
+      var timeMatch = str.match(/(?:(?:[A-Za-z]{3}\s+[A-Za-z]{3}\s+\d+\s+\d+\s+)|T|^)(\d{1,2}):(\d{2})(?::\d{2})?/);
       if (timeMatch) {
         var hh = timeMatch[1].length === 1 ? '0' + timeMatch[1] : timeMatch[1];
         var mm = timeMatch[2];
         return hh + ':' + mm;
+      }
+      var generalMatch = str.match(/(\d{1,2}):(\d{2})/);
+      if (generalMatch) {
+        var hh2 = generalMatch[1].length === 1 ? '0' + generalMatch[1] : generalMatch[1];
+        var mm2 = generalMatch[2];
+        return hh2 + ':' + mm2;
       }
       return str;
     }
@@ -15381,17 +15562,38 @@
 
       if (data.lateList && data.lateList.length > 0) {
         var ltNames = [];
-        for (var lt = 0; lt < Math.min(data.lateList.length, 5); lt++) {
+        for (var lt = 0; lt < Math.min(data.lateList.length, 8); lt++) {
           var ltItem = data.lateList[lt];
           var ltT = formatTimeString(ltItem.time);
           var ltTStr = (ltT && ltT !== '-') ? ' ⏰ ' + ltT + ' น.' : '';
           ltNames.push('• ' + ltItem.no + '. ' + ltItem.name + (ltItem.className ? ' (' + ltItem.className + ')' : '') + ltTStr);
         }
-        if (data.lateList.length > 5) ltNames.push('...และอีก ' + (data.lateList.length - 5) + ' คน');
+        if (data.lateList.length > 8) ltNames.push('...และอีก ' + (data.lateList.length - 8) + ' คน');
 
         bodyHtml += '<div style="background:#FFFBEB; border-radius:6px; padding:8px 10px; margin-top:6px; font-size:11px; color:#92400E; line-height:1.4;">' +
                     '  <div style="font-weight:700; color:#D97706; margin-bottom:2px;">🌸 มาสาย (' + data.lateList.length + ' คน):</div>' +
                     '  <div>' + ltNames.join('<br>') + '</div>' +
+                    '</div>';
+      }
+
+      if ((data.sickList && data.sickList.length > 0) || (data.leaveList && data.leaveList.length > 0)) {
+        var lvNames = [];
+        var sList = data.sickList || [];
+        for (var sk = 0; sk < Math.min(sList.length, 6); sk++) {
+          var skItem = sList[sk];
+          lvNames.push('• [ลาป่วย] ' + skItem.no + '. ' + skItem.name + (skItem.className ? ' (' + skItem.className + ')' : '') + (skItem.note ? ' [' + skItem.note + ']' : ''));
+        }
+        var lList = data.leaveList || [];
+        for (var lv = 0; lv < Math.min(lList.length, 6); lv++) {
+          var lvItem = lList[lv];
+          lvNames.push('• [ลากิจ] ' + lvItem.no + '. ' + lvItem.name + (lvItem.className ? ' (' + lvItem.className + ')' : '') + (lvItem.note ? ' [' + lvItem.note + ']' : ''));
+        }
+        var totalLeaveCount = sList.length + lList.length;
+        if (totalLeaveCount > 12) lvNames.push('...และอีก ' + (totalLeaveCount - 12) + ' คน');
+
+        bodyHtml += '<div style="background:#FEFCE8; border-radius:6px; padding:8px 10px; margin-top:6px; font-size:11px; color:#854D0E; line-height:1.4;">' +
+                    '  <div style="font-weight:700; color:#CA8A04; margin-bottom:2px;">🟡 แจ้งลา (' + totalLeaveCount + ' คน):</div>' +
+                    '  <div>' + lvNames.join('<br>') + '</div>' +
                     '</div>';
       }
 
@@ -15402,7 +15604,7 @@
                          '      <span>สรุปรายงานการมาเรียนประจำวัน</span>' +
                          '    </div>' +
                          '    <div style="font-size: 24px; font-weight: 800; color: #FFFFFF; line-height: 1.2;">' + dayName + '</div>' +
-                         '    <div style="font-size: 11.5px; color: #9CA3AF; margin-top: 4px;">' + formatThaiDate(data.dateStr) + ' • ' + classLabel + ' (' + total + ' คน)</div>' +
+                         '    <div style="font-size: 11.5px; color: #9CA3AF; margin-top: 4px;">' + formatThaiDate(data.dateStr) + ' • ' + classLabel + (actLabel !== 'เช็คชื่อมาเรียน' ? ' • ' + actLabel : '') + ' (' + total + ' คน)</div>' +
                          '  </div>' +
                          '  <div style="background: #FFFFFF; padding: 14px 18px; color: #1E293B;">' +
                          bodyHtml +
