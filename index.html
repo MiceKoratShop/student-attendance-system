@@ -3362,6 +3362,9 @@
 
               <!-- ROW 2: ACTION BUTTONS TOOLBAR -->
               <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px;">
+                <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-refresh-report" title="ดึงข้อมูลล่าสุดจาก Google Sheets และฐานข้อมูล">
+                  <i class="fas fa-arrows-rotate"></i> รีเฟรชข้อมูล
+                </button>
                 <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-print-report" title="พิมพ์รายงาน">
                   <i class="fas fa-print"></i> พิมพ์
                 </button>
@@ -5380,19 +5383,72 @@
       var descEl = document.getElementById('confirm-modal-desc');
       var iconBox = document.getElementById('confirm-icon-box');
       var okBtn = document.getElementById('btn-custom-confirm-ok');
+      var winEl = document.getElementById('confirm-modal-window');
 
       if (titleEl) titleEl.textContent = config.title || 'ยืนยันการทำรายการ';
       if (descEl) descEl.innerHTML = config.desc || 'คุณต้องการดำเนินการนี้ใช่หรือไม่?';
       
+      var isLine = (config.theme === 'line' || config.btnClass === 'btn-emerald');
+      var isCyan = (config.theme === 'cyan' || config.btnClass === 'btn-cyan');
+      var isOrange = (config.theme === 'orange' || config.btnClass === 'btn-orange');
+
+      if (winEl) {
+        if (isLine) {
+          winEl.style.borderColor = 'rgba(6, 199, 85, 0.45)';
+          winEl.style.boxShadow = '0 20px 60px rgba(0,0,0,0.8), 0 0 35px rgba(6,199,85,0.25)';
+        } else if (isCyan) {
+          winEl.style.borderColor = 'rgba(0, 240, 255, 0.45)';
+          winEl.style.boxShadow = '0 20px 60px rgba(0,0,0,0.8), 0 0 35px rgba(0,240,255,0.25)';
+        } else if (isOrange) {
+          winEl.style.borderColor = 'rgba(255, 107, 0, 0.45)';
+          winEl.style.boxShadow = '0 20px 60px rgba(0,0,0,0.8), 0 0 35px rgba(255,107,0,0.25)';
+        } else {
+          winEl.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+          winEl.style.boxShadow = '0 20px 60px rgba(0,0,0,0.8), 0 0 35px rgba(239,68,68,0.25)';
+        }
+      }
+
       if (iconBox) {
-        var iconName = config.icon || 'fa-trash-can';
-        iconBox.innerHTML = '<i class="fas ' + iconName + '"></i>';
+        var rawIcon = config.icon || 'fa-trash-can';
+        var prefix = (rawIcon.indexOf('line') > -1 || rawIcon.indexOf('fa-brands') > -1) ? 'fab' : 'fas';
+        var cleanIcon = rawIcon.replace(/^fa[sbrld]s+/, '');
+        iconBox.innerHTML = '<i class="' + prefix + ' ' + cleanIcon + '"></i>';
+
+        if (isLine) {
+          iconBox.style.background = 'rgba(6, 199, 85, 0.15)';
+          iconBox.style.borderColor = '#06C755';
+          iconBox.style.color = '#06C755';
+        } else if (isCyan) {
+          iconBox.style.background = 'rgba(0, 240, 255, 0.15)';
+          iconBox.style.borderColor = 'var(--cyan-400)';
+          iconBox.style.color = 'var(--cyan-400)';
+        } else if (isOrange) {
+          iconBox.style.background = 'rgba(255, 107, 0, 0.15)';
+          iconBox.style.borderColor = '#FF6B00';
+          iconBox.style.color = '#FF6B00';
+        } else {
+          iconBox.style.background = 'rgba(239, 68, 68, 0.15)';
+          iconBox.style.borderColor = '#EF4444';
+          iconBox.style.color = '#EF4444';
+        }
       }
 
       if (okBtn) {
-        var btnIcon = config.btnIcon || 'fa-trash';
+        var rawBtnIcon = config.btnIcon || 'fa-trash';
+        var btnPrefix = (rawBtnIcon.indexOf('line') > -1 || rawBtnIcon.indexOf('fa-brands') > -1) ? 'fab' : 'fas';
+        var cleanBtnIcon = rawBtnIcon.replace(/^fa[sbrld]s+/, '');
         var okText = config.okText || 'ยืนยันการลบ';
-        okBtn.innerHTML = '<i class="fas ' + btnIcon + '"></i> ' + okText;
+        okBtn.innerHTML = '<i class="' + btnPrefix + ' ' + cleanBtnIcon + '"></i> ' + okText;
+
+        if (isLine) {
+          okBtn.style.background = 'linear-gradient(135deg, #06C755 0%, #10B981 100%)';
+        } else if (isCyan) {
+          okBtn.style.background = 'linear-gradient(135deg, #00F0FF 0%, #0284C7 100%)';
+        } else if (isOrange) {
+          okBtn.style.background = 'linear-gradient(135deg, #FF6B00 0%, #FF8533 100%)';
+        } else {
+          okBtn.style.background = 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)';
+        }
       }
       
       confirmCallback = config.onConfirm;
@@ -10792,7 +10848,11 @@
         if (s.requireGPS === true) secBadges.push('<span class="badge-glass" style="font-size:10px; padding:2px 5px; color:#10B981;" title="GPS ' + (s.radiusMeters || 100) + 'm">📍 GPS</span>');
         var secBadgesHtml = secBadges.length > 0 ? secBadges.join(' ') : '<span style="color:var(--text-muted); font-size:10px;">- ไม่มี -</span>';
 
-        var statBadge = (s.enabled !== false) ? '<span class="badge-glass badge-present">เปิดใช้งาน</span>' : '<span class="badge-glass badge-absent">ปิดใช้งาน</span>';
+        var isEn = (s.enabled !== false);
+        var statBadge = '<label style="cursor:pointer; display:inline-flex; align-items:center; gap:5px;" title="คลิกเพื่อเปิด/ปิดตารางนี้">' +
+                        '  <input type="checkbox" class="toggle-sch-enable" data-id="' + escapeHtml(s.id || '') + '" ' + (isEn ? 'checked' : '') + ' style="accent-color:#10B981; transform:scale(1.15); cursor:pointer;" />' +
+                        '  <span style="font-size:11px; font-weight:700; color:' + (isEn ? '#10B981' : '#64748B') + ';">' + (isEn ? 'เปิดใช้งาน' : 'ปิดใช้งาน') + '</span>' +
+                        '</label>';
 
         var tr = document.createElement('tr');
         tr.innerHTML = '<td><strong>' + escapeHtml(clsLabel) + '</strong><br><small style="color:var(--text-muted);">' + escapeHtml(s.activityName || 'เช็คชื่อมาเรียน') + '</small></td>' +
@@ -10817,9 +10877,34 @@
 
       var delBtns = tbody.querySelectorAll('.btn-del-sch');
       for (var d = 0; d < delBtns.length; d++) {
-        delBtns[d].addEventListener('click', function() {
+        delBtns[d].addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
           var id = this.getAttribute('data-id');
           deleteScheduleRule(id);
+        });
+      }
+
+      var toggleEnChks = tbody.querySelectorAll('.toggle-sch-enable');
+      for (var tc = 0; tc < toggleEnChks.length; tc++) {
+        toggleEnChks[tc].addEventListener('change', function(e) {
+          var id = this.getAttribute('data-id');
+          var isChecked = this.checked;
+          var schedules = getAutoCheckinSchedulesLocal();
+          for (var si = 0; si < schedules.length; si++) {
+            if (String(schedules[si].id) === String(id)) {
+              schedules[si].enabled = isChecked;
+              break;
+            }
+          }
+          saveAutoCheckinSchedulesLocal(schedules);
+          renderScheduleManagerTable();
+
+          if (isGASAvailable()) {
+            google.script.run.saveAutoCheckinSchedules(schedules);
+          }
+          showToast(isChecked ? 'เปิดใช้งานตารางเวลาแล้ว' : 'ปิดใช้งานตารางเวลาแล้ว', 'info');
+          updateStudentScheduleStatus();
         });
       }
     }
@@ -10935,10 +11020,11 @@
       if (!id) return;
       openConfirmModal({
         title: 'ยืนยันการลบตารางเวลา',
-        desc: 'คุณต้องการลบตารางเวลานี้ใช่หรือไม่? (การลบจะมีผลทันที)',
-        icon: 'fa-trash',
+        desc: '<div style="text-align:center; padding: 10px 0;">คุณต้องการลบตารางเวลานี้ใช่หรือไม่?<br><span style="color:#EF4444; font-size:12px;">(การลบจะมีผลทันทีและหยุดการเช็คชื่ออัตโนมัติของตารางนี้)</span></div>',
+        icon: 'fa-trash-can',
         btnIcon: 'fa-trash',
-        okText: 'ลบตารางเวลา',
+        okText: 'ลบตารางเวลานี้',
+        theme: 'danger',
         onConfirm: function() {
           var schedules = getAutoCheckinSchedulesLocal();
           var newSchedules = [];
@@ -10949,6 +11035,17 @@
           }
           saveAutoCheckinSchedulesLocal(newSchedules);
           renderScheduleManagerTable();
+
+          // Clear any active automated session in local storage
+          try {
+            var activeSess = localStorage.getItem('gas_student_active_session');
+            if (activeSess) {
+              var pSess = JSON.parse(activeSess);
+              if (pSess && (pSess.scheduleId === id || pSess.isAutomated)) {
+                localStorage.removeItem('gas_student_active_session');
+              }
+            }
+          } catch (e) {}
 
           if (isGASAvailable()) {
             google.script.run
@@ -13752,6 +13849,14 @@
     function renderReportsPage() {
       generateReportPreview();
       
+      var btnRefresh = document.getElementById('btn-refresh-report');
+      if (btnRefresh) {
+        btnRefresh.onclick = function() {
+          generateReportPreview();
+          showToast('รีเฟรชข้อมูลรายงานล่าสุดเรียบร้อยแล้ว', 'info');
+        };
+      }
+
       var btnPdf = document.getElementById('btn-download-pdf');
       if (btnPdf) {
         btnPdf.onclick = function() {
@@ -13967,22 +14072,33 @@
 
       var container = document.getElementById('report-preview-container');
       if (!container) return;
-      container.innerHTML = '<div style="padding: 30px; text-align: center; color: var(--text-secondary);"><i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #FF6B00; margin-bottom: 10px; display: block;"></i>กำลังโหลดข้อมูลรายงานและรูปภาพ...</div>';
+      container.innerHTML = '<div style="padding: 30px; text-align: center; color: var(--text-secondary);"><i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #FF6B00; margin-bottom: 10px; display: block;"></i>กำลังโหลดข้อมูลรายงานและรูปภาพล่าสุด...</div>';
 
-      if (isGASAvailable()) {
-        google.script.run
-          .withSuccessHandler(function(recordsMap) {
-            renderReportDocument(reportType, dateStr, className, activityName, statusFilter, recordsMap || {});
-          })
-          .withFailureHandler(function(err) {
-            console.warn('Error fetching report records from GAS:', err);
-            var localRecords = getAttendanceMapFromLocalStorage(dateStr, activityName);
-            renderReportDocument(reportType, dateStr, className, activityName, statusFilter, localRecords);
-          })
-          .getAttendanceRecords(dateStr, className, activityName);
+      function loadData() {
+        if (isGASAvailable()) {
+          google.script.run
+            .withSuccessHandler(function(recordsMap) {
+              renderReportDocument(reportType, dateStr, className, activityName, statusFilter, recordsMap || {});
+            })
+            .withFailureHandler(function(err) {
+              console.warn('Error fetching report records from GAS:', err);
+              var localRecords = getAttendanceMapFromLocalStorage(dateStr, activityName);
+              renderReportDocument(reportType, dateStr, className, activityName, statusFilter, localRecords);
+            })
+            .getAttendanceRecords(dateStr, className, activityName, reportType);
+        } else {
+          var localRecords = getAttendanceMapFromLocalStorage(dateStr, activityName);
+          renderReportDocument(reportType, dateStr, className, activityName, statusFilter, localRecords);
+        }
+      }
+
+      // Ensure students list is loaded
+      if (!AppState.students || AppState.students.length === 0) {
+        fetchStudents('all', function() {
+          loadData();
+        });
       } else {
-        var localRecords = getAttendanceMapFromLocalStorage(dateStr, activityName);
-        renderReportDocument(reportType, dateStr, className, activityName, statusFilter, localRecords);
+        loadData();
       }
     }
 
@@ -14455,20 +14571,32 @@
         showToast('ส่งออกไฟล์ Excel เรียบร้อยแล้ว (' + exportData.length + ' รายการ)', 'success');
       }
 
-      if (isGASAvailable()) {
-        google.script.run
-          .withSuccessHandler(function(recordsMap) {
-            doExcelExport(recordsMap);
-          })
-          .withFailureHandler(function(err) {
-            console.warn('Error fetching report records for Excel:', err);
-            var localRecords = getAttendanceMapFromLocalStorage(dateStr, activityName);
-            doExcelExport(localRecords);
-          })
-          .getAttendanceRecords(dateStr, className, activityName);
+      var reportType = (document.getElementById('report-type-select') && document.getElementById('report-type-select').value) || 'daily';
+
+      function executeExport() {
+        if (isGASAvailable()) {
+          google.script.run
+            .withSuccessHandler(function(recordsMap) {
+              doExcelExport(recordsMap);
+            })
+            .withFailureHandler(function(err) {
+              console.warn('Error fetching report records for Excel:', err);
+              var localRecords = getAttendanceMapFromLocalStorage(dateStr, activityName);
+              doExcelExport(localRecords);
+            })
+            .getAttendanceRecords(dateStr, className, activityName, reportType);
+        } else {
+          var localRecords = getAttendanceMapFromLocalStorage(dateStr, activityName);
+          doExcelExport(localRecords);
+        }
+      }
+
+      if (!AppState.students || AppState.students.length === 0) {
+        fetchStudents('all', function() {
+          executeExport();
+        });
       } else {
-        var localRecords = getAttendanceMapFromLocalStorage(dateStr, activityName);
-        doExcelExport(localRecords);
+        executeExport();
       }
     }
 
@@ -15504,23 +15632,15 @@
       }
     }
 
-        function sendLineSummaryNow() {
+    function sendLineSummaryNow() {
       var cfg = getLineConfigLocal();
       var token = cfg.lineToken || '';
       var groupId = cfg.lineGroupId || '';
       var webhook = cfg.webhookUrl || '';
 
       if (!token && !webhook) {
-        openConfirmModal({
-          title: 'ยังไม่ได้ตั้งค่า LINE Token',
-          desc: 'ระบบยังไม่พบ LINE Token หรือ Webhook สำหรับส่งรายงาน<br>คุณต้องการเปิดหน้าต่างตั้งค่า LINE เลยใช่หรือไม่?',
-          icon: 'fa-line',
-          btnIcon: 'fa-gear',
-          okText: 'ไปที่หน้าตั้งค่า LINE',
-          onConfirm: function() {
-            openLineSettingsModal();
-          }
-        });
+        showToast('ยังไม่ได้ตั้งค่า LINE Token หรือ Webhook กรุณาตั้งค่าก่อนส่งรายงาน', 'warning');
+        openLineSettingsModal();
         return;
       }
 
@@ -15534,94 +15654,116 @@
 
       function proceedWithRecords(recordsMap) {
         hideLoadingPopup();
-        var stats = calculateAttendanceStats(dateStr, className, activityName, recordsMap || {});
-        var flexCardHtml = renderFlexCardHtml(stats);
-        var defaultSendMsg = generateDynamicLineMessage(dateStr, className, activityName, statusFilter, 'flex', recordsMap);
+        try {
+          var stats = calculateAttendanceStats(dateStr, className, activityName, recordsMap || {});
+          var flexCardHtml = renderFlexCardHtml(stats);
+          var defaultSendMsg = generateDynamicLineMessage(dateStr, className, activityName, statusFilter, 'flex', recordsMap);
 
-        var descHtml = '<div style="margin-bottom:12px;">' +
-                       '  <div style="font-size:12.5px; font-weight:700; color:#38BDF8; margin-bottom:8px;">' +
-                       '    <i class="fas fa-sparkles"></i> รูปแบบการ์ด Flex ที่จะส่งเข้า LINE:' +
-                       '  </div>' +
-                       '  <div style="max-height:260px; overflow-y:auto; border-radius:12px; padding:4px; background:rgba(0,0,0,0.3);">' +
-                       flexCardHtml +
-                       '  </div>' +
-                       '</div>' +
-                       '<div style="text-align:left; margin-top:8px;">' +
-                       '  <details style="background:rgba(15,23,42,0.6); border:1px solid var(--border-glass); border-radius:8px; padding:8px 10px;">' +
-                       '    <summary style="font-size:11.5px; font-weight:700; color:var(--orange-400); cursor:pointer;">' +
-                       '      <i class="fas fa-pen-to-square"></i> ดู / แก้ไขข้อความสำรอง (Text Mode)' +
-                       '    </summary>' +
-                       '    <textarea id="quick-send-line-text" class="input-glass" rows="5" style="width:100%; font-family:monospace; font-size:11px; color:#86EFAC; background:#06111e; border:1px solid var(--border-glass); border-radius:6px; padding:8px; margin-top:8px; resize:vertical; line-height:1.4;">' +
-                       escapeHtml(defaultSendMsg) +
-                       '    </textarea>' +
-                       '  </details>' +
-                       '</div>';
+          var descHtml = '<div style="margin-bottom:12px;">' +
+                         '  <div style="font-size:12.5px; font-weight:700; color:#38BDF8; margin-bottom:8px; text-align:center;">' +
+                         '    <i class="fas fa-sparkles" style="color:#FBBF24;"></i> ตัวอย่างการ์ด Flex ที่จะส่งเข้า LINE:' +
+                         '  </div>' +
+                         '  <div style="max-height:260px; overflow-y:auto; border-radius:12px; padding:6px; background:rgba(0,0,0,0.3);">' +
+                         flexCardHtml +
+                         '  </div>' +
+                         '</div>' +
+                         '<div style="text-align:left; margin-top:8px;">' +
+                         '  <details style="background:rgba(15,23,42,0.6); border:1px solid var(--border-glass); border-radius:8px; padding:8px 10px;">' +
+                         '    <summary style="font-size:11.5px; font-weight:700; color:var(--orange-400); cursor:pointer;">' +
+                         '      <i class="fas fa-pen-to-square"></i> ดู / แก้ไขข้อความสำรอง (Text Mode)' +
+                         '    </summary>' +
+                         '    <textarea id="quick-send-line-text" class="input-glass" rows="4" style="width:100%; font-family:monospace; font-size:11px; color:#86EFAC; background:#06111e; border:1px solid var(--border-glass); border-radius:6px; padding:8px; margin-top:8px; resize:vertical; line-height:1.4;">' +
+                         escapeHtml(defaultSendMsg) +
+                         '    </textarea>' +
+                         '  </details>' +
+                         '</div>';
 
-        openConfirmModal({
-          title: 'ยืนยันส่งการ์ดรายงานเข้ากลุ่ม LINE',
-          desc: descHtml,
-          icon: 'fa-paper-plane',
-          btnIcon: 'fa-paper-plane',
-          okText: 'ยืนยันส่งเข้า LINE ทันที',
-          onConfirm: function() {
-            var editedMsgEl = document.getElementById('quick-send-line-text');
-            var finalMsg = editedMsgEl ? editedMsgEl.value.trim() : defaultSendMsg;
+          openConfirmModal({
+            title: 'ยืนยันส่งรายงานเข้ากลุ่ม LINE',
+            desc: descHtml,
+            icon: 'fa-brands fa-line',
+            btnIcon: 'fa-paper-plane',
+            btnClass: 'btn-emerald',
+            theme: 'line',
+            okText: 'ยืนยันส่งเข้า LINE ทันที',
+            onConfirm: function() {
+              var editedMsgEl = document.getElementById('quick-send-line-text');
+              var finalMsg = editedMsgEl ? editedMsgEl.value.trim() : defaultSendMsg;
 
-            showLoadingPopup('กำลังส่งรายงานเข้ากลุ่ม LINE...', 'กำลังส่งการ์ด Flex Message ไปยังกลุ่ม LINE ผู้ปกครอง');
+              showLoadingPopup('กำลังส่งรายงานเข้ากลุ่ม LINE...', 'กำลังส่งการ์ด Flex Message ไปยัง LINE');
 
-            var sendPayload = {
-              date: dateStr,
-              className: className,
-              activityName: activityName,
-              statusFilter: statusFilter,
-              messageStyle: 'flex',
-              token: token,
-              lineGroupId: groupId,
-              webhookUrl: webhook,
-              customMessage: finalMsg,
-              useFlex: true
-            };
+              var sendPayload = {
+                date: dateStr,
+                className: className,
+                activityName: activityName,
+                statusFilter: statusFilter,
+                messageStyle: 'flex',
+                token: token,
+                lineGroupId: groupId,
+                webhookUrl: webhook,
+                customMessage: finalMsg,
+                useFlex: true
+              };
 
-            if (isGASAvailable()) {
-              google.script.run
-                .withSuccessHandler(function(res) {
+              if (isGASAvailable()) {
+                google.script.run
+                  .withSuccessHandler(function(res) {
+                    hideLoadingPopup();
+                    if (res && res.status === 'success') {
+                      showToast(res.message || 'ส่งการ์ด Flex เข้า LINE สำเร็จแล้ว!', 'success');
+                    } else {
+                      showToast((res && res.message) ? res.message : 'เกิดข้อผิดพลาดในการส่ง LINE', 'error');
+                    }
+                  })
+                  .withFailureHandler(function(err) {
+                    hideLoadingPopup();
+                    showToast('เกิดข้อผิดพลาดในการส่ง: ' + (err.message || String(err)), 'error');
+                  })
+                  .sendLineReport(sendPayload);
+              } else {
+                setTimeout(function() {
                   hideLoadingPopup();
-                  if (res && res.status === 'success') {
-                    showToast(res.message, 'success');
-                  } else {
-                    showToast((res && res.message) ? res.message : 'เกิดข้อผิดพลาดในการส่ง', 'error');
-                  }
-                })
-                .withFailureHandler(function(err) {
-                  hideLoadingPopup();
-                  showToast('เกิดข้อผิดพลาดในการส่ง: ' + (err.message || String(err)), 'error');
-                })
-                .sendLineReport(sendPayload);
-            } else {
-              setTimeout(function() {
-                hideLoadingPopup();
-                showToast('จำลองการส่งการ์ด Flex เข้า LINE สำเร็จ (Local Mode)', 'success');
-              }, 600);
+                  showToast('จำลองการส่งการ์ด Flex เข้า LINE สำเร็จ (Local Mode)', 'success');
+                }, 600);
+              }
             }
-          }
-        });
+          });
+        } catch (procErr) {
+          console.error('Error in proceedWithRecords:', procErr);
+          hideLoadingPopup();
+          showToast('เกิดข้อผิดพลาดในการสร้างข้อความ LINE: ' + procErr.message, 'error');
+        }
       }
 
-      if (isGASAvailable()) {
-        google.script.run
-          .withSuccessHandler(function(recordsMap) {
-            proceedWithRecords(recordsMap || {});
-          })
-          .withFailureHandler(function(err) {
-            console.warn('Could not fetch GAS records, falling back to local records:', err);
-            var localMap = getAttendanceMapFromLocalStorage(dateStr, activityName);
-            proceedWithRecords(localMap);
-          })
-          .getAttendanceRecords(dateStr, className, activityName);
-      } else {
-        var localMap = getAttendanceMapFromLocalStorage(dateStr, activityName);
-        proceedWithRecords(localMap);
+      function ensureStudentsAndProceed() {
+        if (!AppState.students || AppState.students.length === 0) {
+          fetchStudents('all', function() {
+            fetchRecordsAndProceed();
+          });
+        } else {
+          fetchRecordsAndProceed();
+        }
       }
+
+      function fetchRecordsAndProceed() {
+        if (isGASAvailable()) {
+          google.script.run
+            .withSuccessHandler(function(recordsMap) {
+              proceedWithRecords(recordsMap || {});
+            })
+            .withFailureHandler(function(err) {
+              console.warn('Could not fetch GAS records, falling back to local records:', err);
+              var localMap = getAttendanceMapFromLocalStorage(dateStr, activityName);
+              proceedWithRecords(localMap);
+            })
+            .getAttendanceRecords(dateStr, className, activityName);
+        } else {
+          var localMap = getAttendanceMapFromLocalStorage(dateStr, activityName);
+          proceedWithRecords(localMap);
+        }
+      }
+
+      ensureStudentsAndProceed();
     }
 
     function renderSettingsPage() {
