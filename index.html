@@ -3799,10 +3799,11 @@
         <div class="form-group-glass">
           <label><i class="fas fa-align-left"></i> รูปแบบข้อความ (Message Template)</label>
           <select class="select-glass" id="line-setting-style">
-            <option value="parent" selected>👨‍👩‍👧‍👦 แบบรายงานแจ้งกลุ่มผู้ปกครอง (แนะนำสำหรับกลุ่มผู้ปกครอง)</option>
-            <option value="formal">📊 แบบสรุปภาพรวมทางการ</option>
-            <option value="compact">📢 แบบกระชับ (ยอดสรุปตัวเลขสั้นๆ)</option>
-            <option value="detailed">📋 แบบรายงานละเอียดรายบุคคล</option>
+            <option value="flex" selected>🌟 การ์ด Flex สวยงาม (โมเดิร์น Dark Header & White Card เหมือนรูปตัวอย่าง)</option>
+            <option value="parent">👨‍👩‍👧‍👦 ข้อความแบบรายงานแจ้งกลุ่มผู้ปกครอง</option>
+            <option value="formal">📊 ข้อความแบบสรุปภาพรวมทางการ</option>
+            <option value="compact">📢 ข้อความแบบกระชับ (ยอดสรุปตัวเลขสั้นๆ)</option>
+            <option value="detailed">📋 ข้อความแบบรายงานละเอียดรายบุคคล</option>
           </select>
         </div>
 
@@ -3835,8 +3836,9 @@
         <!-- MESSAGE PREVIEW & EDIT BOX -->
         <div class="form-group-glass" style="margin-top: 10px;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 6px;">
-            <label style="margin: 0; font-weight: 700;">
-              <i class="fas fa-pen-to-square" style="color: var(--orange-400);"></i> ตัวอย่างข้อความที่ส่งเข้า LINE (<span style="color: var(--orange-400);">แก้ไขพิมพ์ข้อความเองได้</span>)
+            <label style="margin: 0; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+              <i class="fas fa-wand-magic-sparkles" style="color: var(--orange-400);"></i> 
+              <span>ตัวอย่างการแสดงผลใน LINE (<span style="color: #38BDF8;">การ์ด Flex สีสันสวยงาม</span>)</span>
             </label>
             <div style="display: flex; gap: 6px;">
               <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-reset-line-message" style="font-size: 10.5px; padding: 2px 8px;" title="สร้างข้อความอัตโนมัติตามตัวเลือกใหม่">
@@ -3847,7 +3849,33 @@
               </button>
             </div>
           </div>
-          <textarea id="line-message-live-preview" class="input-glass" rows="7" style="width: 100%; font-family: 'Consolas', 'Courier New', monospace; font-size: 12px; color: #86EFAC; line-height: 1.5; background: #06111e; border: 1.5px solid var(--border-glass); border-radius: var(--radius-sm); padding: 12px; resize: vertical;" placeholder="พิมพ์หรือแก้ไขข้อความที่ต้องการส่งเข้า LINE ที่นี่..."></textarea>
+          <!-- LIVE FLEX CARD PREVIEW (MODERN DARK HEADER & WHITE CARD) -->
+          <div id="line-flex-card-container" style="background: #0B0F19; border: 1.5px solid var(--border-glass); border-radius: 14px; padding: 16px; margin-bottom: 12px; display: flex; justify-content: center;">
+            <div id="line-flex-card-box" style="width: 100%; max-width: 360px; border-radius: 16px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.8), 0 0 15px rgba(255,107,0,0.15); font-family: 'Prompt', 'Kanit', sans-serif;">
+              <!-- Header -->
+              <div style="background: #18181B; padding: 18px 20px; color: #FFF; text-align: left;">
+                <div style="color: #FF6B00; font-weight: 700; font-size: 12.5px; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+                  <span style="display: inline-block; width: 9px; height: 9px; background: #FF6B00; border-radius: 50%;"></span>
+                  <span id="flex-card-badge-title">สรุปรายงานการมาเรียนประจำวัน</span>
+                </div>
+                <div id="flex-card-day-title" style="font-size: 24px; font-weight: 800; color: #FFFFFF; line-height: 1.2;">วันพฤหัสบดี</div>
+                <div id="flex-card-date-sub" style="font-size: 11.5px; color: #9CA3AF; margin-top: 4px;">27 สิงหาคม 2569 • ทุกห้องเรียน • รวม 0 คน</div>
+              </div>
+              <!-- Body -->
+              <div id="flex-card-body-content" style="background: #FFFFFF; padding: 14px 18px; color: #1E293B;">
+                <!-- Rows injected dynamically -->
+              </div>
+              <!-- Footer -->
+              <div style="background: #18181B; padding: 12px 16px; text-align: center; color: #F59E0B; font-size: 11.5px; font-weight: 700;">
+                ขอให้เป็นวันที่ยอดเยี่ยมในการเรียนการสอนครับ ✨
+              </div>
+            </div>
+          </div>
+
+          <div style="font-size: 11.5px; font-weight: 700; color: var(--orange-400); margin-bottom: 4px;">
+            <i class="fas fa-pen-to-square"></i> ข้อความแบบข้อความล้วน (Fallback / แก้ไขเองได้):
+          </div>
+          <textarea id="line-message-live-preview" class="input-glass" rows="5" style="width: 100%; font-family: 'Consolas', 'Courier New', monospace; font-size: 12px; color: #86EFAC; line-height: 1.5; background: #06111e; border: 1.5px solid var(--border-glass); border-radius: var(--radius-sm); padding: 12px; resize: vertical;" placeholder="พิมพ์หรือแก้ไขข้อความที่ต้องการส่งเข้า LINE ที่นี่..."></textarea>
           <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px; line-height: 1.4;">
             💡 <strong>คุณสามารถพิมพ์/แก้ไขข้อความในกรอบนี้ได้อย่างอิสระ</strong> เมื่อกด "บันทึก" หรือ "ทดสอบ" ระบบจะส่งข้อความตามที่คุณแก้ไขนี้ครับ
           </div>
@@ -4278,6 +4306,16 @@
 
     // Google Apps Script Web App Deployment Endpoint (For GitHub Pages & External Hosting)
     var GAS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyENNsNjTy8YvyBsm73Ab68GUkKklL_E-nuKWWehPzT8C-AlatfNy0IHLaY-F390TYmng/exec';
+
+    // Auto-detect current active Web App URL if running directly in GAS iframe/window
+    try {
+      if (window.location && window.location.href) {
+        var curHref = window.location.href.split('?')[0].split('#')[0];
+        if (curHref && curHref.indexOf('/macros/s/') > -1 && curHref.endsWith('/exec')) {
+          GAS_WEBAPP_URL = curHref;
+        }
+      }
+    } catch(e) {}
 
     // Initialize Universal Bridge for GitHub Pages & External Hosting
     initGasBridge();
@@ -11729,7 +11767,64 @@
       }
     }
 
+    /* ============================================================= */
+    /* PERSISTENT REPORT FILTER PREFERENCES SYSTEM */
+    /* ============================================================= */
+    function saveReportFilterPreferences() {
+      try {
+        var repType = (document.getElementById('report-type-select') && document.getElementById('report-type-select').value) || 'daily';
+        var repStat = (document.getElementById('report-status-select') && document.getElementById('report-status-select').value) || 'all';
+        
+        var classContainer = document.getElementById('report-class-checkbox-list');
+        var allClassChk = document.getElementById('chk-report-class-all');
+        var selectedClasses = [];
+        var allClassesChecked = allClassChk ? allClassChk.checked : true;
+        if (classContainer) {
+          var itemChks = classContainer.querySelectorAll('.report-class-item-chk:checked');
+          for (var i = 0; i < itemChks.length; i++) selectedClasses.push(itemChks[i].value);
+        }
+
+        var actContainer = document.getElementById('report-activity-checkbox-list');
+        var allActChk = document.getElementById('chk-report-act-all');
+        var selectedActs = [];
+        var allActsChecked = allActChk ? allActChk.checked : true;
+        if (actContainer) {
+          var aChks = actContainer.querySelectorAll('.report-act-item-chk:checked');
+          for (var j = 0; j < aChks.length; j++) selectedActs.push(aChks[j].value);
+        }
+
+        var prefs = {
+          reportType: repType,
+          status: repStat,
+          allClassesChecked: allClassesChecked,
+          selectedClasses: selectedClasses,
+          allActsChecked: allActsChecked,
+          selectedActivities: selectedActs
+        };
+
+        localStorage.setItem('report_filter_preferences', JSON.stringify(prefs));
+      } catch (e) {}
+    }
+
+    function getSavedReportFilterPreferences() {
+      try {
+        var raw = localStorage.getItem('report_filter_preferences');
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      return null;
+    }
+
     function populateReportMultiSelectFilters() {
+      var savedPrefs = getSavedReportFilterPreferences();
+
+      // Restore dropdowns if saved
+      if (savedPrefs) {
+        var repTypeSelect = document.getElementById('report-type-select');
+        if (repTypeSelect && savedPrefs.reportType) repTypeSelect.value = savedPrefs.reportType;
+        var repStatSelect = document.getElementById('report-status-select');
+        if (repStatSelect && savedPrefs.status) repStatSelect.value = savedPrefs.status;
+      }
+
       // 1. Populate Classrooms
       var classListContainer = document.getElementById('report-class-checkbox-list');
       if (classListContainer) {
@@ -11742,12 +11837,14 @@
           if (cName && uniqueClasses.indexOf(cName) === -1) uniqueClasses.push(cName);
         }
 
+        var isAllClassesDefault = (!savedPrefs || savedPrefs.allClassesChecked === true || !savedPrefs.selectedClasses || savedPrefs.selectedClasses.length === 0);
+
         var allLbl = document.createElement('label');
-        allLbl.style.cssText = 'display:flex; align-items:center; gap:6px; cursor:pointer; font-size:12px; font-weight:700; color:#FFF; padding:4px 6px; border-radius:4px; background:rgba(255,107,0,0.18);';
+        allLbl.style.cssText = 'display:flex; align-items:center; gap:6px; cursor:pointer; font-size:12px; font-weight:700; color:#FFF; padding:5px 8px; border-radius:4px; background:rgba(255,107,0,0.18);';
         var allChk = document.createElement('input');
         allChk.type = 'checkbox';
         allChk.id = 'chk-report-class-all';
-        allChk.checked = true;
+        allChk.checked = isAllClassesDefault;
         allChk.style.accentColor = '#FF6B00';
         allChk.style.cursor = 'pointer';
         allChk.addEventListener('change', function() {
@@ -11756,6 +11853,7 @@
             itemChks[i].checked = allChk.checked;
           }
           updateReportClassBtnLabel();
+          saveReportFilterPreferences();
           generateReportPreview();
         });
         allLbl.appendChild(allChk);
@@ -11764,15 +11862,25 @@
         allLbl.appendChild(allSpan);
         classListContainer.appendChild(allLbl);
 
+        var anyClassUnchecked = false;
         for (var k = 0; k < uniqueClasses.length; k++) {
           var cls = uniqueClasses[k];
           var lbl = document.createElement('label');
-          lbl.style.cssText = 'display:flex; align-items:center; gap:6px; cursor:pointer; font-size:12px; color:var(--text-secondary); padding:3px 6px; border-radius:4px;';
+          lbl.style.cssText = 'display:flex; align-items:center; gap:6px; cursor:pointer; font-size:12px; color:var(--text-secondary); padding:4px 8px; border-radius:4px;';
           var chk = document.createElement('input');
           chk.type = 'checkbox';
           chk.className = 'report-class-item-chk';
           chk.value = cls;
-          chk.checked = true;
+
+          if (isAllClassesDefault) {
+            chk.checked = true;
+          } else if (savedPrefs && savedPrefs.selectedClasses) {
+            chk.checked = (savedPrefs.selectedClasses.indexOf(cls) > -1);
+          } else {
+            chk.checked = true;
+          }
+          if (!chk.checked) anyClassUnchecked = true;
+
           chk.style.accentColor = '#FF6B00';
           chk.style.cursor = 'pointer';
           chk.addEventListener('change', function() {
@@ -11783,6 +11891,7 @@
             }
             allChk.checked = allChecked;
             updateReportClassBtnLabel();
+            saveReportFilterPreferences();
             generateReportPreview();
           });
           lbl.appendChild(chk);
@@ -11791,6 +11900,7 @@
           lbl.appendChild(sp);
           classListContainer.appendChild(lbl);
         }
+        if (anyClassUnchecked) allChk.checked = false;
       }
 
       // 2. Populate Activities
@@ -11805,12 +11915,14 @@
           if (aName && uniqueActs.indexOf(aName) === -1) uniqueActs.push(aName);
         }
 
+        var isAllActsDefault = (!savedPrefs || savedPrefs.allActsChecked === true || !savedPrefs.selectedActivities || savedPrefs.selectedActivities.length === 0);
+
         var allActLbl = document.createElement('label');
-        allActLbl.style.cssText = 'display:flex; align-items:center; gap:6px; cursor:pointer; font-size:12px; font-weight:700; color:#FFF; padding:4px 6px; border-radius:4px; background:rgba(0,240,255,0.15);';
+        allActLbl.style.cssText = 'display:flex; align-items:center; gap:6px; cursor:pointer; font-size:12px; font-weight:700; color:#FFF; padding:5px 8px; border-radius:4px; background:rgba(0,240,255,0.15);';
         var allActChk = document.createElement('input');
         allActChk.type = 'checkbox';
         allActChk.id = 'chk-report-act-all';
-        allActChk.checked = true;
+        allActChk.checked = isAllActsDefault;
         allActChk.style.accentColor = 'var(--cyan-400)';
         allActChk.style.cursor = 'pointer';
         allActChk.addEventListener('change', function() {
@@ -11819,6 +11931,7 @@
             itemChks[i].checked = allActChk.checked;
           }
           updateReportActivityBtnLabel();
+          saveReportFilterPreferences();
           generateReportPreview();
         });
         allActLbl.appendChild(allActChk);
@@ -11827,15 +11940,25 @@
         allActLbl.appendChild(allActSpan);
         actListContainer.appendChild(allActLbl);
 
+        var anyActUnchecked = false;
         for (var m = 0; m < uniqueActs.length; m++) {
           var act = uniqueActs[m];
           var actLbl = document.createElement('label');
-          actLbl.style.cssText = 'display:flex; align-items:center; gap:6px; cursor:pointer; font-size:12px; color:var(--text-secondary); padding:3px 6px; border-radius:4px;';
+          actLbl.style.cssText = 'display:flex; align-items:center; gap:6px; cursor:pointer; font-size:12px; color:var(--text-secondary); padding:4px 8px; border-radius:4px;';
           var aChk = document.createElement('input');
           aChk.type = 'checkbox';
           aChk.className = 'report-act-item-chk';
           aChk.value = act;
-          aChk.checked = true;
+
+          if (isAllActsDefault) {
+            aChk.checked = true;
+          } else if (savedPrefs && savedPrefs.selectedActivities) {
+            aChk.checked = (savedPrefs.selectedActivities.indexOf(act) > -1);
+          } else {
+            aChk.checked = true;
+          }
+          if (!aChk.checked) anyActUnchecked = true;
+
           aChk.style.accentColor = 'var(--cyan-400)';
           aChk.style.cursor = 'pointer';
           aChk.addEventListener('change', function() {
@@ -11846,6 +11969,7 @@
             }
             allActChk.checked = allChecked;
             updateReportActivityBtnLabel();
+            saveReportFilterPreferences();
             generateReportPreview();
           });
           actLbl.appendChild(aChk);
@@ -11854,6 +11978,7 @@
           actLbl.appendChild(asp);
           actListContainer.appendChild(actLbl);
         }
+        if (anyActUnchecked) allActChk.checked = false;
       }
 
       updateReportClassBtnLabel();
@@ -11908,6 +12033,7 @@
       var reportTypeSelect = document.getElementById('report-type-select');
       if (reportTypeSelect) {
         reportTypeSelect.onchange = function() {
+          saveReportFilterPreferences();
           generateReportPreview();
         };
       }
@@ -11973,6 +12099,7 @@
           e.preventDefault();
           var allChk = document.getElementById('chk-report-class-all');
           if (allChk) { allChk.checked = true; allChk.dispatchEvent(new Event('change')); }
+          saveReportFilterPreferences();
         };
       }
 
@@ -11988,6 +12115,7 @@
             for (var i = 0; i < itemChks.length; i++) itemChks[i].checked = false;
           }
           updateReportClassBtnLabel();
+          saveReportFilterPreferences();
           generateReportPreview();
         };
       }
@@ -11998,6 +12126,7 @@
           e.preventDefault();
           var allChk = document.getElementById('chk-report-act-all');
           if (allChk) { allChk.checked = true; allChk.dispatchEvent(new Event('change')); }
+          saveReportFilterPreferences();
         };
       }
 
@@ -12013,6 +12142,7 @@
             for (var i = 0; i < itemChks.length; i++) itemChks[i].checked = false;
           }
           updateReportActivityBtnLabel();
+          saveReportFilterPreferences();
           generateReportPreview();
         };
       }
@@ -12028,6 +12158,7 @@
       var reportStatusSelect = document.getElementById('report-status-select');
       if (reportStatusSelect) {
         reportStatusSelect.onchange = function() {
+          saveReportFilterPreferences();
           generateReportPreview();
         };
       }
@@ -12987,7 +13118,7 @@
     }
 
     
-    function generateDynamicLineMessage(dateStr, classFilter, activityFilter, statusFilter, messageStyle, customRecordsMap) {
+        function generateDynamicLineMessage(dateStr, classFilter, activityFilter, statusFilter, messageStyle, customRecordsMap) {
       dateStr = dateStr || getTodayDateString();
       classFilter = classFilter || 'all';
       activityFilter = activityFilter || 'all';
@@ -13046,106 +13177,146 @@
       }
 
       var totalAll = countPresent + countAbsent + countSick + countLeave + countLate;
-      var attRate = totalAll > 0 ? (((countPresent + countLate) / totalAll) * 100).toFixed(1) : '100.0';
+      var totalBase = totalStudents > 0 ? totalStudents : (totalAll > 0 ? totalAll : 1);
+      var attRate = totalBase > 0 ? (((countPresent + countLate) / totalBase) * 100).toFixed(1) : '100.0';
+      var pctPresent = ((countPresent / totalBase) * 100).toFixed(1);
+      var pctLate = ((countLate / totalBase) * 100).toFixed(1);
+      var pctSickLeave = (((countSick + countLeave) / totalBase) * 100).toFixed(1);
+      var pctAbsent = ((countAbsent / totalBase) * 100).toFixed(1);
+
+      function makeProgressBar(rate) {
+        var num = parseFloat(rate) || 0;
+        var blocks = Math.round(num / 10);
+        if (blocks > 10) blocks = 10;
+        if (blocks < 0) blocks = 0;
+        var bar = '';
+        for (var b = 0; b < blocks; b++) bar += '🟩';
+        for (var w = blocks; w < 10; w++) bar += '⬜';
+        return bar;
+      }
+
       var isMultiClass = (classFilter !== 'all' && classFilter.indexOf(',') > -1) || classFilter === 'all';
       var classLabel = (classFilter === 'all' || classFilter === 'ทุกห้องเรียน') ? 'ทุกห้องเรียน' : ('ห้อง ' + classFilter);
-      var actLabel = (activityFilter === 'all' || activityFilter === 'ทุกกิจกรรม' || !activityFilter) ? 'เช็คชื่อประจำวัน' : activityFilter;
+      var actLabel = (activityFilter === 'all' || activityFilter === 'ทุกกิจกรรม' || !activityFilter) ? 'เช็คชื่อมาเรียน' : activityFilter;
 
       var text = '';
+      var divLine = '━━━━━━━━━━━━━━━━━━━━\n';
       if (messageStyle === 'parent' || messageStyle === 'parents') {
-        text = '📢 [รายงานการมาเรียนถึงผู้ปกครอง]\n' +
-               '🏫 ' + classLabel + '\n' +
-               '📅 วันที่: ' + formatThaiDate(dateStr) + ' (' + actLabel + ')\n' +
-               '------------------------\n' +
-               '🟢 นักเรียนที่มาเรียน: ' + countPresent + ' คน (' + attRate + '%)\n' +
-               '🔴 นักเรียนที่ขาดเรียน: ' + countAbsent + ' คน\n' +
-               '🟡 ลาป่วย/ลากิจ: ' + (countSick + countLeave) + ' คน\n' +
-               '🌸 มาสาย: ' + countLate + ' คน\n' +
-               '👥 จำนวนนักเรียนทั้งหมด: ' + (totalStudents || totalAll) + ' คน\n' +
-               '------------------------\n';
+        text = divLine +
+               '👨‍👩‍👧‍👦 แจ้งเตือนสถิติการมาเรียน (กลุ่มผู้ปกครอง)\n' +
+               '🏫 ห้องเรียน: ' + classLabel + '\n' +
+               '📅 ประจำวันที่: ' + formatThaiDate(dateStr) + '\n' +
+               '🏷️ รายการ: ' + actLabel + '\n' +
+               divLine +
+               '📊 อัตราการเข้าเรียน: ' + attRate + '%\n' +
+               '[' + makeProgressBar(attRate) + ']\n\n' +
+               '📋 สรุปยอดการมาเรียนวันนี้:\n' +
+               '👥 นักเรียนทั้งหมด: ' + (totalStudents || totalAll) + ' คน (100%)\n' +
+               '🟢 มาเรียนตรงเวลา: ' + countPresent + ' คน (' + pctPresent + '%)\n' +
+               '🌸 มาสาย: ' + countLate + ' คน (' + pctLate + '%)\n' +
+               '🟡 ลาป่วย/ลากิจ: ' + (countSick + countLeave) + ' คน (' + pctSickLeave + '%)\n' +
+               '🔴 ขาดเรียน (ไม่พบเช็คชื่อ): ' + countAbsent + ' คน (' + pctAbsent + '%)\n' +
+               divLine;
 
         if (absentList.length > 0) {
-          text += '\n⚠️ รายชื่อนักเรียนที่ไม่พบการเช็คชื่อวันนี้ (' + absentList.length + ' คน):\n';
+          text += '\n🔴 รายชื่อนักเรียนที่ไม่พบการเช็คชื่อ (' + absentList.length + ' คน):\n';
           for (var a = 0; a < absentList.length; a++) {
             var rTag = isMultiClass ? ' (' + absentList[a].className + ')' : '';
-            text += '• เลขที่ ' + absentList[a].no + ' ' + absentList[a].name + rTag + (absentList[a].note ? ' [' + absentList[a].note + ']' : '') + '\n';
+            text += '  ' + (a + 1) + '. เลขที่ ' + absentList[a].no + ' ' + absentList[a].name + rTag + (absentList[a].note ? ' 📝 ' + absentList[a].note : '') + '\n';
           }
         }
 
         if (lateList.length > 0) {
-          text += '\n⏰ นักเรียนที่มาสาย (' + lateList.length + ' คน):\n';
+          text += '\n🌸 รายชื่อนักเรียนที่มาสาย (' + lateList.length + ' คน):\n';
           for (var lt = 0; lt < lateList.length; lt++) {
             var rTagLt = isMultiClass ? ' (' + lateList[lt].className + ')' : '';
-            text += '• เลขที่ ' + lateList[lt].no + ' ' + lateList[lt].name + rTagLt + ' [เข้าเรียนเวลา ' + lateList[lt].time + ']\n';
+            text += '  ' + (lt + 1) + '. เลขที่ ' + lateList[lt].no + ' ' + lateList[lt].name + rTagLt + ' ⏰ เข้าเรียน ' + lateList[lt].time + ' น.\n';
           }
         }
 
         if (sickList.length > 0 || leaveList.length > 0) {
-          text += '\n✉️ นักเรียนที่แจ้งลา (' + (sickList.length + leaveList.length) + ' คน):\n';
+          text += '\n🟡 รายชื่อนักเรียนที่แจ้งลา (' + (sickList.length + leaveList.length) + ' คน):\n';
+          var lCount = 1;
           for (var sk = 0; sk < sickList.length; sk++) {
             var rTagSk = isMultiClass ? ' (' + sickList[sk].className + ')' : '';
-            text += '• [ป่วย] เลขที่ ' + sickList[sk].no + ' ' + sickList[sk].name + rTagSk + (sickList[sk].note ? ' (' + sickList[sk].note + ')' : '') + '\n';
+            text += '  ' + lCount + '. [ลาป่วย] เลขที่ ' + sickList[sk].no + ' ' + sickList[sk].name + rTagSk + (sickList[sk].note ? ' 📝 ' + sickList[sk].note : '') + '\n';
+            lCount++;
           }
           for (var lv = 0; lv < leaveList.length; lv++) {
             var rTagLv = isMultiClass ? ' (' + leaveList[lv].className + ')' : '';
-            text += '• [กิจ] เลขที่ ' + leaveList[lv].no + ' ' + leaveList[lv].name + rTagLv + (leaveList[lv].note ? ' (' + leaveList[lv].note + ')' : '') + '\n';
+            text += '  ' + lCount + '. [ลากิจ] เลขที่ ' + leaveList[lv].no + ' ' + leaveList[lv].name + rTagLv + (leaveList[lv].note ? ' 📝 ' + leaveList[lv].note : '') + '\n';
+            lCount++;
           }
         }
 
-        text += '\n🙏 หากผู้ปกครองท่านใดมีข้อสงสัย หรือประสงค์แจ้งการลาของบุตรหลาน สามารถติดต่อครูประจำชั้นได้เลยครับ ขอบคุณครับ';
+        if (countAbsent === 0 && countLate === 0 && countSick === 0 && countLeave === 0) {
+          text += '\n✨ ยอดเยี่ยมมากครับ! วันนี้นักเรียนทุกคนมาเรียนครบตรงเวลา 100% 🎉\n';
+        }
+
+        text += '\n' + divLine +
+                '💬 หากผู้ปกครองท่านใดประสงค์แจ้งการลา หรือมีข้อสอบถาม สามารถติดต่ออาจารย์ที่ปรึกษาได้โดยตรงครับ\n' +
+                '🙏 ขอบพระคุณผู้ปกครองทุกท่านที่ให้ความร่วมมือครับ';
       } else if (messageStyle === 'compact') {
-        text = '📢 [สรุปการเช็คชื่อ] ' + classLabel + '\n' +
-               '📅 วันที่: ' + formatThaiDate(dateStr) + '\n' +
-               '🏷️ รายการ: ' + actLabel + '\n' +
-               '------------------------\n' +
-               '🟢 มาเรียน: ' + countPresent + ' คน (' + attRate + '%)\n' +
-               '🔴 ขาดเรียน: ' + countAbsent + ' คน\n' +
-               '🟡 ลาป่วย: ' + countSick + ' คน | 🟣 ลากิจ: ' + countLeave + ' คน\n' +
-               '🌸 มาสาย: ' + countLate + ' คน\n' +
+        text = divLine +
+               '📢 [สรุปการเช็คชื่อ] ' + classLabel + '\n' +
+               '📅 วันที่: ' + formatThaiDate(dateStr) + ' • ' + actLabel + '\n' +
+               divLine +
+               '📊 อัตราการเข้าเรียน: ' + attRate + '% [' + makeProgressBar(attRate) + ']\n' +
+               '🟢 มาเรียน: ' + countPresent + ' | 🌸 สาย: ' + countLate + ' | 🟡 ลา: ' + (countSick + countLeave) + ' | 🔴 ขาด: ' + countAbsent + '\n' +
                '👥 รวมทั้งหมด: ' + (totalStudents || totalAll) + ' คน\n';
 
         if (absentList.length > 0) {
-          text += '\n❌ รายชื่อนักเรียนขาดเรียน (' + absentList.length + ' คน):\n';
+          text += '\n🔴 ขาดเรียน (' + absentList.length + ' คน):\n';
           for (var cAb = 0; cAb < absentList.length; cAb++) {
             var cTag = isMultiClass ? ' (' + absentList[cAb].className + ')' : '';
             text += '• เลขที่ ' + absentList[cAb].no + ' ' + absentList[cAb].name + cTag + '\n';
           }
         }
       } else if (messageStyle === 'detailed') {
-        text = '📋 รายงานการเช็คชื่อนักเรียนฉบับละเอียด\n' +
+        text = divLine +
+               '📋 รายงานการเช็คชื่อนักเรียนฉบับละเอียด\n' +
                '🏫 ' + classLabel + ' • ' + actLabel + '\n' +
-               '📅 วันที่: ' + formatThaiDate(dateStr) + '\n' +
-               '------------------------\n' +
-               '📊 สถิติ: มา ' + countPresent + ' | ขาด ' + countAbsent + ' | ป่วย ' + countSick + ' | กิจ ' + countLeave + ' | สาย ' + countLate + ' (รวม ' + (totalStudents || totalAll) + ' คน, ' + attRate + '%)\n' +
-               '------------------------\n';
+               '📅 ประจำวันที่: ' + formatThaiDate(dateStr) + '\n' +
+               divLine +
+               '📊 สถิติ: มา ' + countPresent + ' | สาย ' + countLate + ' | ป่วย ' + countSick + ' | กิจ ' + countLeave + ' | ขาด ' + countAbsent + ' (รวม ' + (totalStudents || totalAll) + ' คน, ' + attRate + '%)\n' +
+               divLine;
         for (var d = 0; d < Math.min(studentList.length, 50); d++) {
           var std = studentList[d];
           if (!isClassMatch(classFilter, std.className)) continue;
           var r = recordsMap[std.studentId] || {};
           var st = r.status || 'Absent';
-          var mark = (st === 'Present' || st === 'มาเรียน') ? '🟢' : ((st === 'Absent' || st === 'ขาด' || st === 'ขาดเรียน') ? '🔴' : '🟡');
+          var mark = (st === 'Present' || st === 'มาเรียน') ? '🟢' : ((st === 'Late' || st === 'มาสาย') ? '🌸' : ((st === 'Sick' || st === 'ลาป่วย' || st === 'Leave' || st === 'ลากิจ') ? '🟡' : '🔴'));
           text += (std.studentNo || (d + 1)) + '. ' + mark + ' ' + std.name + ' - ' + st + '\n';
         }
       } else {
-        text = '📊 รายงานสรุปการเช็คชื่อนักเรียน\n' +
+        text = divLine +
+               '📊 รายงานสรุปการเช็คชื่อนักเรียน\n' +
                '🏫 ห้องเรียน: ' + classLabel + '\n' +
                '🏷️ กิจกรรม/วิชา: ' + actLabel + '\n' +
-               '📅 วันที่: ' + formatThaiDate(dateStr) + '\n' +
-               '========================\n' +
-               '🟢 มาเรียน: ' + countPresent + ' คน\n' +
-               '🔴 ขาดเรียน: ' + countAbsent + ' คน\n' +
+               '📅 ประจำวันที่: ' + formatThaiDate(dateStr) + '\n' +
+               divLine +
+               '📈 อัตราการมาเรียนรวม: ' + attRate + '%\n' +
+               '[' + makeProgressBar(attRate) + ']\n\n' +
+               '🟢 มาเรียนตรงเวลา: ' + countPresent + ' คน (' + pctPresent + '%)\n' +
+               '🌸 มาสาย: ' + countLate + ' คน (' + pctLate + '%)\n' +
                '🟡 ลาป่วย: ' + countSick + ' คน\n' +
                '🟣 ลากิจ: ' + countLeave + ' คน\n' +
-               '🌸 มาสาย: ' + countLate + ' คน\n' +
+               '🔴 ขาดเรียน: ' + countAbsent + ' คน (' + pctAbsent + '%)\n' +
                '👥 รวมทั้งหมด: ' + (totalStudents || totalAll) + ' คน\n' +
-               '📈 อัตราการมาเรียน: ' + attRate + '%\n' +
-               '========================\n';
+               divLine;
 
         if (absentList.length > 0) {
-          text += '\n❌ ขาดเรียน (' + absentList.length + ' คน):\n';
+          text += '\n🔴 ขาดเรียน (' + absentList.length + ' คน):\n';
           for (var fAb = 0; fAb < absentList.length; fAb++) {
             var fTag = isMultiClass ? ' (' + absentList[fAb].className + ')' : '';
             text += '• ' + absentList[fAb].no + '. ' + absentList[fAb].name + fTag + '\n';
+          }
+        }
+        if (lateList.length > 0) {
+          text += '\n🌸 มาสาย (' + lateList.length + ' คน):\n';
+          for (var lt2 = 0; lt2 < lateList.length; lt2++) {
+            var fTagLt = isMultiClass ? ' (' + lateList[lt2].className + ')' : '';
+            text += '• ' + lateList[lt2].no + '. ' + lateList[lt2].name + fTagLt + ' [' + lateList[lt2].time + ']\n';
           }
         }
         if (sickList.length > 0 || leaveList.length > 0) {
@@ -13160,43 +13331,267 @@
       return text;
     }
 
-    function updateLineMessagePreview(forceReset) {
-      var previewBox = document.getElementById('line-message-live-preview');
-      if (!previewBox) return;
+    
+    function getThaiDayOfWeekName(dateStr) {
+      var d = new Date();
+      if (dateStr) {
+        var str = String(dateStr).trim();
+        if (str.indexOf('/') > -1) {
+          var parts = str.split('/');
+          if (parts.length === 3) {
+            var day = parseInt(parts[0], 10);
+            var month = parseInt(parts[1], 10) - 1;
+            var year = parseInt(parts[2], 10);
+            if (year > 2500) year -= 543;
+            d = new Date(year, month, day);
+          }
+        } else if (str.match(/^\d{4}-\d{2}-\d{2}/)) {
+          var yParts = str.substring(0, 10).split('-');
+          d = new Date(parseInt(yParts[0], 10), parseInt(yParts[1], 10) - 1, parseInt(yParts[2], 10));
+        }
+      }
+      var days = ['วันอาทิตย์', 'วันจันทร์', 'วันอังคาร', 'วันพุธ', 'วันพฤหัสบดี', 'วันศุกร์', 'วันเสาร์'];
+      return days[d.getDay()] || 'สรุปการเช็คชื่อ';
+    }
 
-      if (!forceReset && previewBox.getAttribute('data-user-edited') === 'true') {
-        return;
+    function renderFlexCardHtml(data) {
+      var dayName = getThaiDayOfWeekName(data.dateStr);
+      var classLabel = (data.className === 'all' || data.className === 'ทุกห้องเรียน') ? 'ทุกห้องเรียน' : ('ห้อง ' + data.className);
+      var actLabel = (data.activityName === 'all' || data.activityName === 'ทุกกิจกรรม' || !data.activityName) ? 'เช็คชื่อมาเรียน' : data.activityName;
+      var total = data.totalStudents || 0;
+      var countPresent = data.countPresent || 0;
+      var countAbsent = data.countAbsent || 0;
+      var countLate = data.countLate || 0;
+      var countLeave = (data.countSick || 0) + (data.countLeave || 0);
+      var attRate = data.attRate || '100.0';
+
+      var bodyHtml = '';
+
+      // Main percentage row
+      bodyHtml += '<div style="display:flex; align-items:center; justify-content:space-between; padding-bottom:10px; border-bottom:1px solid #F1F5F9;">' +
+                  '  <div style="width:75px;">' +
+                  '    <div style="font-size:18px; font-weight:800; color:#10B981; line-height:1;">' + attRate + '%</div>' +
+                  '    <div style="font-size:10px; color:#64748B; margin-top:2px;">เข้าเรียน</div>' +
+                  '  </div>' +
+                  '  <div style="flex:1; padding-left:10px;">' +
+                  '    <div style="font-size:13px; font-weight:700; color:#1E293B;">มาเรียน ' + (countPresent + countLate) + ' จาก ' + total + ' คน</div>' +
+                  '    <div style="font-size:11px; color:#64748B; margin-top:2px;">ตรงเวลา ' + countPresent + ' • สาย ' + countLate + ' • ลา ' + countLeave + ' • ขาด ' + countAbsent + '</div>' +
+                  '  </div>' +
+                  '</div>';
+
+      // Rows
+      bodyHtml += '<div style="display:flex; align-items:center; padding:9px 0; border-bottom:1px solid #F1F5F9;">' +
+                  '  <div style="width:75px;">' +
+                  '    <div style="font-size:13px; font-weight:700; color:#10B981;">มาเรียน</div>' +
+                  '    <div style="font-size:10px; color:#94A3B8;">ตรงเวลา</div>' +
+                  '  </div>' +
+                  '  <div style="flex:1; padding-left:10px;">' +
+                  '    <div style="font-size:13px; font-weight:700; color:#1E293B;">มาเรียนตรงเวลา (' + countPresent + ' คน)</div>' +
+                  '    <div style="font-size:11px; color:#64748B;">เข้าเรียนตามเวลาปกติ</div>' +
+                  '  </div>' +
+                  '</div>';
+
+      if (countLate > 0) {
+        bodyHtml += '<div style="display:flex; align-items:center; padding:9px 0; border-bottom:1px solid #F1F5F9;">' +
+                    '  <div style="width:75px;">' +
+                    '    <div style="font-size:13px; font-weight:700; color:#FF6B00;">มาสาย</div>' +
+                    '    <div style="font-size:10px; color:#94A3B8;">' + countLate + ' คน</div>' +
+                    '  </div>' +
+                    '  <div style="flex:1; padding-left:10px;">' +
+                    '    <div style="font-size:13px; font-weight:700; color:#1E293B;">มาสาย (' + countLate + ' คน)</div>' +
+                    '    <div style="font-size:11px; color:#64748B;">เกินเวลาที่กำหนด</div>' +
+                    '  </div>' +
+                    '</div>';
       }
 
-      var style = (document.getElementById('line-setting-style') && document.getElementById('line-setting-style').value) || 'parent';
+      if (countLeave > 0) {
+        bodyHtml += '<div style="display:flex; align-items:center; padding:9px 0; border-bottom:1px solid #F1F5F9;">' +
+                    '  <div style="width:75px;">' +
+                    '    <div style="font-size:13px; font-weight:700; color:#EAB308;">แจ้งลา</div>' +
+                    '    <div style="font-size:10px; color:#94A3B8;">' + countLeave + ' คน</div>' +
+                    '  </div>' +
+                    '  <div style="flex:1; padding-left:10px;">' +
+                    '    <div style="font-size:13px; font-weight:700; color:#1E293B;">ลากิจ / ลาป่วย (' + countLeave + ' คน)</div>' +
+                    '    <div style="font-size:11px; color:#64748B;">ป่วย ' + (data.countSick || 0) + ' • กิจ ' + (data.countLeave || 0) + '</div>' +
+                    '  </div>' +
+                    '</div>';
+      }
+
+      if (countAbsent > 0) {
+        bodyHtml += '<div style="display:flex; align-items:center; padding:9px 0; border-bottom:1px solid #F1F5F9;">' +
+                    '  <div style="width:75px;">' +
+                    '    <div style="font-size:13px; font-weight:700; color:#EF4444;">ขาดเรียน</div>' +
+                    '    <div style="font-size:10px; color:#94A3B8;">' + countAbsent + ' คน</div>' +
+                    '  </div>' +
+                    '  <div style="flex:1; padding-left:10px;">' +
+                    '    <div style="font-size:13px; font-weight:700; color:#1E293B;">ขาดเรียน (' + countAbsent + ' คน)</div>' +
+                    '    <div style="font-size:11px; color:#64748B;">ไม่พบการเช็คชื่อในระบบ</div>' +
+                    '  </div>' +
+                    '</div>';
+      }
+
+      // Individual Exception Lists
+      if (data.absentList && data.absentList.length > 0) {
+        var abNames = [];
+        for (var a = 0; a < Math.min(data.absentList.length, 6); a++) {
+          var abItem = data.absentList[a];
+          abNames.push('• ' + abItem.no + '. ' + abItem.name + (abItem.className ? ' (' + abItem.className + ')' : ''));
+        }
+        if (data.absentList.length > 6) abNames.push('...และอีก ' + (data.absentList.length - 6) + ' คน');
+
+        bodyHtml += '<div style="background:#FEF2F2; border-radius:6px; padding:8px 10px; margin-top:8px; font-size:11px; color:#991B1B; line-height:1.4;">' +
+                    '  <div style="font-weight:700; color:#DC2626; margin-bottom:2px;">🔴 ไม่พบการเช็คชื่อ (' + data.absentList.length + ' คน):</div>' +
+                    '  <div>' + abNames.join('<br>') + '</div>' +
+                    '</div>';
+      }
+
+      if (data.lateList && data.lateList.length > 0) {
+        var ltNames = [];
+        for (var lt = 0; lt < Math.min(data.lateList.length, 5); lt++) {
+          var ltItem = data.lateList[lt];
+          ltNames.push('• ' + ltItem.no + '. ' + ltItem.name + ' (เข้า ' + ltItem.time + ')');
+        }
+        if (data.lateList.length > 5) ltNames.push('...และอีก ' + (data.lateList.length - 5) + ' คน');
+
+        bodyHtml += '<div style="background:#FFFBEB; border-radius:6px; padding:8px 10px; margin-top:6px; font-size:11px; color:#92400E; line-height:1.4;">' +
+                    '  <div style="font-weight:700; color:#D97706; margin-bottom:2px;">🌸 มาสาย (' + data.lateList.length + ' คน):</div>' +
+                    '  <div>' + ltNames.join('<br>') + '</div>' +
+                    '</div>';
+      }
+
+      var fullCardHtml = '<div style="width: 100%; max-width: 360px; margin: 0 auto; border-radius: 16px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.8), 0 0 15px rgba(255,107,0,0.15); font-family: sans-serif; text-align: left;">' +
+                         '  <div style="background: #18181B; padding: 18px 20px; color: #FFF;">' +
+                         '    <div style="color: #FF6B00; font-weight: 700; font-size: 12.5px; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">' +
+                         '      <span style="display: inline-block; width: 9px; height: 9px; background: #FF6B00; border-radius: 50%;"></span>' +
+                         '      <span>สรุปรายงานการมาเรียนประจำวัน</span>' +
+                         '    </div>' +
+                         '    <div style="font-size: 24px; font-weight: 800; color: #FFFFFF; line-height: 1.2;">' + dayName + '</div>' +
+                         '    <div style="font-size: 11.5px; color: #9CA3AF; margin-top: 4px;">' + formatThaiDate(data.dateStr) + ' • ' + classLabel + ' (' + total + ' คน)</div>' +
+                         '  </div>' +
+                         '  <div style="background: #FFFFFF; padding: 14px 18px; color: #1E293B;">' +
+                         bodyHtml +
+                         '  </div>' +
+                         '  <div style="background: #18181B; padding: 12px 16px; text-align: center; color: #F59E0B; font-size: 11.5px; font-weight: 700;">' +
+                         '    ขอให้เป็นวันที่ยอดเยี่ยมในการเรียนการสอนครับ ✨' +
+                         '  </div>' +
+                         '</div>';
+
+      return fullCardHtml;
+    }
+
+    function calculateAttendanceStats(dateStr, classFilter, activityFilter, customRecordsMap) {
+      dateStr = dateStr || getTodayDateString();
+      classFilter = classFilter || 'all';
+      activityFilter = activityFilter || 'all';
+
+      var recordsMap = customRecordsMap || getAttendanceMapFromLocalStorage(dateStr, activityFilter);
+      var studentList = AppState.students || [];
+
+      var countPresent = 0;
+      var countAbsent = 0;
+      var countSick = 0;
+      var countLeave = 0;
+      var countLate = 0;
+      var absentList = [];
+      var sickList = [];
+      var leaveList = [];
+      var lateList = [];
+      var totalStudents = 0;
+
+      for (var j = 0; j < studentList.length; j++) {
+        var s = studentList[j];
+        if (!isClassMatch(classFilter, s.className)) continue;
+
+        totalStudents++;
+        var cleanId = String(s.studentId).trim().toLowerCase();
+        var rec = recordsMap[s.studentId] || recordsMap[cleanId];
+        var status = 'Absent';
+        var note = '';
+        var cTime = '-';
+
+        if (rec !== undefined && rec !== null) {
+          if (typeof rec === 'object') {
+            status = rec.status || 'Present';
+            note = rec.note || '';
+            cTime = rec.checkinTime || '-';
+          } else {
+            status = String(rec);
+          }
+        }
+
+        var sObj = {
+          no: s.studentNo || (j + 1),
+          id: s.studentId,
+          name: s.name,
+          className: s.className,
+          note: note,
+          time: cTime
+        };
+
+        if (status === 'Present' || status === 'มาเรียน') countPresent++;
+        else if (status === 'Absent' || status === 'ขาด' || status === 'ขาดเรียน') { countAbsent++; absentList.push(sObj); }
+        else if (status === 'Sick' || status === 'ลาป่วย') { countSick++; sickList.push(sObj); }
+        else if (status === 'Leave' || status === 'ลากิจ') { countLeave++; leaveList.push(sObj); }
+        else if (status === 'Late' || status === 'มาสาย') { countLate++; lateList.push(sObj); }
+      }
+
+      var totalAll = countPresent + countAbsent + countSick + countLeave + countLate;
+      var totalBase = totalStudents > 0 ? totalStudents : (totalAll > 0 ? totalAll : 1);
+      var attRate = totalBase > 0 ? (((countPresent + countLate) / totalBase) * 100).toFixed(1) : '100.0';
+
+      return {
+        dateStr: dateStr,
+        className: classFilter,
+        activityName: activityFilter,
+        totalStudents: totalStudents || totalAll,
+        countPresent: countPresent,
+        countAbsent: countAbsent,
+        countSick: countSick,
+        countLeave: countLeave,
+        countLate: countLate,
+        attRate: attRate,
+        absentList: absentList,
+        lateList: lateList,
+        sickList: sickList,
+        leaveList: leaveList
+      };
+    }
+
+        function updateLineMessagePreview(forceReset) {
+      var previewBox = document.getElementById('line-message-live-preview');
+      var flexContainer = document.getElementById('line-flex-card-container');
+
+      var style = (document.getElementById('line-setting-style') && document.getElementById('line-setting-style').value) || 'flex';
       var cls = getLineSelectedClasses();
       var act = (document.getElementById('line-setting-activity') && document.getElementById('line-setting-activity').value) || 'all';
       var stat = (document.getElementById('line-setting-status') && document.getElementById('line-setting-status').value) || 'all';
       var today = getTodayDateString();
 
+      function updateViews(recordsMap) {
+        var stats = calculateAttendanceStats(today, cls, act, recordsMap || {});
+        if (flexContainer) {
+          flexContainer.innerHTML = renderFlexCardHtml(stats);
+        }
+        var text = generateDynamicLineMessage(today, cls, act, stat, style, recordsMap || {});
+        if (previewBox && (!previewBox.getAttribute('data-user-edited') || forceReset)) {
+          previewBox.value = text;
+          previewBox.removeAttribute('data-user-edited');
+        }
+      }
+
       if (isGASAvailable()) {
         google.script.run
           .withSuccessHandler(function(recordsMap) {
-            var text = generateDynamicLineMessage(today, cls, act, stat, style, recordsMap || {});
-            if (previewBox && (!previewBox.getAttribute('data-user-edited') || forceReset)) {
-              previewBox.value = text;
-              previewBox.removeAttribute('data-user-edited');
-            }
+            updateViews(recordsMap);
           })
           .withFailureHandler(function() {
             var localMap = getAttendanceMapFromLocalStorage(today, act);
-            var text = generateDynamicLineMessage(today, cls, act, stat, style, localMap);
-            if (previewBox && (!previewBox.getAttribute('data-user-edited') || forceReset)) {
-              previewBox.value = text;
-              previewBox.removeAttribute('data-user-edited');
-            }
+            updateViews(localMap);
           })
           .getAttendanceRecords(today, cls, act);
       } else {
         var localMap = getAttendanceMapFromLocalStorage(today, act);
-        var text = generateDynamicLineMessage(today, cls, act, stat, style, localMap);
-        previewBox.value = text;
-        previewBox.removeAttribute('data-user-edited');
+        updateViews(localMap);
       }
     }
 
@@ -13301,7 +13696,7 @@
       }
     }
 
-    function sendLineSummaryNow() {
+        function sendLineSummaryNow() {
       var cfg = getLineConfigLocal();
       var token = cfg.lineToken || '';
       var groupId = cfg.lineGroupId || '';
@@ -13327,50 +13722,56 @@
       var repStatSelect = document.getElementById('report-status-select');
       var statusFilter = (repStatSelect && repStatSelect.value) ? repStatSelect.value : 'all';
 
-      var classLabel = (className === 'all' || className === 'ทุกห้องเรียน') ? 'ทุกห้องเรียน' : ('ห้อง ' + className);
-      var actLabel = (activityName === 'all' || activityName === 'ทุกกิจกรรม') ? 'ทุกกิจกรรม' : activityName;
-
       showLoadingPopup('กำลังดึงข้อมูลล่าสุด...', 'กำลังโหลดข้อมูลการเช็คชื่อของนักศึกษาจากฐานข้อมูลเพื่อเตรียมส่ง LINE');
 
       function proceedWithRecords(recordsMap) {
         hideLoadingPopup();
-        var defaultSendMsg = generateDynamicLineMessage(dateStr, className, activityName, statusFilter, cfg.messageStyle || 'parent', recordsMap);
+        var stats = calculateAttendanceStats(dateStr, className, activityName, recordsMap || {});
+        var flexCardHtml = renderFlexCardHtml(stats);
+        var defaultSendMsg = generateDynamicLineMessage(dateStr, className, activityName, statusFilter, 'flex', recordsMap);
 
-        var descHtml = '<div style="margin-bottom:10px;">คุณต้องการส่งรายงานสรุปการเช็คชื่อวันที่ <b>' + formatThaiDate(dateStr) + '</b><br>' +
-                       'ห้อง: <b>' + classLabel + '</b> • กิจกรรม: <b>' + actLabel + '</b><br>' +
-                       'เข้ากลุ่ม LINE ใช่หรือไม่?</div>' +
-                       '<div style="text-align:left; margin-top:8px;">' +
-                       '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">' +
-                       '<span style="font-size:11.5px; font-weight:700; color:var(--orange-400);"><i class="fas fa-pen-to-square"></i> ตรวจสอบ / แก้ไขข้อความก่อนส่ง:</span>' +
-                       '<span style="font-size:10.5px; color:#10B981;"><i class="fas fa-circle-check"></i> ดึงข้อมูลปัจจุบันสำเร็จ</span>' +
+        var descHtml = '<div style="margin-bottom:12px;">' +
+                       '  <div style="font-size:12.5px; font-weight:700; color:#38BDF8; margin-bottom:8px;">' +
+                       '    <i class="fas fa-sparkles"></i> รูปแบบการ์ด Flex ที่จะส่งเข้า LINE:' +
+                       '  </div>' +
+                       '  <div style="max-height:260px; overflow-y:auto; border-radius:12px; padding:4px; background:rgba(0,0,0,0.3);">' +
+                       flexCardHtml +
+                       '  </div>' +
                        '</div>' +
-                       '<textarea id="quick-send-line-text" class="input-glass" rows="8" style="width:100%; font-family:monospace; font-size:11.5px; color:#86EFAC; background:#06111e; border:1.5px solid var(--border-glass); border-radius:6px; padding:8px; resize:vertical; line-height:1.4;">' +
+                       '<div style="text-align:left; margin-top:8px;">' +
+                       '  <details style="background:rgba(15,23,42,0.6); border:1px solid var(--border-glass); border-radius:8px; padding:8px 10px;">' +
+                       '    <summary style="font-size:11.5px; font-weight:700; color:var(--orange-400); cursor:pointer;">' +
+                       '      <i class="fas fa-pen-to-square"></i> ดู / แก้ไขข้อความสำรอง (Text Mode)' +
+                       '    </summary>' +
+                       '    <textarea id="quick-send-line-text" class="input-glass" rows="5" style="width:100%; font-family:monospace; font-size:11px; color:#86EFAC; background:#06111e; border:1px solid var(--border-glass); border-radius:6px; padding:8px; margin-top:8px; resize:vertical; line-height:1.4;">' +
                        escapeHtml(defaultSendMsg) +
-                       '</textarea>' +
+                       '    </textarea>' +
+                       '  </details>' +
                        '</div>';
 
         openConfirmModal({
-          title: 'ยืนยันส่งรายงานเข้ากลุ่ม LINE',
+          title: 'ยืนยันส่งการ์ดรายงานเข้ากลุ่ม LINE',
           desc: descHtml,
           icon: 'fa-paper-plane',
           btnIcon: 'fa-paper-plane',
-          okText: 'ยืนยันส่งเข้า LINE',
+          okText: 'ยืนยันส่งเข้า LINE ทันที',
           onConfirm: function() {
             var editedMsgEl = document.getElementById('quick-send-line-text');
             var finalMsg = editedMsgEl ? editedMsgEl.value.trim() : defaultSendMsg;
 
-            showLoadingPopup('กำลังส่งรายงานเข้ากลุ่ม LINE...', 'กำลังส่งข้อมูลไปยัง LINE Messaging API / กลุ่มผู้ปกครอง');
+            showLoadingPopup('กำลังส่งรายงานเข้ากลุ่ม LINE...', 'กำลังส่งการ์ด Flex Message ไปยังกลุ่ม LINE ผู้ปกครอง');
 
             var sendPayload = {
               date: dateStr,
               className: className,
               activityName: activityName,
               statusFilter: statusFilter,
-              messageStyle: cfg.messageStyle || 'parent',
+              messageStyle: 'flex',
               token: token,
               lineGroupId: groupId,
               webhookUrl: webhook,
-              customMessage: finalMsg
+              customMessage: finalMsg,
+              useFlex: true
             };
 
             if (isGASAvailable()) {
@@ -13391,7 +13792,7 @@
             } else {
               setTimeout(function() {
                 hideLoadingPopup();
-                showToast('จำลองการส่งรายงานเข้า LINE สำเร็จ (Local Mode)', 'success');
+                showToast('จำลองการส่งการ์ด Flex เข้า LINE สำเร็จ (Local Mode)', 'success');
               }, 600);
             }
           }
