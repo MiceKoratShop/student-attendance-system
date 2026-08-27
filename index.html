@@ -3789,7 +3789,34 @@
     </div>
   </div>
 
-<!-- MODAL: AUTO SCHEDULE SETTINGS -->
+<!-- MODAL: ADMIN PASSWORD CONFIRM FOR DANGEROUS OPERATIONS -->
+  <div class="modal-backdrop-glass" id="modal-admin-password-confirm" style="display: none; z-index: 9999999;">
+    <div class="modal-window-glass" style="max-width: 420px; text-align: center;">
+      <div style="width: 56px; height: 56px; border-radius: var(--radius-full); background: rgba(239, 68, 68, 0.15); border: 2px solid #EF4444; color: #EF4444; display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 16px auto;">
+        <i class="fas fa-triangle-exclamation"></i>
+      </div>
+      <h2 style="font-size: 19px; font-weight: 800; color: #FFF; margin-bottom: 6px;" id="sec-pass-modal-title">ยืนยันรหัสผ่านเพื่อล้างฐานข้อมูล</h2>
+      <p style="font-size: 12.5px; color: #FCA5A5; margin-bottom: 18px; line-height: 1.5;" id="sec-pass-modal-desc">
+        ⚠️ การกระทำนี้จะลบข้อมูลนักเรียน ห้องเรียน และประวัติการเช็คชื่อทั้งหมด กรุณากรอกรหัสผ่าน Admin เพื่อยืนยันความปลอดภัย
+      </p>
+
+      <form id="form-security-password-confirm">
+        <div class="form-group-glass" style="text-align: left; margin-bottom: 18px;">
+          <label style="font-size: 12px; font-weight: 700; color: #FFF;"><i class="fas fa-key" style="color: var(--orange-400);"></i> รหัสผ่าน Admin</label>
+          <input type="password" class="input-glass" id="input-security-admin-pass" placeholder="กรอกรหัสผ่าน Admin เพื่อยืนยัน" required style="border-color: #EF4444;" />
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+          <button type="button" class="btn-glass btn-dark btn-close-modal" style="flex: 1;">ยกเลิก</button>
+          <button type="submit" class="btn-glass btn-danger-glass" id="btn-submit-security-confirm" style="flex: 1.5; font-weight: 700; background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); color: #FFF;">
+            <i class="fas fa-arrows-rotate"></i> ยืนยันล้างข้อมูล
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: AUTO SCHEDULE SETTINGS -->
   <div class="modal-backdrop-glass" id="modal-auto-schedule-settings" style="display: none; z-index: 999999;">
     <div class="modal-window-glass" style="max-width: 780px; max-height: 92vh; overflow-y: auto;">
       <div class="modal-header-flex">
@@ -3842,12 +3869,20 @@
 
         <div class="grid-2" style="gap: 12px; margin-bottom: 12px;">
           <div class="form-group-glass" style="margin-bottom: 0;">
-            <label><i class="fas fa-chalkboard-user"></i> ห้องเรียนที่ใช้ตารางนี้</label>
-            <select class="select-glass" id="sch-form-class"></select>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <label style="margin: 0;"><i class="fas fa-chalkboard-user"></i> ห้องเรียน (เลือกได้หลายห้อง):</label>
+              <button type="button" class="btn-glass btn-sm-glass btn-cyan" id="btn-sch-select-all-classes" style="font-size: 10.5px; padding: 2px 8px;">
+                เลือกทั้งหมด
+              </button>
+            </div>
+            <div id="sch-class-checkboxes-container" style="max-height: 120px; overflow-y: auto; background: rgba(0,0,0,0.3); border: 1.5px solid var(--border-glass); border-radius: 8px; padding: 8px 12px; display: flex; flex-wrap: wrap; gap: 8px;">
+              <!-- Populated by JS -->
+            </div>
           </div>
           <div class="form-group-glass" style="margin-bottom: 0;">
-            <label><i class="fas fa-tag"></i> ชื่อกิจกรรม/วิชา</label>
-            <input type="text" class="input-glass" id="sch-form-activity" value="เช็คชื่อมาเรียน" />
+            <label><i class="fas fa-tag"></i> ชื่อกิจกรรม/วิชา (ดึงจากระบบเดิม):</label>
+            <select class="select-glass" id="sch-form-activity"></select>
+            <input type="text" class="input-glass" id="sch-form-custom-activity" placeholder="ระบุชื่อกิจกรรมกำหนดเอง..." style="display: none; margin-top: 6px; font-size: 12px;" />
           </div>
         </div>
 
@@ -3900,12 +3935,18 @@
           </div>
         </div>
 
-        <!-- Afternoon Session Settings -->
+        <!-- Afternoon Session Settings with Toggle -->
         <div style="background: rgba(56, 189, 248, 0.06); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 14px;">
-          <div style="font-size: 12.5px; font-weight: 700; color: #38BDF8; margin-bottom: 8px;">
-            ☀️ กำหนดเวลารอบบ่าย (Afternoon Session)
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
+            <div style="font-size: 12.5px; font-weight: 700; color: #38BDF8;">
+              ☀️ กำหนดเวลารอบบ่าย (Afternoon Session)
+            </div>
+            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 12px; color: #38BDF8; font-weight: 700;">
+              <input type="checkbox" id="sch-afternoon-enabled" checked style="accent-color: #38BDF8; transform: scale(1.15);" />
+              <span>เปิดใช้งานรอบบ่าย</span>
+            </label>
           </div>
-          <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+          <div id="sch-afternoon-times-row" style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center; transition: opacity 0.2s;">
             <div style="flex: 1; min-width: 130px;">
               <span style="font-size: 11px; color: var(--text-secondary);">เริ่มเปิดรอบบ่าย:</span>
               <input type="time" class="input-glass" id="sch-a-start" value="12:00" style="padding: 6px 10px; font-size: 12px; font-family: monospace;" />
@@ -9868,6 +9909,15 @@
         if (!isMatch && sch.classes && Array.isArray(sch.classes)) {
           isMatch = (sch.classes.indexOf(className) > -1 || sch.classes.indexOf('all') > -1);
         }
+        if (!isMatch && typeof sch.className === 'string' && sch.className.indexOf(',') > -1) {
+          var cSplits = sch.className.split(',');
+          for (var cs = 0; cs < cSplits.length; cs++) {
+            if (cSplits[cs].trim() === className || cSplits[cs].trim() === 'all') {
+              isMatch = true;
+              break;
+            }
+          }
+        }
         if (!isMatch) continue;
 
         var isDayMatch = false;
@@ -9895,15 +9945,15 @@
         };
       }
 
-      var mStart = parseMin(matchedSchedule.morningStart, 7 * 60);         // 07:00 (420)
-      var mOnTime = parseMin(matchedSchedule.morningOnTimeEnd, 8 * 60 + 30); // 08:30 (510)
-      var mLate = parseMin(matchedSchedule.morningLateEnd, 9 * 60);          // 09:00 (540)
-      var mCutoff = parseMin(matchedSchedule.morningCutoff, 11 * 60 + 59);  // 11:59 (719)
+      var mStart = parseMin(matchedSchedule.morningStart, 7 * 60);
+      var mOnTime = parseMin(matchedSchedule.morningOnTimeEnd, 8 * 60 + 30);
+      var mLate = parseMin(matchedSchedule.morningLateEnd, 9 * 60);
+      var mCutoff = parseMin(matchedSchedule.morningCutoff, 11 * 60 + 59);
 
-      var aStart = parseMin(matchedSchedule.afternoonStart, 12 * 60);        // 12:00 (720)
-      var aOnTime = parseMin(matchedSchedule.afternoonOnTimeEnd, 13 * 60 + 30); // 13:30 (810)
-      var aLate = parseMin(matchedSchedule.afternoonLateEnd, 14 * 60);       // 14:00 (840)
-      var aCutoff = parseMin(matchedSchedule.afternoonCutoff, 17 * 60);     // 17:00 (1020)
+      var aStart = parseMin(matchedSchedule.afternoonStart, 12 * 60);
+      var aOnTime = parseMin(matchedSchedule.afternoonOnTimeEnd, 13 * 60 + 30);
+      var aLate = parseMin(matchedSchedule.afternoonLateEnd, 14 * 60);
+      var aCutoff = parseMin(matchedSchedule.afternoonCutoff, 17 * 60);
 
       var sessionPhase = null;
       var statusResult = 'Present';
@@ -9924,7 +9974,7 @@
           statusResult = 'Late';
           phaseLabel = 'มาสาย (หลัง 09:00 น.)';
         }
-      } else if (nowMinutes >= aStart && nowMinutes <= aCutoff) {
+      } else if (matchedSchedule.afternoonEnabled !== false && nowMinutes >= aStart && nowMinutes <= aCutoff) {
         activeActivity = 'เช็คชื่อช่วงบ่าย';
         if (nowMinutes <= aOnTime) {
           sessionPhase = 'AFTERNOON_ON_TIME';
@@ -9938,13 +9988,14 @@
       }
 
       if (!sessionPhase) {
+        var aftInfo = (matchedSchedule.afternoonEnabled !== false) ? (' / รอบบ่าย ' + (matchedSchedule.afternoonStart || '12:00') + ' - ' + (matchedSchedule.afternoonCutoff || '17:00') + ' น.') : ' (รอบบ่ายปิด)';
         return {
           status: 'locked',
           code: 'OUT_OF_HOURS',
           message: 'ขณะนี้อยู่นอกช่วงเวลาเช็คชื่อที่กำหนด',
           currentMinutes: nowMinutes,
           schedule: matchedSchedule,
-          allowedTimes: 'รอบเช้า ' + (matchedSchedule.morningStart || '07:00') + ' - ' + (matchedSchedule.morningLateEnd || '09:00') + ' น. / รอบบ่าย ' + (matchedSchedule.afternoonStart || '12:00') + ' - ' + (matchedSchedule.afternoonCutoff || '17:00') + ' น.'
+          allowedTimes: 'รอบเช้า ' + (matchedSchedule.morningStart || '07:00') + ' - ' + (matchedSchedule.morningLateEnd || '09:00') + ' น.' + aftInfo
         };
       }
 
@@ -10146,28 +10197,18 @@
       var modal = document.getElementById('modal-auto-schedule-settings');
       if (!modal) return;
 
-      // Populate class dropdown
-      var schClassSelect = document.getElementById('sch-form-class');
-      if (schClassSelect) {
-        schClassSelect.innerHTML = '';
-        var optAll = document.createElement('option');
-        optAll.value = 'all';
-        optAll.textContent = '🌟 ทุกห้องเรียน (ใช้ตารางเดียวกัน)';
-        schClassSelect.appendChild(optAll);
+      populateScheduleClassCheckboxes(['all']);
+      populateScheduleActivityDropdown('เช็คชื่อมาเรียน');
 
-        var classes = AppState.classes || [];
-        for (var c = 0; c < classes.length; c++) {
-          var opt = document.createElement('option');
-          opt.value = classes[c];
-          opt.textContent = 'ห้อง ' + classes[c];
-          schClassSelect.appendChild(opt);
-        }
+      var aftCheck = document.getElementById('sch-afternoon-enabled');
+      if (aftCheck) {
+        aftCheck.checked = true;
+        toggleAfternoonInputs(true);
       }
 
       renderScheduleManagerTable();
       modal.style.display = 'flex';
 
-      // Load from GAS in background
       if (isGASAvailable()) {
         google.script.run
           .withSuccessHandler(function(schedules) {
@@ -10178,6 +10219,107 @@
           })
           .getAutoCheckinSchedules();
       }
+    }
+
+    function populateScheduleClassCheckboxes(selectedClasses) {
+      var container = document.getElementById('sch-class-checkboxes-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      selectedClasses = selectedClasses || ['all'];
+      if (typeof selectedClasses === 'string') {
+        selectedClasses = selectedClasses.split(',').map(function(s) { return s.trim(); });
+      }
+
+      var isAllSelected = selectedClasses.indexOf('all') > -1 || selectedClasses.indexOf('ทุกห้องเรียน') > -1;
+
+      // 'all' checkbox
+      var allLabel = document.createElement('label');
+      allLabel.className = 'badge-glass';
+      allLabel.style.cssText = 'cursor:pointer; padding:6px 10px; font-size:12px; font-weight:700; color:var(--orange-400); display:flex; align-items:center; gap:6px; background:rgba(255,107,0,0.12); border-color:var(--orange-500);';
+      allLabel.innerHTML = '<input type="checkbox" class="sch-class-chk" value="all" ' + (isAllSelected ? 'checked' : '') + ' style="accent-color:#FF6B00; transform:scale(1.15);" /> 🌟 ทุกห้องเรียน';
+      container.appendChild(allLabel);
+
+      var classes = AppState.classes || [];
+      for (var c = 0; c < classes.length; c++) {
+        var cName = classes[c];
+        var isChecked = isAllSelected || selectedClasses.indexOf(cName) > -1;
+        var cLabel = document.createElement('label');
+        cLabel.className = 'badge-glass';
+        cLabel.style.cssText = 'cursor:pointer; padding:6px 10px; font-size:12px; display:flex; align-items:center; gap:6px;';
+        cLabel.innerHTML = '<input type="checkbox" class="sch-class-chk" value="' + escapeHtml(cName) + '" ' + (isChecked ? 'checked' : '') + ' style="accent-color:#FF6B00;" /> ห้อง ' + escapeHtml(cName);
+        container.appendChild(cLabel);
+      }
+
+      // Add 'all' checkbox toggle listener
+      var allChk = container.querySelector('input[value="all"]');
+      if (allChk) {
+        allChk.addEventListener('change', function() {
+          var allBoxes = container.querySelectorAll('.sch-class-chk');
+          for (var b = 0; b < allBoxes.length; b++) {
+            allBoxes[b].checked = allChk.checked;
+          }
+        });
+      }
+    }
+
+    function toggleAfternoonInputs(enabled) {
+      var row = document.getElementById('sch-afternoon-times-row');
+      var aStart = document.getElementById('sch-a-start');
+      var aOntime = document.getElementById('sch-a-ontime');
+      if (row) row.style.opacity = enabled ? '1' : '0.35';
+      if (aStart) aStart.disabled = !enabled;
+      if (aOntime) aOntime.disabled = !enabled;
+    }
+
+    function populateScheduleActivityDropdown(selectedAct) {
+      var select = document.getElementById('sch-form-activity');
+      if (!select) return;
+      select.innerHTML = '';
+
+      var acts = [];
+      if (AppState.activities && AppState.activities.length > 0) {
+        acts = AppState.activities.slice();
+      } else {
+        acts = ['เช็คชื่อมาเรียน', 'เช็คชื่อเข้าแถว', 'กิจกรรมโฮมรูม', 'กิจกรรมชมรม'];
+      }
+
+      if (acts.indexOf('เช็คชื่อมาเรียน') === -1) {
+        acts.unshift('เช็คชื่อมาเรียน');
+      }
+
+      for (var i = 0; i < acts.length; i++) {
+        var opt = document.createElement('option');
+        opt.value = acts[i];
+        opt.textContent = acts[i];
+        if (acts[i] === selectedAct) opt.selected = true;
+        select.appendChild(opt);
+      }
+
+      var optCustom = document.createElement('option');
+      optCustom.value = '__custom__';
+      optCustom.textContent = '✏️ ระบุชื่อกิจกรรม/วิชาเอง...';
+      select.appendChild(optCustom);
+
+      var customInput = document.getElementById('sch-form-custom-activity');
+      if (customInput) {
+        customInput.style.display = (selectedAct && acts.indexOf(selectedAct) === -1) ? 'block' : 'none';
+        if (selectedAct && acts.indexOf(selectedAct) === -1) {
+          select.value = '__custom__';
+          customInput.value = selectedAct;
+        }
+      }
+
+      select.addEventListener('change', function() {
+        if (customInput) {
+          if (this.value === '__custom__') {
+            customInput.style.display = 'block';
+            customInput.focus();
+          } else {
+            customInput.style.display = 'none';
+          }
+        }
+      });
     }
 
     function renderScheduleManagerTable() {
@@ -10211,15 +10353,24 @@
         }
 
         var morningStr = (s.morningStart || '07:00') + ' - ' + (s.morningOnTimeEnd || '08:30') + ' (สาย ' + (s.morningLateEnd || '09:00') + ')';
-        var aftStr = (s.afternoonStart || '12:00') + ' - ' + (s.afternoonOnTimeEnd || '13:30');
-        var clsLabel = (s.className === 'all' || s.className === 'ทุกห้องเรียน') ? '🌟 ทุกห้องเรียน' : ('ห้อง ' + s.className);
+        var aftStr = (s.afternoonEnabled !== false) ? ((s.afternoonStart || '12:00') + ' - ' + (s.afternoonOnTimeEnd || '13:30')) : '<span style="color:#64748B;">- ปิดรอบบ่าย -</span>';
+        
+        var clsLabel = '';
+        if (s.className === 'all' || s.className === 'ทุกห้องเรียน' || (s.classes && s.classes.indexOf('all') > -1)) {
+          clsLabel = '🌟 ทุกห้องเรียน';
+        } else if (Array.isArray(s.classes) && s.classes.length > 0) {
+          clsLabel = s.classes.map(function(c) { return 'ห้อง ' + c; }).join(', ');
+        } else {
+          clsLabel = s.className;
+        }
+
         var statBadge = (s.enabled !== false) ? '<span class="badge-glass badge-present">เปิดใช้งาน</span>' : '<span class="badge-glass badge-absent">ปิดใช้งาน</span>';
 
         var tr = document.createElement('tr');
         tr.innerHTML = '<td><strong>' + escapeHtml(clsLabel) + '</strong><br><small style="color:var(--text-muted);">' + escapeHtml(s.activityName || 'เช็คชื่อมาเรียน') + '</small></td>' +
                        '<td><span class="badge-glass" style="font-size:11px;">' + escapeHtml(dStr) + '</span></td>' +
                        '<td><span style="color:#10B981;">' + escapeHtml(morningStr) + '</span></td>' +
-                       '<td><span style="color:#38BDF8;">' + escapeHtml(aftStr) + '</span></td>' +
+                       '<td>' + aftStr + '</td>' +
                        '<td>' + statBadge + '</td>' +
                        '<td style="text-align:center; white-space:nowrap;">' +
                        '  <button type="button" class="btn-glass btn-cyan btn-sm-glass btn-edit-sch" data-id="' + escapeHtml(s.id || '') + '" style="padding:3px 8px; font-size:11px; margin-right:4px;" title="แก้ไข"><i class="fas fa-pen"></i></button>' +
@@ -10228,7 +10379,6 @@
         tbody.appendChild(tr);
       }
 
-      // Bind edit and delete buttons
       var editBtns = tbody.querySelectorAll('.btn-edit-sch');
       for (var e = 0; e < editBtns.length; e++) {
         editBtns[e].addEventListener('click', function() {
@@ -10255,14 +10405,23 @@
       if (!target) return;
 
       document.getElementById('edit-schedule-id').value = target.id;
-      document.getElementById('sch-form-class').value = target.className || 'all';
-      document.getElementById('sch-form-activity').value = target.activityName || 'เช็คชื่อมาเรียน';
+
+      var selectedClasses = target.classes || (target.className ? target.className.split(',').map(function(s){return s.trim();}) : ['all']);
+      populateScheduleClassCheckboxes(selectedClasses);
+      populateScheduleActivityDropdown(target.activityName || 'เช็คชื่อมาเรียน');
+
       document.getElementById('sch-m-start').value = target.morningStart || '07:00';
       document.getElementById('sch-m-ontime').value = target.morningOnTimeEnd || '08:30';
       document.getElementById('sch-m-late').value = target.morningLateEnd || '09:00';
       document.getElementById('sch-a-start').value = target.afternoonStart || '12:00';
       document.getElementById('sch-a-ontime').value = target.afternoonOnTimeEnd || '13:30';
       document.getElementById('sch-form-enabled').checked = (target.enabled !== false);
+
+      var aftCheck = document.getElementById('sch-afternoon-enabled');
+      if (aftCheck) {
+        aftCheck.checked = (target.afternoonEnabled !== false);
+        toggleAfternoonInputs(aftCheck.checked);
+      }
 
       var dayBoxes = document.querySelectorAll('.sch-day-checkbox');
       var dList = Array.isArray(target.days) ? target.days.map(String) : (target.days ? String(target.days).split(',') : ['1','2','3','4','5']);
@@ -10278,14 +10437,21 @@
 
     function cancelEditScheduleHandler() {
       document.getElementById('edit-schedule-id').value = '';
-      document.getElementById('sch-form-class').value = 'all';
-      document.getElementById('sch-form-activity').value = 'เช็คชื่อมาเรียน';
+      populateScheduleClassCheckboxes(['all']);
+      populateScheduleActivityDropdown('เช็คชื่อมาเรียน');
+
       document.getElementById('sch-m-start').value = '07:00';
       document.getElementById('sch-m-ontime').value = '08:30';
       document.getElementById('sch-m-late').value = '09:00';
       document.getElementById('sch-a-start').value = '12:00';
       document.getElementById('sch-a-ontime').value = '13:30';
       document.getElementById('sch-form-enabled').checked = true;
+
+      var aftCheck = document.getElementById('sch-afternoon-enabled');
+      if (aftCheck) {
+        aftCheck.checked = true;
+        toggleAfternoonInputs(true);
+      }
 
       var formTitle = document.getElementById('schedule-form-title');
       if (formTitle) formTitle.innerHTML = '<i class="fas fa-plus-circle"></i> เพิ่ม / แก้ไขตารางเวลา';
@@ -10317,14 +10483,50 @@
 
     function saveScheduleRuleHandler() {
       var editId = document.getElementById('edit-schedule-id').value;
-      var className = document.getElementById('sch-form-class').value;
-      var activityName = document.getElementById('sch-form-activity').value.trim() || 'เช็คชื่อมาเรียน';
+      
+      // Selected Classes
+      var selectedClasses = [];
+      var chkBoxes = document.querySelectorAll('.sch-class-chk');
+      var isAll = false;
+      for (var c = 0; c < chkBoxes.length; c++) {
+        if (chkBoxes[c].checked) {
+          if (chkBoxes[c].value === 'all') {
+            isAll = true;
+          } else {
+            selectedClasses.push(chkBoxes[c].value);
+          }
+        }
+      }
+
+      if (!isAll && selectedClasses.length === 0) {
+        showToast('กรุณาเลือกห้องเรียนอย่างน้อย 1 ห้อง', 'error');
+        return;
+      }
+
+      var classStr = isAll ? 'all' : selectedClasses.join(', ');
+      var classesArr = isAll ? ['all'] : selectedClasses;
+
+      // Activity Name
+      var actSelect = document.getElementById('sch-form-activity');
+      var activityName = 'เช็คชื่อมาเรียน';
+      if (actSelect) {
+        if (actSelect.value === '__custom__') {
+          var customInput = document.getElementById('sch-form-custom-activity');
+          activityName = (customInput && customInput.value.trim()) ? customInput.value.trim() : 'เช็คชื่อมาเรียน';
+        } else {
+          activityName = actSelect.value;
+        }
+      }
+
       var mStart = document.getElementById('sch-m-start').value || '07:00';
       var mOnTime = document.getElementById('sch-m-ontime').value || '08:30';
       var mLate = document.getElementById('sch-m-late').value || '09:00';
       var aStart = document.getElementById('sch-a-start').value || '12:00';
       var aOnTime = document.getElementById('sch-a-ontime').value || '13:30';
       var enabled = document.getElementById('sch-form-enabled').checked;
+
+      var aftCheck = document.getElementById('sch-afternoon-enabled');
+      var afternoonEnabled = aftCheck ? aftCheck.checked : true;
 
       var selectedDays = [];
       var dayBoxes = document.querySelectorAll('.sch-day-checkbox');
@@ -10344,8 +10546,9 @@
 
       var ruleObj = {
         id: id,
-        className: className,
-        title: (className === 'all' ? 'ทุกห้องเรียน' : ('ห้อง ' + className)),
+        className: classStr,
+        classes: classesArr,
+        title: (isAll ? 'ทุกห้องเรียน' : ('ห้อง ' + classStr)),
         enabled: enabled,
         days: selectedDays,
         activityName: activityName,
@@ -10357,6 +10560,7 @@
         afternoonOnTimeEnd: aOnTime,
         afternoonLateEnd: '14:00',
         afternoonCutoff: '17:00',
+        afternoonEnabled: afternoonEnabled,
         requireGPS: false,
         requireSelfie: true,
         gpsLat: 0,
@@ -10478,6 +10682,27 @@
       var btnCancelSch = document.getElementById('btn-cancel-edit-schedule');
       if (btnCancelSch) {
         btnCancelSch.addEventListener('click', cancelEditScheduleHandler);
+      }
+
+      var aftToggle = document.getElementById('sch-afternoon-enabled');
+      if (aftToggle) {
+        aftToggle.addEventListener('change', function() {
+          toggleAfternoonInputs(this.checked);
+        });
+      }
+
+      var btnSelectAllCls = document.getElementById('btn-sch-select-all-classes');
+      if (btnSelectAllCls) {
+        btnSelectAllCls.addEventListener('click', function(e) {
+          e.preventDefault();
+          var container = document.getElementById('sch-class-checkboxes-container');
+          if (container) {
+            var boxes = container.querySelectorAll('.sch-class-chk');
+            for (var b = 0; b < boxes.length; b++) {
+              boxes[b].checked = true;
+            }
+          }
+        });
       }
 
       // Copy buttons in Student Step 1
@@ -14811,25 +15036,51 @@
       var btnSeed = document.getElementById('btn-seed-data');
       if (btnSeed) {
         btnSeed.addEventListener('click', function() {
-          openConfirmModal({
-            title: 'ล้างข้อมูลและเริ่มต้นระบบใหม่',
-            desc: 'คุณต้องการล้างข้อมูลนักเรียน ห้องเรียน และประวัติการเช็คชื่อทั้งหมดใช่หรือไม่?<br><span style="color:#EF4444; font-weight:600;">ข้อมูลทั้งหมดจะถูกรีเซ็ตและไม่สามารถกู้คืนได้</span>',
-            icon: 'fa-triangle-exclamation',
-            btnIcon: 'fa-arrows-rotate',
-            okText: 'ยืนยันล้างข้อมูล',
-            onConfirm: function() {
-              if (isGASAvailable()) {
-                google.script.run
-                  .withSuccessHandler(function(res) {
-                    showToast(res.message, 'success');
-                    fetchClasses(function() {
-                      fetchStudents('all', function() {
-                        renderDashboard();
-                      });
+          var secModal = document.getElementById('modal-admin-password-confirm');
+          var passInput = document.getElementById('input-security-admin-pass');
+          if (passInput) passInput.value = '';
+          if (secModal) {
+            secModal.style.display = 'flex';
+            if (passInput) passInput.focus();
+          }
+        });
+      }
+
+      var secForm = document.getElementById('form-security-password-confirm');
+      if (secForm && !secForm.getAttribute('data-bound')) {
+        secForm.setAttribute('data-bound', 'true');
+        secForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          var passInput = document.getElementById('input-security-admin-pass');
+          var entered = passInput ? passInput.value.trim() : '';
+
+          if (!entered) {
+            showToast('กรุณากรอกรหัสผ่าน Admin', 'error');
+            return;
+          }
+
+          function proceedDatabaseReset() {
+            closeModal('modal-admin-password-confirm');
+            showLoadingPopup('กำลังล้างและรีเซ็ตฐานข้อมูล...', 'ระบบกำลังล้างข้อมูลชีตและสร้างตารางเปล่า');
+
+            if (isGASAvailable()) {
+              google.script.run
+                .withSuccessHandler(function(res) {
+                  hideLoadingPopup();
+                  showToast(res.message || 'ล้างและเริ่มต้นฐานข้อมูลใหม่เรียบร้อยแล้ว', 'success');
+                  fetchClasses(function() {
+                    fetchStudents('all', function() {
+                      renderDashboard();
                     });
-                  })
-                  .initDatabase();
-              } else {
+                  });
+                })
+                .withFailureHandler(function(err) {
+                  hideLoadingPopup();
+                  showToast('เกิดข้อผิดพลาด: ' + err.message, 'error');
+                })
+                .initDatabase();
+            } else {
+              setTimeout(function() {
                 localStorage.removeItem('gas_student_app_students');
                 localStorage.removeItem('gas_student_app_attendance');
                 localStorage.removeItem('gas_student_active_session');
@@ -14837,11 +15088,45 @@
                 AppState.students = [];
                 AppState.classes = [];
                 populateClassDropdowns();
+                hideLoadingPopup();
                 renderDashboard();
-                showToast('รีเซ็ตฐานข้อมูลเรียบร้อยแล้ว', 'success');
+                showToast('รีเซ็ตฐานข้อมูลเรียบร้อยแล้ว (Local Mode)', 'success');
+              }, 800);
+            }
+          }
+
+          if (isGASAvailable()) {
+            google.script.run
+              .withSuccessHandler(function(isValid) {
+                if (isValid === true || (isValid && isValid.status === 'success')) {
+                  proceedDatabaseReset();
+                } else {
+                  showToast('รหัสผ่าน Admin ไม่ถูกต้อง! ไม่สามารถล้างข้อมูลได้', 'error');
+                  if (passInput) {
+                    passInput.focus();
+                    passInput.select();
+                  }
+                }
+              })
+              .withFailureHandler(function() {
+                if (entered === 'admin888') {
+                  proceedDatabaseReset();
+                } else {
+                  showToast('รหัสผ่าน Admin ไม่ถูกต้อง!', 'error');
+                }
+              })
+              .verifyAdminPassword(entered);
+          } else {
+            if (entered === 'admin888') {
+              proceedDatabaseReset();
+            } else {
+              showToast('รหัสผ่าน Admin ไม่ถูกต้อง! (รหัสผ่านคือ admin888)', 'error');
+              if (passInput) {
+                passInput.focus();
+                passInput.select();
               }
             }
-          });
+          }
         });
       }
     }
