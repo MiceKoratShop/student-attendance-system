@@ -10198,7 +10198,14 @@
       if (!modal) return;
 
       populateScheduleClassCheckboxes(['all']);
-      populateScheduleActivityDropdown('เช็คชื่อมาเรียน');
+
+      if (!AppState.activities || AppState.activities.length === 0) {
+        fetchActivities(function() {
+          populateScheduleActivityDropdown('เช็คชื่อมาเรียน');
+        });
+      } else {
+        populateScheduleActivityDropdown('เช็คชื่อมาเรียน');
+      }
 
       var aftCheck = document.getElementById('sch-afternoon-enabled');
       if (aftCheck) {
@@ -10277,40 +10284,110 @@
       if (!select) return;
       select.innerHTML = '';
 
-      var acts = [];
-      if (AppState.activities && AppState.activities.length > 0) {
-        acts = AppState.activities.slice();
-      } else {
-        acts = ['เช็คชื่อมาเรียน', 'เช็คชื่อเข้าแถว', 'กิจกรรมโฮมรูม', 'กิจกรรมชมรม'];
+      var actList = normalizeActivitiesList(AppState.activities || []);
+      AppState.activities = actList;
+
+      var generals = [];
+      var periods = [];
+      var subjects = [];
+      var activities = [];
+      var allNames = [];
+
+      for (var i = 0; i < actList.length; i++) {
+        var item = actList[i];
+        var name = (typeof item === 'object' && item) ? (item.name || '') : String(item || '');
+        name = name.trim();
+        if (!name) continue;
+
+        if (allNames.indexOf(name) === -1) allNames.push(name);
+
+        var type = (typeof item === 'object' && item) ? (item.type || 'general') : 'general';
+        if (type === 'period') periods.push(name);
+        else if (type === 'subject') subjects.push(name);
+        else if (type === 'activity') activities.push(name);
+        else generals.push(name);
       }
 
-      if (acts.indexOf('เช็คชื่อมาเรียน') === -1) {
-        acts.unshift('เช็คชื่อมาเรียน');
+      if (generals.indexOf('เช็คชื่อมาเรียน') === -1 && allNames.indexOf('เช็คชื่อมาเรียน') === -1) {
+        generals.unshift('เช็คชื่อมาเรียน');
+        allNames.unshift('เช็คชื่อมาเรียน');
       }
 
-      for (var i = 0; i < acts.length; i++) {
-        var opt = document.createElement('option');
-        opt.value = acts[i];
-        opt.textContent = acts[i];
-        if (acts[i] === selectedAct) opt.selected = true;
-        select.appendChild(opt);
+      selectedAct = selectedAct || 'เช็คชื่อมาเรียน';
+
+      // 1. General group
+      if (generals.length > 0) {
+        var grpGen = document.createElement('optgroup');
+        grpGen.label = '📋 เช็คชื่อประจำวัน (General)';
+        for (var g = 0; g < generals.length; g++) {
+          var optG = document.createElement('option');
+          optG.value = generals[g];
+          optG.textContent = generals[g];
+          if (generals[g] === selectedAct) optG.selected = true;
+          grpGen.appendChild(optG);
+        }
+        select.appendChild(grpGen);
       }
 
+      // 2. Periods group
+      if (periods.length > 0) {
+        var grpPer = document.createElement('optgroup');
+        grpPer.label = '⏰ คาบเรียน (Periods)';
+        for (var p = 0; p < periods.length; p++) {
+          var optP = document.createElement('option');
+          optP.value = periods[p];
+          optP.textContent = periods[p];
+          if (periods[p] === selectedAct) optP.selected = true;
+          grpPer.appendChild(optP);
+        }
+        select.appendChild(grpPer);
+      }
+
+      // 3. Subjects group
+      if (subjects.length > 0) {
+        var grpSub = document.createElement('optgroup');
+        grpSub.label = '📖 รายวิชา (Subjects)';
+        for (var s = 0; s < subjects.length; s++) {
+          var optS = document.createElement('option');
+          optS.value = subjects[s];
+          optS.textContent = (subjects[s].indexOf('วิชา') === 0 ? '' : 'วิชา ') + subjects[s];
+          if (subjects[s] === selectedAct) optS.selected = true;
+          grpSub.appendChild(optS);
+        }
+        select.appendChild(grpSub);
+      }
+
+      // 4. Activities group
+      if (activities.length > 0) {
+        var grpAct = document.createElement('optgroup');
+        grpAct.label = '🏆 กิจกรรม (Activities)';
+        for (var a = 0; a < activities.length; a++) {
+          var optA = document.createElement('option');
+          optA.value = activities[a];
+          optA.textContent = activities[a];
+          if (activities[a] === selectedAct) optA.selected = true;
+          grpAct.appendChild(optA);
+        }
+        select.appendChild(grpAct);
+      }
+
+      // 5. Custom Option
       var optCustom = document.createElement('option');
       optCustom.value = '__custom__';
       optCustom.textContent = '✏️ ระบุชื่อกิจกรรม/วิชาเอง...';
       select.appendChild(optCustom);
 
+      var isCustomMatch = (selectedAct && allNames.indexOf(selectedAct) === -1);
       var customInput = document.getElementById('sch-form-custom-activity');
       if (customInput) {
-        customInput.style.display = (selectedAct && acts.indexOf(selectedAct) === -1) ? 'block' : 'none';
-        if (selectedAct && acts.indexOf(selectedAct) === -1) {
+        customInput.style.display = isCustomMatch ? 'block' : 'none';
+        customInput.value = isCustomMatch ? selectedAct : '';
+        if (isCustomMatch) {
           select.value = '__custom__';
-          customInput.value = selectedAct;
         }
       }
 
-      select.addEventListener('change', function() {
+      select.onchange = function() {
         if (customInput) {
           if (this.value === '__custom__') {
             customInput.style.display = 'block';
@@ -10319,7 +10396,7 @@
             customInput.style.display = 'none';
           }
         }
-      });
+      };
     }
 
     function renderScheduleManagerTable() {
