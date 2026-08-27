@@ -12315,7 +12315,7 @@
           }
         }
 
-        if (status === 'Present' || status === 'มาเรียน') countPresent++;
+        if (status === 'Present' || status === 'มาเรียน') { countPresent++; presentList.push(sObj); }
         else if (status === 'Absent' || status === 'ขาด' || status === 'ขาดเรียน') countAbsent++;
         else if (status === 'Sick' || status === 'ลาป่วย') countSick++;
         else if (status === 'Leave' || status === 'ลากิจ') countLeave++;
@@ -13218,6 +13218,16 @@
                '🔴 ขาดเรียน (ไม่พบเช็คชื่อ): ' + countAbsent + ' คน (' + pctAbsent + '%)\n' +
                divLine;
 
+        if (presentList.length > 0) {
+          text += '\n🟢 รายชื่อผู้ที่มาเรียนตรงเวลา (' + presentList.length + ' คน):\n';
+          for (var p2 = 0; p2 < presentList.length; p2++) {
+            var rTagPr2 = isMultiClass ? ' (' + presentList[p2].className + ')' : '';
+            var tPr2 = formatTimeString(presentList[p2].time);
+            var tStrPr2 = (tPr2 && tPr2 !== '-') ? ' ⏰ เข้า ' + tPr2 + ' น.' : '';
+            text += '  ' + (p2 + 1) + '. เลขที่ ' + presentList[p2].no + ' ' + presentList[p2].name + rTagPr2 + tStrPr2 + '\n';
+          }
+        }
+
         if (absentList.length > 0) {
           text += '\n🔴 รายชื่อนักเรียนที่ไม่พบการเช็คชื่อ (' + absentList.length + ' คน):\n';
           for (var a = 0; a < absentList.length; a++) {
@@ -13230,7 +13240,7 @@
           text += '\n🌸 รายชื่อนักเรียนที่มาสาย (' + lateList.length + ' คน):\n';
           for (var lt = 0; lt < lateList.length; lt++) {
             var rTagLt = isMultiClass ? ' (' + lateList[lt].className + ')' : '';
-            text += '  ' + (lt + 1) + '. เลขที่ ' + lateList[lt].no + ' ' + lateList[lt].name + rTagLt + ' ⏰ เข้าเรียน ' + lateList[lt].time + ' น.\n';
+            text += '  ' + (lt + 1) + '. เลขที่ ' + lateList[lt].no + ' ' + lateList[lt].name + rTagLt + ' ⏰ เข้าเรียน ' + formatTimeString(lateList[lt].time) + ' น.\n';
           }
         }
 
@@ -13332,6 +13342,21 @@
     }
 
     
+    
+    function formatTimeString(val) {
+      if (!val || val === '-' || val === 'null' || val === 'undefined') return '-';
+      var str = String(val).trim();
+      if (!str || str === '-') return '-';
+
+      var timeMatch = str.match(/(\d{1,2}):(\d{2})(?::\d{2})?/);
+      if (timeMatch) {
+        var hh = timeMatch[1].length === 1 ? '0' + timeMatch[1] : timeMatch[1];
+        var mm = timeMatch[2];
+        return hh + ':' + mm;
+      }
+      return str;
+    }
+
     function getThaiDayOfWeekName(dateStr) {
       var d = new Date();
       if (dateStr) {
@@ -13430,7 +13455,23 @@
                     '</div>';
       }
 
-      // Individual Exception Lists
+      // Individual Attendance Lists
+      if (data.presentList && data.presentList.length > 0) {
+        var prNames = [];
+        for (var p = 0; p < Math.min(data.presentList.length, 12); p++) {
+          var prItem = data.presentList[p];
+          var pTime = formatTimeString(prItem.time);
+          var pTimeStr = (pTime && pTime !== '-') ? ' ⏰ ' + pTime + ' น.' : '';
+          prNames.push('• ' + prItem.no + '. ' + prItem.name + (prItem.className ? ' (' + prItem.className + ')' : '') + pTimeStr);
+        }
+        if (data.presentList.length > 12) prNames.push('...และอีก ' + (data.presentList.length - 12) + ' คน');
+
+        bodyHtml += '<div style="background:#F0FDF4; border-radius:6px; padding:8px 10px; margin-top:8px; font-size:11px; color:#166534; line-height:1.4;">' +
+                    '  <div style="font-weight:700; color:#16A34A; margin-bottom:2px;">🟢 ผู้ที่มาเรียนตรงเวลา (' + data.presentList.length + ' คน):</div>' +
+                    '  <div>' + prNames.join('<br>') + '</div>' +
+                    '</div>';
+      }
+
       if (data.absentList && data.absentList.length > 0) {
         var abNames = [];
         for (var a = 0; a < Math.min(data.absentList.length, 6); a++) {
@@ -13449,7 +13490,9 @@
         var ltNames = [];
         for (var lt = 0; lt < Math.min(data.lateList.length, 5); lt++) {
           var ltItem = data.lateList[lt];
-          ltNames.push('• ' + ltItem.no + '. ' + ltItem.name + ' (เข้า ' + ltItem.time + ')');
+          var ltT = formatTimeString(ltItem.time);
+          var ltTStr = (ltT && ltT !== '-') ? ' ⏰ ' + ltT + ' น.' : '';
+          ltNames.push('• ' + ltItem.no + '. ' + ltItem.name + (ltItem.className ? ' (' + ltItem.className + ')' : '') + ltTStr);
         }
         if (data.lateList.length > 5) ltNames.push('...และอีก ' + (data.lateList.length - 5) + ' คน');
 
@@ -13550,6 +13593,7 @@
         countLeave: countLeave,
         countLate: countLate,
         attRate: attRate,
+        presentList: presentList,
         absentList: absentList,
         lateList: lateList,
         sickList: sickList,
