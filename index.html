@@ -2268,6 +2268,83 @@
                 <select class="select-glass" id="self-checkin-class"></select>
               </div>
 
+              <!-- ACTIVE SCHEDULE / LIVE QR & OTP BOX (When active and in time) -->
+              <div id="student-schedule-active-card" style="display: none; background: rgba(16, 185, 129, 0.08); border: 1.5px solid #10B981; border-radius: var(--radius-md); padding: 18px; margin: 18px 0; text-align: center; animation: fadeIn 0.3s ease;">
+                
+                <!-- Live Phase Badge -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+                  <span id="student-schedule-status-badge" class="badge-glass badge-present" style="font-size: 13px; padding: 6px 14px; font-weight: 700;">
+                    <i class="fas fa-circle-check"></i> <span id="student-schedule-badge-text">🟢 มาเรียนตรงเวลา</span>
+                  </span>
+                  <span id="student-schedule-time-label" style="font-size: 12px; color: #94A3B8; font-weight: 600;">
+                    รอบเช้า (07:00 - 08:30 น.)
+                  </span>
+                </div>
+
+                <!-- QR Code & OTP Flex Layout -->
+                <div style="display: flex; gap: 16px; align-items: center; justify-content: center; flex-wrap: wrap; margin-bottom: 16px;">
+                  
+                  <!-- QR Code Box -->
+                  <div style="background: #FFF; padding: 10px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.6); display: inline-block;">
+                    <div id="student-auto-qr-code" style="width: 140px; height: 140px; display: flex; align-items: center; justify-content: center;"></div>
+                    <div style="font-size: 10.5px; color: #1E293B; font-weight: 700; margin-top: 4px;">QR ประจำคาบ</div>
+                  </div>
+
+                  <!-- OTP & Session Codes Box -->
+                  <div style="flex: 1; min-width: 180px; max-width: 240px; text-align: left;">
+                    <div style="font-size: 11.5px; color: var(--text-secondary); margin-bottom: 4px; font-weight: 600;">
+                      <i class="fas fa-key" style="color: var(--orange-400);"></i> รหัส OTP ไดนามิก:
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
+                      <div id="student-auto-otp-display" style="font-family: 'Consolas', 'Courier New', monospace; font-size: 26px; font-weight: 900; color: #38BDF8; letter-spacing: 4px; background: #06111e; padding: 6px 12px; border-radius: 8px; border: 1.5px solid #0284C7; text-align: center; flex: 1;">
+                        ------
+                      </div>
+                      <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-copy-auto-otp" style="padding: 10px 12px; font-size: 12px;" title="คัดลอกรหัส OTP">
+                        <i class="fas fa-copy"></i>
+                      </button>
+                    </div>
+
+                    <!-- OTP Timer Bar -->
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                      <div style="flex: 1; height: 5px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
+                        <div id="student-otp-countdown-bar" style="width: 100%; height: 100%; background: #38BDF8; transition: width 1s linear;"></div>
+                      </div>
+                      <span id="student-otp-countdown-text" style="font-size: 11px; color: #94A3B8; font-family: monospace;">15s</span>
+                    </div>
+
+                    <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 4px;">
+                      <i class="fas fa-hashtag" style="color: var(--orange-400);"></i> รหัสคาบ (Session):
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                      <span id="student-auto-session-code" style="font-size: 12px; font-family: monospace; color: #FFF; background: rgba(0,0,0,0.4); padding: 4px 8px; border-radius: 6px; flex: 1;">-</span>
+                      <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-copy-auto-session" style="padding: 5px 8px; font-size: 11px;" title="คัดลอกรหัสคาบ">
+                        <i class="fas fa-copy"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+                  <button type="button" class="btn-glass btn-emerald btn-sm-glass" id="btn-copy-otp-and-fill" style="font-size: 12.5px; padding: 8px 16px; font-weight: 700;">
+                    <i class="fas fa-paste"></i> คัดลอกและกรอก OTP ทันที
+                  </button>
+                </div>
+              </div>
+
+              <!-- LOCKED OUT OF TIME / NOT CONFIGURED NOTICE (When inactive or out of time) -->
+              <div id="student-schedule-locked-card" style="display: none; background: rgba(239, 68, 68, 0.08); border: 1.5px solid rgba(239, 68, 68, 0.5); border-radius: var(--radius-md); padding: 22px 18px; margin: 18px 0; text-align: center; animation: fadeIn 0.3s ease;">
+                <div style="width: 52px; height: 52px; border-radius: 50%; background: rgba(239, 68, 68, 0.15); border: 2px solid #EF4444; color: #EF4444; display: flex; align-items: center; justify-content: center; font-size: 22px; margin: 0 auto 12px auto;">
+                  <i class="fas fa-lock"></i>
+                </div>
+                <h3 id="student-schedule-locked-title" style="font-size: 16px; font-weight: 800; color: #FFF; margin-bottom: 6px;">ขณะนี้ยังไม่เปิดให้เช็คชื่อ</h3>
+                <p id="student-schedule-locked-desc" style="font-size: 12.5px; color: var(--text-secondary); margin-bottom: 14px; line-height: 1.5;">
+                  ห้องเรียนนี้ไม่ได้เปิดการเช็คชื่อไว้ หรืออยู่นอกช่วงเวลาที่กำหนด
+                </p>
+                <div id="student-schedule-allowed-badge" style="display: inline-block; background: rgba(0,0,0,0.4); border: 1px solid var(--border-glass); border-radius: 20px; padding: 6px 14px; font-size: 12px; color: var(--orange-400); font-weight: 600;">
+                  ⏰ เวลาเช็คชื่อ: รอบเช้า 07:00 - 08:30 น. (สายถึง 09:00 น.) / รอบบ่าย 12:00 - 13:30 น.
+                </div>
+              </div>
+
               <div class="form-group-glass">
                 <label><i class="fas fa-user-graduate" style="color: var(--orange-500);"></i> เลือกรหัส / ชื่อของคุณ</label>
                 <select class="select-glass" id="self-checkin-student"></select>
@@ -3171,6 +3248,20 @@
 
             <div class="glass-card">
               <div class="card-header-flex">
+                <div class="card-title-text"><i class="fas fa-calendar-days" style="color: var(--orange-400);"></i> ตั้งค่าเช็คชื่อรายวันอัตโนมัติ (Daily Auto Schedule)</div>
+              </div>
+              <p style="font-size: 13.5px; color: var(--text-secondary); margin-bottom: 16px;">
+                กำหนดตารางเวลาและวันในสัปดาห์สำหรับเปิดเช็คชื่ออัตโนมัติรายห้องเรียน (เช้า 07:00-08:30 น. / สาย 08:30-09:00 น. / บ่าย 12:00 น.)
+              </p>
+              <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button type="button" class="btn-glass btn-orange" id="btn-open-auto-schedule-settings">
+                  <i class="fas fa-calendar-check"></i> จัดการตารางเวลาเช็คชื่ออัตโนมัติ & ปฏิทิน
+                </button>
+              </div>
+            </div>
+
+            <div class="glass-card">
+              <div class="card-header-flex">
                 <div class="card-title-text"><i class="fab fa-line" style="color: #22C55E;"></i> แจ้งเตือนกลุ่ม LINE (LINE Group Summary)</div>
               </div>
               <p style="font-size: 13.5px; color: var(--text-secondary); margin-bottom: 16px;">
@@ -3698,7 +3789,155 @@
     </div>
   </div>
 
-  <!-- MODAL: LINE NOTIFICATION SETTINGS -->
+<!-- MODAL: AUTO SCHEDULE SETTINGS -->
+  <div class="modal-backdrop-glass" id="modal-auto-schedule-settings" style="display: none; z-index: 999999;">
+    <div class="modal-window-glass" style="max-width: 780px; max-height: 92vh; overflow-y: auto;">
+      <div class="modal-header-flex">
+        <div class="modal-title">
+          <i class="fas fa-calendar-days" style="color: var(--orange-400);"></i> ตั้งค่าเช็คชื่อรายวันอัตโนมัติตามปฏิทิน & ตารางสอน
+        </div>
+        <button type="button" class="btn-glass btn-dark btn-sm-glass btn-close-modal"><i class="fas fa-xmark"></i></button>
+      </div>
+
+      <div style="background: rgba(255,107,0,0.06); border: 1px solid var(--border-orange-glow); border-radius: var(--radius-sm); padding: 12px 14px; margin-bottom: 16px; font-size: 12.5px; color: var(--text-secondary); line-height: 1.5;">
+        💡 <strong>ระบบเช็คชื่อรายวันอัตโนมัติ:</strong> กำหนดเวลาเปิดเช็คชื่อสำหรับแต่ละห้องเรียนในแต่ละวัน เมื่อถึงเวลาที่ตั้งไว้ นักศึกษาจะสามารถเข้าเช็คชื่อได้ทันทีโดยไม่ต้องรอกดเปิดคาบด้วยตนเอง
+      </div>
+
+      <!-- Quick Preset Toolbar -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+        <span style="font-size: 13px; font-weight: 700; color: #FFF;">
+          <i class="fas fa-list-check" style="color: #10B981;"></i> รายการตารางเวลาที่เปิดใช้งาน
+        </span>
+        <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-reset-default-schedule" style="font-size: 11.5px;">
+          <i class="fas fa-bolt"></i> ⚡ คืนค่ามาตรฐานทุกห้อง (จันทร์-ศุกร์ 07:00-08:30 น.)
+        </button>
+      </div>
+
+      <!-- Schedule Table -->
+      <div class="table-container-glass" style="margin-bottom: 20px; max-height: 220px; overflow-y: auto;">
+        <table class="table-glass" style="font-size: 12px; width: 100%;">
+          <thead>
+            <tr>
+              <th>ห้องเรียน</th>
+              <th>วันเปิดใช้งาน</th>
+              <th>รอบเช้า (มาเรียน / มาสาย)</th>
+              <th>รอบบ่าย</th>
+              <th>สถานะ</th>
+              <th style="text-align: center;">จัดการ</th>
+            </tr>
+          </thead>
+          <tbody id="schedule-list-tbody">
+            <!-- Rendered by JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ADD / EDIT SCHEDULE FORM -->
+      <div style="background: rgba(14, 20, 36, 0.7); border: 1.5px solid var(--border-glass); border-radius: var(--radius-sm); padding: 16px;">
+        <h4 id="schedule-form-title" style="font-size: 14px; font-weight: 700; color: var(--orange-400); margin-bottom: 12px;">
+          <i class="fas fa-plus-circle"></i> เพิ่ม / แก้ไขตารางเวลา
+        </h4>
+
+        <input type="hidden" id="edit-schedule-id" value="" />
+
+        <div class="grid-2" style="gap: 12px; margin-bottom: 12px;">
+          <div class="form-group-glass" style="margin-bottom: 0;">
+            <label><i class="fas fa-chalkboard-user"></i> ห้องเรียนที่ใช้ตารางนี้</label>
+            <select class="select-glass" id="sch-form-class"></select>
+          </div>
+          <div class="form-group-glass" style="margin-bottom: 0;">
+            <label><i class="fas fa-tag"></i> ชื่อกิจกรรม/วิชา</label>
+            <input type="text" class="input-glass" id="sch-form-activity" value="เช็คชื่อมาเรียน" />
+          </div>
+        </div>
+
+        <!-- Days of Week Selector -->
+        <div class="form-group-glass" style="margin-bottom: 14px;">
+          <label style="margin-bottom: 6px;"><i class="fas fa-calendar-week"></i> วันที่เปิดให้เช็คชื่อ:</label>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <label class="badge-glass" style="cursor: pointer; padding: 6px 10px; font-size: 11.5px; display: flex; align-items: center; gap: 5px;">
+              <input type="checkbox" class="sch-day-checkbox" value="1" checked style="accent-color: #FF6B00;" /> จันทร์
+            </label>
+            <label class="badge-glass" style="cursor: pointer; padding: 6px 10px; font-size: 11.5px; display: flex; align-items: center; gap: 5px;">
+              <input type="checkbox" class="sch-day-checkbox" value="2" checked style="accent-color: #FF6B00;" /> อังคาร
+            </label>
+            <label class="badge-glass" style="cursor: pointer; padding: 6px 10px; font-size: 11.5px; display: flex; align-items: center; gap: 5px;">
+              <input type="checkbox" class="sch-day-checkbox" value="3" checked style="accent-color: #FF6B00;" /> พุธ
+            </label>
+            <label class="badge-glass" style="cursor: pointer; padding: 6px 10px; font-size: 11.5px; display: flex; align-items: center; gap: 5px;">
+              <input type="checkbox" class="sch-day-checkbox" value="4" checked style="accent-color: #FF6B00;" /> พฤหัสบดี
+            </label>
+            <label class="badge-glass" style="cursor: pointer; padding: 6px 10px; font-size: 11.5px; display: flex; align-items: center; gap: 5px;">
+              <input type="checkbox" class="sch-day-checkbox" value="5" checked style="accent-color: #FF6B00;" /> ศุกร์
+            </label>
+            <label class="badge-glass" style="cursor: pointer; padding: 6px 10px; font-size: 11.5px; display: flex; align-items: center; gap: 5px;">
+              <input type="checkbox" class="sch-day-checkbox" value="6" style="accent-color: #FF6B00;" /> เสาร์
+            </label>
+            <label class="badge-glass" style="cursor: pointer; padding: 6px 10px; font-size: 11.5px; display: flex; align-items: center; gap: 5px;">
+              <input type="checkbox" class="sch-day-checkbox" value="0" style="accent-color: #FF6B00;" /> อาทิตย์
+            </label>
+          </div>
+        </div>
+
+        <!-- Morning Session Settings -->
+        <div style="background: rgba(16, 185, 129, 0.06); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+          <div style="font-size: 12.5px; font-weight: 700; color: #10B981; margin-bottom: 8px;">
+            🌅 กำหนดเวลารอบเช้า (Morning Session)
+          </div>
+          <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+            <div style="flex: 1; min-width: 130px;">
+              <span style="font-size: 11px; color: var(--text-secondary);">เริ่มเปิดเช็คชื่อ:</span>
+              <input type="time" class="input-glass" id="sch-m-start" value="07:00" style="padding: 6px 10px; font-size: 12px; font-family: monospace;" />
+            </div>
+            <div style="flex: 1; min-width: 130px;">
+              <span style="font-size: 11px; color: #10B981; font-weight: 700;">🟢 หมดเขตมาตรงเวลา:</span>
+              <input type="time" class="input-glass" id="sch-m-ontime" value="08:30" style="padding: 6px 10px; font-size: 12px; font-family: monospace; border-color: #10B981;" />
+            </div>
+            <div style="flex: 1; min-width: 130px;">
+              <span style="font-size: 11px; color: #FF6B00; font-weight: 700;">🌸 หมดเขตมาสาย:</span>
+              <input type="time" class="input-glass" id="sch-m-late" value="09:00" style="padding: 6px 10px; font-size: 12px; font-family: monospace; border-color: #FF6B00;" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Afternoon Session Settings -->
+        <div style="background: rgba(56, 189, 248, 0.06); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 14px;">
+          <div style="font-size: 12.5px; font-weight: 700; color: #38BDF8; margin-bottom: 8px;">
+            ☀️ กำหนดเวลารอบบ่าย (Afternoon Session)
+          </div>
+          <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+            <div style="flex: 1; min-width: 130px;">
+              <span style="font-size: 11px; color: var(--text-secondary);">เริ่มเปิดรอบบ่าย:</span>
+              <input type="time" class="input-glass" id="sch-a-start" value="12:00" style="padding: 6px 10px; font-size: 12px; font-family: monospace;" />
+            </div>
+            <div style="flex: 1; min-width: 130px;">
+              <span style="font-size: 11px; color: #38BDF8; font-weight: 700;">☀️ หมดเขตรอบบ่าย:</span>
+              <input type="time" class="input-glass" id="sch-a-ontime" value="13:30" style="padding: 6px 10px; font-size: 12px; font-family: monospace; border-color: #38BDF8;" />
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 12.5px; color: #FFF;">
+            <input type="checkbox" id="sch-form-enabled" checked style="accent-color: #10B981; transform: scale(1.2);" />
+            <span>เปิดใช้งานตารางนี้</span>
+          </label>
+          <div style="display: flex; gap: 8px;">
+            <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-cancel-edit-schedule" style="display: none;">ยกเลิก</button>
+            <button type="button" class="btn-glass btn-orange" id="btn-save-schedule-rule" style="font-weight: 700;">
+              <i class="fas fa-floppy-disk"></i> บันทึกตารางเวลา
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; margin-top: 18px;">
+        <button type="button" class="btn-glass btn-dark btn-close-modal" style="min-width: 100px;">ปิด</button>
+      </div>
+    </div>
+  </div>
+
+    <!-- MODAL: LINE NOTIFICATION SETTINGS -->
   <div class="modal-backdrop-glass" id="modal-line-settings">
     <div class="modal-window-glass" style="max-width: 580px;">
       <div class="modal-header-flex">
@@ -9548,12 +9787,713 @@
       }
     }
 
+    
+    /**
+     * =========================================================================
+     * AUTOMATED DAILY SCHEDULE & CALENDAR JAVASCRIPT ENGINE
+     * =========================================================================
+     */
+    var autoOtpTimer = null;
+
+    var DEFAULT_AUTO_SCHEDULES = [
+      {
+        id: 'SCH_DEFAULT_ALL',
+        className: 'all',
+        title: 'ตารางเช็คชื่อประจำวันมาตรฐาน (ทุกห้องเรียน)',
+        enabled: true,
+        days: [1, 2, 3, 4, 5],
+        activityName: 'เช็คชื่อมาเรียน',
+        morningStart: '07:00',
+        morningOnTimeEnd: '08:30',
+        morningLateEnd: '09:00',
+        morningCutoff: '11:59',
+        afternoonStart: '12:00',
+        afternoonOnTimeEnd: '13:30',
+        afternoonLateEnd: '14:00',
+        afternoonCutoff: '17:00',
+        requireGPS: false,
+        requireSelfie: true,
+        gpsLat: 0,
+        gpsLng: 0,
+        radiusMeters: 100
+      }
+    ];
+
+    function getAutoCheckinSchedulesLocal() {
+      try {
+        var raw = localStorage.getItem('gas_auto_checkin_schedules');
+        if (raw) {
+          var parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch (e) {}
+      return DEFAULT_AUTO_SCHEDULES;
+    }
+
+    function saveAutoCheckinSchedulesLocal(schedules) {
+      try {
+        localStorage.setItem('gas_auto_checkin_schedules', JSON.stringify(schedules));
+      } catch (e) {}
+    }
+
+    function resolveActiveScheduleLocal(className, clientDateStr, clientTimeStr) {
+      var schedules = getAutoCheckinSchedulesLocal();
+      var now = new Date();
+      var nowMinutes = now.getHours() * 60 + now.getMinutes();
+      var dayOfWeek = now.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+
+      className = String(className || 'all').trim();
+
+      if (clientTimeStr && String(clientTimeStr).indexOf(':') > -1) {
+        var parts = String(clientTimeStr).split(':');
+        var h = parseInt(parts[0], 10);
+        var m = parseInt(parts[1], 10);
+        if (!isNaN(h) && !isNaN(m)) {
+          nowMinutes = h * 60 + m;
+        }
+      }
+
+      function parseMin(tStr, defaultMin) {
+        if (!tStr || String(tStr).indexOf(':') === -1) return defaultMin;
+        var p = String(tStr).split(':');
+        return (parseInt(p[0], 10) * 60) + parseInt(p[1], 10);
+      }
+
+      var matchedSchedule = null;
+      for (var i = 0; i < schedules.length; i++) {
+        var sch = schedules[i];
+        if (sch.enabled === false) continue;
+
+        var isMatch = (sch.className === 'all' || sch.className === 'ทุกห้องเรียน' || sch.className === className);
+        if (!isMatch && sch.classes && Array.isArray(sch.classes)) {
+          isMatch = (sch.classes.indexOf(className) > -1 || sch.classes.indexOf('all') > -1);
+        }
+        if (!isMatch) continue;
+
+        var isDayMatch = false;
+        if (sch.days === 'all' || !sch.days) {
+          isDayMatch = true;
+        } else if (Array.isArray(sch.days)) {
+          isDayMatch = (sch.days.indexOf(dayOfWeek) > -1 || sch.days.indexOf(String(dayOfWeek)) > -1);
+        } else if (typeof sch.days === 'string') {
+          var dArr = sch.days.split(',');
+          isDayMatch = (dArr.indexOf(String(dayOfWeek)) > -1 || dArr.indexOf('all') > -1);
+        }
+        if (!isDayMatch) continue;
+
+        matchedSchedule = sch;
+        break;
+      }
+
+      if (!matchedSchedule) {
+        return {
+          status: 'locked',
+          code: 'NOT_SCHEDULED',
+          message: 'ห้องนี้ไม่ได้เปิดการตั้งค่าเช็คชื่ออัตโนมัติ หรือไม่มีตารางสำหรับวันนี้',
+          className: className,
+          schedule: null
+        };
+      }
+
+      var mStart = parseMin(matchedSchedule.morningStart, 7 * 60);         // 07:00 (420)
+      var mOnTime = parseMin(matchedSchedule.morningOnTimeEnd, 8 * 60 + 30); // 08:30 (510)
+      var mLate = parseMin(matchedSchedule.morningLateEnd, 9 * 60);          // 09:00 (540)
+      var mCutoff = parseMin(matchedSchedule.morningCutoff, 11 * 60 + 59);  // 11:59 (719)
+
+      var aStart = parseMin(matchedSchedule.afternoonStart, 12 * 60);        // 12:00 (720)
+      var aOnTime = parseMin(matchedSchedule.afternoonOnTimeEnd, 13 * 60 + 30); // 13:30 (810)
+      var aLate = parseMin(matchedSchedule.afternoonLateEnd, 14 * 60);       // 14:00 (840)
+      var aCutoff = parseMin(matchedSchedule.afternoonCutoff, 17 * 60);     // 17:00 (1020)
+
+      var sessionPhase = null;
+      var statusResult = 'Present';
+      var phaseLabel = '';
+      var activeActivity = matchedSchedule.activityName || 'เช็คชื่อมาเรียน';
+
+      if (nowMinutes >= mStart && nowMinutes <= mCutoff) {
+        if (nowMinutes <= mOnTime) {
+          sessionPhase = 'MORNING_ON_TIME';
+          statusResult = 'Present';
+          phaseLabel = 'มาเรียนตรงเวลา (07:00 - 08:30 น.)';
+        } else if (nowMinutes <= mLate) {
+          sessionPhase = 'MORNING_LATE';
+          statusResult = 'Late';
+          phaseLabel = 'มาสาย (08:30 - 09:00 น.)';
+        } else {
+          sessionPhase = 'MORNING_LATE_EXTENDED';
+          statusResult = 'Late';
+          phaseLabel = 'มาสาย (หลัง 09:00 น.)';
+        }
+      } else if (nowMinutes >= aStart && nowMinutes <= aCutoff) {
+        activeActivity = 'เช็คชื่อช่วงบ่าย';
+        if (nowMinutes <= aOnTime) {
+          sessionPhase = 'AFTERNOON_ON_TIME';
+          statusResult = 'Present';
+          phaseLabel = 'เช็คชื่อช่วงบ่าย (ตรงเวลา 12:00 - 13:30 น.)';
+        } else {
+          sessionPhase = 'AFTERNOON_LATE';
+          statusResult = 'Late';
+          phaseLabel = 'ช่วงบ่าย (มาสาย)';
+        }
+      }
+
+      if (!sessionPhase) {
+        return {
+          status: 'locked',
+          code: 'OUT_OF_HOURS',
+          message: 'ขณะนี้อยู่นอกช่วงเวลาเช็คชื่อที่กำหนด',
+          currentMinutes: nowMinutes,
+          schedule: matchedSchedule,
+          allowedTimes: 'รอบเช้า ' + (matchedSchedule.morningStart || '07:00') + ' - ' + (matchedSchedule.morningLateEnd || '09:00') + ' น. / รอบบ่าย ' + (matchedSchedule.afternoonStart || '12:00') + ' - ' + (matchedSchedule.afternoonCutoff || '17:00') + ' น.'
+        };
+      }
+
+      var todayDateStr = clientDateStr || getTodayDateString();
+      var cleanClassTag = className.replace(/[^a-zA-Z0-9]/g, '_');
+      var dailySeed = 'SEC_' + todayDateStr.replace(/-/g, '') + '_' + cleanClassTag;
+      var sessionId = 'AUTOSES_' + todayDateStr.replace(/-/g, '') + '_' + (nowMinutes < aStart ? 'MORN' : 'AFT');
+
+      return {
+        status: 'open',
+        sessionPhase: sessionPhase,
+        statusResult: statusResult,
+        phaseLabel: phaseLabel,
+        activityName: activeActivity,
+        className: className,
+        dateStr: todayDateStr,
+        sessionId: sessionId,
+        secretSeed: dailySeed,
+        otpIntervalSeconds: 15,
+        requireSelfie: matchedSchedule.requireSelfie !== false,
+        requireGPS: matchedSchedule.requireGPS === true,
+        gpsLat: matchedSchedule.gpsLat || 0,
+        gpsLng: matchedSchedule.gpsLng || 0,
+        radiusMeters: matchedSchedule.radiusMeters || 100,
+        schedule: matchedSchedule
+      };
+    }
+
+    function renderDynamicQRCodeToElement(targetEl, sessionId, otpCode) {
+      if (!targetEl) return;
+      targetEl.innerHTML = '';
+      var qrPayload = JSON.stringify({
+        type: 'ATTENDANCE_OTP',
+        sessionId: sessionId,
+        otp: otpCode,
+        timestamp: Date.now()
+      });
+
+      if (typeof QRCode !== 'undefined') {
+        try {
+          new QRCode(targetEl, {
+            text: qrPayload,
+            width: 140,
+            height: 140,
+            colorDark: '#0B0F19',
+            colorLight: '#FFFFFF',
+            correctLevel: (typeof QRCode.CorrectLevel !== 'undefined') ? QRCode.CorrectLevel.M : 2
+          });
+        } catch (e) {
+          console.warn('QRCode render error:', e);
+        }
+      }
+    }
+
+    function startAutoOtpCountdown(secretSeed, intervalSec, sessionId) {
+      if (autoOtpTimer) clearInterval(autoOtpTimer);
+      intervalSec = intervalSec || 15;
+
+      function updateTick() {
+        var now = Date.now();
+        var currentOtp = generateTOTP(secretSeed, intervalSec, now);
+        var otpEl = document.getElementById('student-auto-otp-display');
+        if (otpEl) otpEl.textContent = currentOtp;
+
+        var secRemaining = intervalSec - (Math.floor(now / 1000) % intervalSec);
+        var pctRemaining = (secRemaining / intervalSec) * 100;
+
+        var barEl = document.getElementById('student-otp-countdown-bar');
+        var textEl = document.getElementById('student-otp-countdown-text');
+        if (barEl) barEl.style.width = pctRemaining + '%';
+        if (textEl) textEl.textContent = secRemaining + 's';
+
+        var qrTarget = document.getElementById('student-auto-qr-code');
+        if (qrTarget && qrTarget.getAttribute('data-last-otp') !== currentOtp) {
+          qrTarget.setAttribute('data-last-otp', currentOtp);
+          renderDynamicQRCodeToElement(qrTarget, sessionId, currentOtp);
+        }
+      }
+
+      updateTick();
+      autoOtpTimer = setInterval(updateTick, 1000);
+    }
+
+    function copyTextToClipboard(text, successMsg) {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(function() {
+          showToast(successMsg || 'คัดลอกเรียบร้อยแล้ว!', 'success');
+        }).catch(function() {
+          fallbackCopyText(text, successMsg);
+        });
+      } else {
+        fallbackCopyText(text, successMsg);
+      }
+    }
+
+    function fallbackCopyText(text, successMsg) {
+      var textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.opacity = '0';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        showToast(successMsg || 'คัดลอกเรียบร้อยแล้ว!', 'success');
+      } catch (err) {
+        showToast('ไม่สามารถคัดลอกได้: ' + err, 'error');
+      }
+      document.body.removeChild(textArea);
+    }
+
+    function updateStudentScheduleStatus(className) {
+      className = className || (document.getElementById('self-checkin-class') && document.getElementById('self-checkin-class').value) || '';
+
+      var activeBox = document.getElementById('student-schedule-active-card');
+      var lockedBox = document.getElementById('student-schedule-locked-card');
+      var btnStep1 = document.getElementById('btn-step-1-next');
+
+      if (!className) {
+        if (activeBox) activeBox.style.display = 'none';
+        if (lockedBox) lockedBox.style.display = 'none';
+        return;
+      }
+
+      var res = resolveActiveScheduleLocal(className);
+
+      if (res.status === 'open') {
+        if (lockedBox) lockedBox.style.display = 'none';
+        if (activeBox) activeBox.style.display = 'block';
+
+        var badgeText = document.getElementById('student-schedule-badge-text');
+        var badgeBox = document.getElementById('student-schedule-status-badge');
+        var timeLabel = document.getElementById('student-schedule-time-label');
+        var sessionCodeEl = document.getElementById('student-auto-session-code');
+
+        if (res.statusResult === 'Present') {
+          if (badgeBox) badgeBox.className = 'badge-glass badge-present';
+          if (badgeText) {
+            badgeText.innerHTML = (res.sessionPhase.indexOf('AFTERNOON') > -1) ? '☀️ เช็คชื่อช่วงบ่าย (ตรงเวลา)' : '🟢 มาเรียนตรงเวลา';
+          }
+        } else {
+          if (badgeBox) badgeBox.className = 'badge-glass badge-late';
+          if (badgeText) {
+            badgeText.innerHTML = '🌸 มาสาย (เกินเวลา 08:30 น.)';
+          }
+        }
+
+        if (timeLabel) timeLabel.textContent = res.phaseLabel || 'ช่วงเวลาที่เปิดเช็คชื่อ';
+        if (sessionCodeEl) sessionCodeEl.textContent = res.sessionId;
+
+        startAutoOtpCountdown(res.secretSeed, res.otpIntervalSeconds, res.sessionId);
+
+        AppState.activeSession = {
+          sessionId: res.sessionId,
+          className: res.className,
+          activityName: res.activityName,
+          secretSeed: res.secretSeed,
+          otpIntervalSeconds: res.otpIntervalSeconds || 15,
+          requireGPS: res.requireGPS === true,
+          requireSelfie: res.requireSelfie !== false,
+          requireDeviceBinding: true,
+          lat: res.gpsLat || 0,
+          lng: res.gpsLng || 0,
+          radiusMeters: res.radiusMeters || 100,
+          isAutomated: true,
+          statusResult: res.statusResult
+        };
+
+        if (btnStep1) {
+          btnStep1.disabled = false;
+          btnStep1.innerHTML = 'ต่อไป: ตรวจสอบพิกัด GPS <i class="fas fa-arrow-right"></i>';
+        }
+      } else {
+        if (activeBox) activeBox.style.display = 'none';
+        if (lockedBox) lockedBox.style.display = 'block';
+        if (autoOtpTimer) clearInterval(autoOtpTimer);
+
+        var lockTitle = document.getElementById('student-schedule-locked-title');
+        var lockDesc = document.getElementById('student-schedule-locked-desc');
+        var allowedBadge = document.getElementById('student-schedule-allowed-badge');
+
+        if (lockTitle) lockTitle.textContent = 'ขณะนี้ยังไม่เปิดให้เช็คชื่อ (' + className + ')';
+        if (lockDesc) lockDesc.textContent = res.message || 'ห้องเรียนนี้ไม่ได้เปิดการเช็คชื่อไว้ หรืออยู่นอกช่วงเวลาที่กำหนด';
+        if (allowedBadge && res.allowedTimes) {
+          allowedBadge.textContent = '⏰ ' + res.allowedTimes;
+        }
+
+        AppState.activeSession = null;
+
+        if (btnStep1) {
+          btnStep1.disabled = true;
+          btnStep1.innerHTML = '<i class="fas fa-lock"></i> ยังไม่เปิดให้เช็คชื่อห้องนี้';
+        }
+      }
+    }
+
+    function openAutoScheduleSettingsModal() {
+      var modal = document.getElementById('modal-auto-schedule-settings');
+      if (!modal) return;
+
+      // Populate class dropdown
+      var schClassSelect = document.getElementById('sch-form-class');
+      if (schClassSelect) {
+        schClassSelect.innerHTML = '';
+        var optAll = document.createElement('option');
+        optAll.value = 'all';
+        optAll.textContent = '🌟 ทุกห้องเรียน (ใช้ตารางเดียวกัน)';
+        schClassSelect.appendChild(optAll);
+
+        var classes = AppState.classes || [];
+        for (var c = 0; c < classes.length; c++) {
+          var opt = document.createElement('option');
+          opt.value = classes[c];
+          opt.textContent = 'ห้อง ' + classes[c];
+          schClassSelect.appendChild(opt);
+        }
+      }
+
+      renderScheduleManagerTable();
+      modal.style.display = 'flex';
+
+      // Load from GAS in background
+      if (isGASAvailable()) {
+        google.script.run
+          .withSuccessHandler(function(schedules) {
+            if (schedules && Array.isArray(schedules) && schedules.length > 0) {
+              saveAutoCheckinSchedulesLocal(schedules);
+              renderScheduleManagerTable();
+            }
+          })
+          .getAutoCheckinSchedules();
+      }
+    }
+
+    function renderScheduleManagerTable() {
+      var tbody = document.getElementById('schedule-list-tbody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      var schedules = getAutoCheckinSchedulesLocal();
+      var dayNames = { '1': 'จ.', '2': 'อ.', '3': 'พ.', '4': 'พฤ.', '5': 'ศ.', '6': 'ส.', '0': 'อา.' };
+
+      if (schedules.length === 0) {
+        var emptyTr = document.createElement('tr');
+        emptyTr.innerHTML = '<td colspan="6" style="text-align:center; color:var(--text-muted); padding:16px;">ยังไม่มีตารางเวลาที่กำหนด (กดปุ่มคืนค่ามาตรฐานเพื่อเริ่มต้น)</td>';
+        tbody.appendChild(emptyTr);
+        return;
+      }
+
+      for (var i = 0; i < schedules.length; i++) {
+        var s = schedules[i];
+        var dStr = '';
+        if (s.days === 'all' || !s.days) {
+          dStr = 'ทุกวัน';
+        } else if (Array.isArray(s.days)) {
+          var dList = [];
+          for (var d = 0; d < s.days.length; d++) {
+            dList.push(dayNames[String(s.days[d])] || s.days[d]);
+          }
+          dStr = dList.join(', ');
+        } else {
+          dStr = String(s.days);
+        }
+
+        var morningStr = (s.morningStart || '07:00') + ' - ' + (s.morningOnTimeEnd || '08:30') + ' (สาย ' + (s.morningLateEnd || '09:00') + ')';
+        var aftStr = (s.afternoonStart || '12:00') + ' - ' + (s.afternoonOnTimeEnd || '13:30');
+        var clsLabel = (s.className === 'all' || s.className === 'ทุกห้องเรียน') ? '🌟 ทุกห้องเรียน' : ('ห้อง ' + s.className);
+        var statBadge = (s.enabled !== false) ? '<span class="badge-glass badge-present">เปิดใช้งาน</span>' : '<span class="badge-glass badge-absent">ปิดใช้งาน</span>';
+
+        var tr = document.createElement('tr');
+        tr.innerHTML = '<td><strong>' + escapeHtml(clsLabel) + '</strong><br><small style="color:var(--text-muted);">' + escapeHtml(s.activityName || 'เช็คชื่อมาเรียน') + '</small></td>' +
+                       '<td><span class="badge-glass" style="font-size:11px;">' + escapeHtml(dStr) + '</span></td>' +
+                       '<td><span style="color:#10B981;">' + escapeHtml(morningStr) + '</span></td>' +
+                       '<td><span style="color:#38BDF8;">' + escapeHtml(aftStr) + '</span></td>' +
+                       '<td>' + statBadge + '</td>' +
+                       '<td style="text-align:center; white-space:nowrap;">' +
+                       '  <button type="button" class="btn-glass btn-cyan btn-sm-glass btn-edit-sch" data-id="' + escapeHtml(s.id || '') + '" style="padding:3px 8px; font-size:11px; margin-right:4px;" title="แก้ไข"><i class="fas fa-pen"></i></button>' +
+                       '  <button type="button" class="btn-glass btn-danger-glass btn-sm-glass btn-del-sch" data-id="' + escapeHtml(s.id || '') + '" style="padding:3px 8px; font-size:11px;" title="ลบ"><i class="fas fa-trash"></i></button>' +
+                       '</td>';
+        tbody.appendChild(tr);
+      }
+
+      // Bind edit and delete buttons
+      var editBtns = tbody.querySelectorAll('.btn-edit-sch');
+      for (var e = 0; e < editBtns.length; e++) {
+        editBtns[e].addEventListener('click', function() {
+          var id = this.getAttribute('data-id');
+          editScheduleRule(id);
+        });
+      }
+
+      var delBtns = tbody.querySelectorAll('.btn-del-sch');
+      for (var d = 0; d < delBtns.length; d++) {
+        delBtns[d].addEventListener('click', function() {
+          var id = this.getAttribute('data-id');
+          deleteScheduleRule(id);
+        });
+      }
+    }
+
+    function editScheduleRule(id) {
+      var schedules = getAutoCheckinSchedulesLocal();
+      var target = null;
+      for (var i = 0; i < schedules.length; i++) {
+        if (schedules[i].id === id) { target = schedules[i]; break; }
+      }
+      if (!target) return;
+
+      document.getElementById('edit-schedule-id').value = target.id;
+      document.getElementById('sch-form-class').value = target.className || 'all';
+      document.getElementById('sch-form-activity').value = target.activityName || 'เช็คชื่อมาเรียน';
+      document.getElementById('sch-m-start').value = target.morningStart || '07:00';
+      document.getElementById('sch-m-ontime').value = target.morningOnTimeEnd || '08:30';
+      document.getElementById('sch-m-late').value = target.morningLateEnd || '09:00';
+      document.getElementById('sch-a-start').value = target.afternoonStart || '12:00';
+      document.getElementById('sch-a-ontime').value = target.afternoonOnTimeEnd || '13:30';
+      document.getElementById('sch-form-enabled').checked = (target.enabled !== false);
+
+      var dayBoxes = document.querySelectorAll('.sch-day-checkbox');
+      var dList = Array.isArray(target.days) ? target.days.map(String) : (target.days ? String(target.days).split(',') : ['1','2','3','4','5']);
+      for (var b = 0; b < dayBoxes.length; b++) {
+        dayBoxes[b].checked = (dList.indexOf(dayBoxes[b].value) > -1);
+      }
+
+      var formTitle = document.getElementById('schedule-form-title');
+      if (formTitle) formTitle.innerHTML = '<i class="fas fa-pen-to-square"></i> แก้ไขตารางเวลา (' + (target.className === 'all' ? 'ทุกห้อง' : target.className) + ')';
+      var cancelBtn = document.getElementById('btn-cancel-edit-schedule');
+      if (cancelBtn) cancelBtn.style.display = 'inline-block';
+    }
+
+    function cancelEditScheduleHandler() {
+      document.getElementById('edit-schedule-id').value = '';
+      document.getElementById('sch-form-class').value = 'all';
+      document.getElementById('sch-form-activity').value = 'เช็คชื่อมาเรียน';
+      document.getElementById('sch-m-start').value = '07:00';
+      document.getElementById('sch-m-ontime').value = '08:30';
+      document.getElementById('sch-m-late').value = '09:00';
+      document.getElementById('sch-a-start').value = '12:00';
+      document.getElementById('sch-a-ontime').value = '13:30';
+      document.getElementById('sch-form-enabled').checked = true;
+
+      var formTitle = document.getElementById('schedule-form-title');
+      if (formTitle) formTitle.innerHTML = '<i class="fas fa-plus-circle"></i> เพิ่ม / แก้ไขตารางเวลา';
+      var cancelBtn = document.getElementById('btn-cancel-edit-schedule');
+      if (cancelBtn) cancelBtn.style.display = 'none';
+    }
+
+    function deleteScheduleRule(id) {
+      openConfirmModal({
+        title: 'ยืนยันการลบตารางเวลา',
+        desc: 'คุณต้องการลบตารางเวลานี้ใช่หรือไม่?',
+        icon: 'fa-trash',
+        btnIcon: 'fa-trash',
+        okText: 'ลบตารางเวลา',
+        onConfirm: function() {
+          var schedules = getAutoCheckinSchedulesLocal();
+          schedules = schedules.filter(function(item) { return item.id !== id; });
+          saveAutoCheckinSchedulesLocal(schedules);
+          renderScheduleManagerTable();
+
+          if (isGASAvailable()) {
+            google.script.run.saveAutoCheckinSchedules(schedules);
+          }
+          showToast('ลบตารางเวลาเรียบร้อยแล้ว', 'success');
+          updateStudentScheduleStatus();
+        }
+      });
+    }
+
+    function saveScheduleRuleHandler() {
+      var editId = document.getElementById('edit-schedule-id').value;
+      var className = document.getElementById('sch-form-class').value;
+      var activityName = document.getElementById('sch-form-activity').value.trim() || 'เช็คชื่อมาเรียน';
+      var mStart = document.getElementById('sch-m-start').value || '07:00';
+      var mOnTime = document.getElementById('sch-m-ontime').value || '08:30';
+      var mLate = document.getElementById('sch-m-late').value || '09:00';
+      var aStart = document.getElementById('sch-a-start').value || '12:00';
+      var aOnTime = document.getElementById('sch-a-ontime').value || '13:30';
+      var enabled = document.getElementById('sch-form-enabled').checked;
+
+      var selectedDays = [];
+      var dayBoxes = document.querySelectorAll('.sch-day-checkbox');
+      for (var b = 0; b < dayBoxes.length; b++) {
+        if (dayBoxes[b].checked) {
+          selectedDays.push(parseInt(dayBoxes[b].value, 10));
+        }
+      }
+
+      if (selectedDays.length === 0) {
+        showToast('กรุณาเลือกวันในสัปดาห์อย่างน้อย 1 วัน', 'error');
+        return;
+      }
+
+      var schedules = getAutoCheckinSchedulesLocal();
+      var id = editId || ('SCH_' + Date.now().toString(36).toUpperCase());
+
+      var ruleObj = {
+        id: id,
+        className: className,
+        title: (className === 'all' ? 'ทุกห้องเรียน' : ('ห้อง ' + className)),
+        enabled: enabled,
+        days: selectedDays,
+        activityName: activityName,
+        morningStart: mStart,
+        morningOnTimeEnd: mOnTime,
+        morningLateEnd: mLate,
+        morningCutoff: '11:59',
+        afternoonStart: aStart,
+        afternoonOnTimeEnd: aOnTime,
+        afternoonLateEnd: '14:00',
+        afternoonCutoff: '17:00',
+        requireGPS: false,
+        requireSelfie: true,
+        gpsLat: 0,
+        gpsLng: 0,
+        radiusMeters: 100
+      };
+
+      var existingIdx = -1;
+      for (var i = 0; i < schedules.length; i++) {
+        if (schedules[i].id === id) { existingIdx = i; break; }
+      }
+
+      if (existingIdx > -1) {
+        schedules[existingIdx] = ruleObj;
+      } else {
+        schedules.push(ruleObj);
+      }
+
+      saveAutoCheckinSchedulesLocal(schedules);
+      renderScheduleManagerTable();
+      cancelEditScheduleHandler();
+
+      showToast('บันทึกตารางเวลาเรียบร้อยแล้ว', 'success');
+      updateStudentScheduleStatus();
+
+      if (isGASAvailable()) {
+        google.script.run
+          .withSuccessHandler(function(res) {
+            if (res && res.status === 'success') {
+              console.log('Schedules synced to Google Sheets:', res);
+            }
+          })
+          .saveAutoCheckinSchedules(schedules);
+      }
+    }
+
+    function resetDefaultScheduleHandler() {
+      openConfirmModal({
+        title: 'คืนค่ามาตรฐานตารางเช็คชื่อ',
+        desc: 'ระบบจะตั้งค่าตารางเช็คชื่ออัตโนมัติสำหรับทุกห้องเรียน:<br><strong>🌅 รอบเช้า: 07:00 - 08:30 น. (สายถึง 09:00 น.)<br>☀️ รอบบ่าย: 12:00 - 13:30 น.<br>📅 วันจันทร์ - วันศุกร์</strong>',
+        icon: 'fa-bolt',
+        btnIcon: 'fa-bolt',
+        okText: 'คืนค่ามาตรฐานทันที',
+        onConfirm: function() {
+          saveAutoCheckinSchedulesLocal(DEFAULT_AUTO_SCHEDULES);
+          renderScheduleManagerTable();
+          cancelEditScheduleHandler();
+
+          if (isGASAvailable()) {
+            google.script.run.saveAutoCheckinSchedules(DEFAULT_AUTO_SCHEDULES);
+          }
+          showToast('คืนค่ามาตรฐานตารางเช็คชื่อเรียบร้อยแล้ว', 'success');
+          updateStudentScheduleStatus();
+        }
+      });
+    }
+
+    function copyAutoOtpHandler() {
+      var otpEl = document.getElementById('student-auto-otp-display');
+      var val = otpEl ? otpEl.textContent.trim() : '';
+      if (!val || val === '------') {
+        showToast('ไม่พบรหัส OTP ที่ใช้งานได้', 'error');
+        return;
+      }
+      copyTextToClipboard(val, 'คัดลอกรหัส OTP (' + val + ') เรียบร้อยแล้ว!');
+    }
+
+    function copyAutoSessionHandler() {
+      var sesEl = document.getElementById('student-auto-session-code');
+      var val = sesEl ? sesEl.textContent.trim() : '';
+      if (!val || val === '-') {
+        showToast('ไม่พบรหัสคาบเรียน', 'error');
+        return;
+      }
+      copyTextToClipboard(val, 'คัดลอกรหัสคาบ (' + val + ') เรียบร้อยแล้ว!');
+    }
+
+    function copyOtpAndFillHandler() {
+      var otpEl = document.getElementById('student-auto-otp-display');
+      var otpVal = otpEl ? otpEl.textContent.trim() : '';
+      if (!otpVal || otpVal === '------') {
+        showToast('ไม่พบรหัส OTP ที่ใช้งานได้', 'error');
+        return;
+      }
+      copyTextToClipboard(otpVal, 'คัดลอกและกรอกรหัส OTP ' + otpVal + ' ให้อัตโนมัติแล้ว!');
+
+      for (var i = 1; i <= 6; i++) {
+        var pBox = document.getElementById('pin-' + i);
+        if (pBox) pBox.value = otpVal.charAt(i - 1) || '';
+      }
+    }
+
     function bindStudentCheckinEvents() {
       var classSelect = document.getElementById('self-checkin-class');
       if (classSelect) {
         classSelect.addEventListener('change', function() {
           populateStudentSelectForClass(this.value);
+          updateStudentScheduleStatus(this.value);
         });
+      }
+
+      // Schedule modal button in settings
+      var btnOpenSchedule = document.getElementById('btn-open-auto-schedule-settings');
+      if (btnOpenSchedule) {
+        btnOpenSchedule.addEventListener('click', openAutoScheduleSettingsModal);
+      }
+
+      // Schedule save & reset buttons
+      var btnSaveSch = document.getElementById('btn-save-schedule-rule');
+      if (btnSaveSch) {
+        btnSaveSch.addEventListener('click', saveScheduleRuleHandler);
+      }
+
+      var btnResetSch = document.getElementById('btn-reset-default-schedule');
+      if (btnResetSch) {
+        btnResetSch.addEventListener('click', resetDefaultScheduleHandler);
+      }
+
+      var btnCancelSch = document.getElementById('btn-cancel-edit-schedule');
+      if (btnCancelSch) {
+        btnCancelSch.addEventListener('click', cancelEditScheduleHandler);
+      }
+
+      // Copy buttons in Student Step 1
+      var btnCopyOtp = document.getElementById('btn-copy-auto-otp');
+      if (btnCopyOtp) {
+        btnCopyOtp.addEventListener('click', copyAutoOtpHandler);
+      }
+
+      var btnCopySes = document.getElementById('btn-copy-auto-session');
+      if (btnCopySes) {
+        btnCopySes.addEventListener('click', copyAutoSessionHandler);
+      }
+
+      var btnCopyFill = document.getElementById('btn-copy-otp-and-fill');
+      if (btnCopyFill) {
+        btnCopyFill.addEventListener('click', copyOtpAndFillHandler);
       }
 
       var btnStep1Next = document.getElementById('btn-step-1-next');
