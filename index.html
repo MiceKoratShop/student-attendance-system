@@ -10861,8 +10861,8 @@
                        '<td>' + secBadgesHtml + '</td>' +
                        '<td>' + statBadge + '</td>' +
                        '<td style="text-align:center; white-space:nowrap;">' +
-                       '  <button type="button" class="btn-glass btn-cyan btn-sm-glass btn-edit-sch" data-id="' + escapeHtml(s.id || '') + '" style="padding:3px 8px; font-size:11px; margin-right:4px;" title="แก้ไข"><i class="fas fa-pen"></i></button>' +
-                       '  <button type="button" class="btn-glass btn-danger-glass btn-sm-glass btn-del-sch" data-id="' + escapeHtml(s.id || '') + '" style="padding:3px 8px; font-size:11px;" title="ลบ"><i class="fas fa-trash"></i></button>' +
+                       '  <button type="button" class="btn-glass btn-cyan btn-sm-glass btn-edit-sch" data-id="' + escapeHtml(s.id || '') + '" data-index="' + i + '" style="padding:3px 8px; font-size:11px; margin-right:4px;" title="แก้ไข"><i class="fas fa-pen"></i></button>' +
+                       '  <button type="button" class="btn-glass btn-danger-glass btn-sm-glass btn-del-sch" data-id="' + escapeHtml(s.id || '') + '" data-index="' + i + '" style="padding:3px 8px; font-size:11px;" title="ลบ"><i class="fas fa-trash"></i></button>' +
                        '</td>';
         tbody.appendChild(tr);
       }
@@ -10881,7 +10881,10 @@
           e.preventDefault();
           e.stopPropagation();
           var id = this.getAttribute('data-id');
-          deleteScheduleRule(id);
+          var idx = parseInt(this.getAttribute('data-index'), 10);
+          if (confirm('คุณต้องการลบตารางเวลานี้ใช่หรือไม่? (การลบจะมีผลทันที)')) {
+            deleteScheduleRule(id, idx);
+          }
         });
       }
 
@@ -11016,48 +11019,37 @@
       if (cancelBtn) cancelBtn.style.display = 'none';
     }
 
-    function deleteScheduleRule(id) {
-      if (!id) return;
-      openConfirmModal({
-        title: 'ยืนยันการลบตารางเวลา',
-        desc: '<div style="text-align:center; padding: 10px 0;">คุณต้องการลบตารางเวลานี้ใช่หรือไม่?<br><span style="color:#EF4444; font-size:12px;">(การลบจะมีผลทันทีและหยุดการเช็คชื่ออัตโนมัติของตารางนี้)</span></div>',
-        icon: 'fa-trash-can',
-        btnIcon: 'fa-trash',
-        okText: 'ลบตารางเวลานี้',
-        theme: 'danger',
-        onConfirm: function() {
-          var schedules = getAutoCheckinSchedulesLocal();
-          var newSchedules = [];
-          for (var i = 0; i < schedules.length; i++) {
-            if (String(schedules[i].id) !== String(id)) {
-              newSchedules.push(schedules[i]);
-            }
-          }
-          saveAutoCheckinSchedulesLocal(newSchedules);
-          renderScheduleManagerTable();
-
-          // Clear any active automated session in local storage
-          try {
-            var activeSess = localStorage.getItem('gas_student_active_session');
-            if (activeSess) {
-              var pSess = JSON.parse(activeSess);
-              if (pSess && (pSess.scheduleId === id || pSess.isAutomated)) {
-                localStorage.removeItem('gas_student_active_session');
-              }
-            }
-          } catch (e) {}
-
-          if (isGASAvailable()) {
-            google.script.run
-              .withSuccessHandler(function(res) {
-                console.log('Schedule deleted on GAS:', res);
-              })
-              .saveAutoCheckinSchedules(newSchedules);
-          }
-          showToast('ลบตารางเวลาเรียบร้อยแล้ว', 'success');
-          updateStudentScheduleStatus();
+    function deleteScheduleRule(id, idx) {
+      var schedules = getAutoCheckinSchedulesLocal();
+      var newSchedules = [];
+      for (var i = 0; i < schedules.length; i++) {
+        var it = schedules[i];
+        var itId = String(it.id || '');
+        if (id && itId && itId === String(id)) {
+          continue;
         }
-      });
+        if (idx !== undefined && !isNaN(idx) && i === idx) {
+          continue;
+        }
+        newSchedules.push(it);
+      }
+      saveAutoCheckinSchedulesLocal(newSchedules);
+      renderScheduleManagerTable();
+
+      // Clear any active automated session in local storage
+      try {
+        localStorage.removeItem('gas_student_active_session');
+      } catch (e) {}
+
+      if (isGASAvailable()) {
+        google.script.run
+          .withSuccessHandler(function(res) {
+            console.log('Schedule deleted on GAS:', res);
+          })
+          .saveAutoCheckinSchedules(newSchedules);
+      }
+      showToast('ลบตารางเวลาเรียบร้อยแล้ว', 'success');
+      updateStudentScheduleStatus();
     }
 
     function saveScheduleRuleHandler() {
@@ -12809,7 +12801,9 @@
       }
 
       var listToSave = [];
-      var dateStr = AppState.selectedDate;
+      var dateInput = document.getElementById('att-date-select');
+      var dateStr = (dateInput && dateInput.value) || AppState.selectedDate || getTodayDateString();
+      AppState.selectedDate = dateStr;
       var attActSelect = document.getElementById('att-activity-select');
       var curActivity = attActSelect ? attActSelect.value : 'เช็คชื่อมาเรียน';
       if (curActivity === 'all' || !curActivity) curActivity = 'เช็คชื่อมาเรียน';
@@ -14048,7 +14042,7 @@
         if (it.date === dateStr) {
           var act = it.activityName || 'เช็คชื่อมาเรียน';
           if (isActivityMatch(activityName, act)) {
-            map[it.studentId] = {
+            var attObj = {
               status: it.status,
               selfiePhoto: it.selfiePhoto || '',
               distanceMeters: it.distanceMeters || 0,
@@ -14056,6 +14050,8 @@
               checkinTime: it.checkinTime || '',
               note: it.note || ''
             };
+            map[it.studentId] = attObj;
+            map[String(it.studentId).toLowerCase()] = attObj;
           }
         }
       }
@@ -14195,7 +14191,7 @@
           }
         }
 
-        if (status === 'Present' || status === 'มาเรียน') { countPresent++; presentList.push(sObj); }
+        if (status === 'Present' || status === 'มาเรียน') countPresent++;
         else if (status === 'Absent' || status === 'ขาด' || status === 'ขาดเรียน') countAbsent++;
         else if (status === 'Sick' || status === 'ลาป่วย') countSick++;
         else if (status === 'Leave' || status === 'ลากิจ') countLeave++;
