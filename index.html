@@ -2089,6 +2089,162 @@
       border-color: var(--orange-400) !important;
     }
 
+
+    /* ============================================================= */
+    /* ☀️ LIGHT MODE & THEME SYSTEM STYLES */
+    /* ============================================================= */
+    [data-theme="light"] {
+      --bg-space: #F1F5F9;
+      --bg-surface-1: rgba(255, 255, 255, 0.95);
+      --bg-surface-2: rgba(248, 250, 252, 0.92);
+      --bg-surface-card: rgba(255, 255, 255, 0.96);
+      --bg-glass-modal: rgba(255, 255, 255, 0.98);
+
+      --text-pure-white: #0F172A;
+      --text-primary: #0F172A;
+      --text-secondary: #334155;
+      --text-muted: #64748B;
+      --border-glass: rgba(0, 0, 0, 0.09);
+      --border-glass-light: rgba(0, 0, 0, 0.15);
+      --border-orange-glow: rgba(255, 107, 0, 0.45);
+
+      --shadow-glass: 0 8px 30px 0 rgba(0, 0, 0, 0.07);
+      --shadow-glass-lg: 0 16px 45px 0 rgba(0, 0, 0, 0.12);
+    }
+
+    [data-theme="light"] body {
+      background-color: #F8FAFC !important;
+      color: #0F172A !important;
+      background-image: 
+        radial-gradient(circle at 10% 15%, rgba(255, 107, 0, 0.08) 0%, transparent 35%),
+        radial-gradient(circle at 90% 85%, rgba(56, 189, 248, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(241, 245, 249, 0.8) 0%, transparent 70%) !important;
+    }
+
+    [data-theme="light"] .sidebar,
+    [data-theme="light"] .top-header,
+    [data-theme="light"] .mobile-bottom-nav {
+      background: rgba(255, 255, 255, 0.94) !important;
+      border-color: rgba(0, 0, 0, 0.08) !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    [data-theme="light"] .card-glass,
+    [data-theme="light"] .glass-card,
+    [data-theme="light"] .checkin-step-card,
+    [data-theme="light"] .modal-window-glass,
+    [data-theme="light"] .glass-panel,
+    [data-theme="light"] .summary-card-glass {
+      background: rgba(255, 255, 255, 0.96) !important;
+      border-color: rgba(0, 0, 0, 0.1) !important;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.06), 0 8px 10px -6px rgba(0, 0, 0, 0.04) !important;
+    }
+
+    [data-theme="light"] .input-glass,
+    [data-theme="light"] .select-glass {
+      background: #FFFFFF !important;
+      color: #0F172A !important;
+      border-color: #CBD5E1 !important;
+    }
+
+    [data-theme="light"] .input-glass::placeholder {
+      color: #94A3B8 !important;
+    }
+
+    [data-theme="light"] .table-glass th,
+    [data-theme="light"] .glass-table th {
+      background: #F1F5F9 !important;
+      color: #0F172A !important;
+      border-bottom: 1.5px solid #CBD5E1 !important;
+    }
+
+    [data-theme="light"] .table-glass td,
+    [data-theme="light"] .glass-table td {
+      border-bottom: 1px solid #E2E8F0 !important;
+      color: #334155 !important;
+    }
+
+    [data-theme="light"] .table-glass tr:hover td,
+    [data-theme="light"] .glass-table tr:hover td {
+      background: rgba(241, 245, 249, 0.9) !important;
+    }
+
+    [data-theme="light"] .pin-digit-box {
+      background: #FFFFFF !important;
+      color: #0F172A !important;
+      border-color: #CBD5E1 !important;
+    }
+
+    [data-theme="light"] .badge-glass {
+      background: rgba(0, 0, 0, 0.04) !important;
+      border-color: rgba(0, 0, 0, 0.1) !important;
+      color: #334155 !important;
+    }
+
+    [data-theme="light"] .btn-glass.btn-dark {
+      background: #E2E8F0 !important;
+      color: #1E293B !important;
+      border-color: #CBD5E1 !important;
+    }
+
+    [data-theme="light"] .btn-glass.btn-dark:hover {
+      background: #CBD5E1 !important;
+      color: #0F172A !important;
+    }
+
+    [data-theme="light"] .nav-item {
+      color: #475569 !important;
+    }
+
+    [data-theme="light"] .nav-item:hover,
+    [data-theme="light"] .nav-item.active {
+      background: rgba(255, 107, 0, 0.12) !important;
+      color: var(--orange-600) !important;
+      border-color: var(--orange-500) !important;
+    }
+
+    [data-theme="light"] .page-title,
+    [data-theme="light"] h1,
+    [data-theme="light"] h2,
+    [data-theme="light"] h3,
+    [data-theme="light"] h4 {
+      color: #0F172A !important;
+    }
+
+    [data-theme="light"] .glass-pill {
+      background: #FFFFFF !important;
+      border-color: #CBD5E1 !important;
+      color: #334155 !important;
+    }
+
+    .floating-theme-btn {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      z-index: 9999;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg-surface-card);
+      border: 1.5px solid var(--border-glass-light);
+      color: var(--orange-400);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: var(--shadow-glass);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .floating-theme-btn:hover {
+      transform: scale(1.1);
+      border-color: var(--orange-500);
+      color: #FFF;
+      box-shadow: 0 0 20px rgba(255, 107, 0, 0.4);
+    }
+
   </style>
 </head>
 <body class="mode-student">
@@ -2206,7 +2362,13 @@
           </div>
         </div>
 
-        <div class="header-right">
+        <div class="header-right" style="display: flex; align-items: center; gap: 8px;">
+          <!-- THEME TOGGLE BUTTON -->
+          <button type="button" class="btn-glass btn-sm-glass btn-theme-toggle" id="btn-theme-toggle" title="สลับโหมดมืด / โหมดสว่าง" style="padding: 6px 12px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+            <i class="fas fa-moon" id="theme-icon-indicator" style="color: var(--orange-400);"></i>
+            <span id="theme-text-indicator">โหมดมืด</span>
+          </button>
+
           <div class="glass-pill" id="header-date-pill">
             <i class="fas fa-calendar-day"></i>
             <span id="header-date-text">กำลังโหลด...</span>
@@ -3246,6 +3408,35 @@
               </div>
             </div>
 
+            <div class="glass-card" style="margin-bottom: 20px;">
+              <div class="card-header-flex">
+                <div class="card-title-text"><i class="fas fa-palette" style="color: var(--orange-400);"></i> ธีมและการแสดงผล (Theme & Appearance)</div>
+              </div>
+              <p style="font-size: 13.5px; color: var(--text-secondary); margin-bottom: 16px;">
+                สลับโหมดการแสดงผลระหว่างโหมดมืด (Dark Mode) และโหมดสว่าง (Light Mode) เพื่อความสบายตาในการใช้งาน
+              </p>
+              <div class="grid-2" style="gap: 12px;">
+                <div class="theme-choice-card" id="card-theme-dark" style="cursor: pointer; background: rgba(11,15,25,0.8); border: 2px solid var(--orange-500); border-radius: 12px; padding: 14px; display: flex; align-items: center; gap: 12px; transition: all 0.2s;">
+                  <div style="width: 42px; height: 42px; border-radius: 10px; background: #0B0F19; border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 18px; color: #FF8533;">
+                    <i class="fas fa-moon"></i>
+                  </div>
+                  <div>
+                    <div style="font-size: 14px; font-weight: 700; color: #FFF;">🌙 โหมดมืด (Dark Mode)</div>
+                    <div style="font-size: 11.5px; color: var(--text-muted);">สบายตา ทันสมัย สไตล์ Glassmorphism (ค่าเริ่มต้น)</div>
+                  </div>
+                </div>
+                <div class="theme-choice-card" id="card-theme-light" style="cursor: pointer; background: rgba(255,255,255,0.06); border: 1.5px solid rgba(255,255,255,0.15); border-radius: 12px; padding: 14px; display: flex; align-items: center; gap: 12px; transition: all 0.2s;">
+                  <div style="width: 42px; height: 42px; border-radius: 10px; background: #F8FAFC; border: 1px solid #CBD5E1; display: flex; align-items: center; justify-content: center; font-size: 18px; color: #FF6B00;">
+                    <i class="fas fa-sun"></i>
+                  </div>
+                  <div>
+                    <div style="font-size: 14px; font-weight: 700; color: #FFF;">☀️ โหมดสว่าง (Light Mode)</div>
+                    <div style="font-size: 11.5px; color: var(--text-muted);">สะอาด สว่าง ชัดเจน เหมาะกับเวลากลางวัน</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div class="glass-card">
               <div class="card-header-flex">
                 <div class="card-title-text"><i class="fas fa-calendar-days" style="color: var(--orange-400);"></i> ตั้งค่าเช็คชื่อรายวันอัตโนมัติ (Daily Auto Schedule)</div>
@@ -3769,7 +3960,7 @@
   </div>
 
   <!-- MODAL: LUXURY CUSTOM CONFIRMATION POPUP (High Priority z-index) -->
-  <div class="modal-backdrop-glass" id="modal-custom-confirm">
+  <div class="modal-backdrop-glass" id="modal-custom-confirm" style="display: none; z-index: 99999999;">
     <div class="modal-window-glass" style="max-width: 440px; text-align: center; border: 1.5px solid rgba(239, 68, 68, 0.4); box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 35px rgba(239,68,68,0.25);">
       <div id="confirm-icon-box" style="width: 64px; height: 64px; border-radius: var(--radius-full); background: rgba(239, 68, 68, 0.15); border: 2px solid #EF4444; color: #EF4444; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 16px auto; animation: pulseGlow 2s infinite;">
         <i class="fas fa-trash-can"></i>
@@ -3835,9 +4026,14 @@
         <span style="font-size: 13px; font-weight: 700; color: #FFF;">
           <i class="fas fa-list-check" style="color: #10B981;"></i> รายการตารางเวลาที่เปิดใช้งาน
         </span>
-        <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-reset-default-schedule" style="font-size: 11.5px;">
-          <i class="fas fa-bolt"></i> ⚡ คืนค่ามาตรฐานทุกห้อง (จันทร์-ศุกร์ 07:00-08:30 น.)
-        </button>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+          <button type="button" class="btn-glass btn-orange btn-sm-glass" id="btn-new-schedule-rule" style="font-size: 11.5px; font-weight: 700; background: linear-gradient(135deg, #FF6B00 0%, #FF8533 100%);">
+            <i class="fas fa-plus"></i> เพิ่มตารางเวลาใหม่
+          </button>
+          <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-reset-default-schedule" style="font-size: 11.5px;">
+            <i class="fas fa-bolt"></i> ⚡ คืนค่ามาตรฐานทุกห้อง
+          </button>
+        </div>
       </div>
 
       <!-- Schedule Table -->
@@ -3964,10 +4160,24 @@
             <i class="fas fa-shield-halved"></i> ระบบความปลอดภัยที่เปิดใช้งาน (Anti-Cheat 4-Layer):
           </div>
           <div class="grid-2" style="gap: 10px; margin-bottom: 8px;">
-            <label class="badge-glass" style="cursor: pointer; padding: 8px 12px; font-size: 12px; display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.15);">
-              <input type="checkbox" id="sch-sec-otp" checked style="accent-color: #FF6B00; transform: scale(1.2);" />
-              <span>🔑 <strong>Dynamic OTP</strong> (รหัส 6 หลัก 15 วิ)</span>
-            </label>
+            <div class="badge-glass" style="padding: 8px 12px; font-size: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.15);">
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin: 0;">
+                <input type="checkbox" id="sch-sec-otp" checked style="accent-color: #FF6B00; transform: scale(1.2);" />
+                <span>🔑 <strong>Dynamic OTP</strong> (รหัส 6 หลัก)</span>
+              </label>
+              <div id="sch-otp-interval-box" style="display: flex; align-items: center; gap: 4px;">
+                <span style="font-size: 11px; color: var(--text-muted);">เปลี่ยนทุก:</span>
+                <select class="select-glass" id="sch-sec-otp-interval" style="padding: 2px 6px; font-size: 11px; width: auto; font-family: monospace; border-color: rgba(255,107,0,0.4);">
+                  <option value="10">10 วินาที</option>
+                  <option value="15" selected>15 วินาที (แนะนำ)</option>
+                  <option value="20">20 วินาที</option>
+                  <option value="30">30 วินาที</option>
+                  <option value="45">45 วินาที</option>
+                  <option value="60">60 วินาที (1 นาที)</option>
+                  <option value="120">120 วินาที (2 นาที)</option>
+                </select>
+              </div>
+            </div>
             <label class="badge-glass" style="cursor: pointer; padding: 8px 12px; font-size: 12px; display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.15);">
               <input type="checkbox" id="sch-sec-device" checked style="accent-color: #FF6B00; transform: scale(1.2);" />
               <span>📱 <strong>Device Binding</strong> (1 เครื่อง / 1 คน)</span>
@@ -3986,11 +4196,16 @@
           <div id="sch-gps-detail-row" style="display: none; background: rgba(0,0,0,0.4); border-radius: 6px; padding: 10px 12px; margin-top: 8px; border: 1px dashed rgba(0,240,255,0.3);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
               <span style="font-size: 11.5px; color: var(--cyan-400); font-weight: 700;">
-                <i class="fas fa-location-dot"></i> กำหนดพิกัดศูนย์กลางห้องเรียน:
+                <i class="fas fa-location-dot"></i> กำหนดพิกัดศูนย์กลางห้องเรียน (Google Maps):
               </span>
-              <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-sch-get-current-gps" style="font-size: 10.5px; padding: 3px 8px;">
-                <i class="fas fa-location-arrow"></i> ใช้พิกัดปัจจุบันของฉัน
-              </button>
+              <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                <button type="button" class="btn-glass btn-orange btn-sm-glass" id="btn-sch-open-map-picker" style="font-size: 11px; padding: 4px 10px; font-weight: 700; background: linear-gradient(135deg, #FF6B00 0%, #FF8533 100%);">
+                  <i class="fas fa-map-location-dot"></i> 🗺️ ปักหมุดบนแผนที่ Google Maps
+                </button>
+                <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-sch-get-current-gps" style="font-size: 10.5px; padding: 4px 8px;">
+                  <i class="fas fa-location-arrow"></i> ใช้ตำแหน่งฉัน
+                </button>
+              </div>
             </div>
             <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
               <div style="flex: 1; min-width: 110px;">
@@ -4526,7 +4741,68 @@
       initApp();
     });
 
+    
+    /**
+     * =========================================================================
+     * THEME ENGINE (DARK MODE & LIGHT MODE SWITCHER)
+     * =========================================================================
+     */
+    function getAppTheme() {
+      try {
+        return localStorage.getItem('gas_student_app_theme') || 'dark';
+      } catch (e) {
+        return 'dark';
+      }
+    }
+
+    function setAppTheme(theme) {
+      theme = (theme === 'light') ? 'light' : 'dark';
+      try {
+        localStorage.setItem('gas_student_app_theme', theme);
+      } catch (e) {}
+
+      document.documentElement.setAttribute('data-theme', theme);
+      document.body.setAttribute('data-theme', theme);
+
+      var iconEl = document.getElementById('theme-icon-indicator');
+      var textEl = document.getElementById('theme-text-indicator');
+      var floatIcon = document.getElementById('floating-theme-icon');
+
+      if (iconEl) iconEl.className = (theme === 'light') ? 'fas fa-sun' : 'fas fa-moon';
+      if (floatIcon) floatIcon.className = (theme === 'light') ? 'fas fa-sun' : 'fas fa-moon';
+      if (textEl) textEl.textContent = (theme === 'light') ? 'โหมดสว่าง' : 'โหมดมืด';
+
+      var cardDark = document.getElementById('card-theme-dark');
+      var cardLight = document.getElementById('card-theme-light');
+      if (cardDark && cardLight) {
+        if (theme === 'light') {
+          cardLight.style.borderColor = 'var(--orange-500)';
+          cardLight.style.background = 'rgba(255, 107, 0, 0.15)';
+          cardDark.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+          cardDark.style.background = 'rgba(0, 0, 0, 0.3)';
+        } else {
+          cardDark.style.borderColor = 'var(--orange-500)';
+          cardDark.style.background = 'rgba(255, 107, 0, 0.15)';
+          cardLight.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+          cardLight.style.background = 'rgba(255, 255, 255, 0.05)';
+        }
+      }
+    }
+
+    function toggleAppTheme() {
+      var current = getAppTheme();
+      var next = (current === 'light') ? 'dark' : 'light';
+      setAppTheme(next);
+      showToast('เปลี่ยนเป็น ' + (next === 'light' ? '☀️ โหมดสว่าง' : '🌙 โหมดมืด') + ' เรียบร้อยแล้ว', 'info');
+    }
+
+    function initTheme() {
+      var savedTheme = getAppTheme();
+      setAppTheme(savedTheme);
+    }
+
     function initApp() {
+      initTheme();
       // Clean legacy mock data from localStorage if exists
       cleanLegacyMockStorage();
 
@@ -9911,6 +10187,7 @@
         afternoonCutoff: '17:00',
         afternoonEnabled: true,
         requireOTP: true,
+        otpIntervalSeconds: 15,
         requireDeviceBinding: true,
         requireSelfie: true,
         requireGPS: false,
@@ -9923,9 +10200,9 @@
     function getAutoCheckinSchedulesLocal() {
       try {
         var raw = localStorage.getItem('gas_auto_checkin_schedules');
-        if (raw) {
+        if (raw !== null && raw !== undefined) {
           var parsed = JSON.parse(raw);
-          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+          if (Array.isArray(parsed)) return parsed;
         }
       } catch (e) {}
       return DEFAULT_AUTO_SCHEDULES;
@@ -10075,6 +10352,7 @@
         sessionId: sessionId,
         secretSeed: dailySeed,
         otpIntervalSeconds: 15,
+        otpIntervalSeconds: matchedSchedule.otpIntervalSeconds || 15,
         requireOTP: matchedSchedule.requireOTP !== false,
         requireDeviceBinding: matchedSchedule.requireDeviceBinding !== false,
         requireSelfie: matchedSchedule.requireSelfie !== false,
@@ -10282,7 +10560,7 @@
       if (isGASAvailable()) {
         google.script.run
           .withSuccessHandler(function(schedules) {
-            if (schedules && Array.isArray(schedules) && schedules.length > 0) {
+            if (schedules && Array.isArray(schedules)) {
               saveAutoCheckinSchedulesLocal(schedules);
               renderScheduleManagerTable();
             }
@@ -10505,7 +10783,10 @@
         }
 
         var secBadges = [];
-        if (s.requireOTP !== false) secBadges.push('<span class="badge-glass" style="font-size:10px; padding:2px 5px; color:#FF6B00;" title="Dynamic OTP 15s">🔑 OTP</span>');
+        if (s.requireOTP !== false) {
+          var intSec = s.otpIntervalSeconds || 15;
+          secBadges.push('<span class="badge-glass" style="font-size:10px; padding:2px 5px; color:#FF6B00;" title="Dynamic OTP ' + intSec + 's">🔑 OTP ' + intSec + 's</span>');
+        }
         if (s.requireDeviceBinding !== false) secBadges.push('<span class="badge-glass" style="font-size:10px; padding:2px 5px; color:#38BDF8;" title="Device Binding (1เครื่อง/1คน)">📱 Dev</span>');
         if (s.requireSelfie !== false) secBadges.push('<span class="badge-glass" style="font-size:10px; padding:2px 5px; color:#A855F7;" title="Live Selfie">📷 Sel</span>');
         if (s.requireGPS === true) secBadges.push('<span class="badge-glass" style="font-size:10px; padding:2px 5px; color:#10B981;" title="GPS ' + (s.radiusMeters || 100) + 'm">📍 GPS</span>');
@@ -10579,6 +10860,8 @@
       // Security Measures
       var chkOtp = document.getElementById('sch-sec-otp');
       if (chkOtp) chkOtp.checked = (target.requireOTP !== false);
+      var otpIntSelect = document.getElementById('sch-sec-otp-interval');
+      if (otpIntSelect) otpIntSelect.value = target.otpIntervalSeconds || 15;
       var chkDev = document.getElementById('sch-sec-device');
       if (chkDev) chkDev.checked = (target.requireDeviceBinding !== false);
       var chkSlf = document.getElementById('sch-sec-selfie');
@@ -10624,6 +10907,8 @@
       // Reset Security Measures
       var chkOtp = document.getElementById('sch-sec-otp');
       if (chkOtp) chkOtp.checked = true;
+      var otpIntSelect = document.getElementById('sch-sec-otp-interval');
+      if (otpIntSelect) otpIntSelect.value = 15;
       var chkDev = document.getElementById('sch-sec-device');
       if (chkDev) chkDev.checked = true;
       var chkSlf = document.getElementById('sch-sec-selfie');
@@ -10647,20 +10932,30 @@
     }
 
     function deleteScheduleRule(id) {
+      if (!id) return;
       openConfirmModal({
         title: 'ยืนยันการลบตารางเวลา',
-        desc: 'คุณต้องการลบตารางเวลานี้ใช่หรือไม่?',
+        desc: 'คุณต้องการลบตารางเวลานี้ใช่หรือไม่? (การลบจะมีผลทันที)',
         icon: 'fa-trash',
         btnIcon: 'fa-trash',
         okText: 'ลบตารางเวลา',
         onConfirm: function() {
           var schedules = getAutoCheckinSchedulesLocal();
-          schedules = schedules.filter(function(item) { return item.id !== id; });
-          saveAutoCheckinSchedulesLocal(schedules);
+          var newSchedules = [];
+          for (var i = 0; i < schedules.length; i++) {
+            if (String(schedules[i].id) !== String(id)) {
+              newSchedules.push(schedules[i]);
+            }
+          }
+          saveAutoCheckinSchedulesLocal(newSchedules);
           renderScheduleManagerTable();
 
           if (isGASAvailable()) {
-            google.script.run.saveAutoCheckinSchedules(schedules);
+            google.script.run
+              .withSuccessHandler(function(res) {
+                console.log('Schedule deleted on GAS:', res);
+              })
+              .saveAutoCheckinSchedules(newSchedules);
           }
           showToast('ลบตารางเวลาเรียบร้อยแล้ว', 'success');
           updateStudentScheduleStatus();
@@ -10734,6 +11029,8 @@
       // Read Security Measures
       var chkOtp = document.getElementById('sch-sec-otp');
       var reqOtp = chkOtp ? chkOtp.checked : true;
+      var otpIntSelect = document.getElementById('sch-sec-otp-interval');
+      var otpInterval = otpIntSelect ? (parseInt(otpIntSelect.value, 10) || 15) : 15;
       var chkDev = document.getElementById('sch-sec-device');
       var reqDev = chkDev ? chkDev.checked : true;
       var chkSlf = document.getElementById('sch-sec-selfie');
@@ -10766,6 +11063,7 @@
         afternoonCutoff: '17:00',
         afternoonEnabled: afternoonEnabled,
         requireOTP: reqOtp,
+        otpIntervalSeconds: otpInterval,
         requireDeviceBinding: reqDev,
         requireSelfie: reqSelfie,
         requireGPS: reqGps,
@@ -10880,6 +11178,17 @@
         btnSaveSch.addEventListener('click', saveScheduleRuleHandler);
       }
 
+      var btnNewSch = document.getElementById('btn-new-schedule-rule');
+      if (btnNewSch) {
+        btnNewSch.addEventListener('click', function(e) {
+          e.preventDefault();
+          cancelEditScheduleHandler();
+          var formTitle = document.getElementById('schedule-form-title');
+          if (formTitle) formTitle.scrollIntoView({ behavior: 'smooth' });
+          showToast('พร้อมเพิ่มตารางเวลาใหม่ กรุณากรอกข้อมูลแล้วกดบันทึก', 'info');
+        });
+      }
+
       var btnResetSch = document.getElementById('btn-reset-default-schedule');
       if (btnResetSch) {
         btnResetSch.addEventListener('click', resetDefaultScheduleHandler);
@@ -10903,6 +11212,48 @@
         schGpsToggle.addEventListener('change', function() {
           var gpsDetail = document.getElementById('sch-gps-detail-row');
           if (gpsDetail) gpsDetail.style.display = this.checked ? 'block' : 'none';
+        });
+      }
+
+      // Open Map Picker button in schedule modal
+      var btnSchMap = document.getElementById('btn-sch-open-map-picker');
+      if (btnSchMap) {
+        btnSchMap.addEventListener('click', function(e) {
+          e.preventDefault();
+          openGpsMapPicker('sch-gps-lat', 'sch-gps-lng');
+        });
+      }
+
+      // Theme toggle buttons & cards
+      var btnThemeToggle = document.getElementById('btn-theme-toggle');
+      if (btnThemeToggle) {
+        btnThemeToggle.addEventListener('click', function(e) {
+          e.preventDefault();
+          toggleAppTheme();
+        });
+      }
+
+      var btnFloatTheme = document.getElementById('btn-floating-theme');
+      if (btnFloatTheme) {
+        btnFloatTheme.addEventListener('click', function(e) {
+          e.preventDefault();
+          toggleAppTheme();
+        });
+      }
+
+      var cardDark = document.getElementById('card-theme-dark');
+      if (cardDark) {
+        cardDark.addEventListener('click', function() {
+          setAppTheme('dark');
+          showToast('เปลี่ยนเป็น 🌙 โหมดมืด เรียบร้อยแล้ว', 'info');
+        });
+      }
+
+      var cardLight = document.getElementById('card-theme-light');
+      if (cardLight) {
+        cardLight.addEventListener('click', function() {
+          setAppTheme('light');
+          showToast('เปลี่ยนเป็น ☀️ โหมดสว่าง เรียบร้อยแล้ว', 'info');
         });
       }
 
@@ -15379,6 +15730,11 @@
       }
     }
   </script>
+  <!-- FLOATING THEME TOGGLE BUTTON -->
+  <button type="button" class="floating-theme-btn" id="btn-floating-theme" title="สลับโหมดมืด / โหมดสว่าง">
+    <i class="fas fa-moon" id="floating-theme-icon"></i>
+  </button>
+
   <!-- FLOATING BLURRED TEACHER LOGIN BUTTON (BOTTOM CORNER) -->
   <button type="button" class="floating-teacher-btn" id="btn-show-admin-login" title="เข้าสู่ระบบสำหรับอาจารย์ผู้สอน / Admin">
     <i class="fas fa-shield-halved"></i>
