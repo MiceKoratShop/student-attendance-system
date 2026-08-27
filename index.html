@@ -5394,15 +5394,19 @@
 
       if (winEl) {
         if (isLine) {
+          winEl.style.maxWidth = '560px';
           winEl.style.borderColor = 'rgba(6, 199, 85, 0.45)';
           winEl.style.boxShadow = '0 20px 60px rgba(0,0,0,0.8), 0 0 35px rgba(6,199,85,0.25)';
         } else if (isCyan) {
+          winEl.style.maxWidth = '520px';
           winEl.style.borderColor = 'rgba(0, 240, 255, 0.45)';
           winEl.style.boxShadow = '0 20px 60px rgba(0,0,0,0.8), 0 0 35px rgba(0,240,255,0.25)';
         } else if (isOrange) {
+          winEl.style.maxWidth = '520px';
           winEl.style.borderColor = 'rgba(255, 107, 0, 0.45)';
           winEl.style.boxShadow = '0 20px 60px rgba(0,0,0,0.8), 0 0 35px rgba(255,107,0,0.25)';
         } else {
+          winEl.style.maxWidth = '480px';
           winEl.style.borderColor = 'rgba(239, 68, 68, 0.4)';
           winEl.style.boxShadow = '0 20px 60px rgba(0,0,0,0.8), 0 0 35px rgba(239,68,68,0.25)';
         }
@@ -14191,7 +14195,7 @@
           }
         }
 
-        if (status === 'Present' || status === 'มาเรียน') countPresent++;
+        if (status === 'Present' || status === 'มาเรียน') { countPresent++; presentList.push(sObj); }
         else if (status === 'Absent' || status === 'ขาด' || status === 'ขาดเรียน') countAbsent++;
         else if (status === 'Sick' || status === 'ลาป่วย') countSick++;
         else if (status === 'Leave' || status === 'ลากิจ') countLeave++;
@@ -15021,6 +15025,7 @@
       var countSick = 0;
       var countLeave = 0;
       var countLate = 0;
+      var presentList = [];
       var absentList = [];
       var sickList = [];
       var leaveList = [];
@@ -15057,7 +15062,7 @@
           time: cTime
         };
 
-        if (status === 'Present' || status === 'มาเรียน') countPresent++;
+        if (status === 'Present' || status === 'มาเรียน') { countPresent++; presentList.push(sObj); }
         else if (status === 'Absent' || status === 'ขาด' || status === 'ขาดเรียน') { countAbsent++; absentList.push(sObj); }
         else if (status === 'Sick' || status === 'ลาป่วย') { countSick++; sickList.push(sObj); }
         else if (status === 'Leave' || status === 'ลากิจ') { countLeave++; leaveList.push(sObj); }
@@ -15423,6 +15428,7 @@
       var countSick = 0;
       var countLeave = 0;
       var countLate = 0;
+      var presentList = [];
       var absentList = [];
       var sickList = [];
       var leaveList = [];
@@ -15629,24 +15635,14 @@
     }
 
     function sendLineSummaryNow() {
-      var cfg = getLineConfigLocal();
-      var token = cfg.lineToken || '';
-      var groupId = cfg.lineGroupId || '';
-      var webhook = cfg.webhookUrl || '';
-
-      if (!token && !webhook) {
-        showToast('ยังไม่ได้ตั้งค่า LINE Token หรือ Webhook กรุณาตั้งค่าก่อนส่งรายงาน', 'warning');
-        openLineSettingsModal();
-        return;
-      }
-
+      var cfg = getLineConfigLocal() || {};
       var dateStr = (document.getElementById('report-date-select') && document.getElementById('report-date-select').value) || getTodayDateString();
       var className = getSelectedReportClasses();
       var activityName = getSelectedReportActivities();
       var repStatSelect = document.getElementById('report-status-select');
       var statusFilter = (repStatSelect && repStatSelect.value) ? repStatSelect.value : 'all';
 
-      showLoadingPopup('กำลังดึงข้อมูลล่าสุด...', 'กำลังโหลดข้อมูลการเช็คชื่อของนักศึกษาจากฐานข้อมูลเพื่อเตรียมส่ง LINE');
+      showLoadingPopup('กำลังเตรียมข้อมูลส่ง LINE...', 'กำลังดึงสถิติและเตรียมตัวอย่างการ์ดรายงาน');
 
       function proceedWithRecords(recordsMap) {
         hideLoadingPopup();
@@ -15655,11 +15651,49 @@
           var flexCardHtml = renderFlexCardHtml(stats);
           var defaultSendMsg = generateDynamicLineMessage(dateStr, className, activityName, statusFilter, 'flex', recordsMap);
 
+          var classLabel = (className === 'all' || className === 'ทุกห้องเรียน') ? 'ทุกห้องเรียน' : ('ห้อง ' + className);
+          var actLabel = (activityName === 'all' || activityName === 'ทุกกิจกรรม' || !activityName) ? 'เช็คชื่อมาเรียน' : activityName;
+
           var descHtml = '<div style="margin-bottom:12px;">' +
-                         '  <div style="font-size:12.5px; font-weight:700; color:#38BDF8; margin-bottom:8px; text-align:center;">' +
-                         '    <i class="fas fa-sparkles" style="color:#FBBF24;"></i> ตัวอย่างการ์ด Flex ที่จะส่งเข้า LINE:' +
+                         '  <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12); border-radius:10px; padding:10px 14px; margin-bottom:12px;">' +
+                         '    <div style="font-size:13px; font-weight:700; color:#FFF; margin-bottom:4px;">' +
+                         '      📅 วันที่: <span style="color:#FBBF24;">' + formatThaiDate(dateStr) + '</span> • 🏫 ' + escapeHtml(classLabel) +
+                         '    </div>' +
+                         '    <div style="font-size:12px; color:#94A3B8; margin-bottom:6px;">' +
+                         '      🏷️ กิจกรรม/วิชา: <span style="color:#38BDF8;">' + escapeHtml(actLabel) + '</span>' +
+                         '    </div>' +
+                         '    <div style="display:flex; gap:6px; flex-wrap:wrap; font-size:11.5px; font-weight:700;">' +
+                         '      <span style="background:rgba(16,185,129,0.2); color:#34D399; border:1px solid rgba(16,185,129,0.4); border-radius:6px; padding:2px 8px;">มาเรียน ' + stats.countPresent + ' คน</span>' +
+                         '      <span style="background:rgba(236,72,153,0.2); color:#F472B6; border:1px solid rgba(236,72,153,0.4); border-radius:6px; padding:2px 8px;">สาย ' + stats.countLate + ' คน</span>' +
+                         '      <span style="background:rgba(245,158,11,0.2); color:#FBBF24; border:1px solid rgba(245,158,11,0.4); border-radius:6px; padding:2px 8px;">ลา ' + ((stats.countSick || 0) + (stats.countLeave || 0)) + ' คน</span>' +
+                         '      <span style="background:rgba(239,68,68,0.2); color:#F87171; border:1px solid rgba(239,68,68,0.4); border-radius:6px; padding:2px 8px;">ขาด ' + stats.countAbsent + ' คน</span>' +
+                         '      <span style="background:rgba(56,189,248,0.2); color:#38BDF8; border:1px solid rgba(56,189,248,0.4); border-radius:6px; padding:2px 8px;">รวม ' + stats.totalStudents + ' คน (' + stats.attRate + '%)</span>' +
+                         '    </div>' +
                          '  </div>' +
-                         '  <div style="max-height:260px; overflow-y:auto; border-radius:12px; padding:6px; background:rgba(0,0,0,0.3);">' +
+                         '  <div style="background:rgba(6,199,85,0.08); border:1px solid rgba(6,199,85,0.3); border-radius:10px; padding:10px 12px; margin-bottom:12px;">' +
+                         '    <div style="font-size:12px; font-weight:700; color:#4ADE80; margin-bottom:6px; display:flex; align-items:center; justify-content:space-between;">' +
+                         '      <span><i class="fab fa-line"></i> การเชื่อมต่อ LINE Messaging API / Webhook</span>' +
+                         '      <a href="javascript:void(0)" onclick="openLineSettingsModal()" style="font-size:11px; color:#38BDF8; text-decoration:underline;">ตั้งค่าละเอียด</a>' +
+                         '    </div>' +
+                         '    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">' +
+                         '      <div>' +
+                         '        <label style="font-size:10.5px; color:#CBD5E1; display:block; margin-bottom:2px;">Channel Access Token:</label>' +
+                         '        <input type="password" id="quick-send-line-token" class="input-glass" style="font-size:11px; padding:5px 8px; width:100%;" value="' + escapeHtml(cfg.lineToken || '') + '" placeholder="วาง Token..." />' +
+                         '      </div>' +
+                         '      <div>' +
+                         '        <label style="font-size:10.5px; color:#CBD5E1; display:block; margin-bottom:2px;">Group ID ผู้ปกครอง (ขึ้นต้นด้วย C...):</label>' +
+                         '        <input type="text" id="quick-send-line-group" class="input-glass" style="font-size:11px; padding:5px 8px; width:100%; font-family:monospace;" value="' + escapeHtml(cfg.lineGroupId || '') + '" placeholder="Group ID..." />' +
+                         '      </div>' +
+                         '    </div>' +
+                         '    <div style="margin-top:6px;">' +
+                         '      <label style="font-size:10.5px; color:#CBD5E1; display:block; margin-bottom:2px;">หรือ Webhook URL (ทางเลือกเสริม):</label>' +
+                         '      <input type="text" id="quick-send-line-webhook" class="input-glass" style="font-size:11px; padding:4px 8px; width:100%;" value="' + escapeHtml(cfg.webhookUrl || '') + '" placeholder="https://..." />' +
+                         '    </div>' +
+                         '  </div>' +
+                         '  <div style="font-size:12.5px; font-weight:700; color:#38BDF8; margin-bottom:8px; text-align:center;">' +
+                         '    <i class="fas fa-sparkles" style="color:#FBBF24;"></i> พรีวิวการ์ดรายงานจริงที่จะส่งเข้า LINE:' +
+                         '  </div>' +
+                         '  <div style="max-height:240px; overflow-y:auto; border-radius:12px; padding:6px; background:rgba(0,0,0,0.3);">' +
                          flexCardHtml +
                          '  </div>' +
                          '</div>' +
@@ -15675,18 +15709,39 @@
                          '</div>';
 
           openConfirmModal({
-            title: 'ยืนยันส่งรายงานเข้ากลุ่ม LINE',
+            title: '💬 ตรวจสอบข้อมูลก่อนส่งรายงานเข้ากลุ่ม LINE',
             desc: descHtml,
             icon: 'fa-brands fa-line',
             btnIcon: 'fa-paper-plane',
             btnClass: 'btn-emerald',
             theme: 'line',
-            okText: 'ยืนยันส่งเข้า LINE ทันที',
+            okText: '🚀 ยืนยันส่งเข้า LINE ทันที',
             onConfirm: function() {
+              var tokenInput = document.getElementById('quick-send-line-token');
+              var groupInput = document.getElementById('quick-send-line-group');
+              var webhookInput = document.getElementById('quick-send-line-webhook');
               var editedMsgEl = document.getElementById('quick-send-line-text');
+
+              var curToken = tokenInput ? tokenInput.value.trim() : (cfg.lineToken || '');
+              var curGroup = groupInput ? groupInput.value.trim() : (cfg.lineGroupId || '');
+              var curWebhook = webhookInput ? webhookInput.value.trim() : (cfg.webhookUrl || '');
               var finalMsg = editedMsgEl ? editedMsgEl.value.trim() : defaultSendMsg;
 
-              showLoadingPopup('กำลังส่งรายงานเข้ากลุ่ม LINE...', 'กำลังส่งการ์ด Flex Message ไปยัง LINE');
+              if (!curToken && !curWebhook) {
+                showToast('กรุณากรอก LINE Token หรือ Webhook URL ในช่องด้านบนก่อนส่ง', 'warning');
+                return;
+              }
+
+              // Persist entered credentials
+              cfg.lineToken = curToken;
+              cfg.lineGroupId = curGroup;
+              cfg.webhookUrl = curWebhook;
+              AppState.lineConfig = cfg;
+              try {
+                localStorage.setItem('gas_student_line_config', JSON.stringify(cfg));
+              } catch (e) {}
+
+              showLoadingPopup('กำลังส่งรายงานเข้ากลุ่ม LINE...', 'กำลังส่งการ์ด Flex Message และสรุปรายชื่อไปยังกลุ่ม LINE');
 
               var sendPayload = {
                 date: dateStr,
@@ -15694,9 +15749,9 @@
                 activityName: activityName,
                 statusFilter: statusFilter,
                 messageStyle: 'flex',
-                token: token,
-                lineGroupId: groupId,
-                webhookUrl: webhook,
+                token: curToken,
+                lineGroupId: curGroup,
+                webhookUrl: curWebhook,
                 customMessage: finalMsg,
                 useFlex: true
               };
@@ -15719,7 +15774,7 @@
               } else {
                 setTimeout(function() {
                   hideLoadingPopup();
-                  showToast('จำลองการส่งการ์ด Flex เข้า LINE สำเร็จ (Local Mode)', 'success');
+                  showToast('จำลองการส่งการ์ด Flex เข้ากลุ่ม LINE เรียบร้อยแล้ว (Local Mode)', 'success');
                 }, 600);
               }
             }
@@ -15727,7 +15782,7 @@
         } catch (procErr) {
           console.error('Error in proceedWithRecords:', procErr);
           hideLoadingPopup();
-          showToast('เกิดข้อผิดพลาดในการสร้างข้อความ LINE: ' + procErr.message, 'error');
+          showToast('เกิดข้อผิดพลาดในการเตรียมข้อมูล LINE: ' + procErr.message, 'error');
         }
       }
 
@@ -15742,6 +15797,7 @@
       }
 
       function fetchRecordsAndProceed() {
+        var repType = (document.getElementById('report-type-select') && document.getElementById('report-type-select').value) || 'daily';
         if (isGASAvailable()) {
           google.script.run
             .withSuccessHandler(function(recordsMap) {
@@ -15752,7 +15808,7 @@
               var localMap = getAttendanceMapFromLocalStorage(dateStr, activityName);
               proceedWithRecords(localMap);
             })
-            .getAttendanceRecords(dateStr, className, activityName);
+            .getAttendanceRecords(dateStr, className, activityName, repType);
         } else {
           var localMap = getAttendanceMapFromLocalStorage(dateStr, activityName);
           proceedWithRecords(localMap);
