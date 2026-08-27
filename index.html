@@ -3847,8 +3847,8 @@
             <tr>
               <th>ห้องเรียน</th>
               <th>วันเปิดใช้งาน</th>
-              <th>รอบเช้า (มาเรียน / มาสาย)</th>
-              <th>รอบบ่าย</th>
+              <th>รอบเช้า / รอบบ่าย</th>
+              <th>มาตรการความปลอดภัย</th>
               <th>สถานะ</th>
               <th style="text-align: center;">จัดการ</th>
             </tr>
@@ -3954,6 +3954,63 @@
             <div style="flex: 1; min-width: 130px;">
               <span style="font-size: 11px; color: #38BDF8; font-weight: 700;">☀️ หมดเขตรอบบ่าย:</span>
               <input type="time" class="input-glass" id="sch-a-ontime" value="13:30" style="padding: 6px 10px; font-size: 12px; font-family: monospace; border-color: #38BDF8;" />
+            </div>
+          </div>
+        </div>
+
+        <!-- 🛡️ ANTI-CHEAT 4-LAYER SECURITY CONFIGURATION -->
+        <div style="background: rgba(255, 107, 0, 0.05); border: 1.5px solid rgba(255, 107, 0, 0.3); border-radius: 8px; padding: 14px; margin-bottom: 14px;">
+          <div style="font-size: 13px; font-weight: 700; color: var(--orange-400); margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+            <i class="fas fa-shield-halved"></i> ระบบความปลอดภัยที่เปิดใช้งาน (Anti-Cheat 4-Layer):
+          </div>
+          <div class="grid-2" style="gap: 10px; margin-bottom: 8px;">
+            <label class="badge-glass" style="cursor: pointer; padding: 8px 12px; font-size: 12px; display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.15);">
+              <input type="checkbox" id="sch-sec-otp" checked style="accent-color: #FF6B00; transform: scale(1.2);" />
+              <span>🔑 <strong>Dynamic OTP</strong> (รหัส 6 หลัก 15 วิ)</span>
+            </label>
+            <label class="badge-glass" style="cursor: pointer; padding: 8px 12px; font-size: 12px; display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.15);">
+              <input type="checkbox" id="sch-sec-device" checked style="accent-color: #FF6B00; transform: scale(1.2);" />
+              <span>📱 <strong>Device Binding</strong> (1 เครื่อง / 1 คน)</span>
+            </label>
+            <label class="badge-glass" style="cursor: pointer; padding: 8px 12px; font-size: 12px; display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.15);">
+              <input type="checkbox" id="sch-sec-selfie" checked style="accent-color: #FF6B00; transform: scale(1.2);" />
+              <span>📷 <strong>Live Selfie Camera</strong> (บังคับถ่ายสด)</span>
+            </label>
+            <label class="badge-glass" style="cursor: pointer; padding: 8px 12px; font-size: 12px; display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.15);">
+              <input type="checkbox" id="sch-sec-gps" style="accent-color: #FF6B00; transform: scale(1.2);" />
+              <span>📍 <strong>GPS Geofencing</strong> (ตรวจพิกัดรัศมี)</span>
+            </label>
+          </div>
+
+          <!-- GPS Detail Configuration (Shown when GPS Geofencing is checked) -->
+          <div id="sch-gps-detail-row" style="display: none; background: rgba(0,0,0,0.4); border-radius: 6px; padding: 10px 12px; margin-top: 8px; border: 1px dashed rgba(0,240,255,0.3);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
+              <span style="font-size: 11.5px; color: var(--cyan-400); font-weight: 700;">
+                <i class="fas fa-location-dot"></i> กำหนดพิกัดศูนย์กลางห้องเรียน:
+              </span>
+              <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-sch-get-current-gps" style="font-size: 10.5px; padding: 3px 8px;">
+                <i class="fas fa-location-arrow"></i> ใช้พิกัดปัจจุบันของฉัน
+              </button>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+              <div style="flex: 1; min-width: 110px;">
+                <span style="font-size: 10.5px; color: var(--text-muted);">Latitude (ละติจูด):</span>
+                <input type="number" step="any" class="input-glass" id="sch-gps-lat" placeholder="0.000000" style="padding: 4px 8px; font-size: 11.5px; font-family: monospace;" />
+              </div>
+              <div style="flex: 1; min-width: 110px;">
+                <span style="font-size: 10.5px; color: var(--text-muted);">Longitude (ลองจิจูด):</span>
+                <input type="number" step="any" class="input-glass" id="sch-gps-lng" placeholder="0.000000" style="padding: 4px 8px; font-size: 11.5px; font-family: monospace;" />
+              </div>
+              <div style="flex: 1; min-width: 110px;">
+                <span style="font-size: 10.5px; color: var(--text-muted);">รัศมีที่อนุญาต:</span>
+                <select class="select-glass" id="sch-gps-radius" style="padding: 4px 8px; font-size: 11.5px;">
+                  <option value="30">30 เมตร (เฉพาะในห้อง)</option>
+                  <option value="50">50 เมตร (อาคารเรียน)</option>
+                  <option value="100" selected>100 เมตร (บริเวณตึก/แผนก)</option>
+                  <option value="200">200 เมตร (ทั่ววิทยาลัย)</option>
+                  <option value="500">500 เมตร (ครอบคลุมกว้าง)</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>
@@ -9852,8 +9909,11 @@
         afternoonOnTimeEnd: '13:30',
         afternoonLateEnd: '14:00',
         afternoonCutoff: '17:00',
-        requireGPS: false,
+        afternoonEnabled: true,
+        requireOTP: true,
+        requireDeviceBinding: true,
         requireSelfie: true,
+        requireGPS: false,
         gpsLat: 0,
         gpsLng: 0,
         radiusMeters: 100
@@ -10015,6 +10075,8 @@
         sessionId: sessionId,
         secretSeed: dailySeed,
         otpIntervalSeconds: 15,
+        requireOTP: matchedSchedule.requireOTP !== false,
+        requireDeviceBinding: matchedSchedule.requireDeviceBinding !== false,
         requireSelfie: matchedSchedule.requireSelfie !== false,
         requireGPS: matchedSchedule.requireGPS === true,
         gpsLat: matchedSchedule.gpsLat || 0,
@@ -10155,9 +10217,10 @@
           activityName: res.activityName,
           secretSeed: res.secretSeed,
           otpIntervalSeconds: res.otpIntervalSeconds || 15,
+          requireOTP: res.requireOTP !== false,
           requireGPS: res.requireGPS === true,
           requireSelfie: res.requireSelfie !== false,
-          requireDeviceBinding: true,
+          requireDeviceBinding: res.requireDeviceBinding !== false,
           lat: res.gpsLat || 0,
           lng: res.gpsLng || 0,
           radiusMeters: res.radiusMeters || 100,
@@ -10429,8 +10492,8 @@
           dStr = String(s.days);
         }
 
-        var morningStr = (s.morningStart || '07:00') + ' - ' + (s.morningOnTimeEnd || '08:30') + ' (สาย ' + (s.morningLateEnd || '09:00') + ')';
-        var aftStr = (s.afternoonEnabled !== false) ? ((s.afternoonStart || '12:00') + ' - ' + (s.afternoonOnTimeEnd || '13:30')) : '<span style="color:#64748B;">- ปิดรอบบ่าย -</span>';
+        var morningStr = '🌅 ' + (s.morningStart || '07:00') + '-' + (s.morningOnTimeEnd || '08:30') + ' (สาย ' + (s.morningLateEnd || '09:00') + ')';
+        var aftStr = (s.afternoonEnabled !== false) ? ('☀️ ' + (s.afternoonStart || '12:00') + '-' + (s.afternoonOnTimeEnd || '13:30')) : '<span style="color:#64748B;">- ปิดบ่าย -</span>';
         
         var clsLabel = '';
         if (s.className === 'all' || s.className === 'ทุกห้องเรียน' || (s.classes && s.classes.indexOf('all') > -1)) {
@@ -10441,13 +10504,20 @@
           clsLabel = s.className;
         }
 
+        var secBadges = [];
+        if (s.requireOTP !== false) secBadges.push('<span class="badge-glass" style="font-size:10px; padding:2px 5px; color:#FF6B00;" title="Dynamic OTP 15s">🔑 OTP</span>');
+        if (s.requireDeviceBinding !== false) secBadges.push('<span class="badge-glass" style="font-size:10px; padding:2px 5px; color:#38BDF8;" title="Device Binding (1เครื่อง/1คน)">📱 Dev</span>');
+        if (s.requireSelfie !== false) secBadges.push('<span class="badge-glass" style="font-size:10px; padding:2px 5px; color:#A855F7;" title="Live Selfie">📷 Sel</span>');
+        if (s.requireGPS === true) secBadges.push('<span class="badge-glass" style="font-size:10px; padding:2px 5px; color:#10B981;" title="GPS ' + (s.radiusMeters || 100) + 'm">📍 GPS</span>');
+        var secBadgesHtml = secBadges.length > 0 ? secBadges.join(' ') : '<span style="color:var(--text-muted); font-size:10px;">- ไม่มี -</span>';
+
         var statBadge = (s.enabled !== false) ? '<span class="badge-glass badge-present">เปิดใช้งาน</span>' : '<span class="badge-glass badge-absent">ปิดใช้งาน</span>';
 
         var tr = document.createElement('tr');
         tr.innerHTML = '<td><strong>' + escapeHtml(clsLabel) + '</strong><br><small style="color:var(--text-muted);">' + escapeHtml(s.activityName || 'เช็คชื่อมาเรียน') + '</small></td>' +
                        '<td><span class="badge-glass" style="font-size:11px;">' + escapeHtml(dStr) + '</span></td>' +
-                       '<td><span style="color:#10B981;">' + escapeHtml(morningStr) + '</span></td>' +
-                       '<td>' + aftStr + '</td>' +
+                       '<td><span style="color:#10B981; font-size:11.5px;">' + escapeHtml(morningStr) + '</span><br><span style="font-size:11px;">' + aftStr + '</span></td>' +
+                       '<td>' + secBadgesHtml + '</td>' +
                        '<td>' + statBadge + '</td>' +
                        '<td style="text-align:center; white-space:nowrap;">' +
                        '  <button type="button" class="btn-glass btn-cyan btn-sm-glass btn-edit-sch" data-id="' + escapeHtml(s.id || '') + '" style="padding:3px 8px; font-size:11px; margin-right:4px;" title="แก้ไข"><i class="fas fa-pen"></i></button>' +
@@ -10506,6 +10576,27 @@
         dayBoxes[b].checked = (dList.indexOf(dayBoxes[b].value) > -1);
       }
 
+      // Security Measures
+      var chkOtp = document.getElementById('sch-sec-otp');
+      if (chkOtp) chkOtp.checked = (target.requireOTP !== false);
+      var chkDev = document.getElementById('sch-sec-device');
+      if (chkDev) chkDev.checked = (target.requireDeviceBinding !== false);
+      var chkSlf = document.getElementById('sch-sec-selfie');
+      if (chkSlf) chkSlf.checked = (target.requireSelfie !== false);
+      var chkGps = document.getElementById('sch-sec-gps');
+      var hasGps = (target.requireGPS === true);
+      if (chkGps) chkGps.checked = hasGps;
+
+      var gpsRow = document.getElementById('sch-gps-detail-row');
+      if (gpsRow) gpsRow.style.display = hasGps ? 'block' : 'none';
+
+      var latInp = document.getElementById('sch-gps-lat');
+      if (latInp) latInp.value = target.gpsLat || '';
+      var lngInp = document.getElementById('sch-gps-lng');
+      if (lngInp) lngInp.value = target.gpsLng || '';
+      var radInp = document.getElementById('sch-gps-radius');
+      if (radInp) radInp.value = target.radiusMeters || 100;
+
       var formTitle = document.getElementById('schedule-form-title');
       if (formTitle) formTitle.innerHTML = '<i class="fas fa-pen-to-square"></i> แก้ไขตารางเวลา (' + (target.className === 'all' ? 'ทุกห้อง' : target.className) + ')';
       var cancelBtn = document.getElementById('btn-cancel-edit-schedule');
@@ -10529,6 +10620,25 @@
         aftCheck.checked = true;
         toggleAfternoonInputs(true);
       }
+
+      // Reset Security Measures
+      var chkOtp = document.getElementById('sch-sec-otp');
+      if (chkOtp) chkOtp.checked = true;
+      var chkDev = document.getElementById('sch-sec-device');
+      if (chkDev) chkDev.checked = true;
+      var chkSlf = document.getElementById('sch-sec-selfie');
+      if (chkSlf) chkSlf.checked = true;
+      var chkGps = document.getElementById('sch-sec-gps');
+      if (chkGps) chkGps.checked = false;
+
+      var gpsRow = document.getElementById('sch-gps-detail-row');
+      if (gpsRow) gpsRow.style.display = 'none';
+      var latInp = document.getElementById('sch-gps-lat');
+      if (latInp) latInp.value = '';
+      var lngInp = document.getElementById('sch-gps-lng');
+      if (lngInp) lngInp.value = '';
+      var radInp = document.getElementById('sch-gps-radius');
+      if (radInp) radInp.value = 100;
 
       var formTitle = document.getElementById('schedule-form-title');
       if (formTitle) formTitle.innerHTML = '<i class="fas fa-plus-circle"></i> เพิ่ม / แก้ไขตารางเวลา';
@@ -10621,6 +10731,23 @@
       var schedules = getAutoCheckinSchedulesLocal();
       var id = editId || ('SCH_' + Date.now().toString(36).toUpperCase());
 
+      // Read Security Measures
+      var chkOtp = document.getElementById('sch-sec-otp');
+      var reqOtp = chkOtp ? chkOtp.checked : true;
+      var chkDev = document.getElementById('sch-sec-device');
+      var reqDev = chkDev ? chkDev.checked : true;
+      var chkSlf = document.getElementById('sch-sec-selfie');
+      var reqSelfie = chkSlf ? chkSlf.checked : true;
+      var chkGps = document.getElementById('sch-sec-gps');
+      var reqGps = chkGps ? chkGps.checked : false;
+
+      var latInp = document.getElementById('sch-gps-lat');
+      var gpsLat = latInp ? (parseFloat(latInp.value) || 0) : 0;
+      var lngInp = document.getElementById('sch-gps-lng');
+      var gpsLng = lngInp ? (parseFloat(lngInp.value) || 0) : 0;
+      var radInp = document.getElementById('sch-gps-radius');
+      var radiusMeters = radInp ? (parseInt(radInp.value, 10) || 100) : 100;
+
       var ruleObj = {
         id: id,
         className: classStr,
@@ -10638,11 +10765,13 @@
         afternoonLateEnd: '14:00',
         afternoonCutoff: '17:00',
         afternoonEnabled: afternoonEnabled,
-        requireGPS: false,
-        requireSelfie: true,
-        gpsLat: 0,
-        gpsLng: 0,
-        radiusMeters: 100
+        requireOTP: reqOtp,
+        requireDeviceBinding: reqDev,
+        requireSelfie: reqSelfie,
+        requireGPS: reqGps,
+        gpsLat: gpsLat,
+        gpsLng: gpsLng,
+        radiusMeters: radiusMeters
       };
 
       var existingIdx = -1;
@@ -10765,6 +10894,48 @@
       if (aftToggle) {
         aftToggle.addEventListener('change', function() {
           toggleAfternoonInputs(this.checked);
+        });
+      }
+
+      // GPS Geofencing toggle in schedule modal
+      var schGpsToggle = document.getElementById('sch-sec-gps');
+      if (schGpsToggle) {
+        schGpsToggle.addEventListener('change', function() {
+          var gpsDetail = document.getElementById('sch-gps-detail-row');
+          if (gpsDetail) gpsDetail.style.display = this.checked ? 'block' : 'none';
+        });
+      }
+
+      // Current GPS button in schedule modal
+      var btnSchGps = document.getElementById('btn-sch-get-current-gps');
+      if (btnSchGps) {
+        btnSchGps.addEventListener('click', function(e) {
+          e.preventDefault();
+          if (!navigator.geolocation) {
+            showToast('เบราว์เซอร์ไม่รองรับการดึงพิกัด GPS', 'error');
+            return;
+          }
+          btnSchGps.disabled = true;
+          btnSchGps.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังดึงพิกัด...';
+          navigator.geolocation.getCurrentPosition(
+            function(pos) {
+              btnSchGps.disabled = false;
+              btnSchGps.innerHTML = '<i class="fas fa-location-arrow"></i> ใช้พิกัดปัจจุบันของฉัน';
+              var lat = pos.coords.latitude;
+              var lng = pos.coords.longitude;
+              var latInp = document.getElementById('sch-gps-lat');
+              var lngInp = document.getElementById('sch-gps-lng');
+              if (latInp) latInp.value = lat.toFixed(6);
+              if (lngInp) lngInp.value = lng.toFixed(6);
+              showToast('ดึงพิกัดปัจจุบันสำเร็จ: ' + lat.toFixed(4) + ', ' + lng.toFixed(4), 'success');
+            },
+            function(err) {
+              btnSchGps.disabled = false;
+              btnSchGps.innerHTML = '<i class="fas fa-location-arrow"></i> ใช้พิกัดปัจจุบันของฉัน';
+              showToast('ไม่สามารถดึงพิกัดได้: ' + err.message, 'error');
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+          );
         });
       }
 
