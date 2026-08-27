@@ -2016,23 +2016,32 @@
 
   
     /* Multi-Select Filter Popover Styling */
+    .report-filters-card {
+      overflow: visible !important;
+      position: relative !important;
+      z-index: 100 !important;
+    }
+    .form-group-glass.has-popover-open {
+      z-index: 999999 !important;
+      position: relative !important;
+    }
     .filter-popover-glass {
       display: none;
       position: absolute;
       top: calc(100% + 6px);
       left: 0;
-      z-index: 99999;
-      min-width: 220px;
-      max-width: 320px;
-      max-height: 260px;
+      z-index: 999999 !important;
+      min-width: 270px;
+      max-width: 360px;
+      max-height: 320px;
       overflow-y: auto;
-      background: rgba(15, 23, 42, 0.95);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      background: #0E1424 !important;
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
       border: 1.5px solid var(--orange-500);
-      border-radius: var(--radius-sm);
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(255, 107, 0, 0.25);
-      padding: 10px 12px;
+      border-radius: 10px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.95), 0 0 30px rgba(255, 107, 0, 0.4);
+      padding: 12px 14px;
       animation: popoverFadeIn 0.15s ease;
     }
     @keyframes popoverFadeIn {
@@ -3028,57 +3037,72 @@
         <!-- VIEW: REPORTS (PDF / EXCEL / JPG) -->
         <!-- ============================================================= -->
         <section class="view-section" id="view-reports">
-          <div class="glass-card" style="margin-bottom: 24px;">
-            <div class="card-header-flex">
-              <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                <div class="form-group-glass" style="margin-bottom: 0; min-width: 140px;">
-                  <label style="font-size: 11px; margin-bottom: 2px;"><i class="fas fa-file-lines"></i> รูปแบบรายงาน</label>
-                  <select class="select-glass" id="report-type-select" style="min-width: 140px;">
+          <div class="glass-card report-filters-card" style="margin-bottom: 24px; overflow: visible !important; position: relative; z-index: 100;">
+            <div style="display: flex; flex-direction: column; gap: 16px; overflow: visible;">
+              
+              <!-- ROW 1: 5 DEDICATED FILTER SELECTORS (RESPONSIVE GRID) -->
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; align-items: end; overflow: visible;">
+                
+                <!-- 1. Report Type -->
+                <div class="form-group-glass" style="margin-bottom: 0;">
+                  <label style="font-size: 11.5px; margin-bottom: 3px; font-weight: 700; color: #FFF;">
+                    <i class="fas fa-file-lines" style="color: var(--cyan-400);"></i> รูปแบบรายงาน
+                  </label>
+                  <select class="select-glass" id="report-type-select" style="width: 100%;">
                     <option value="daily">รายงานประจำวัน</option>
                     <option value="monthly">รายงานประจำเดือน</option>
                     <option value="term">รายงานสถิติประจำภาคเรียน</option>
                   </select>
                 </div>
-                <!-- MULTI-SELECT CLASSROOM -->
-                <div class="form-group-glass" style="margin-bottom: 0; position: relative; min-width: 160px;">
-                  <label style="font-size: 11px; margin-bottom: 2px;"><i class="fas fa-chalkboard-user" style="color: var(--orange-400);"></i> ห้องเรียน (เลือกได้หลายห้อง)</label>
+
+                <!-- 2. Multi-Select Classroom -->
+                <div class="form-group-glass" id="fg-report-class-container" style="margin-bottom: 0; position: relative;">
+                  <label style="font-size: 11.5px; margin-bottom: 3px; font-weight: 700; color: #FFF;">
+                    <i class="fas fa-chalkboard-user" style="color: var(--orange-400);"></i> ห้องเรียน (เลือกได้หลายห้อง)
+                  </label>
                   <button type="button" class="select-glass" id="btn-report-class-multi" style="width: 100%; text-align: left; display: flex; align-items: center; justify-content: space-between; cursor: pointer; padding: 8px 12px;">
-                    <span id="report-class-selected-label" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px;">🌟 ทุกห้องเรียน</span>
+                    <span id="report-class-selected-label" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;">🌟 ทุกห้องเรียน</span>
                     <i class="fas fa-chevron-down" style="font-size: 10px; color: var(--orange-400); margin-left: 6px;"></i>
                   </button>
                   <div id="popover-report-class" class="filter-popover-glass">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px;">
-                      <span style="font-size: 11px; font-weight: 700; color: #FFF;">เลือกห้องเรียน:</span>
+                      <span style="font-size: 11.5px; font-weight: 700; color: #FFF;">เลือกห้องเรียน:</span>
                       <div style="display: flex; gap: 4px;">
-                        <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-report-select-all-classes" style="font-size: 9.5px; padding: 2px 6px;">ทุกห้อง</button>
-                        <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-report-clear-classes" style="font-size: 9.5px; padding: 2px 6px;">ล้าง</button>
+                        <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-report-select-all-classes" style="font-size: 10px; padding: 2px 7px;">ทุกห้อง</button>
+                        <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-report-clear-classes" style="font-size: 10px; padding: 2px 7px;">ล้าง</button>
                       </div>
                     </div>
-                    <div id="report-class-checkbox-list" style="display: flex; flex-direction: column; gap: 6px;"></div>
+                    <div id="report-class-checkbox-list" style="display: flex; flex-direction: column; gap: 6px; max-height: 230px; overflow-y: auto;"></div>
                   </div>
                 </div>
 
-                <!-- MULTI-SELECT ACTIVITY -->
-                <div class="form-group-glass" style="margin-bottom: 0; position: relative; min-width: 180px;">
-                  <label style="font-size: 11px; margin-bottom: 2px;"><i class="fas fa-tags" style="color: var(--cyan-400);"></i> กิจกรรม/วิชา (เลือกได้หลายวิชา)</label>
+                <!-- 3. Multi-Select Activity -->
+                <div class="form-group-glass" id="fg-report-activity-container" style="margin-bottom: 0; position: relative;">
+                  <label style="font-size: 11.5px; margin-bottom: 3px; font-weight: 700; color: #FFF;">
+                    <i class="fas fa-tags" style="color: #F472B6;"></i> กิจกรรม/วิชา (เลือกได้หลายวิชา)
+                  </label>
                   <button type="button" class="select-glass" id="btn-report-activity-multi" style="width: 100%; text-align: left; display: flex; align-items: center; justify-content: space-between; cursor: pointer; padding: 8px 12px;">
-                    <span id="report-activity-selected-label" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 145px;">🌟 ทุกกิจกรรม</span>
-                    <i class="fas fa-chevron-down" style="font-size: 10px; color: var(--cyan-400); margin-left: 6px;"></i>
+                    <span id="report-activity-selected-label" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;">🌟 ทุกกิจกรรม</span>
+                    <i class="fas fa-chevron-down" style="font-size: 10px; color: #F472B6; margin-left: 6px;"></i>
                   </button>
                   <div id="popover-report-activity" class="filter-popover-glass">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px;">
-                      <span style="font-size: 11px; font-weight: 700; color: #FFF;">เลือกกิจกรรม/วิชา:</span>
+                      <span style="font-size: 11.5px; font-weight: 700; color: #FFF;">เลือกกิจกรรม/วิชา:</span>
                       <div style="display: flex; gap: 4px;">
-                        <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-report-select-all-activities" style="font-size: 9.5px; padding: 2px 6px;">ทั้งหมด</button>
-                        <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-report-clear-activities" style="font-size: 9.5px; padding: 2px 6px;">ล้าง</button>
+                        <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-report-select-all-activities" style="font-size: 10px; padding: 2px 7px;">ทั้งหมด</button>
+                        <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-report-clear-activities" style="font-size: 10px; padding: 2px 7px;">ล้าง</button>
                       </div>
                     </div>
-                    <div id="report-activity-checkbox-list" style="display: flex; flex-direction: column; gap: 6px;"></div>
+                    <div id="report-activity-checkbox-list" style="display: flex; flex-direction: column; gap: 6px; max-height: 230px; overflow-y: auto;"></div>
                   </div>
                 </div>
-                <div class="form-group-glass" style="margin-bottom: 0; min-width: 120px;">
-                  <label style="font-size: 11px; margin-bottom: 2px;"><i class="fas fa-filter"></i> สถานะ</label>
-                  <select class="select-glass" id="report-status-select" style="min-width: 120px;">
+
+                <!-- 4. Status Filter -->
+                <div class="form-group-glass" style="margin-bottom: 0;">
+                  <label style="font-size: 11.5px; margin-bottom: 3px; font-weight: 700; color: #FFF;">
+                    <i class="fas fa-filter" style="color: #10B981;"></i> สถานะ
+                  </label>
+                  <select class="select-glass" id="report-status-select" style="width: 100%;">
                     <option value="all">🌟 ทุกสถานะ</option>
                     <option value="Present">✅ มาเรียน</option>
                     <option value="Absent">❌ ขาดเรียน</option>
@@ -3087,13 +3111,18 @@
                     <option value="Late">⏰ มาสาย</option>
                   </select>
                 </div>
-                <div class="form-group-glass" style="margin-bottom: 0; min-width: 130px;">
-                  <label style="font-size: 11px; margin-bottom: 2px;"><i class="fas fa-calendar-day"></i> วันที่</label>
-                  <input type="date" class="input-glass" id="report-date-select" style="min-width: 130px;" />
+
+                <!-- 5. Date Selector -->
+                <div class="form-group-glass" style="margin-bottom: 0;">
+                  <label style="font-size: 11.5px; margin-bottom: 3px; font-weight: 700; color: #FFF;">
+                    <i class="fas fa-calendar-day" style="color: #FBBF24;"></i> วันที่
+                  </label>
+                  <input type="date" class="input-glass" id="report-date-select" style="width: 100%;" />
                 </div>
               </div>
 
-              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <!-- ROW 2: ACTION BUTTONS TOOLBAR -->
+              <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px;">
                 <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-print-report" title="พิมพ์รายงาน">
                   <i class="fas fa-print"></i> พิมพ์
                 </button>
@@ -3113,6 +3142,7 @@
                   <i class="fas fa-gear"></i> ตั้งค่า LINE
                 </button>
               </div>
+
             </div>
           </div>
 
@@ -3691,18 +3721,34 @@
           <input type="password" class="input-glass" id="input-line-token" placeholder="วาง Channel access token จาก LINE Developers ที่นี่..." autocomplete="off" />
         </div>
 
-        <div class="form-group-glass">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; flex-wrap: wrap; gap: 6px;">
-            <label style="margin: 0; font-weight: 700;">
-              <i class="fas fa-users" style="color: #38BDF8;"></i> Group ID กลุ่ม LINE ผู้ปกครอง / กลุ่มอาจารย์ (เช่น Cxxxxxx)
+        <!-- GROUP ID & WEBHOOK URL FOR PARENT GROUP NOTIFICATIONS -->
+        <div class="form-group-glass" style="background: rgba(56, 189, 248, 0.05); border: 1.5px solid rgba(56, 189, 248, 0.3); border-radius: var(--radius-md); padding: 14px 16px; margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
+            <label style="margin: 0; font-weight: 700; font-size: 13.5px; color: #FFF;">
+              <i class="fas fa-users" style="color: #38BDF8;"></i> Group ID กลุ่ม LINE ผู้ปกครอง (ขึ้นต้นด้วย C...)
             </label>
-            <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-detect-line-group" style="font-size: 10.5px; padding: 2px 8px;" title="ดึงรหัสกลุ่มผู้ปกครองที่บอทเข้าร่วมล่าสุดอัตโนมัติ">
-              <i class="fas fa-satellite-dish"></i> ดึงรหัสกลุ่มล่าสุด
+            <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-detect-line-group" style="font-size: 11px; font-weight: 700; padding: 4px 10px;" title="ดึงรหัสกลุ่มผู้ปกครองที่บอทเข้าร่วมล่าสุดอัตโนมัติ">
+              <i class="fas fa-satellite-dish"></i> 📡 ดึงรหัสกลุ่มล่าสุด
             </button>
           </div>
-          <input type="text" class="input-glass" id="input-line-group-id" placeholder="เว้นว่างไว้สำหรับส่ง Broadcast หรือใส่ Group ID กลุ่มผู้ปกครอง (ขึ้นต้นด้วย C...)" />
-          <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px; line-height: 1.5;">
-            👨‍👩‍👧‍👦 <strong>วิธีส่งเข้ากลุ่มผู้ปกครอง:</strong> ดึงบอท LINE OA เข้ากลุ่มผู้ปกครอง ➔ พิมพ์ <code>!id</code> หรือ <code>เช็คชื่อ</code> ในกลุ่ม 1 ครั้ง ➔ กดปุ่ม <strong>"ดึงรหัสกลุ่มล่าสุด"</strong>
+          <input type="text" class="input-glass" id="input-line-group-id" placeholder="วาง Group ID เช่น C43789abcdef0123456789abcdef0123..." style="font-family: monospace; font-size: 12.5px;" />
+
+          <!-- Webhook URL Box for Bot Integration -->
+          <div style="margin-top: 10px; background: rgba(15, 23, 42, 0.7); border: 1px dashed rgba(56, 189, 248, 0.4); border-radius: 8px; padding: 10px 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; flex-wrap: wrap; gap: 6px;">
+              <span style="font-size: 11.5px; font-weight: 700; color: #38BDF8;"><i class="fas fa-link"></i> Webhook URL สำหรับบอท LINE (นำไปใส่ใน LINE Developers):</span>
+              <button type="button" class="btn-glass btn-sm-glass" id="btn-copy-gas-webhook-url" style="font-size: 10.5px; padding: 2px 8px; background: rgba(56, 189, 248, 0.15); border-color: rgba(56, 189, 248, 0.4); color: #38BDF8;">
+                <i class="fas fa-copy"></i> คัดลอก URL
+              </button>
+            </div>
+            <input type="text" class="input-glass" id="display-gas-webhook-url" readonly value="https://script.google.com/macros/s/AKfycbyENNsNjTy8YvyBsm73Ab68GUkKklL_E-nuKWWehPzT8C-AlatfNy0IHLaY-F390TYmng/exec" style="font-size: 11px; color: #94A3B8; background: rgba(0,0,0,0.4); padding: 5px 8px; cursor: pointer;" />
+            
+            <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 6px; line-height: 1.6;">
+              📌 <strong>วิธีเชื่อมต่อส่งเข้ากลุ่มผู้ปกครอง (3 ขั้นตอน):</strong><br>
+              1️⃣ นำ <strong>Webhook URL</strong> ด้านบนไปวางที่ <a href="https://developers.line.biz/console" target="_blank" style="color: var(--orange-400); text-decoration: underline;">LINE Developers Console</a> ➔ แท็บ <strong>Messaging API</strong> ➔ ช่อง <strong>Webhook URL</strong> แล้วเปิด <strong>Use webhook = ON</strong><br>
+              2️⃣ เปิดแอป LINE ➔ ดึงบอทเข้ากลุ่มผู้ปกครอง ➔ พิมพ์คำว่า <code>!id</code> หรือ <code>เช็คชื่อ</code> ในกลุ่ม 1 ครั้ง (บอทจะตอบรหัสกลุ่ม <code>C...</code> ให้ทันที)<br>
+              3️⃣ กดปุ่ม <strong>"📡 ดึงรหัสกลุ่มล่าสุด"</strong> ด้านบน หรือคัดลอกรหัสกลุ่ม <code>C...</code> มาวางในช่อง Group ID
+            </div>
           </div>
         </div>
 
@@ -4267,13 +4313,15 @@
           'importStudentsBatch', 'createCheckinSession', 'getActiveSession', 'getActiveSessions', 'closeCheckinSession',
           'validateAndCheckinStudent', 'getSessionLiveAttendance', 'deleteLiveCheckinRecord', 'getAttendanceRecords',
           'saveAttendanceBatch', 'getDashboardData', 'getStudentStats',
-          'getLineConfig', 'saveLineConfig', 'testLineConnection', 'sendLineReport', 'setupDailyLineTrigger'
+          'getLineConfig', 'saveLineConfig', 'testLineConnection', 'sendLineReport', 'setupDailyLineTrigger',
+          'getDetectedLineGroups', 'authorizePermissions'
         ];
 
         var getMethods = [
           'getClassList', 'getStudents', 'getActivityList', 'getDashboardData',
           'getActiveSessions', 'getActiveSession', 'getAttendanceRecords', 'getSessionLiveAttendance',
           'getStudentStats', 'getLineConfig', 'verifyAdminPassword',
+          'getDetectedLineGroups', 'authorizePermissions',
           'deleteStudent', 'deleteStudentsBatch', 'deleteClass', 'deleteActivity', 'deleteAllStudents'
         ];
 
@@ -4357,6 +4405,49 @@
                 });
             };
           })(gasMethods[i]);
+        }
+
+        if (typeof Proxy !== 'undefined') {
+          return new Proxy(runner, {
+            get: function(target, prop) {
+              if (prop in target) return target[prop];
+              if (typeof prop === 'string') {
+                return function() {
+                  var args = Array.prototype.slice.call(arguments);
+                  var payload = args.length === 1 ? args[0] : (args.length > 1 ? args : null);
+                  var isGet = getMethods.indexOf(prop) > -1 || prop.startsWith('get') || prop.startsWith('verify');
+                  var targetUrl = GAS_WEBAPP_URL;
+                  var fetchOptions = { mode: 'cors' };
+
+                  if (isGet) {
+                    var queryParts = ['action=' + encodeURIComponent(prop), 't=' + Date.now()];
+                    if (args && args.length > 0) queryParts.push('args=' + encodeURIComponent(JSON.stringify(args)));
+                    if (payload !== null && payload !== undefined) {
+                      queryParts.push('data=' + encodeURIComponent(typeof payload === 'object' ? JSON.stringify(payload) : String(payload)));
+                    }
+                    targetUrl += (targetUrl.indexOf('?') > -1 ? '&' : '?') + queryParts.join('&');
+                    fetchOptions.method = 'GET';
+                  } else {
+                    fetchOptions.method = 'POST';
+                    fetchOptions.headers = { 'Content-Type': 'text/plain;charset=utf-8' };
+                    fetchOptions.body = JSON.stringify({ action: prop, data: payload, payload: payload, args: args });
+                  }
+
+                  fetch(targetUrl, fetchOptions)
+                    .then(function(res) { return res.text(); })
+                    .then(function(raw) {
+                      var result;
+                      try { result = JSON.parse(raw); } catch (e) { result = { status: 'success', raw: raw }; }
+                      successHandler(result);
+                    })
+                    .catch(function(err) {
+                      failureHandler(err);
+                    });
+                };
+              }
+              return undefined;
+            }
+          });
         }
 
         return runner;
@@ -11821,35 +11912,59 @@
         };
       }
 
-      // Multi-Select Popover Toggles
+      // Multi-Select Popover Toggles with Stacking Context Protection
       var btnClassMulti = document.getElementById('btn-report-class-multi');
       var popClass = document.getElementById('popover-report-class');
+      var fgClass = document.getElementById('fg-report-class-container');
+      var btnActMulti = document.getElementById('btn-report-activity-multi');
+      var popAct = document.getElementById('popover-report-activity');
+      var fgAct = document.getElementById('fg-report-activity-container');
+
       if (btnClassMulti && popClass) {
         btnClassMulti.onclick = function(e) {
           e.stopPropagation();
           var isShown = popClass.style.display === 'block';
-          var popAct = document.getElementById('popover-report-activity');
-          if (popAct) popAct.style.display = 'none';
+          if (popAct) {
+            popAct.style.display = 'none';
+            if (fgAct) fgAct.classList.remove('has-popover-open');
+          }
           popClass.style.display = isShown ? 'none' : 'block';
+          if (fgClass) {
+            if (!isShown) fgClass.classList.add('has-popover-open');
+            else fgClass.classList.remove('has-popover-open');
+          }
         };
         popClass.onclick = function(e) {
           e.stopPropagation();
         };
       }
 
-      var btnActMulti = document.getElementById('btn-report-activity-multi');
-      var popAct = document.getElementById('popover-report-activity');
       if (btnActMulti && popAct) {
         btnActMulti.onclick = function(e) {
           e.stopPropagation();
           var isShown = popAct.style.display === 'block';
-          if (popClass) popClass.style.display = 'none';
+          if (popClass) {
+            popClass.style.display = 'none';
+            if (fgClass) fgClass.classList.remove('has-popover-open');
+          }
           popAct.style.display = isShown ? 'none' : 'block';
+          if (fgAct) {
+            if (!isShown) fgAct.classList.add('has-popover-open');
+            else fgAct.classList.remove('has-popover-open');
+          }
         };
         popAct.onclick = function(e) {
           e.stopPropagation();
         };
       }
+
+      // Close popovers on click outside
+      document.addEventListener('click', function() {
+        if (popClass) popClass.style.display = 'none';
+        if (popAct) popAct.style.display = 'none';
+        if (fgClass) fgClass.classList.remove('has-popover-open');
+        if (fgAct) fgAct.classList.remove('has-popover-open');
+      });
 
       // Quick buttons in popovers
       var btnSelAllRepCls = document.getElementById('btn-report-select-all-classes');
@@ -12509,35 +12624,69 @@
         });
       }
 
+      // Copy Webhook URL Button
+      var btnCopyWebhook = document.getElementById('btn-copy-gas-webhook-url');
+      if (btnCopyWebhook) {
+        btnCopyWebhook.addEventListener('click', function(e) {
+          e.preventDefault();
+          var whEl = document.getElementById('display-gas-webhook-url');
+          if (whEl && whEl.value) {
+            navigator.clipboard.writeText(whEl.value).then(function() {
+              showToast('คัดลอก Webhook URL เรียบร้อยแล้ว นำไปวางใน LINE Developers ได้เลยครับ', 'success');
+            }).catch(function() {
+              whEl.select();
+              document.execCommand('copy');
+              showToast('คัดลอก Webhook URL สำเร็จ!', 'success');
+            });
+          }
+        });
+      }
+
       var btnDetectGroup = document.getElementById('btn-detect-line-group');
       if (btnDetectGroup) {
         btnDetectGroup.addEventListener('click', function(e) {
           e.preventDefault();
           showLoadingPopup('กำลังค้นหากลุ่ม LINE...', 'กำลังตรวจสอบ Group ID กลุ่มผู้ปกครองที่บอทเข้าร่วมล่าสุด');
-          if (isGASAvailable()) {
-            google.script.run
-              .withSuccessHandler(function(res) {
+
+          var safetyTimer = setTimeout(function() {
+            hideLoadingPopup();
+            showToast('ใช้เวลาค้นหานานเกินไป กรุณาตรวจสอบว่าเปิด Use Webhook ใน LINE Developers แล้ว', 'info');
+          }, 8000);
+
+          try {
+            if (isGASAvailable()) {
+              google.script.run
+                .withSuccessHandler(function(res) {
+                  clearTimeout(safetyTimer);
+                  hideLoadingPopup();
+                  if (res && res.lastGroupId) {
+                    var grpInput = document.getElementById('input-line-group-id');
+                    if (grpInput) grpInput.value = res.lastGroupId;
+                    showToast('ดึงรหัสกลุ่มสำเร็จ: ' + res.lastGroupId, 'success');
+                  } else {
+                    showToast('ยังไม่พบรหัสกลุ่ม กรุณาใส่ Webhook URL ใน LINE Developers ➔ ดึงบอทเข้ากลุ่ม ➔ พิมพ์ !id ในกลุ่ม 1 ครั้ง', 'info');
+                  }
+                })
+                .withFailureHandler(function(err) {
+                  clearTimeout(safetyTimer);
+                  hideLoadingPopup();
+                  console.warn('Error detecting LINE group:', err);
+                  showToast('ไม่สามารถค้นหารหัสกลุ่มได้: ' + (err.message || String(err)), 'error');
+                })
+                .getDetectedLineGroups();
+            } else {
+              clearTimeout(safetyTimer);
+              setTimeout(function() {
                 hideLoadingPopup();
-                if (res && res.lastGroupId) {
-                  var grpInput = document.getElementById('input-line-group-id');
-                  if (grpInput) grpInput.value = res.lastGroupId;
-                  showToast('ดึงรหัสกลุ่มผู้ปกครองสำเร็จ: ' + res.lastGroupId, 'success');
-                } else {
-                  showToast('ยังไม่พบข้อมูลกลุ่ม กรุณาดึงบอทเข้ากลุ่มผู้ปกครองแล้วพิมพ์ข้อความในกลุ่ม 1 ครั้งก่อนกดค้นหา', 'info');
-                }
-              })
-              .withFailureHandler(function(err) {
-                hideLoadingPopup();
-                showToast('ไม่สามารถค้นหารหัสกลุ่มได้: ' + err.message, 'error');
-              })
-              .getDetectedLineGroups();
-          } else {
-            setTimeout(function() {
-              hideLoadingPopup();
-              var grpInput = document.getElementById('input-line-group-id');
-              if (grpInput) grpInput.value = 'C1234567890abcdef1234567890abcdef';
-              showToast('จำลองดึงรหัสกลุ่มผู้ปกครองตัวอย่างสำเร็จ!', 'success');
-            }, 600);
+                var grpInput = document.getElementById('input-line-group-id');
+                if (grpInput) grpInput.value = 'C1234567890abcdef1234567890abcdef';
+                showToast('จำลองดึงรหัสกลุ่มผู้ปกครองตัวอย่างสำเร็จ!', 'success');
+              }, 600);
+            }
+          } catch (ex) {
+            clearTimeout(safetyTimer);
+            hideLoadingPopup();
+            showToast('เกิดข้อผิดพลาด: ' + ex.message, 'error');
           }
         });
       }
