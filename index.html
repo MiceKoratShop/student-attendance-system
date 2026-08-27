@@ -27,6 +27,10 @@
   <!-- html2canvas CDN (High-res JPG Image Export) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
+    <!-- Leaflet CDN (Interactive Map GPS Location Picker) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
   <!-- SheetJS CDN (Excel Export & Import) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
@@ -2036,6 +2040,46 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
+  
+    /* Map Picker Styles */
+    .custom-map-pin {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .custom-map-pin-icon {
+      background: linear-gradient(135deg, #FF6B00 0%, #FF9033 100%);
+      width: 32px;
+      height: 32px;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      border: 2.5px solid #FFFFFF;
+      box-shadow: 0 4px 15px rgba(255, 107, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: grab;
+      transition: transform 0.15s ease;
+    }
+    .custom-map-pin-icon:hover {
+      transform: rotate(-45deg) scale(1.1);
+    }
+    .custom-map-pin-icon i {
+      transform: rotate(45deg);
+      font-size: 13px;
+      color: #FFFFFF;
+    }
+    .leaflet-container {
+      font-family: 'Prompt', 'Kanit', sans-serif !important;
+      background: #0B0F19 !important;
+    }
+    .btn-map-layer.active {
+      background: var(--orange-500) !important;
+      color: #FFFFFF !important;
+      font-weight: 700 !important;
+      border-color: var(--orange-400) !important;
+    }
+
   </style>
 </head>
 <body class="mode-student">
@@ -2700,12 +2744,18 @@
                   </div>
 
                   <div class="form-group-glass">
-                    <label><i class="fas fa-location-dot"></i> พิกัด GPS ละติจูด / ลองจิจูด</label>
-                    <div style="display: flex; gap: 8px;">
-                      <input type="text" class="input-glass" id="session-lat-input" placeholder="Latitude" value="13.7563" />
-                      <input type="text" class="input-glass" id="session-lng-input" placeholder="Longitude" value="100.5018" />
-                      <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-get-teacher-gps" title="ดึงพิกัดห้องเรียนปัจจุบัน">
-                        <i class="fas fa-location-crosshairs"></i> ดึงพิกัด
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; flex-wrap: wrap; gap: 6px;">
+                      <label style="margin: 0;"><i class="fas fa-location-dot" style="color: var(--orange-500);"></i> พิกัด GPS ละติจูด / ลองจิจูด (จุดเช็คชื่อ)</label>
+                      <span style="font-size: 11px; color: var(--text-muted);">เลือกตำแหน่งที่นักศึกษาอยู่</span>
+                    </div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                      <input type="text" class="input-glass" id="session-lat-input" placeholder="Latitude (เช่น 13.756300)" value="13.756300" style="flex: 1.2; min-width: 110px; font-family: monospace; font-size: 13px;" />
+                      <input type="text" class="input-glass" id="session-lng-input" placeholder="Longitude (เช่น 100.501800)" value="100.501800" style="flex: 1.2; min-width: 110px; font-family: monospace; font-size: 13px;" />
+                      <button type="button" class="btn-glass btn-orange btn-sm-glass" id="btn-open-map-picker" title="เปิดแผนที่ Google Maps ปักหมุดเลือกตำแหน่งที่นักศึกษาอยู่" style="font-weight: 700; padding: 7px 12px; white-space: nowrap;">
+                        <i class="fas fa-map-location-dot"></i> 🗺️ เลือกบนแผนที่
+                      </button>
+                      <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-get-teacher-gps" title="ดึงพิกัดห้องเรียนปัจจุบันของคุณครู" style="padding: 7px 11px; white-space: nowrap;">
+                        <i class="fas fa-location-crosshairs"></i> พิกัดปัจจุบัน
                       </button>
                     </div>
                   </div>
@@ -3843,6 +3893,26 @@
           </div>
         </div>
 
+        <!-- GPS LOCATION ROW IN MODAL -->
+        <div class="form-group-glass" style="margin-bottom: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; flex-wrap: wrap; gap: 6px;">
+            <label style="margin: 0; font-size: 13px; font-weight: 700; color: #FFF;">
+              <i class="fas fa-location-dot" style="color: var(--orange-500);"></i> พิกัด GPS เช็คชื่อ (ละติจูด / ลองจิจูด)
+            </label>
+            <span style="font-size: 11px; color: var(--text-muted);">เลือกพิกัดจุดที่นักศึกษาอยู่</span>
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+            <input type="text" class="input-glass" id="modal-session-lat-input" placeholder="Latitude" value="13.756300" style="flex: 1; min-width: 100px; font-family: monospace; font-size: 12px;" />
+            <input type="text" class="input-glass" id="modal-session-lng-input" placeholder="Longitude" value="100.501800" style="flex: 1; min-width: 100px; font-family: monospace; font-size: 12px;" />
+            <button type="button" class="btn-glass btn-orange btn-sm-glass" id="btn-modal-open-map-picker" style="font-weight: 700; font-size: 11.5px; padding: 6px 10px;">
+              <i class="fas fa-map-location-dot"></i> 🗺️ เลือกบนแผนที่
+            </button>
+            <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-modal-get-gps" style="font-size: 11.5px; padding: 6px 10px;">
+              <i class="fas fa-location-crosshairs"></i> พิกัดปัจจุบัน
+            </button>
+          </div>
+        </div>
+
         <!-- DURATION & OTP INTERVAL -->
         <div class="grid-2">
           <div class="form-group-glass">
@@ -3902,6 +3972,96 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+  
+  <!-- ============================================================= -->
+  <!-- MODAL: INTERACTIVE GOOGLE MAPS GPS LOCATION PICKER -->
+  <!-- ============================================================= -->
+  <div class="modal-backdrop-glass" id="modal-gps-map-picker" style="z-index: 100000;">
+    <div class="modal-window-glass" style="max-width: 880px; width: 95%; max-height: 94vh; display: flex; flex-direction: column; padding: 18px 20px;">
+      
+      <!-- Modal Header -->
+      <div class="modal-header-flex" style="margin-bottom: 12px;">
+        <div class="modal-title" style="display: flex; align-items: center; gap: 8px; font-size: 16px;">
+          <i class="fas fa-map-location-dot" style="color: var(--orange-500);"></i> 🗺️ ปักหมุดเลือกตำแหน่งเช็คชื่อบนแผนที่ (GPS Location Picker)
+        </div>
+        <button type="button" class="modal-close btn-close-modal">&times;</button>
+      </div>
+
+      <!-- Search / Link Paste Bar -->
+      <div style="margin-bottom: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 250px; position: relative;">
+          <input type="text" class="input-glass" id="input-map-search" placeholder="🔍 พิมพ์ชื่อสถานที่ (เช่น วิทยาลัย, อาคาร 3) หรือวางพิกัด / ลิงก์ Google Maps..." style="padding-left: 32px; font-size: 12.5px; width: 100%;" />
+          <i class="fas fa-search" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 13px;"></i>
+        </div>
+        <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-map-search-execute" style="font-weight: 700; padding: 6px 14px; font-size: 12px;">
+          <i class="fas fa-magnifying-glass"></i> ค้นหา
+        </button>
+        <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-map-locate-me" style="padding: 6px 12px; font-size: 12px;" title="ไปที่พิกัดปัจจุบันของฉัน">
+          <i class="fas fa-crosshairs" style="color: #00F0FF;"></i> ตำแหน่งฉัน
+        </button>
+      </div>
+
+      <!-- Quick Preset Chips -->
+      <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; align-items: center;">
+        <span style="font-size: 11px; color: var(--text-muted);">ตำแหน่งแนะนำ:</span>
+        <button type="button" class="btn-glass btn-sm-glass chip-preset-loc" data-lat="13.7563" data-lng="100.5018" style="font-size: 10.5px; padding: 2px 8px;">กรุงเทพฯ</button>
+        <button type="button" class="btn-glass btn-sm-glass chip-preset-loc" data-lat="13.7649" data-lng="100.5383" style="font-size: 10.5px; padding: 2px 8px;">อนุสาวรีย์ชัยฯ</button>
+        <button type="button" class="btn-glass btn-sm-glass chip-preset-loc" data-lat="18.7883" data-lng="98.9853" style="font-size: 10.5px; padding: 2px 8px;">เชียงใหม่</button>
+        <button type="button" class="btn-glass btn-sm-glass chip-preset-loc" data-lat="14.9799" data-lng="102.0978" style="font-size: 10.5px; padding: 2px 8px;">นครราชสีมา</button>
+        <button type="button" class="btn-glass btn-sm-glass chip-preset-loc" data-lat="7.0087" data-lng="100.4747" style="font-size: 10.5px; padding: 2px 8px;">สงขลา/หาดใหญ่</button>
+        <span id="map-search-status" style="font-size: 11px; color: var(--orange-400); margin-left: auto;"></span>
+      </div>
+
+      <!-- Interactive Map Canvas -->
+      <div style="position: relative; width: 100%; height: 380px; min-height: 300px; border-radius: var(--radius-sm); overflow: hidden; border: 1.5px solid var(--border-orange-glow); box-shadow: 0 4px 20px rgba(0,0,0,0.6);">
+        <div id="map-picker-canvas" style="width: 100%; height: 100%; z-index: 1;"></div>
+        
+        <!-- Floating Layer Switcher Badge -->
+        <div style="position: absolute; top: 10px; right: 10px; z-index: 999; display: flex; gap: 4px; background: rgba(15,23,42,0.85); backdrop-filter: blur(10px); padding: 4px; border-radius: 6px; border: 1px solid var(--border-glass);">
+          <button type="button" class="btn-glass btn-sm-glass btn-map-layer active" data-layer="street" id="btn-layer-street" style="font-size: 10px; padding: 3px 8px;">ถนน (Street)</button>
+          <button type="button" class="btn-glass btn-sm-glass btn-map-layer" data-layer="satellite" id="btn-layer-satellite" style="font-size: 10px; padding: 3px 8px;">ดาวเทียม (Satellite)</button>
+        </div>
+
+        <!-- Hint Overlay at bottom of map -->
+        <div style="position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); z-index: 999; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); padding: 4px 12px; border-radius: 20px; font-size: 11px; color: #FFF; pointer-events: none; border: 1px solid rgba(255,255,255,0.15); white-space: nowrap;">
+          <i class="fas fa-hand-pointer" style="color: var(--orange-400);"></i> คลิกบนแผนที่ หรือลากหมุดสีส้มไปยังจุดที่นักศึกษาอยู่
+        </div>
+      </div>
+
+      <!-- Live Coordinate Info Bar -->
+      <div style="margin-top: 12px; background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.25); border-radius: var(--radius-sm); padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: center;">
+          <div style="font-size: 12px; color: var(--text-secondary);">
+            📍 ละติจูด (Lat): <strong id="map-picked-lat-display" style="color: #FFF; font-family: monospace; font-size: 13px;">13.756300</strong>
+          </div>
+          <div style="font-size: 12px; color: var(--text-secondary);">
+            📍 ลองจิจูด (Lng): <strong id="map-picked-lng-display" style="color: #FFF; font-family: monospace; font-size: 13px;">100.501800</strong>
+          </div>
+          <div style="font-size: 12px; color: var(--text-secondary);">
+            ⭕ รัศมีครอบคลุม: <strong id="map-picked-radius-display" style="color: var(--orange-400);">50 เมตร</strong>
+          </div>
+        </div>
+        <div id="map-picked-address-display" style="font-size: 11px; color: #94A3B8; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+          กำลังระบุตำแหน่ง...
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div style="display: flex; gap: 10px; margin-top: 14px; justify-content: flex-end; flex-wrap: wrap;">
+        <button type="button" class="btn-glass btn-dark btn-close-modal" style="min-width: 90px; padding: 9px 16px;">
+          ยกเลิก
+        </button>
+        <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-open-google-maps-external" style="padding: 9px 14px; font-size: 12px;" title="เปิดดูจุดนี้ใน Google Maps">
+          <i class="fas fa-arrow-up-right-from-square"></i> เปิดใน Google Maps
+        </button>
+        <button type="button" class="btn-glass btn-orange" id="btn-confirm-map-pick" style="min-width: 170px; font-weight: 700; padding: 9px 20px; font-size: 13px;">
+          <i class="fas fa-circle-check"></i> ✅ ยืนยันใช้ตำแหน่งนี้
+        </button>
+      </div>
+
     </div>
   </div>
 
@@ -7321,7 +7481,378 @@
       }
     }
 
+    
+    /* ============================================================= */
+    /* INTERACTIVE GOOGLE MAPS GPS LOCATION PICKER SYSTEM */
+    /* ============================================================= */
+    var mapPickerInstance = null;
+    var mapPickerMarker = null;
+    var mapPickerCircle = null;
+    var mapStreetLayer = null;
+    var mapSatLayer = null;
+    var currentMapTargetLatInput = 'session-lat-input';
+    var currentMapTargetLngInput = 'session-lng-input';
+    var currentPickedLat = 13.756300;
+    var currentPickedLng = 100.501800;
+
+    function openGpsMapPicker(targetLatId, targetLngId) {
+      currentMapTargetLatInput = targetLatId || 'session-lat-input';
+      currentMapTargetLngInput = targetLngId || 'session-lng-input';
+
+      var latInput = document.getElementById(currentMapTargetLatInput);
+      var lngInput = document.getElementById(currentMapTargetLngInput);
+      var radiusSelect = document.getElementById('session-radius-select');
+
+      var initialLat = latInput ? (parseFloat(latInput.value) || 13.756300) : 13.756300;
+      var initialLng = lngInput ? (parseFloat(lngInput.value) || 100.501800) : 100.501800;
+      var radiusMeters = radiusSelect ? (parseInt(radiusSelect.value, 10) || 50) : 50;
+
+      currentPickedLat = initialLat;
+      currentPickedLng = initialLng;
+
+      openModal('modal-gps-map-picker');
+
+      setTimeout(function() {
+        initOrUpdateMapPicker(initialLat, initialLng, radiusMeters);
+      }, 250);
+    }
+
+    function initOrUpdateMapPicker(lat, lng, radius) {
+      var mapCanvas = document.getElementById('map-picker-canvas');
+      if (!mapCanvas || typeof L === 'undefined') {
+        updateMapDisplayCoordinates(lat, lng);
+        return;
+      }
+
+      currentPickedLat = lat;
+      currentPickedLng = lng;
+      var radiusEl = document.getElementById('map-picked-radius-display');
+      if (radiusEl) radiusEl.textContent = radius + ' เมตร';
+
+      var pinIcon = L.divIcon({
+        className: 'custom-map-pin',
+        html: '<div class="custom-map-pin-icon"><i class="fas fa-graduation-cap"></i></div>',
+        iconSize: [32, 32],
+        iconAnchor: [16, 32]
+      });
+
+      if (!mapPickerInstance) {
+        mapPickerInstance = L.map('map-picker-canvas', {
+          center: [lat, lng],
+          zoom: 17,
+          zoomControl: true
+        });
+
+        // Street Layer (Google Map Roads)
+        mapStreetLayer = L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+          maxZoom: 21,
+          subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+          attribution: '&copy; Google Maps'
+        }).addTo(mapPickerInstance);
+
+        // Satellite Hybrid Layer (Google Satellite + Roads/Labels)
+        mapSatLayer = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+          maxZoom: 21,
+          subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+          attribution: '&copy; Google Maps'
+        });
+
+        // Marker
+        mapPickerMarker = L.marker([lat, lng], {
+          draggable: true,
+          icon: pinIcon
+        }).addTo(mapPickerInstance);
+
+        // Radius Geofence Circle
+        mapPickerCircle = L.circle([lat, lng], {
+          radius: radius,
+          color: '#FF6B00',
+          fillColor: '#FF6B00',
+          fillOpacity: 0.22,
+          weight: 2.5
+        }).addTo(mapPickerInstance);
+
+        // Dragging Marker
+        mapPickerMarker.on('drag', function(e) {
+          var pos = e.target.getLatLng();
+          mapPickerCircle.setLatLng(pos);
+          updateMapDisplayCoordinates(pos.lat, pos.lng);
+        });
+
+        mapPickerMarker.on('dragend', function(e) {
+          var pos = e.target.getLatLng();
+          reverseGeocodeCoordinates(pos.lat, pos.lng);
+        });
+
+        // Clicking on Map
+        mapPickerInstance.on('click', function(e) {
+          mapPickerMarker.setLatLng(e.latlng);
+          mapPickerCircle.setLatLng(e.latlng);
+          updateMapDisplayCoordinates(e.latlng.lat, e.latlng.lng);
+          reverseGeocodeCoordinates(e.latlng.lat, e.latlng.lng);
+        });
+
+      } else {
+        mapPickerInstance.invalidateSize();
+        mapPickerInstance.setView([lat, lng], 17);
+        mapPickerMarker.setLatLng([lat, lng]);
+        mapPickerCircle.setLatLng([lat, lng]);
+        mapPickerCircle.setRadius(radius);
+      }
+
+      updateMapDisplayCoordinates(lat, lng);
+      reverseGeocodeCoordinates(lat, lng);
+    }
+
+    function updateMapDisplayCoordinates(lat, lng) {
+      currentPickedLat = lat;
+      currentPickedLng = lng;
+      var latDisp = document.getElementById('map-picked-lat-display');
+      var lngDisp = document.getElementById('map-picked-lng-display');
+      if (latDisp) latDisp.textContent = lat.toFixed(6);
+      if (lngDisp) lngDisp.textContent = lng.toFixed(6);
+    }
+
+    function panMapToLocation(lat, lng, zoomLevel) {
+      currentPickedLat = lat;
+      currentPickedLng = lng;
+      if (mapPickerInstance) {
+        mapPickerInstance.setView([lat, lng], zoomLevel || 17);
+        if (mapPickerMarker) mapPickerMarker.setLatLng([lat, lng]);
+        if (mapPickerCircle) mapPickerCircle.setLatLng([lat, lng]);
+      }
+      updateMapDisplayCoordinates(lat, lng);
+      reverseGeocodeCoordinates(lat, lng);
+    }
+
+    function reverseGeocodeCoordinates(lat, lng) {
+      var addrEl = document.getElementById('map-picked-address-display');
+      if (!addrEl) return;
+      addrEl.textContent = 'กำลังค้นหาชื่อสถานที่...';
+      
+      fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lng + '&zoom=18&addressdetails=1', {
+        headers: { 'Accept-Language': 'th,en' }
+      })
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (data && data.display_name) {
+          addrEl.textContent = data.display_name;
+          addrEl.title = data.display_name;
+        } else {
+          addrEl.textContent = 'พิกัด: ' + lat.toFixed(6) + ', ' + lng.toFixed(6);
+        }
+      })
+      .catch(function() {
+        addrEl.textContent = 'พิกัด: ' + lat.toFixed(6) + ', ' + lng.toFixed(6);
+      });
+    }
+
+    function handleMapSearch() {
+      var searchInput = document.getElementById('input-map-search');
+      var statusEl = document.getElementById('map-search-status');
+      if (!searchInput || !searchInput.value) return;
+      var query = searchInput.value.trim();
+      if (!query) return;
+
+      if (statusEl) statusEl.textContent = 'กำลังค้นหา...';
+
+      // 1. Coordinates Regex (e.g. "13.7563, 100.5018")
+      var coordRegex = /([-+]?\d{1,2}(?:\.\d+)?)[,\s]+([-+]?\d{1,3}(?:\.\d+)?)/;
+      var coordMatch = query.match(coordRegex);
+
+      // 2. Google Maps URL Regex
+      var gmapsRegex = /(?:@|q=|ll=)([-+]?\d{1,2}(?:\.\d+)?)[,\s]+([-+]?\d{1,3}(?:\.\d+)?)/;
+      var gmapsMatch = query.match(gmapsRegex);
+
+      var foundLat = null;
+      var foundLng = null;
+
+      if (gmapsMatch && gmapsMatch[1] && gmapsMatch[2]) {
+        foundLat = parseFloat(gmapsMatch[1]);
+        foundLng = parseFloat(gmapsMatch[2]);
+      } else if (coordMatch && coordMatch[1] && coordMatch[2]) {
+        var p1 = parseFloat(coordMatch[1]);
+        var p2 = parseFloat(coordMatch[2]);
+        if (Math.abs(p1) <= 90 && Math.abs(p2) <= 180) {
+          foundLat = p1;
+          foundLng = p2;
+        }
+      }
+
+      if (foundLat !== null && foundLng !== null) {
+        if (statusEl) statusEl.textContent = 'พบพิกัดจากลิงก์/ข้อความ!';
+        panMapToLocation(foundLat, foundLng, 18);
+        showToast('ไปยังพิกัด: ' + foundLat.toFixed(6) + ', ' + foundLng.toFixed(6), 'success');
+        return;
+      }
+
+      // 3. Forward Geocoding
+      var searchUrl = 'https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(query) + '&countrycodes=th&limit=5';
+      fetch(searchUrl, { headers: { 'Accept-Language': 'th,en' } })
+        .then(function(res) { return res.json(); })
+        .then(function(results) {
+          if (results && results.length > 0) {
+            var top = results[0];
+            var sLat = parseFloat(top.lat);
+            var sLng = parseFloat(top.lon);
+            if (statusEl) statusEl.textContent = 'พบ: ' + (top.display_name.substring(0, 26) + '...');
+            panMapToLocation(sLat, sLng, 17);
+            showToast('พบสถานที่: ' + (top.name || query), 'success');
+          } else {
+            if (statusEl) statusEl.textContent = 'ไม่พบสถานที่ ลองระบุชื่อให้กว้างขึ้น';
+            showToast('ไม่พบสถานที่ที่ค้นหา ลองระบุชื่ออำเภอหรือวางพิกัดตัวเลข', 'info');
+          }
+        })
+        .catch(function() {
+          if (statusEl) statusEl.textContent = 'ไม่สามารถค้นหาสถานที่ได้';
+        });
+    }
+
+    function bindMapPickerEvents() {
+      // Open Map Picker from Projector Form
+      var btnOpenMap = document.getElementById('btn-open-map-picker');
+      if (btnOpenMap) {
+        btnOpenMap.addEventListener('click', function(e) {
+          e.preventDefault();
+          openGpsMapPicker('session-lat-input', 'session-lng-input');
+        });
+      }
+
+      // Open Map Picker from Modal Form
+      var btnModalOpenMap = document.getElementById('btn-modal-open-map-picker');
+      if (btnModalOpenMap) {
+        btnModalOpenMap.addEventListener('click', function(e) {
+          e.preventDefault();
+          openGpsMapPicker('modal-session-lat-input', 'modal-session-lng-input');
+        });
+      }
+
+      var btnModalGetGps = document.getElementById('btn-modal-get-gps');
+      if (btnModalGetGps) {
+        btnModalGetGps.addEventListener('click', function(e) {
+          e.preventDefault();
+          showToast('กำลังดึงพิกัด GPS ปัจจุบัน...', 'info');
+          requestRobustGeolocation(
+            function(pos) {
+              var mLat = document.getElementById('modal-session-lat-input');
+              var mLng = document.getElementById('modal-session-lng-input');
+              if (mLat) mLat.value = pos.coords.latitude.toFixed(6);
+              if (mLng) mLng.value = pos.coords.longitude.toFixed(6);
+              showToast('ดึงพิกัดสำเร็จ (±' + Math.round(pos.coords.accuracy) + 'm)', 'success');
+            },
+            function(err) {
+              showToast(err.message || 'ไม่สามารถดึงพิกัดได้', 'error');
+            }
+          );
+        });
+      }
+
+      // Search Actions
+      var btnSearch = document.getElementById('btn-map-search-execute');
+      if (btnSearch) {
+        btnSearch.addEventListener('click', function(e) {
+          e.preventDefault();
+          handleMapSearch();
+        });
+      }
+
+      var inputSearch = document.getElementById('input-map-search');
+      if (inputSearch) {
+        inputSearch.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            handleMapSearch();
+          }
+        });
+      }
+
+      // Locate Me in Map
+      var btnLocateMe = document.getElementById('btn-map-locate-me');
+      if (btnLocateMe) {
+        btnLocateMe.addEventListener('click', function(e) {
+          e.preventDefault();
+          showToast('กำลังค้นหาตำแหน่งปัจจุบันของคุณ...', 'info');
+          requestRobustGeolocation(
+            function(pos) {
+              panMapToLocation(pos.coords.latitude, pos.coords.longitude, 18);
+              showToast('ไปยังตำแหน่งปัจจุบันของคุณแล้ว (±' + Math.round(pos.coords.accuracy) + 'm)', 'success');
+            },
+            function(err) {
+              showToast('ไม่สามารถระบุตำแหน่งได้: ' + (err.message || ''), 'error');
+            }
+          );
+        });
+      }
+
+      // Quick Preset Location Chips
+      var presetChips = document.querySelectorAll('.chip-preset-loc');
+      for (var p = 0; p < presetChips.length; p++) {
+        (function(chip) {
+          chip.addEventListener('click', function(e) {
+            e.preventDefault();
+            var pLat = parseFloat(chip.getAttribute('data-lat'));
+            var pLng = parseFloat(chip.getAttribute('data-lng'));
+            if (!isNaN(pLat) && !isNaN(pLng)) {
+              panMapToLocation(pLat, pLng, 17);
+            }
+          });
+        })(presetChips[p]);
+      }
+
+      // Layer Switcher (Street vs Satellite)
+      var btnStreet = document.getElementById('btn-layer-street');
+      var btnSatellite = document.getElementById('btn-layer-satellite');
+      if (btnStreet && btnSatellite) {
+        btnStreet.addEventListener('click', function(e) {
+          e.preventDefault();
+          btnStreet.classList.add('active');
+          btnSatellite.classList.remove('active');
+          if (mapPickerInstance && mapSatLayer && mapStreetLayer) {
+            mapPickerInstance.removeLayer(mapSatLayer);
+            mapPickerInstance.addLayer(mapStreetLayer);
+          }
+        });
+
+        btnSatellite.addEventListener('click', function(e) {
+          e.preventDefault();
+          btnSatellite.classList.add('active');
+          btnStreet.classList.remove('active');
+          if (mapPickerInstance && mapStreetLayer && mapSatLayer) {
+            mapPickerInstance.removeLayer(mapStreetLayer);
+            mapPickerInstance.addLayer(mapSatLayer);
+          }
+        });
+      }
+
+      // Open in External Google Maps
+      var btnGmapsExt = document.getElementById('btn-open-google-maps-external');
+      if (btnGmapsExt) {
+        btnGmapsExt.addEventListener('click', function(e) {
+          e.preventDefault();
+          var gmapsUrl = 'https://www.google.com/maps?q=' + currentPickedLat.toFixed(6) + ',' + currentPickedLng.toFixed(6);
+          window.open(gmapsUrl, '_blank');
+        });
+      }
+
+      // Confirm Picked Location
+      var btnConfirmPick = document.getElementById('btn-confirm-map-pick');
+      if (btnConfirmPick) {
+        btnConfirmPick.addEventListener('click', function(e) {
+          e.preventDefault();
+          var latInput = document.getElementById(currentMapTargetLatInput);
+          var lngInput = document.getElementById(currentMapTargetLngInput);
+
+          if (latInput) latInput.value = currentPickedLat.toFixed(6);
+          if (lngInput) lngInput.value = currentPickedLng.toFixed(6);
+
+          closeModal('modal-gps-map-picker');
+          showToast('กำหนดพิกัดเช็คชื่อ: ' + currentPickedLat.toFixed(6) + ', ' + currentPickedLng.toFixed(6) + ' เรียบร้อยแล้ว', 'success');
+        });
+      }
+    }
+
     function bindProjectorEvents() {
+      bindMapPickerEvents();
       // Main Form Activity Category Tabs
       var catTabs = document.querySelectorAll('.session-cat-tab');
       for (var c = 0; c < catTabs.length; c++) {
