@@ -2025,22 +2025,42 @@
       z-index: 999999 !important;
       position: relative !important;
     }
+    .form-group-glass.has-popover-open {
+      z-index: 999999 !important;
+      position: relative !important;
+    }
+    #view-attendance .glass-card:first-child,
+    #view-reports .glass-card:first-child {
+      position: relative !important;
+      z-index: 500 !important;
+      overflow: visible !important;
+    }
+    #view-attendance .card-header-flex,
+    #view-reports .card-header-flex {
+      position: relative !important;
+      z-index: 500 !important;
+      overflow: visible !important;
+    }
+    #attendance-student-list {
+      position: relative !important;
+      z-index: 1 !important;
+    }
     .filter-popover-glass {
       display: none;
       position: absolute;
-      top: calc(100% + 6px);
+      top: calc(100% + 4px);
       left: 0;
-      z-index: 999999 !important;
+      z-index: 9999999 !important;
       min-width: 270px;
       max-width: 360px;
-      max-height: 320px;
+      max-height: 340px;
       overflow-y: auto;
       background: #0E1424 !important;
       backdrop-filter: blur(25px);
       -webkit-backdrop-filter: blur(25px);
       border: 1.5px solid var(--orange-500);
       border-radius: 10px;
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.95), 0 0 30px rgba(255, 107, 0, 0.4);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.95), 0 0 30px rgba(255, 107, 0, 0.5);
       padding: 12px 14px;
       animation: popoverFadeIn 0.15s ease;
     }
@@ -5698,6 +5718,12 @@
         popAttClass.onclick = function(e) {
           e.stopPropagation();
         };
+        document.addEventListener('click', function(e) {
+          if (!fgAttClass || !fgAttClass.contains(e.target)) {
+            popAttClass.style.display = 'none';
+            if (fgAttClass) fgAttClass.classList.remove('has-popover-open');
+          }
+        });
       }
 
       if (btnAttClassAll) {
@@ -6589,6 +6615,25 @@
         populateActivityDropdowns();
         if (callback) callback(AppState.activities);
       }
+    }
+
+    function getActivitiesByCategory(catKey) {
+      catKey = catKey || 'general';
+      var actList = normalizeActivitiesList(AppState.activities || []);
+      var res = [];
+      for (var i = 0; i < actList.length; i++) {
+        var it = actList[i];
+        if (!it) continue;
+        var itemType = it.type || 'general';
+        if (itemType === catKey || (catKey === 'general' && (!it.type || it.type === 'general'))) {
+          res.push(it);
+        }
+      }
+      return res;
+    }
+
+    function renderProjectorCategoryItems(catKey) {
+      updateSessionActivityDropdownForCategory(catKey);
     }
 
     function updateSessionActivityDropdownForCategory(cat, preselectVal) {
@@ -9307,9 +9352,9 @@
         lateAtIso = new Date(lateAtMs).toISOString();
       }
 
-      var latInput = document.getElementById('session-lat-input');
+      var latInput = isModal ? (document.getElementById('modal-session-lat-input') || document.getElementById('session-lat-input')) : document.getElementById('session-lat-input');
       var lat = latInput ? (parseFloat(latInput.value) || 0) : 0;
-      var lngInput = document.getElementById('session-lng-input');
+      var lngInput = isModal ? (document.getElementById('modal-session-lng-input') || document.getElementById('session-lng-input')) : document.getElementById('session-lng-input');
       var lng = lngInput ? (parseFloat(lngInput.value) || 0) : 0;
       var radSelect = document.getElementById('session-radius-select');
       var radius = radSelect ? (parseInt(radSelect.value, 10) || 50) : 50;
