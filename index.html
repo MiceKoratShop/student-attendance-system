@@ -4147,6 +4147,30 @@
               <input type="time" class="input-glass" id="sch-m-late" value="09:00" style="padding: 6px 10px; font-size: 12px; font-family: monospace; border-color: #FF6B00;" />
             </div>
           </div>
+
+          <!-- Check-in Window Duration Setting -->
+          <div style="margin-top: 10px; background: rgba(0, 240, 255, 0.05); border: 1px dashed rgba(0, 240, 255, 0.35); border-radius: 6px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <i class="fas fa-hourglass-half" style="color: #00F0FF; font-size: 13px;"></i>
+              <span style="font-size: 12px; font-weight: 700; color: #FFF;">⏱️ ระยะเวลาที่เปิดให้เช็คชื่อ (Session Duration):</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+              <select class="select-glass" id="sch-checkin-duration" style="padding: 4px 10px; font-size: 11.5px; border-color: rgba(0,240,255,0.4); min-width: 140px;">
+                <option value="15">15 นาที</option>
+                <option value="30">30 นาที</option>
+                <option value="45">45 นาที</option>
+                <option value="60" selected>60 นาที (1 ชั่วโมง)</option>
+                <option value="90">90 นาที (1.5 ชั่วโมง)</option>
+                <option value="120">120 นาที (2 ชั่วโมง)</option>
+                <option value="all_day">เปิดตลอดทั้งวัน (All Day)</option>
+                <option value="custom">✏️ กำหนดเอง (นาที)...</option>
+              </select>
+              <div id="sch-custom-duration-box" style="display: none; align-items: center; gap: 4px;">
+                <input type="number" min="1" max="1440" class="input-glass" id="sch-custom-duration-val" value="60" style="width: 75px; padding: 4px 8px; font-size: 11.5px;" />
+                <span style="font-size: 11px; color: var(--text-muted);">นาที</span>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Afternoon Session Settings with Toggle -->
@@ -4623,7 +4647,7 @@
   <!-- ============================================================= -->
   <!-- MODAL: INTERACTIVE GOOGLE MAPS GPS LOCATION PICKER -->
   <!-- ============================================================= -->
-  <div class="modal-backdrop-glass" id="modal-gps-map-picker" style="z-index: 100000;">
+  <div class="modal-backdrop-glass" id="modal-gps-map-picker" style="z-index: 2000000;">
     <div class="modal-window-glass" style="max-width: 880px; width: 95%; max-height: 94vh; display: flex; flex-direction: column; padding: 18px 20px;">
       
       <!-- Modal Header -->
@@ -10393,7 +10417,9 @@
       if (!matchedSchedule) {
         return {
           status: 'locked',
-          code: 'NOT_SCHEDULED',
+          code: 'CLOSED',
+          isUpcoming: false,
+          isClosed: true,
           message: 'ห้องนี้ไม่ได้เปิดการตั้งค่าเช็คชื่ออัตโนมัติ หรือไม่มีตารางสำหรับวันนี้',
           className: className,
           schedule: null
@@ -10444,10 +10470,20 @@
 
       if (!sessionPhase) {
         var aftInfo = (matchedSchedule.afternoonEnabled !== false) ? (' / รอบบ่าย ' + (matchedSchedule.afternoonStart || '12:00') + ' - ' + (matchedSchedule.afternoonCutoff || '17:00') + ' น.') : ' (รอบบ่ายปิด)';
+        var isUpcoming = false;
+        if (nowMinutes < mStart) {
+          isUpcoming = true;
+        } else if (matchedSchedule.afternoonEnabled !== false && nowMinutes > mCutoff && nowMinutes < aStart) {
+          isUpcoming = true;
+        }
+        var isClosed = !isUpcoming;
+
         return {
           status: 'locked',
-          code: 'OUT_OF_HOURS',
-          message: 'ขณะนี้อยู่นอกช่วงเวลาเช็คชื่อที่กำหนด',
+          code: isUpcoming ? 'UPCOMING' : 'CLOSED',
+          isUpcoming: isUpcoming,
+          isClosed: isClosed,
+          message: isUpcoming ? 'ขณะนี้ยังไม่ถึงเวลาเปิดให้เช็คชื่อ' : 'ปิดการเช็คชื่อสำหรับวันนี้แล้ว',
           currentMinutes: nowMinutes,
           schedule: matchedSchedule,
           allowedTimes: 'รอบเช้า ' + (matchedSchedule.morningStart || '07:00') + ' - ' + (matchedSchedule.morningLateEnd || '09:00') + ' น.' + aftInfo
@@ -10628,7 +10664,8 @@
           btnStep1.disabled = false;
           btnStep1.innerHTML = 'ต่อไป: ตรวจสอบพิกัด GPS <i class="fas fa-arrow-right"></i>';
         }
-      } else {
+      } else if (res.isUpcoming) {
+        // ยังไม่ถึงเวลาเปิด: ซ่อน QR/OTP และแสดงการ์ดแจ้งเตือนว่ายังไม่ถึงเวลาเปิด
         if (activeBox) activeBox.style.display = 'none';
         if (lockedBox) lockedBox.style.display = 'block';
         if (autoOtpTimer) clearInterval(autoOtpTimer);
@@ -10637,17 +10674,29 @@
         var lockDesc = document.getElementById('student-schedule-locked-desc');
         var allowedBadge = document.getElementById('student-schedule-allowed-badge');
 
-        if (lockTitle) lockTitle.textContent = 'ขณะนี้ยังไม่เปิดให้เช็คชื่อ (' + className + ')';
-        if (lockDesc) lockDesc.textContent = res.message || 'ห้องเรียนนี้ไม่ได้เปิดการเช็คชื่อไว้ หรืออยู่นอกช่วงเวลาที่กำหนด';
+        if (lockTitle) lockTitle.textContent = '⏳ ขณะนี้ยังไม่ถึงเวลาเปิดให้เช็คชื่อ (' + className + ')';
+        if (lockDesc) lockDesc.textContent = res.message || 'ระบบจะเปิดให้เช็คชื่อตามกำหนดเวลาของตาราง กรุณารอสักครู่';
         if (allowedBadge && res.allowedTimes) {
-          allowedBadge.textContent = '⏰ ' + res.allowedTimes;
+          allowedBadge.textContent = '⏱️ ช่วงเวลาเช็คชื่อ: ' + res.allowedTimes;
         }
 
         AppState.activeSession = null;
 
         if (btnStep1) {
           btnStep1.disabled = true;
-          btnStep1.innerHTML = '<i class="fas fa-lock"></i> ยังไม่เปิดให้เช็คชื่อห้องนี้';
+          btnStep1.innerHTML = '<i class="fas fa-clock"></i> ยังไม่ถึงเวลาเปิดเช็คชื่อ';
+        }
+      } else {
+        // ปิดการเช็คชื่อไปแล้ว (Closed) หรือไม่มีตาราง: ซ่อนการ์ดแจ้งเตือน "ขณะนี้ยังไม่เปิดให้เช็คชื่อ" ไปเลยตามคำขอของผู้ใช้!
+        if (activeBox) activeBox.style.display = 'none';
+        if (lockedBox) lockedBox.style.display = 'none';
+        if (autoOtpTimer) clearInterval(autoOtpTimer);
+
+        AppState.activeSession = null;
+
+        if (btnStep1) {
+          btnStep1.disabled = true;
+          btnStep1.innerHTML = '<i class="fas fa-lock"></i> ปิดการเช็คชื่อแล้ว';
         }
       }
     }
@@ -11884,6 +11933,7 @@
         }
 
         populateStudentSelectForClass(classSelect.value);
+        updateStudentScheduleStatus(classSelect.value);
 
         if (!AppState.students || AppState.students.length === 0) {
           fetchStudents('all', function() {
@@ -12688,6 +12738,14 @@
     }
 
     function renderAttendancePage() {
+      var attDateEl = document.getElementById('att-date-select');
+      if (attDateEl) {
+        if (AppState.selectedDate) {
+          attDateEl.value = AppState.selectedDate;
+        } else if (!attDateEl.value) {
+          attDateEl.value = getTodayDateString();
+        }
+      }
       populateAttendanceClassCheckboxes();
       loadAttendanceDataForSelectedDate();
     }
@@ -12703,6 +12761,14 @@
 
       var headerDateLabel = document.getElementById('header-date-text');
       if (headerDateLabel) headerDateLabel.textContent = formatThaiDate(targetDate);
+
+      var attDateSelect = document.getElementById('att-date-select');
+      if (attDateSelect) {
+        attDateSelect.addEventListener('change', function() {
+          AppState.selectedDate = this.value;
+          loadAttendanceDataForSelectedDate();
+        });
+      }
 
       var attActSelect = document.getElementById('att-activity-select');
       var targetActivity = attActSelect ? attActSelect.value : 'all';
@@ -14013,6 +14079,14 @@
     }
 
     function renderReportsPage() {
+      var repDateEl = document.getElementById('report-date-select');
+      if (repDateEl) {
+        if (AppState.selectedDate) {
+          repDateEl.value = AppState.selectedDate;
+        } else if (!repDateEl.value) {
+          repDateEl.value = getTodayDateString();
+        }
+      }
       generateReportPreview();
       
       var btnRefresh = document.getElementById('btn-refresh-report');
@@ -14201,6 +14275,7 @@
       var reportDateSelect = document.getElementById('report-date-select');
       if (reportDateSelect) {
         reportDateSelect.onchange = function() {
+          AppState.selectedDate = this.value;
           generateReportPreview();
         };
       }
@@ -14208,10 +14283,12 @@
 
     function getAttendanceMapFromLocalStorage(dateStr, activityName) {
       var allAtt = getLocalStorageAttendance();
+      var targetD = formatDateString(dateStr);
       var map = {};
       for (var i = 0; i < allAtt.length; i++) {
         var it = allAtt[i];
-        if (it.date === dateStr) {
+        var itemD = formatDateString(it.date);
+        if (itemD === targetD) {
           var act = it.activityName || 'เช็คชื่อมาเรียน';
           if (isActivityMatch(activityName, act)) {
             var attObj = {
@@ -14363,7 +14440,7 @@
           }
         }
 
-        if (status === 'Present' || status === 'มาเรียน') { countPresent++; presentList.push(sObj); }
+        if (status === 'Present' || status === 'มาเรียน') countPresent++;
         else if (status === 'Absent' || status === 'ขาด' || status === 'ขาดเรียน') countAbsent++;
         else if (status === 'Sick' || status === 'ลาป่วย') countSick++;
         else if (status === 'Leave' || status === 'ลากิจ') countLeave++;
@@ -15227,7 +15304,8 @@
           name: s.name,
           className: s.className,
           note: note,
-          time: cTime
+          time: cTime,
+          selfiePhoto: (rec && rec.selfiePhoto) ? rec.selfiePhoto : ''
         };
 
         if (status === 'Present' || status === 'มาเรียน') { countPresent++; presentList.push(sObj); }
@@ -15404,6 +15482,29 @@
 
     
     
+    function formatDateString(val) {
+      if (!val) return '';
+      var str = String(val).trim();
+      if (str.match(/^\d{4}-\d{2}-\d{2}/)) {
+        return str.substring(0, 10);
+      }
+      if (str.indexOf('/') > -1) {
+        var parts = str.split('/');
+        if (parts.length === 3) {
+          var day = parts[0].trim().length === 1 ? '0' + parts[0].trim() : parts[0].trim();
+          var month = parts[1].trim().length === 1 ? '0' + parts[1].trim() : parts[1].trim();
+          var year = parts[2].trim().substring(0, 4);
+          if (parseInt(year, 10) > 2500) {
+            year = String(parseInt(year, 10) - 543);
+          } else if (year.length === 2) {
+            year = '20' + year;
+          }
+          return year + '-' + month + '-' + day;
+        }
+      }
+      return str;
+    }
+
     function formatTimeString(val) {
       if (!val || val === '-' || val === 'null' || val === 'undefined') return '-';
       if (typeof val === 'object' && val instanceof Date) {
@@ -15465,6 +15566,81 @@
       var attRate = data.attRate || '100.0';
 
       var bodyHtml = '';
+
+      // Top 3 Early Birds Champions Podium (👑 Gold / Silver / Bronze)
+      var earlyBirds = [];
+      if (data.presentList && data.presentList.length > 0) {
+        for (var eb = 0; eb < data.presentList.length; eb++) {
+          var pItem = data.presentList[eb];
+          var pT = formatTimeString(pItem.time);
+          if (pT && pT !== '-') {
+            earlyBirds.push({
+              no: pItem.no,
+              name: pItem.name,
+              className: pItem.className,
+              time: pT,
+              selfiePhoto: pItem.selfiePhoto || ''
+            });
+          }
+        }
+        earlyBirds.sort(function(a, b) {
+          return String(a.time).localeCompare(String(b.time));
+        });
+      }
+
+      if (earlyBirds.length > 0) {
+        var top1 = earlyBirds[0];
+        var top2 = earlyBirds[1] || null;
+        var top3 = earlyBirds[2] || null;
+
+        var renderChampAvatar = function(item, borderColor, glowColor) {
+          if (item.selfiePhoto && item.selfiePhoto.length > 50) {
+            return '<img src="' + item.selfiePhoto + '" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid ' + borderColor + '; box-shadow: 0 0 10px ' + glowColor + '; display: block; margin: 0 auto;" />';
+          }
+          return '<div style="width: 44px; height: 44px; border-radius: 50%; background: #27272A; border: 2px solid ' + borderColor + '; box-shadow: 0 0 10px ' + glowColor + '; display: flex; align-items: center; justify-content: center; margin: 0 auto; color: ' + borderColor + '; font-size: 16px;"><i class="fas fa-user"></i></div>';
+        };
+
+        var podiumCol2 = '';
+        if (top2) {
+          podiumCol2 = '<div style="flex: 1; text-align: center; padding: 4px;">' +
+                       '  <div style="font-size: 14px; margin-bottom: 2px;">👑</div>' +
+                       renderChampAvatar(top2, '#C0C0C0', 'rgba(192,192,192,0.4)') +
+                       '  <div style="font-size: 9.5px; font-weight: 800; color: #E2E8F0; margin-top: 3px; background: rgba(255,255,255,0.1); border-radius: 4px; padding: 1px 4px;">🥈 อันดับ 2</div>' +
+                       '  <div style="font-size: 10px; font-weight: 700; color: #FFF; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 85px;">' + top2.name + '</div>' +
+                       '  <div style="font-size: 9px; color: #94A3B8;">⏰ ' + top2.time + ' น.</div>' +
+                       '</div>';
+        } else {
+          podiumCol2 = '<div style="flex: 1;"></div>';
+        }
+
+        var podiumCol1 = '<div style="flex: 1.2; text-align: center; padding: 4px; transform: scale(1.05);">' +
+                         '  <div style="font-size: 17px; margin-bottom: 2px;">👑</div>' +
+                         renderChampAvatar(top1, '#FFD700', 'rgba(255,215,0,0.6)') +
+                         '  <div style="font-size: 10.5px; font-weight: 800; color: #FFD700; margin-top: 3px; background: rgba(255,215,0,0.18); border: 1px solid rgba(255,215,0,0.4); border-radius: 4px; padding: 1px 6px;">🥇 อันดับ 1</div>' +
+                         '  <div style="font-size: 11px; font-weight: 800; color: #FFF; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 95px;">' + top1.name + '</div>' +
+                         '  <div style="font-size: 9.5px; font-weight: 700; color: #FBBF24;">⏰ ' + top1.time + ' น.</div>' +
+                         '</div>';
+
+        var podiumCol3 = '';
+        if (top3) {
+          podiumCol3 = '<div style="flex: 1; text-align: center; padding: 4px;">' +
+                       '  <div style="font-size: 14px; margin-bottom: 2px;">👑</div>' +
+                       renderChampAvatar(top3, '#CD7F32', 'rgba(205,127,50,0.4)') +
+                       '  <div style="font-size: 9.5px; font-weight: 800; color: #FDBA74; margin-top: 3px; background: rgba(205,127,50,0.15); border-radius: 4px; padding: 1px 4px;">🥉 อันดับ 3</div>' +
+                       '  <div style="font-size: 10px; font-weight: 700; color: #FFF; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 85px;">' + top3.name + '</div>' +
+                       '  <div style="font-size: 9px; color: #FB923C;">⏰ ' + top3.time + ' น.</div>' +
+                       '</div>';
+        } else {
+          podiumCol3 = '<div style="flex: 1;"></div>';
+        }
+
+        bodyHtml += '<div style="background: linear-gradient(135deg, #18181B 0%, #27272A 100%); border: 1.5px solid rgba(255, 215, 0, 0.45); border-radius: 12px; padding: 10px 8px; margin-bottom: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.4);">' +
+                    '  <div style="font-size: 11.5px; font-weight: 800; color: #FFD700; text-align: center; margin-bottom: 6px; letter-spacing: 0.5px;">👑 🏆 อันดับเช็คชื่อไวที่สุดประจำวัน (Top 3)</div>' +
+                    '  <div style="display: flex; align-items: flex-end; justify-content: space-around; gap: 4px;">' +
+                    podiumCol2 + podiumCol1 + podiumCol3 +
+                    '  </div>' +
+                    '</div>';
+      }
 
       // Main percentage row
       bodyHtml += '<div style="display:flex; align-items:center; justify-content:space-between; padding-bottom:10px; border-bottom:1px solid #F1F5F9;">' +
