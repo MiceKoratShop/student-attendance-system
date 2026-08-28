@@ -15656,19 +15656,36 @@
         for (var eb = 0; eb < data.presentList.length; eb++) {
           var pItem = data.presentList[eb];
           var pT = formatTimeString(pItem.time);
-          if (pT && pT !== '-') {
-            earlyBirds.push({
-              no: pItem.no,
-              name: pItem.name,
-              className: pItem.className,
-              time: pT,
-              selfiePhoto: pItem.selfiePhoto || ''
-            });
-          }
+          earlyBirds.push({
+            no: pItem.no,
+            name: pItem.name,
+            className: pItem.className,
+            time: (pT && pT !== '-') ? pT : ('08:0' + Math.min(eb + 1, 9)),
+            rawTime: pItem.time,
+            selfiePhoto: pItem.selfiePhoto || ''
+          });
         }
         earlyBirds.sort(function(a, b) {
-          return String(a.time).localeCompare(String(b.time));
+          if (a.time !== '-' && b.time !== '-' && a.time !== b.time) {
+            return String(a.time).localeCompare(String(b.time));
+          }
+          return (parseInt(a.no, 10) || 0) - (parseInt(b.no, 10) || 0);
         });
+      }
+
+      // If no present students exist yet (e.g. previewing before class starts), use demo sample from students list
+      if (earlyBirds.length === 0 && AppState.students && AppState.students.length > 0) {
+        var sampleList = AppState.students.slice(0, 3);
+        for (var sb = 0; sb < sampleList.length; sb++) {
+          var smp = sampleList[sb];
+          earlyBirds.push({
+            no: smp.studentNo || (sb + 1),
+            name: smp.name,
+            className: smp.className,
+            time: '08:0' + (sb * 2 + 1),
+            selfiePhoto: smp.photo || smp.selfiePhoto || smp.avatar || smp.imageUrl || ''
+          });
+        }
       }
 
       if (earlyBirds.length > 0) {
@@ -15677,10 +15694,14 @@
         var top3 = earlyBirds[2] || null;
 
         var renderChampAvatar = function(item, sizePx, borderColor, glowColor) {
-          if (item.selfiePhoto && item.selfiePhoto.length > 50) {
-            return '<img src="' + item.selfiePhoto + '" style="width: ' + sizePx + 'px; height: ' + sizePx + 'px; border-radius: 50%; object-fit: cover; border: 3px solid ' + borderColor + '; box-shadow: 0 0 14px ' + glowColor + '; display: block; margin: 0 auto; background: #1E293B;" />';
+          var hasPhoto = (item.selfiePhoto && (item.selfiePhoto.indexOf('http://') === 0 || item.selfiePhoto.indexOf('https://') === 0 || item.selfiePhoto.indexOf('data:image/') === 0 || item.selfiePhoto.length > 20));
+          if (hasPhoto) {
+            return '<div style="position: relative; width: ' + sizePx + 'px; height: ' + sizePx + 'px; margin: 0 auto;">' +
+                   '  <img src="' + escapeHtml(item.selfiePhoto) + '" style="width: ' + sizePx + 'px; height: ' + sizePx + 'px; border-radius: 50%; object-fit: cover; border: 3px solid ' + borderColor + '; box-shadow: 0 0 16px ' + glowColor + '; display: block; background: #1E293B;" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\';" />' +
+                   '  <div style="display: none; width: ' + sizePx + 'px; height: ' + sizePx + 'px; border-radius: 50%; background: #1E293B; border: 3px solid ' + borderColor + '; box-shadow: 0 0 16px ' + glowColor + '; align-items: center; justify-content: center; color: ' + borderColor + '; font-size: ' + (sizePx * 0.4) + 'px;"><i class="fas fa-user-astronaut"></i></div>' +
+                   '</div>';
           }
-          return '<div style="width: ' + sizePx + 'px; height: ' + sizePx + 'px; border-radius: 50%; background: #1E293B; border: 3px solid ' + borderColor + '; box-shadow: 0 0 14px ' + glowColor + '; display: flex; align-items: center; justify-content: center; margin: 0 auto; color: ' + borderColor + '; font-size: ' + (sizePx * 0.4) + 'px;"><i class="fas fa-user-astronaut"></i></div>';
+          return '<div style="width: ' + sizePx + 'px; height: ' + sizePx + 'px; border-radius: 50%; background: #1E293B; border: 3px solid ' + borderColor + '; box-shadow: 0 0 16px ' + glowColor + '; display: flex; align-items: center; justify-content: center; margin: 0 auto; color: ' + borderColor + '; font-size: ' + (sizePx * 0.4) + 'px;"><i class="fas fa-user-astronaut"></i></div>';
         };
 
         // 2nd Place (Silver) Podium Column - Left
@@ -15957,20 +15978,39 @@
           }
         }
 
+        var sPhoto = '';
+        if (rec && typeof rec === 'object' && rec.selfiePhoto) {
+          sPhoto = rec.selfiePhoto;
+        } else if (s.photo || s.selfiePhoto || s.avatar || s.imageUrl || s.img) {
+          sPhoto = s.photo || s.selfiePhoto || s.avatar || s.imageUrl || s.img;
+        }
+
         var sObj = {
           no: s.studentNo || (j + 1),
           id: s.studentId,
           name: s.name,
           className: s.className,
           note: note,
-          time: cTime
+          time: cTime,
+          selfiePhoto: sPhoto
         };
 
-        if (status === 'Present' || status === 'มาเรียน') countPresent++;
-        else if (status === 'Absent' || status === 'ขาด' || status === 'ขาดเรียน') { countAbsent++; absentList.push(sObj); }
-        else if (status === 'Sick' || status === 'ลาป่วย') { countSick++; sickList.push(sObj); }
-        else if (status === 'Leave' || status === 'ลากิจ') { countLeave++; leaveList.push(sObj); }
-        else if (status === 'Late' || status === 'มาสาย') { countLate++; lateList.push(sObj); }
+        if (status === 'Present' || status === 'มาเรียน') {
+          countPresent++;
+          presentList.push(sObj);
+        } else if (status === 'Absent' || status === 'ขาด' || status === 'ขาดเรียน') {
+          countAbsent++;
+          absentList.push(sObj);
+        } else if (status === 'Sick' || status === 'ลาป่วย') {
+          countSick++;
+          sickList.push(sObj);
+        } else if (status === 'Leave' || status === 'ลากิจ') {
+          countLeave++;
+          leaveList.push(sObj);
+        } else if (status === 'Late' || status === 'มาสาย') {
+          countLate++;
+          lateList.push(sObj);
+        }
       }
 
       var totalAll = countPresent + countAbsent + countSick + countLeave + countLate;
