@@ -15385,6 +15385,41 @@
 
       var text = '';
       var divLine = '━━━━━━━━━━━━━━━━━━━━\n';
+      // Top 3 Early Birds Champions Text List
+      var textEarlyBirds = [];
+      for (var teb = 0; teb < presentList.length; teb++) {
+        var tStrE = formatTimeString(presentList[teb].time);
+        if (tStrE && tStrE !== '-') {
+          textEarlyBirds.push({
+            no: presentList[teb].no,
+            name: presentList[teb].name,
+            className: presentList[teb].className,
+            time: tStrE
+          });
+        }
+      }
+      textEarlyBirds.sort(function(a, b) {
+        return String(a.time).localeCompare(String(b.time));
+      });
+
+      var top3TextSection = '';
+      if (textEarlyBirds.length > 0) {
+        top3TextSection = '\n👑 🏆 3 อันดับแรกที่เช็คชื่อไวที่สุดประจำวัน:\n';
+        if (textEarlyBirds[0]) {
+          var tClass1 = (isMultiClass && textEarlyBirds[0].className) ? ' (' + textEarlyBirds[0].className + ')' : '';
+          top3TextSection += '🥇 อันดับ 1 (Champion): 👑 ' + textEarlyBirds[0].name + tClass1 + ' ⏰ ' + textEarlyBirds[0].time + ' น.\n';
+        }
+        if (textEarlyBirds[1]) {
+          var tClass2 = (isMultiClass && textEarlyBirds[1].className) ? ' (' + textEarlyBirds[1].className + ')' : '';
+          top3TextSection += '🥈 อันดับ 2: 👑 ' + textEarlyBirds[1].name + tClass2 + ' ⏰ ' + textEarlyBirds[1].time + ' น.\n';
+        }
+        if (textEarlyBirds[2]) {
+          var tClass3 = (isMultiClass && textEarlyBirds[2].className) ? ' (' + textEarlyBirds[2].className + ')' : '';
+          top3TextSection += '🥉 อันดับ 3: 👑 ' + textEarlyBirds[2].name + tClass3 + ' ⏰ ' + textEarlyBirds[2].time + ' น.\n';
+        }
+        top3TextSection += divLine;
+      }
+
       if (messageStyle === 'parent' || messageStyle === 'parents') {
         text = divLine +
                '👨‍👩‍👧‍👦 แจ้งเตือนสถิติการมาเรียน (กลุ่มผู้ปกครอง)\n' +
@@ -15400,7 +15435,8 @@
                '🌸 มาสาย: ' + countLate + ' คน (' + pctLate + '%)\n' +
                '🟡 ลาป่วย/ลากิจ: ' + (countSick + countLeave) + ' คน (' + pctSickLeave + '%)\n' +
                '🔴 ขาดเรียน (ไม่พบเช็คชื่อ): ' + countAbsent + ' คน (' + pctAbsent + '%)\n' +
-               divLine;
+               divLine +
+               top3TextSection;
 
         if (presentList.length > 0) {
           text += '\n🟢 รายชื่อผู้ที่มาเรียนตรงเวลา (' + presentList.length + ' คน):\n';
@@ -15612,7 +15648,7 @@
 
       var bodyHtml = '';
 
-      // Top 3 Early Birds Champions Podium (👑 Gold / Silver / Bronze)
+      // Top 3 Early Birds Champions 3D Luxury Podium (👑 Gold / Silver / Bronze)
       var earlyBirds = [];
       if (data.presentList && data.presentList.length > 0) {
         for (var eb = 0; eb < data.presentList.length; eb++) {
@@ -15638,49 +15674,61 @@
         var top2 = earlyBirds[1] || null;
         var top3 = earlyBirds[2] || null;
 
-        var renderChampAvatar = function(item, borderColor, glowColor) {
+        var renderChampAvatar = function(item, sizePx, borderColor, glowColor) {
           if (item.selfiePhoto && item.selfiePhoto.length > 50) {
-            return '<img src="' + item.selfiePhoto + '" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid ' + borderColor + '; box-shadow: 0 0 10px ' + glowColor + '; display: block; margin: 0 auto;" />';
+            return '<img src="' + item.selfiePhoto + '" style="width: ' + sizePx + 'px; height: ' + sizePx + 'px; border-radius: 50%; object-fit: cover; border: 3px solid ' + borderColor + '; box-shadow: 0 0 14px ' + glowColor + '; display: block; margin: 0 auto; background: #1E293B;" />';
           }
-          return '<div style="width: 44px; height: 44px; border-radius: 50%; background: #27272A; border: 2px solid ' + borderColor + '; box-shadow: 0 0 10px ' + glowColor + '; display: flex; align-items: center; justify-content: center; margin: 0 auto; color: ' + borderColor + '; font-size: 16px;"><i class="fas fa-user"></i></div>';
+          return '<div style="width: ' + sizePx + 'px; height: ' + sizePx + 'px; border-radius: 50%; background: #1E293B; border: 3px solid ' + borderColor + '; box-shadow: 0 0 14px ' + glowColor + '; display: flex; align-items: center; justify-content: center; margin: 0 auto; color: ' + borderColor + '; font-size: ' + (sizePx * 0.4) + 'px;"><i class="fas fa-user-astronaut"></i></div>';
         };
 
+        // 2nd Place (Silver) Podium Column - Left
         var podiumCol2 = '';
         if (top2) {
-          podiumCol2 = '<div style="flex: 1; text-align: center; padding: 4px;">' +
-                       '  <div style="font-size: 14px; margin-bottom: 2px;">👑</div>' +
-                       renderChampAvatar(top2, '#C0C0C0', 'rgba(192,192,192,0.4)') +
-                       '  <div style="font-size: 9.5px; font-weight: 800; color: #E2E8F0; margin-top: 3px; background: rgba(255,255,255,0.1); border-radius: 4px; padding: 1px 4px;">🥈 อันดับ 2</div>' +
-                       '  <div style="font-size: 10px; font-weight: 700; color: #FFF; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 85px;">' + top2.name + '</div>' +
-                       '  <div style="font-size: 9px; color: #94A3B8;">⏰ ' + top2.time + ' น.</div>' +
+          var rTag2 = top2.className ? (' (' + top2.className + ')') : '';
+          podiumCol2 = '<div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end;">' +
+                       '  <div style="font-size: 16px; margin-bottom: 2px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">👑</div>' +
+                       renderChampAvatar(top2, 46, '#C0C0C0', 'rgba(192,192,192,0.6)') +
+                       '  <div style="font-size: 9.5px; font-weight: 800; color: #E2E8F0; margin-top: 4px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); border-radius: 4px; padding: 1px 6px; white-space: nowrap;">🥈 อันดับ 2</div>' +
+                       '  <div style="font-size: 10px; font-weight: 700; color: #FFF; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 82px;" title="' + top2.name + rTag2 + '">' + top2.name + '</div>' +
+                       '  <div style="font-size: 9px; color: #94A3B8; font-weight: 600;">⏰ ' + top2.time + ' น.</div>' +
+                       '  <!-- 3D Silver Pedestal Base -->' +
+                       '  <div style="width: 85%; height: 26px; background: linear-gradient(180deg, #475569 0%, #1E293B 100%); border-top: 3px solid #94A3B8; border-radius: 6px 6px 0 0; margin-top: 6px; display: flex; align-items: center; justify-content: center; color: #CBD5E1; font-weight: 900; font-size: 13px; box-shadow: 0 4px 10px rgba(0,0,0,0.4); text-shadow: 0 1px 2px #000;">2</div>' +
                        '</div>';
         } else {
           podiumCol2 = '<div style="flex: 1;"></div>';
         }
 
-        var podiumCol1 = '<div style="flex: 1.2; text-align: center; padding: 4px; transform: scale(1.05);">' +
-                         '  <div style="font-size: 17px; margin-bottom: 2px;">👑</div>' +
-                         renderChampAvatar(top1, '#FFD700', 'rgba(255,215,0,0.6)') +
-                         '  <div style="font-size: 10.5px; font-weight: 800; color: #FFD700; margin-top: 3px; background: rgba(255,215,0,0.18); border: 1px solid rgba(255,215,0,0.4); border-radius: 4px; padding: 1px 6px;">🥇 อันดับ 1</div>' +
-                         '  <div style="font-size: 11px; font-weight: 800; color: #FFF; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 95px;">' + top1.name + '</div>' +
-                         '  <div style="font-size: 9.5px; font-weight: 700; color: #FBBF24;">⏰ ' + top1.time + ' น.</div>' +
+        // 1st Place (Gold Champion) Podium Column - Center (Tallest & Glowing)
+        var rTag1 = top1.className ? (' (' + top1.className + ')') : '';
+        var podiumCol1 = '<div style="flex: 1.25; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; z-index: 2;">' +
+                         '  <div style="font-size: 22px; margin-bottom: 2px; filter: drop-shadow(0 0 6px rgba(255,215,0,0.8)); animation: bounce 2s infinite;">👑</div>' +
+                         renderChampAvatar(top1, 56, '#FFD700', 'rgba(255,215,0,0.85)') +
+                         '  <div style="font-size: 10.5px; font-weight: 900; color: #FFD700; margin-top: 4px; background: rgba(255,215,0,0.2); border: 1.5px solid #FFD700; border-radius: 6px; padding: 2px 8px; box-shadow: 0 0 10px rgba(255,215,0,0.3); white-space: nowrap;">🥇 อันดับ 1 (แชมป์)</div>' +
+                         '  <div style="font-size: 11px; font-weight: 800; color: #FFFFFF; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 98px;" title="' + top1.name + rTag1 + '">' + top1.name + '</div>' +
+                         '  <div style="font-size: 9.5px; font-weight: 700; color: #FDE047;">⏰ ' + top1.time + ' น.</div>' +
+                         '  <!-- 3D Gold Pedestal Base -->' +
+                         '  <div style="width: 90%; height: 42px; background: linear-gradient(180deg, #D97706 0%, #78350F 100%); border-top: 3.5px solid #FFD700; border-radius: 8px 8px 0 0; margin-top: 6px; display: flex; align-items: center; justify-content: center; color: #FFF; font-weight: 900; font-size: 16px; box-shadow: 0 4px 15px rgba(255,215,0,0.35); text-shadow: 0 1px 3px #000;">1</div>' +
                          '</div>';
 
+        // 3rd Place (Bronze) Podium Column - Right
         var podiumCol3 = '';
         if (top3) {
-          podiumCol3 = '<div style="flex: 1; text-align: center; padding: 4px;">' +
-                       '  <div style="font-size: 14px; margin-bottom: 2px;">👑</div>' +
-                       renderChampAvatar(top3, '#CD7F32', 'rgba(205,127,50,0.4)') +
-                       '  <div style="font-size: 9.5px; font-weight: 800; color: #FDBA74; margin-top: 3px; background: rgba(205,127,50,0.15); border-radius: 4px; padding: 1px 4px;">🥉 อันดับ 3</div>' +
-                       '  <div style="font-size: 10px; font-weight: 700; color: #FFF; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 85px;">' + top3.name + '</div>' +
-                       '  <div style="font-size: 9px; color: #FB923C;">⏰ ' + top3.time + ' น.</div>' +
+          var rTag3 = top3.className ? (' (' + top3.className + ')') : '';
+          podiumCol3 = '<div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end;">' +
+                       '  <div style="font-size: 16px; margin-bottom: 2px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">👑</div>' +
+                       renderChampAvatar(top3, 46, '#F97316', 'rgba(249,115,22,0.6)') +
+                       '  <div style="font-size: 9.5px; font-weight: 800; color: #FDBA74; margin-top: 4px; background: rgba(249,115,22,0.18); border: 1px solid rgba(249,115,22,0.4); border-radius: 4px; padding: 1px 6px; white-space: nowrap;">🥉 อันดับ 3</div>' +
+                       '  <div style="font-size: 10px; font-weight: 700; color: #FFF; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 82px;" title="' + top3.name + rTag3 + '">' + top3.name + '</div>' +
+                       '  <div style="font-size: 9px; color: #FB923C; font-weight: 600;">⏰ ' + top3.time + ' น.</div>' +
+                       '  <!-- 3D Bronze Pedestal Base -->' +
+                       '  <div style="width: 85%; height: 18px; background: linear-gradient(180deg, #9A3412 0%, #431407 100%); border-top: 3px solid #F97316; border-radius: 6px 6px 0 0; margin-top: 6px; display: flex; align-items: center; justify-content: center; color: #FED7AA; font-weight: 900; font-size: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.4); text-shadow: 0 1px 2px #000;">3</div>' +
                        '</div>';
         } else {
           podiumCol3 = '<div style="flex: 1;"></div>';
         }
 
-        bodyHtml += '<div style="background: linear-gradient(135deg, #18181B 0%, #27272A 100%); border: 1.5px solid rgba(255, 215, 0, 0.45); border-radius: 12px; padding: 10px 8px; margin-bottom: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.4);">' +
-                    '  <div style="font-size: 11.5px; font-weight: 800; color: #FFD700; text-align: center; margin-bottom: 6px; letter-spacing: 0.5px;">👑 🏆 อันดับเช็คชื่อไวที่สุดประจำวัน (Top 3)</div>' +
+        bodyHtml += '<div style="background: linear-gradient(145deg, #090D16 0%, #151C2C 100%); border: 1.5px solid rgba(255, 215, 0, 0.45); border-radius: 12px; padding: 12px 8px 0 8px; margin-bottom: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 20px rgba(255,215,0,0.25);">' +
+                    '  <div style="font-size: 12px; font-weight: 800; color: #FFD700; text-align: center; margin-bottom: 8px; letter-spacing: 0.5px; text-shadow: 0 0 8px rgba(255,215,0,0.4);">👑 🏆 3 อันดับแรกที่เช็คชื่อไวที่สุดประจำวัน</div>' +
                     '  <div style="display: flex; align-items: flex-end; justify-content: space-around; gap: 4px;">' +
                     podiumCol2 + podiumCol1 + podiumCol3 +
                     '  </div>' +
