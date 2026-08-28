@@ -16078,6 +16078,44 @@
     }
 
 
+
+    function downloadFlexCardAsImage(dateStr, className) {
+      var targetEl = document.getElementById('flex-card-capture-area') || document.querySelector('#quick-preview-flex-wrapper > div:last-child');
+      if (!targetEl) {
+        showToast('ไม่พบองค์ประกอบการ์ดสำหรับสร้างรูปภาพ', 'error');
+        return;
+      }
+      showLoadingPopup('กำลังสร้างรูปภาพการ์ด...', 'กำลังแปลงเป็นภาพคมชัดสูง HD เพื่อส่งเข้ากลุ่ม LINE');
+      var captureLib = (typeof html2canvas !== 'undefined') ? html2canvas : (typeof window.html2canvas !== 'undefined' ? window.html2canvas : null);
+      if (!captureLib) {
+        hideLoadingPopup();
+        showToast('ไลบรารีแปลงภาพ html2canvas ยังไม่พร้อมใช้งาน', 'error');
+        return;
+      }
+      captureLib(targetEl, {
+        scale: 2.5,
+        useCORS: true,
+        backgroundColor: '#0F172A',
+        logging: false
+      }).then(function(canvas) {
+        hideLoadingPopup();
+        var imgData = canvas.toDataURL('image/jpeg', 0.95);
+        var filename = 'สรุปการเช็คชื่อ_' + (className || 'ทุกห้อง') + '_' + (dateStr || getTodayDateString()) + '.jpg';
+        var link = document.createElement('a');
+        link.download = filename;
+        link.href = imgData;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast('บันทึกรูปภาพการ์ดรายงานเรียบร้อยแล้ว! ส่งเข้ากลุ่ม LINE ได้ทันที 📸✨', 'success');
+      }).catch(function(err) {
+        hideLoadingPopup();
+        console.error('Error creating image card:', err);
+        showToast('เกิดข้อผิดพลาดในการสร้างภาพ: ' + (err.message || String(err)), 'error');
+      });
+    }
+
+
     function testLineConnectionHandler(sendType) {
       sendType = sendType || 'flex';
       var token = (document.getElementById('input-line-token') && document.getElementById('input-line-token').value) || '';
@@ -16364,7 +16402,32 @@
                     if (res && res.status === 'success') {
                       showToast(res.message || 'ส่งการ์ด Flex เข้า LINE สำเร็จแล้ว!', 'success');
                     } else {
-                      showToast((res && res.message) ? res.message : 'เกิดข้อผิดพลาดในการส่ง LINE', 'error');
+                      var errMsg = (res && res.message) ? res.message : 'เกิดข้อผิดพลาดในการส่ง LINE';
+                      if (errMsg.indexOf('monthly limit') > -1 || errMsg.indexOf('429') > -1 || (res && res.code === 429)) {
+                        openConfirmModal({
+                          title: '⚠️ โควตาส่งข้อความ LINE รายเดือนเต็มแล้ว',
+                          desc: '<div style="font-size:13px; line-height:1.6; color:#E2E8F0;">' +
+                                '  <p style="color:#FBBF24; font-weight:700;"><i class="fas fa-triangle-exclamation"></i> บัญชี LINE Official Account นี้ใช้โควตาส่งข้อความฟรีครบ 500 ข้อความ/เดือนแล้ว (HTTP 429)</p>' +
+                                '  <div style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius:8px; padding:10px 12px; margin:10px 0; text-align:left;">' +
+                                '    <div style="font-weight:700; color:#38BDF8; margin-bottom:4px;">💡 วิธีแก้ไขที่แนะนำ:</div>' +
+                                '    <ul style="padding-left:18px; margin:0; font-size:12px; color:#CBD5E1;">' +
+                                '      <li><strong>สร้าง LINE OA ตัวใหม่ฟรี:</strong> นำ Channel Access Token ของบอทตัวใหม่มาใส่เพื่อรับโควตา 500 ข้อความใหม่ทันที</li>' +
+                                '      <li><strong>ใช้ LINE Notify Token:</strong> ส่งฟรีไม่จำกัดจำนวนข้อความ (Unlimited)</li>' +
+                                '      <li><strong>คัดลอกข้อความสรุป:</strong> กดปุ่มด้านล่างเพื่อคัดลอกข้อความทั้งหมดไปวางใน LINE ได้ทันที</li>' +
+                                '    </ul>' +
+                                '  </div>' +
+                                '</div>',
+                          icon: 'fa-triangle-exclamation',
+                          btnIcon: 'fa-copy',
+                          okText: '📋 คัดลอกข้อความไปวางใน LINE',
+                          onConfirm: function() {
+                            copyTextToClipboard(finalMsg);
+                            showToast('คัดลอกข้อความสรุปเรียบร้อยแล้ว นำไปวางในกลุ่ม LINE ได้เลยครับ!', 'success');
+                          }
+                        });
+                      } else {
+                        showToast(errMsg, 'error');
+                      }
                     }
                   })
                   .withFailureHandler(function(err) {
