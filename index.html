@@ -4497,8 +4497,11 @@
 
         <div style="display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap;">
           <button type="button" class="btn-glass btn-dark btn-close-modal" style="flex: 1; min-width: 100px;">ปิด</button>
-          <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-test-line-connection" style="flex: 1.2; min-width: 150px;">
-            <i class="fas fa-paper-plane"></i> ทดสอบการเชื่อมต่อ
+          <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-test-line-flex" style="flex: 1.2; min-width: 160px; font-weight: 700;">
+            <i class="fas fa-sparkles"></i> 🌟 ทดสอบส่งแบบ Flex Card
+          </button>
+          <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-test-line-text" style="flex: 1.2; min-width: 160px;">
+            <i class="fas fa-file-lines"></i> 📝 ทดสอบส่งเฉพาะข้อความ
           </button>
           <button type="submit" class="btn-glass btn-orange" style="flex: 1.5; min-width: 160px; font-weight: 700;">
             <i class="fas fa-floppy-disk"></i> บันทึกการตั้งค่า
@@ -16075,7 +16078,8 @@
     }
 
 
-    function testLineConnectionHandler() {
+    function testLineConnectionHandler(sendType) {
+      sendType = sendType || 'flex';
       var token = (document.getElementById('input-line-token') && document.getElementById('input-line-token').value) || '';
       var groupId = (document.getElementById('input-line-group-id') && document.getElementById('input-line-group-id').value) || '';
       var webhook = (document.getElementById('input-line-webhook') && document.getElementById('input-line-webhook').value) || '';
@@ -16091,27 +16095,28 @@
         return;
       }
 
-      showLoadingPopup('กำลังทดสอบการเชื่อมต่อ...', 'ส่งข้อความทดสอบไปยังกลุ่ม LINE / Webhook');
+      var typeDesc = (sendType === 'flex') ? 'การ์ด Flex Card' : 'เฉพาะข้อความ (Text)';
+      showLoadingPopup('กำลังทดสอบการเชื่อมต่อ (' + typeDesc + ')...', 'ส่งข้อความทดสอบไปยังกลุ่ม LINE / Webhook');
 
       if (isGASAvailable()) {
         google.script.run
           .withSuccessHandler(function(res) {
             hideLoadingPopup();
-            if (res.status === 'success') {
-              showToast(res.message, 'success');
+            if (res && res.status === 'success') {
+              showToast(res.message || ('ทดสอบส่ง' + typeDesc + 'สำเร็จ!'), 'success');
             } else {
-              showToast(res.message, 'error');
+              showToast((res && res.message) ? res.message : 'เกิดข้อผิดพลาดในการทดสอบ', 'error');
             }
           })
           .withFailureHandler(function(err) {
             hideLoadingPopup();
-            showToast('เกิดข้อผิดพลาด: ' + err.message, 'error');
+            showToast('เกิดข้อผิดพลาด: ' + (err.message || String(err)), 'error');
           })
-          .testLineConnection(token, webhook, groupId, customMsg);
+          .testLineConnection(token, webhook, groupId, customMsg, sendType);
       } else {
         setTimeout(function() {
           hideLoadingPopup();
-          showToast('ทดสอบการส่งจำลองสำเร็จ! ส่งข้อความ: ' + (customMsg ? customMsg.substring(0, 35) + '...' : 'ข้อความทดสอบ'), 'success');
+          showToast('ทดสอบการส่งจำลองสำเร็จ (' + typeDesc + ')!', 'success');
         }, 800);
       }
     }
