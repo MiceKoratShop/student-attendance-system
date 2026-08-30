@@ -3323,9 +3323,9 @@
                     <i class="fas fa-file-lines" style="color: var(--cyan-400);"></i> รูปแบบรายงาน
                   </label>
                   <select class="select-glass" id="report-type-select" style="width: 100%;">
-                    <option value="daily">รายงานประจำวัน</option>
-                    <option value="monthly">รายงานประจำเดือน</option>
-                    <option value="term">รายงานสถิติประจำภาคเรียน</option>
+                    <option value="daily">📅 รายงานประจำวัน / ช่วงวันที่</option>
+                    <option value="monthly">🗓️ รายงานประจำเดือน</option>
+                    <option value="term">🎓 รายงานสถิติประจำภาคเรียน</option>
                   </select>
                 </div>
 
@@ -3386,12 +3386,21 @@
                   </select>
                 </div>
 
-                <!-- 5. Date Selector -->
+                <!-- 5. Date Range Selector: ตั้งแต่วันที่ -->
                 <div class="form-group-glass" style="margin-bottom: 0;">
                   <label style="font-size: 11.5px; margin-bottom: 3px; font-weight: 700; color: #FFF;">
-                    <i class="fas fa-calendar-day" style="color: #FBBF24;"></i> วันที่
+                    <i class="fas fa-calendar-day" style="color: #FBBF24;"></i> ตั้งแต่วันที่
                   </label>
-                  <input type="date" class="input-glass" id="report-date-select" style="width: 100%;" />
+                  <input type="date" class="input-glass" id="report-date-start" style="width: 100%;" />
+                  <input type="hidden" id="report-date-select" />
+                </div>
+
+                <!-- 6. Date Range Selector: ถึงวันที่ -->
+                <div class="form-group-glass" style="margin-bottom: 0;">
+                  <label style="font-size: 11.5px; margin-bottom: 3px; font-weight: 700; color: #FFF;">
+                    <i class="fas fa-calendar-check" style="color: #FBBF24;"></i> ถึงวันที่
+                  </label>
+                  <input type="date" class="input-glass" id="report-date-end" style="width: 100%;" />
                 </div>
               </div>
 
@@ -13934,9 +13943,16 @@
           for (var j = 0; j < aChks.length; j++) selectedActs.push(aChks[j].value);
         }
 
+        var startEl = document.getElementById('report-date-start');
+        var endEl = document.getElementById('report-date-end');
+        var startDateVal = startEl ? startEl.value : '';
+        var endDateVal = endEl ? endEl.value : '';
+
         var prefs = {
           reportType: repType,
           status: repStat,
+          startDate: startDateVal,
+          endDate: endDateVal,
           allClassesChecked: allClassesChecked,
           selectedClasses: selectedClasses,
           allActsChecked: allActsChecked,
@@ -14127,14 +14143,56 @@
     }
 
     function renderReportsPage() {
-      var repDateEl = document.getElementById('report-date-select');
-      if (repDateEl) {
-        if (AppState.selectedDate) {
-          repDateEl.value = AppState.selectedDate;
-        } else if (!repDateEl.value) {
-          repDateEl.value = getTodayDateString();
+      var startEl = document.getElementById('report-date-start');
+      var endEl = document.getElementById('report-date-end');
+      var legacyEl = document.getElementById('report-date-select');
+      var today = getTodayDateString();
+
+      var savedPrefs = getSavedReportFilterPreferences();
+
+      if (startEl) {
+        if (savedPrefs && savedPrefs.startDate) {
+          startEl.value = savedPrefs.startDate;
+        } else if (AppState.selectedDate) {
+          startEl.value = AppState.selectedDate;
+        } else if (!startEl.value) {
+          startEl.value = today;
         }
       }
+
+      if (endEl) {
+        if (savedPrefs && savedPrefs.endDate) {
+          endEl.value = savedPrefs.endDate;
+        } else if (AppState.selectedDate) {
+          endEl.value = AppState.selectedDate;
+        } else if (!endEl.value) {
+          endEl.value = (startEl && startEl.value) ? startEl.value : today;
+        }
+      }
+
+      if (legacyEl && startEl) legacyEl.value = startEl.value;
+
+      if (startEl) {
+        startEl.onchange = function() {
+          if (endEl && endEl.value < startEl.value) {
+            endEl.value = startEl.value;
+          }
+          if (legacyEl) legacyEl.value = startEl.value;
+          saveReportFilterPreferences();
+          generateReportPreview();
+        };
+      }
+
+      if (endEl) {
+        endEl.onchange = function() {
+          if (startEl && startEl.value > endEl.value) {
+            startEl.value = endEl.value;
+          }
+          saveReportFilterPreferences();
+          generateReportPreview();
+        };
+      }
+
       generateReportPreview();
       
       var btnRefresh = document.getElementById('btn-refresh-report');
@@ -14329,14 +14387,53 @@
       }
     }
 
-    function getAttendanceMapFromLocalStorage(dateStr, activityName) {
+    function getReportDateRange() {
+      var startEl = document.getElementById('report-date-start');
+      var endEl = document.getElementById('report-date-end');
+      var legacyEl = document.getElementById('report-date-select');
+      var today = getTodayDateString();
+
+      var start = (startEl && startEl.value) || (legacyEl && legacyEl.value) || today;
+      var end = (endEl && endEl.value) || start;
+
+      if (end < start) {
+        var tmp = start;
+        start = end;
+        end = tmp;
+        if (startEl) startEl.value = start;
+        if (endEl) endEl.value = end;
+      }
+
+      if (legacyEl) legacyEl.value = start;
+
+      var isRange = (start !== end);
+      var displayStr = isRange ? (formatThaiDate(start) + ' ถึง ' + formatThaiDate(end)) : formatThaiDate(start);
+      var fileTag = isRange ? (start + '_to_' + end) : start;
+
+      return {
+        startDate: start,
+        endDate: end,
+        isRange: isRange,
+        displayStr: displayStr,
+        fileTag: fileTag
+      };
+    }
+
+    function getAttendanceMapFromLocalStorage(dateStr, activityName, endDateStr) {
       var allAtt = getLocalStorageAttendance();
-      var targetD = formatDateString(dateStr);
+      var startD = formatDateString(dateStr);
+      var endD = endDateStr ? formatDateString(endDateStr) : startD;
+      if (endD < startD) {
+        var tD = startD;
+        startD = endD;
+        endD = tD;
+      }
       var map = {};
       for (var i = 0; i < allAtt.length; i++) {
         var it = allAtt[i];
         var itemD = formatDateString(it.date);
-        if (itemD === targetD) {
+        var isMatchDate = (startD === endD) ? (itemD === startD) : (itemD >= startD && itemD <= endD);
+        if (isMatchDate) {
           var act = it.activityName || 'เช็คชื่อมาเรียน';
           if (isActivityMatch(activityName, act)) {
             var attObj = {
@@ -14345,10 +14442,13 @@
               distanceMeters: it.distanceMeters || 0,
               activityName: act,
               checkinTime: it.checkinTime || '',
-              note: it.note || ''
+              note: it.note || '',
+              date: itemD
             };
-            map[it.studentId] = attObj;
-            map[String(it.studentId).toLowerCase()] = attObj;
+            if (!map[it.studentId] || it.status === 'Present' || it.status === 'มาเรียน') {
+              map[it.studentId] = attObj;
+              map[String(it.studentId).toLowerCase()] = attObj;
+            }
           }
         }
       }
@@ -14357,7 +14457,9 @@
 
     function generateReportPreview() {
       var reportType = (document.getElementById('report-type-select') && document.getElementById('report-type-select').value) || 'daily';
-      var dateStr = (document.getElementById('report-date-select') && document.getElementById('report-date-select').value) || getTodayDateString();
+      var dateRange = getReportDateRange();
+      var startDate = dateRange.startDate;
+      var endDate = dateRange.endDate;
       var className = getSelectedReportClasses();
       var activityName = getSelectedReportActivities();
       var repStatSelect = document.getElementById('report-status-select');
@@ -14371,17 +14473,17 @@
         if (isGASAvailable()) {
           google.script.run
             .withSuccessHandler(function(recordsMap) {
-              renderReportDocument(reportType, dateStr, className, activityName, statusFilter, recordsMap || {});
+              renderReportDocument(reportType, dateRange, className, activityName, statusFilter, recordsMap || {});
             })
             .withFailureHandler(function(err) {
               console.warn('Error fetching report records from GAS:', err);
-              var localRecords = getAttendanceMapFromLocalStorage(dateStr, activityName);
-              renderReportDocument(reportType, dateStr, className, activityName, statusFilter, localRecords);
+              var localRecords = getAttendanceMapFromLocalStorage(startDate, activityName, endDate);
+              renderReportDocument(reportType, dateRange, className, activityName, statusFilter, localRecords);
             })
-            .getAttendanceRecords(dateStr, className, activityName, reportType);
+            .getAttendanceRecords(startDate, className, activityName, reportType, endDate);
         } else {
-          var localRecords = getAttendanceMapFromLocalStorage(dateStr, activityName);
-          renderReportDocument(reportType, dateStr, className, activityName, statusFilter, localRecords);
+          var localRecords = getAttendanceMapFromLocalStorage(startDate, activityName, endDate);
+          renderReportDocument(reportType, dateRange, className, activityName, statusFilter, localRecords);
         }
       }
 
@@ -14395,7 +14497,9 @@
       }
     }
 
-    function renderReportDocument(reportType, dateStr, className, activityName, statusFilter, recordsMap) {
+    function renderReportDocument(reportType, dateRange, className, activityName, statusFilter, recordsMap) {
+      var dateStr = (typeof dateRange === 'object' && dateRange.startDate) ? dateRange.startDate : String(dateRange || getTodayDateString());
+      var dateDisplay = (typeof dateRange === 'object' && dateRange.displayStr) ? dateRange.displayStr : formatThaiDate(dateStr);
       var container = document.getElementById('report-preview-container');
       if (!container) return;
       container.innerHTML = '';
@@ -14446,7 +14550,7 @@
       var classDisplay = (className === 'all' || className === 'ทุกห้องเรียน') ? 'ทุกห้องเรียน' : ('ห้อง ' + className);
       var actDisplay = (activityName === 'all' || activityName === 'ทุกกิจกรรม') ? 'ทุกกิจกรรม/วิชา' : activityName;
 
-      metaRow.innerHTML = '<span><strong>📅 วันที่:</strong> ' + formatThaiDate(dateStr) + '</span>' +
+      metaRow.innerHTML = '<span><strong>📅 ' + ((typeof dateRange === 'object' && dateRange.isRange) ? 'ช่วงวันที่:' : 'วันที่:') + '</strong> ' + dateDisplay + '</span>' +
                           '<span><strong>🏫 ห้องเรียน:</strong> ' + classDisplay + '</span>' +
                           '<span><strong>🏷️ กิจกรรม/วิชา:</strong> ' + actDisplay + '</span>' +
                           '<span><strong>🔍 ตัวกรอง:</strong> ' + statFilterLabel + '</span>';
@@ -14702,7 +14806,7 @@
         return;
       }
 
-      var dateStr = (document.getElementById('report-date-select') && document.getElementById('report-date-select').value) || getTodayDateString();
+      var dateRange = getReportDateRange();
       var className = getSelectedReportClasses();
       var activityName = getSelectedReportActivities();
       var classTag = (className === 'all' ? 'ทุกห้อง' : className.replace(/[,s]+/g, '_'));
@@ -14712,7 +14816,7 @@
         showToast('กำลังประมวลผลและสร้างไฟล์ PDF...', 'info');
         var opt = {
           margin:       [8, 8, 8, 8],
-          filename:     'รายงานการเช็คชื่อ_' + dateStr + '_' + classTag + '_' + actTag + '.pdf',
+          filename:     'รายงานการเช็คชื่อ_' + dateRange.fileTag + '_' + classTag + '_' + actTag + '.pdf',
           image:        { type: 'jpeg', quality: 0.98 },
           html2canvas:  { scale: 2, useCORS: true, logging: false },
           jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
@@ -14732,12 +14836,12 @@
         return;
       }
 
-      var dateStr = (document.getElementById('report-date-select') && document.getElementById('report-date-select').value) || getTodayDateString();
+      var dateRange = getReportDateRange();
       var className = getSelectedReportClasses();
       var activityName = getSelectedReportActivities();
       var classTag = (className === 'all' ? 'ทุกห้อง' : className.replace(/[,s]+/g, '_'));
       var actTag = (activityName === 'all' ? 'ทุกกิจกรรม' : activityName.replace(/[,s]+/g, '_'));
-      var filename = 'รายงานการเช็คชื่อ_' + dateStr + '_' + classTag + '_' + actTag + '.jpg';
+      var filename = 'รายงานการเช็คชื่อ_' + dateRange.fileTag + '_' + classTag + '_' + actTag + '.jpg';
 
       showLoadingPopup('กำลังสร้างภาพรายงาน...', 'กำลังแปลงตารางรายงานและรูปถ่ายเป็นภาพความละเอียดสูง (.JPG)');
 
@@ -14781,7 +14885,9 @@
         return;
       }
 
-      var dateStr = (document.getElementById('report-date-select') && document.getElementById('report-date-select').value) || getTodayDateString();
+      var dateRange = getReportDateRange();
+      var startDate = dateRange.startDate;
+      var endDate = dateRange.endDate;
       var className = getSelectedReportClasses();
       var activityName = getSelectedReportActivities();
       var repStatSelect = document.getElementById('report-status-select');
@@ -14859,7 +14965,7 @@
         XLSX.utils.book_append_sheet(wb, ws, 'AttendanceReport');
         var classTag = (className === 'all' ? 'ทุกห้อง' : className.replace(/[,s]+/g, '_'));
         var actTag = (activityName === 'all' ? 'ทุกกิจกรรม' : activityName.replace(/[,s]+/g, '_'));
-        var outFilename = 'Student_Attendance_' + dateStr + '_' + classTag + '_' + actTag + '.xlsx';
+        var outFilename = 'Student_Attendance_' + dateRange.fileTag + '_' + classTag + '_' + actTag + '.xlsx';
         XLSX.writeFile(wb, outFilename);
         showToast('ส่งออกไฟล์ Excel เรียบร้อยแล้ว (' + exportData.length + ' รายการ)', 'success');
       }
@@ -14874,12 +14980,12 @@
             })
             .withFailureHandler(function(err) {
               console.warn('Error fetching report records for Excel:', err);
-              var localRecords = getAttendanceMapFromLocalStorage(dateStr, activityName);
+              var localRecords = getAttendanceMapFromLocalStorage(startDate, activityName, endDate);
               doExcelExport(localRecords);
             })
-            .getAttendanceRecords(dateStr, className, activityName, reportType);
+            .getAttendanceRecords(startDate, className, activityName, reportType, endDate);
         } else {
-          var localRecords = getAttendanceMapFromLocalStorage(dateStr, activityName);
+          var localRecords = getAttendanceMapFromLocalStorage(startDate, activityName, endDate);
           doExcelExport(localRecords);
         }
       }
