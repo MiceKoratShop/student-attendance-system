@@ -682,6 +682,16 @@
     }
 
     // Load Report Data
+    var DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbyENNsNjTy8YvyBsm73Ab68GUkKklL_E-nuKWWehPzT8C-AlatfNy0IHLaY-F390TYmng/exec';
+
+    function getGasApiUrl() {
+      var saved = localStorage.getItem('gas_student_web_app_url');
+      if (saved && saved.indexOf('http') === 0) return saved;
+      var paramUrl = getQueryParam('gas_url');
+      if (paramUrl && paramUrl.indexOf('http') === 0) return paramUrl;
+      return DEFAULT_GAS_URL;
+    }
+
     function initReportPage() {
       var dateParam = getQueryParam('date') || '';
       var classParam = getQueryParam('class') || getQueryParam('className') || 'all';
@@ -706,45 +716,67 @@
     }
 
     function fetchReportFromApi(dateParam, classParam, actParam) {
-      // Offline Demo Fallback
-      setTimeout(function() {
-        var demoData = {
-          status: 'success',
-          date: dateParam || '2026-08-31',
-          dateThai: '31 สิงหาคม 2569',
-          dayName: 'วันจันทร์',
-          className: classParam !== 'all' ? classParam : 'ทุกห้องเรียน',
-          activityName: 'เช็คชื่อมาเรียน',
-          stats: {
-            totalStudents: 20,
-            countPresent: 14,
-            countOnTime: 6,
-            countLate: 8,
-            countSick: 1,
-            countLeave: 1,
-            countAbsent: 4,
-            attRate: '70.0'
-          },
-          topChampions: [
-            { no: 1, name: 'นายพนรัญชน์ ศุกรวรรณ', className: 'ปวส.1/2', time: '08:45', selfiePhoto: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150', rank: 1 },
-            { no: 2, name: 'นายรัญวิทย์ หาญชนะ', className: 'ปวส.1/2', time: '08:45', selfiePhoto: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150', rank: 2 },
-            { no: 3, name: 'นางสาวกัลยกร สุขใจ', className: 'ปวส.1/2', time: '08:47', selfiePhoto: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150', rank: 3 }
-          ],
-          students: [
-            { no: 1, studentId: '66309010001', name: 'นายพนรัญชน์ ศุกรวรรณ', className: 'ปวส.1/2', status: 'Present', statusLabel: 'มาเรียนตรงเวลา', statusClass: 'present', checkinTime: '08:45:12', selfiePhoto: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150', note: '' },
-            { no: 2, studentId: '66309010002', name: 'นายรัญวิทย์ หาญชนะ', className: 'ปวส.1/2', status: 'Present', statusLabel: 'มาเรียนตรงเวลา', statusClass: 'present', checkinTime: '08:45:40', selfiePhoto: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150', note: '' },
-            { no: 3, studentId: '66309010003', name: 'นางสาวกัลยกร สุขใจ', className: 'ปวส.1/2', status: 'Present', statusLabel: 'มาเรียนตรงเวลา', statusClass: 'present', checkinTime: '08:47:05', selfiePhoto: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150', note: '' },
-            { no: 4, studentId: '66309010004', name: 'นายสุรจักร งามคงงาม', className: 'ปวส.1/2', status: 'Present', statusLabel: 'มาเรียนตรงเวลา', statusClass: 'present', checkinTime: '08:50:22', selfiePhoto: '', note: '' },
-            { no: 5, studentId: '66309010005', name: 'นายสิทธิพร นาควรนุช', className: 'ปวส.1/2', status: 'Present', statusLabel: 'มาเรียนตรงเวลา', statusClass: 'present', checkinTime: '08:50:45', selfiePhoto: '', note: '' },
-            { no: 6, studentId: '66309010006', name: 'นางสาวสมิตานัน งามโกศล', className: 'ปวส.1/2', status: 'Present', statusLabel: 'มาเรียนตรงเวลา', statusClass: 'present', checkinTime: '08:53:10', selfiePhoto: '', note: '' },
-            { no: 7, studentId: '66309010007', name: 'นายภานุวัฒน์ ตั้งใจ', className: 'ปวส.1/2', status: 'Late', statusLabel: 'มาสาย', statusClass: 'late', checkinTime: '09:05:12', selfiePhoto: '', note: 'สาย 20 นาที' },
-            { no: 8, studentId: '66309010008', name: 'นางสาวพิมพ์มาดา รักเรียน', className: 'ปวส.1/2', status: 'Sick', statusLabel: 'ลาป่วย', statusClass: 'sick', checkinTime: '-', selfiePhoto: '', note: 'มีใบรับรองแพทย์' },
-            { no: 9, studentId: '66309010009', name: 'นายวิศรุต คงคา', className: 'ปวส.1/2', status: 'Leave', statusLabel: 'ลากิจ', statusClass: 'leave', checkinTime: '-', selfiePhoto: '', note: 'ไปทำธุระกับผู้ปกครอง' },
-            { no: 10, studentId: '66309010010', name: 'นายธนกฤต ขาดเรียน', className: 'ปวส.1/2', status: 'Absent', statusLabel: 'ขาดเรียน', statusClass: 'absent', checkinTime: '-', selfiePhoto: '', note: 'ไม่พบเช็คชื่อ' }
-          ]
-        };
-        renderReportData(demoData);
-      }, 500);
+      var gasUrl = getGasApiUrl();
+      if (gasUrl && gasUrl.indexOf('http') === 0) {
+        var reqUrl = gasUrl + '?action=getPublicDailyReportData&args=' + encodeURIComponent(JSON.stringify([dateParam, classParam, actParam]));
+        fetch(reqUrl)
+          .then(function(resp) {
+            return resp.json();
+          })
+          .then(function(res) {
+            if (res && res.status === 'success') {
+              renderReportData(res);
+            } else {
+              renderError((res && res.message) ? res.message : 'ไม่พบข้อมูลรายงานสำหรับเงื่อนไขที่ระบุ');
+            }
+          })
+          .catch(function(err) {
+            console.warn('Live API fetch error, checking local fallback:', err);
+            renderOfflineFallback(dateParam, classParam, actParam);
+          });
+      } else {
+        renderOfflineFallback(dateParam, classParam, actParam);
+      }
+    }
+
+    function renderOfflineFallback(dateParam, classParam, actParam) {
+      // Local demo fallback
+      var demoData = {
+        status: 'success',
+        date: dateParam || '2026-08-31',
+        dateThai: '31 สิงหาคม 2569',
+        dayName: 'วันจันทร์',
+        className: classParam !== 'all' ? classParam : 'ทุกห้องเรียน',
+        activityName: 'เช็คชื่อมาเรียน',
+        stats: {
+          totalStudents: 20,
+          countPresent: 14,
+          countOnTime: 6,
+          countLate: 8,
+          countSick: 1,
+          countLeave: 1,
+          countAbsent: 4,
+          attRate: '70.0'
+        },
+        topChampions: [
+          { no: 1, name: 'นายพนรัญชน์ ศุกรวรรณ', className: 'ปวส.1/2', time: '08:45', selfiePhoto: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150', rank: 1 },
+          { no: 2, name: 'นายรัญวิทย์ หาญชนะ', className: 'ปวส.1/2', time: '08:45', selfiePhoto: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150', rank: 2 },
+          { no: 3, name: 'นางสาวกัลยกร สุขใจ', className: 'ปวส.1/2', time: '08:47', selfiePhoto: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150', rank: 3 }
+        ],
+        students: [
+          { no: 1, studentId: '66309010001', name: 'นายพนรัญชน์ ศุกรวรรณ', className: 'ปวส.1/2', status: 'Present', statusLabel: 'มาเรียนตรงเวลา', statusClass: 'present', checkinTime: '08:45:12', selfiePhoto: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150', note: '' },
+          { no: 2, studentId: '66309010002', name: 'นายรัญวิทย์ หาญชนะ', className: 'ปวส.1/2', status: 'Present', statusLabel: 'มาเรียนตรงเวลา', statusClass: 'present', checkinTime: '08:45:40', selfiePhoto: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150', note: '' },
+          { no: 3, studentId: '66309010003', name: 'นางสาวกัลยกร สุขใจ', className: 'ปวส.1/2', status: 'Present', statusLabel: 'มาเรียนตรงเวลา', statusClass: 'present', checkinTime: '08:47:05', selfiePhoto: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150', note: '' },
+          { no: 4, studentId: '66309010004', name: 'นายสุรจักร งามคงงาม', className: 'ปวส.1/2', status: 'Present', statusLabel: 'มาเรียนตรงเวลา', statusClass: 'present', checkinTime: '08:50:22', selfiePhoto: '', note: '' },
+          { no: 5, studentId: '66309010005', name: 'นายสิทธิพร นาควรนุช', className: 'ปวส.1/2', status: 'Present', statusLabel: 'มาเรียนตรงเวลา', statusClass: 'present', checkinTime: '08:50:45', selfiePhoto: '', note: '' },
+          { no: 6, studentId: '66309010006', name: 'นางสาวสมิตานัน งามโกศล', className: 'ปวส.1/2', status: 'Present', statusLabel: 'มาเรียนตรงเวลา', statusClass: 'present', checkinTime: '08:53:10', selfiePhoto: '', note: '' },
+          { no: 7, studentId: '66309010007', name: 'นายภานุวัฒน์ ตั้งใจ', className: 'ปวส.1/2', status: 'Late', statusLabel: 'มาสาย', statusClass: 'late', checkinTime: '09:05:12', selfiePhoto: '', note: 'สาย 20 นาที' },
+          { no: 8, studentId: '66309010008', name: 'นางสาวพิมพ์มาดา รักเรียน', className: 'ปวส.1/2', status: 'Sick', statusLabel: 'ลาป่วย', statusClass: 'sick', checkinTime: '-', selfiePhoto: '', note: 'มีใบรับรองแพทย์' },
+          { no: 9, studentId: '66309010009', name: 'นายวิศรุต คงคา', className: 'ปวส.1/2', status: 'Leave', statusLabel: 'ลากิจ', statusClass: 'leave', checkinTime: '-', selfiePhoto: '', note: 'ไปทำธุระกับผู้ปกครอง' },
+          { no: 10, studentId: '66309010010', name: 'นายธนกฤต ขาดเรียน', className: 'ปวส.1/2', status: 'Absent', statusLabel: 'ขาดเรียน', statusClass: 'absent', checkinTime: '-', selfiePhoto: '', note: 'ไม่พบเช็คชื่อ' }
+        ]
+      };
+      renderReportData(demoData);
     }
 
     function renderReportData(data) {
@@ -869,9 +901,13 @@
       for (var j = 0; j < filtered.length; j++) {
         var st = filtered[j];
         var photoUrl = st.selfiePhoto || '';
-        var photoTag = (photoUrl && photoUrl.length > 10)
-          ? '<img src="' + escapeHtml(photoUrl) + '" class="student-avatar" alt="' + escapeHtml(st.name) + '" onclick="openPhotoModal(\'' + escapeHtml(photoUrl) + '\', \'' + escapeHtml(st.name) + '\', \'ห้อง ' + escapeHtml(st.className) + ' • เวลา ' + escapeHtml(st.checkinTime) + '\')" />'
-          : '<div class="student-avatar" style="display:flex; align-items:center; justify-content:center; color:var(--text-muted);"><i class="fas fa-user"></i></div>';
+        var hasRealPhoto = (photoUrl && photoUrl.length > 10 && photoUrl !== '-' && photoUrl !== 'null');
+        var photoTag = hasRealPhoto
+          ? '<div style="position: relative; flex-shrink: 0;">' +
+            '  <img src="' + escapeHtml(photoUrl) + '" class="student-avatar" style="border: 2px solid var(--orange-400); box-shadow: 0 0 10px rgba(255, 107, 0, 0.35); cursor: pointer;" alt="' + escapeHtml(st.name) + '" onclick="openPhotoModal(\'' + escapeHtml(photoUrl) + '\', \'' + escapeHtml(st.name) + '\', \'ห้อง ' + escapeHtml(st.className) + ' • เวลา ' + escapeHtml(st.checkinTime) + ' • ' + escapeHtml(st.statusLabel) + '\')" title="คลิกเพื่อดูรูปถ่ายเซลฟี่ยืนยันตัวตนขนาดเต็ม" />' +
+            '  <span style="position: absolute; bottom: -2px; right: -2px; background: #FF6B00; color: #FFF; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 8px; border: 1.5px solid #0F172A;"><i class="fas fa-camera"></i></span>' +
+            '</div>'
+          : '<div class="student-avatar" style="display:flex; align-items:center; justify-content:center; color:var(--text-muted); background: #1E293B;"><i class="fas fa-user"></i></div>';
 
         var badgeClass = 'badge-absent';
         var badgeText = st.statusLabel || 'ขาดเรียน';

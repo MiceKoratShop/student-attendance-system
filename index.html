@@ -3405,7 +3405,10 @@
               </div>
 
               <!-- ROW 2: ACTION BUTTONS TOOLBAR -->
-              <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px;">
+              <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; align-items: center; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px;">
+                <button type="button" class="btn-glass btn-sm-glass" id="btn-publish-parent-report" style="background: linear-gradient(135deg, #FF6B00 0%, #F59E0B 100%); border: none; color: #FFF; font-weight: 800; padding: 7px 18px; box-shadow: 0 4px 15px rgba(255, 107, 0, 0.45); font-size: 13px; cursor: pointer; border-radius: 8px;" title="สรุปข้อมูลการมาเรียนวันนี้ และส่งต่อไปยังหน้ารายงานผู้ปกครอง & กลุ่ม LINE">
+                  <i class="fas fa-paper-plane" style="margin-right: 6px;"></i> 🚀 ส่งไปยังรีพอร์ต
+                </button>
                 <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-refresh-report" title="ดึงข้อมูลล่าสุดจาก Google Sheets และฐานข้อมูล">
                   <i class="fas fa-arrows-rotate"></i> รีเฟรชข้อมูล
                 </button>
@@ -14180,6 +14183,82 @@
     }
 
 
+
+    function openPublishParentReportModal() {
+      var dateRange = getReportDateRange();
+      var className = getSelectedReportClasses();
+      var activityName = getSelectedReportActivities();
+      var dateParam = dateRange.startDate || getTodayDateString();
+      var classParam = (className && className !== 'all') ? className : 'all';
+      var actParam = (activityName && activityName !== 'all') ? activityName : 'all';
+
+      var repUrl = getParentReportUrl();
+      var inputEl = document.getElementById('pub-modal-link-input');
+      if (inputEl) inputEl.value = repUrl;
+
+      var titleEl = document.getElementById('pub-modal-title');
+      var subEl = document.getElementById('pub-modal-subtitle');
+      if (titleEl) titleEl.textContent = 'รายงานสรุปการมาเรียน (' + (className === 'all' ? 'ทุกห้องเรียน' : className) + ')';
+      if (subEl) subEl.textContent = '📅 วันที่: ' + dateRange.displayStr + ' • กิจกรรม: ' + (activityName === 'all' ? 'ทุกกิจกรรม' : activityName);
+
+      // Extract stats from current rendered preview or local state
+      var otEl = document.getElementById('pub-stat-ontime');
+      var ltEl = document.getElementById('pub-stat-late');
+      var lvEl = document.getElementById('pub-stat-leave');
+      var abEl = document.getElementById('pub-stat-absent');
+
+      // Count from AppState if available
+      var students = AppState.students || [];
+      var recMap = AppState.lastReportRecordsMap || {};
+      var cOnTime = 0, cLate = 0, cLeave = 0, cAbsent = 0;
+
+      for (var i = 0; i < students.length; i++) {
+        var s = students[i];
+        if (!isClassMatch(className, s.className)) continue;
+        var r = recMap[s.studentId] || recMap[String(s.studentId).toLowerCase()];
+        var st = 'Absent';
+        if (r) {
+          st = typeof r === 'object' ? (r.status || 'Present') : String(r);
+        }
+        if (st === 'Present' || st === 'มาเรียน') cOnTime++;
+        else if (st === 'Late' || st === 'มาสาย') cLate++;
+        else if (st === 'Sick' || st === 'Leave' || st === 'ลาป่วย' || st === 'ลากิจ') cLeave++;
+        else cAbsent++;
+      }
+
+      if (otEl) otEl.textContent = cOnTime + ' คน';
+      if (ltEl) ltEl.textContent = cLate + ' คน';
+      if (lvEl) lvEl.textContent = cLeave + ' คน';
+      if (abEl) abEl.textContent = cAbsent + ' คน';
+
+      var modal = document.getElementById('modal-publish-parent-report');
+      if (modal) modal.style.display = 'flex';
+    }
+
+    function closePublishParentReportModal() {
+      var modal = document.getElementById('modal-publish-parent-report');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function copyPublishModalLink() {
+      var inputEl = document.getElementById('pub-modal-link-input');
+      if (inputEl && inputEl.value) {
+        copyTextToClipboard(inputEl.value);
+        showToast('คัดลอกลิงก์หน้ารายงานสำหรับผู้ปกครองเรียบร้อยแล้ว! 📋✨', 'success');
+      }
+    }
+
+    function openPublishReportLive() {
+      var repUrl = getParentReportUrl();
+      window.open(repUrl, '_blank');
+    }
+
+    function openLineFromPublishModal() {
+      closePublishParentReportModal();
+      openLineSendModal();
+    }
+
+
     function renderReportsPage() {
       var startEl = document.getElementById('report-date-start');
       var endEl = document.getElementById('report-date-end');
@@ -14245,6 +14324,13 @@
       if (btnPdf) {
         btnPdf.onclick = function() {
           downloadPDFReport();
+        };
+      }
+
+      var btnPublishReport = document.getElementById('btn-publish-parent-report');
+      if (btnPublishReport) {
+        btnPublishReport.onclick = function() {
+          openPublishParentReportModal();
         };
       }
 
@@ -16756,6 +16842,75 @@
     <i class="fas fa-shield-halved"></i>
     <span>อาจารย์</span>
   </button>
+
+
+  <!-- MODAL: PUBLISH PARENT REPORT DIALOG -->
+  <div class="modal-overlay-glass" id="modal-publish-parent-report" style="display: none; z-index: 10005;">
+    <div class="modal-card-glass" style="max-width: 580px; width: 95%;">
+      <div class="modal-header-glass" style="background: linear-gradient(135deg, rgba(255,107,0,0.2) 0%, rgba(245,158,11,0.15) 100%); border-bottom: 1.5px solid rgba(255,107,0,0.35);">
+        <h3 class="modal-title-glass" style="color: #FFF; display: flex; align-items: center; gap: 8px;">
+          <i class="fas fa-paper-plane" style="color: #FF6B00;"></i> 🚀 สรุปและส่งต่อรายงานไปยังผู้ปกครอง
+        </h3>
+        <button type="button" class="btn-close-glass" onclick="closePublishParentReportModal()">&times;</button>
+      </div>
+
+      <div class="modal-body-glass" style="padding: 20px 18px;">
+        <div style="text-align: center; margin-bottom: 16px;">
+          <div style="font-size: 16px; font-weight: 800; color: #FFF;" id="pub-modal-title">รายงานการมาเรียน</div>
+          <div style="font-size: 12.5px; color: #94A3B8; margin-top: 3px;" id="pub-modal-subtitle">ข้อมูลประจำวันที่...</div>
+        </div>
+
+        <!-- Quick Stats Overview -->
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; text-align: center;">
+          <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 10px; padding: 10px 4px;">
+            <div style="font-size: 18px; font-weight: 800; color: #34D399;" id="pub-stat-ontime">-</div>
+            <div style="font-size: 11px; color: #94A3B8; margin-top: 2px; font-weight: 600;">ตรงเวลา</div>
+          </div>
+          <div style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 10px; padding: 10px 4px;">
+            <div style="font-size: 18px; font-weight: 800; color: #FBBF24;" id="pub-stat-late">-</div>
+            <div style="font-size: 11px; color: #94A3B8; margin-top: 2px; font-weight: 600;">มาสาย</div>
+          </div>
+          <div style="background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.4); border-radius: 10px; padding: 10px 4px;">
+            <div style="font-size: 18px; font-weight: 800; color: #C084FC;" id="pub-stat-leave">-</div>
+            <div style="font-size: 11px; color: #94A3B8; margin-top: 2px; font-weight: 600;">แจ้งลา</div>
+          </div>
+          <div style="background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.4); border-radius: 10px; padding: 10px 4px;">
+            <div style="font-size: 18px; font-weight: 800; color: #FB7185;" id="pub-stat-absent">-</div>
+            <div style="font-size: 11px; color: #94A3B8; margin-top: 2px; font-weight: 600;">ขาดเรียน</div>
+          </div>
+        </div>
+
+        <!-- Share Link Box -->
+        <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(0, 240, 255, 0.35); border-radius: 12px; padding: 14px; margin-bottom: 18px;">
+          <label style="font-size: 12px; font-weight: 700; color: var(--cyan-400); display: block; margin-bottom: 6px;">
+            <i class="fas fa-link"></i> 🔗 ลิงก์หน้ารายงานออนไลน์สำหรับผู้ปกครอง:
+          </label>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="pub-modal-link-input" class="input-glass" readonly style="flex: 1; font-size: 12px; color: #FFF; background: rgba(0,0,0,0.4);" />
+            <button type="button" class="btn-glass btn-cyan btn-sm-glass" onclick="copyPublishModalLink()" style="font-weight: 700;">
+              <i class="fas fa-copy"></i> คัดลอก
+            </button>
+          </div>
+        </div>
+
+        <!-- Action Buttons Grid -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <button type="button" class="btn-glass btn-cyan" onclick="openPublishReportLive()" style="padding: 10px; font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+            <i class="fas fa-arrow-up-right-from-square"></i> 👁️ เปิดดูหน้ารายงาน
+          </button>
+          <button type="button" class="btn-glass" onclick="openLineFromPublishModal()" style="background: rgba(6, 199, 85, 0.2); border-color: rgba(6, 199, 85, 0.5); color: #22C55E; padding: 10px; font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+            <i class="fab fa-line" style="font-size: 16px;"></i> 📲 ส่งเข้ากลุ่ม LINE
+          </button>
+        </div>
+      </div>
+
+      <div class="modal-footer-glass" style="display: flex; justify-content: flex-end; padding: 12px 18px; border-top: 1px solid rgba(255,255,255,0.08);">
+        <button type="button" class="btn-glass btn-dark btn-sm-glass" onclick="closePublishParentReportModal()">
+          ปิดหน้าต่าง
+        </button>
+      </div>
+    </div>
+  </div>
 
 </body>
 </html>
