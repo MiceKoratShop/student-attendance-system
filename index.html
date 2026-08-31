@@ -3319,16 +3319,16 @@
                   <label style="font-size: 11.5px; margin-bottom: 3px; font-weight: 700; color: #FFF;">
                     <i class="fas fa-chalkboard-user" style="color: var(--orange-400);"></i> ห้องเรียน (เลือกได้หลายห้อง)
                   </label>
-                  <button type="button" class="select-glass" id="btn-report-class-multi" style="width: 100%; text-align: left; display: flex; align-items: center; justify-content: space-between; cursor: pointer; padding: 8px 12px;">
+                  <button type="button" class="select-glass" id="btn-report-class-multi" onclick="toggleReportClassPopover(event)" style="width: 100%; text-align: left; display: flex; align-items: center; justify-content: space-between; cursor: pointer; padding: 8px 12px;">
                     <span id="report-class-selected-label" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;">🌟 ทุกห้องเรียน</span>
                     <i class="fas fa-chevron-down" style="font-size: 10px; color: var(--orange-400); margin-left: 6px;"></i>
                   </button>
-                  <div id="popover-report-class" class="filter-popover-glass">
+                  <div id="popover-report-class" class="filter-popover-glass" onclick="event.stopPropagation()">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px;">
                       <span style="font-size: 11.5px; font-weight: 700; color: #FFF;">เลือกห้องเรียน:</span>
                       <div style="display: flex; gap: 4px;">
-                        <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-report-select-all-classes" style="font-size: 10px; padding: 2px 7px;">ทุกห้อง</button>
-                        <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-report-clear-classes" style="font-size: 10px; padding: 2px 7px;">ล้าง</button>
+                        <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-report-select-all-classes" onclick="selectAllReportClasses(event)" style="font-size: 10px; padding: 2px 7px;">ทุกห้อง</button>
+                        <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-report-clear-classes" onclick="clearAllReportClasses(event)" style="font-size: 10px; padding: 2px 7px;">ล้าง</button>
                       </div>
                     </div>
                     <div id="report-class-checkbox-list" style="display: flex; flex-direction: column; gap: 6px; max-height: 230px; overflow-y: auto;"></div>
@@ -3340,16 +3340,16 @@
                   <label style="font-size: 11.5px; margin-bottom: 3px; font-weight: 700; color: #FFF;">
                     <i class="fas fa-tags" style="color: #F472B6;"></i> กิจกรรม/วิชา (เลือกได้หลายวิชา)
                   </label>
-                  <button type="button" class="select-glass" id="btn-report-activity-multi" style="width: 100%; text-align: left; display: flex; align-items: center; justify-content: space-between; cursor: pointer; padding: 8px 12px;">
+                  <button type="button" class="select-glass" id="btn-report-activity-multi" onclick="toggleReportActivityPopover(event)" style="width: 100%; text-align: left; display: flex; align-items: center; justify-content: space-between; cursor: pointer; padding: 8px 12px;">
                     <span id="report-activity-selected-label" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;">🌟 ทุกกิจกรรม</span>
                     <i class="fas fa-chevron-down" style="font-size: 10px; color: #F472B6; margin-left: 6px;"></i>
                   </button>
-                  <div id="popover-report-activity" class="filter-popover-glass">
+                  <div id="popover-report-activity" class="filter-popover-glass" onclick="event.stopPropagation()">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px;">
                       <span style="font-size: 11.5px; font-weight: 700; color: #FFF;">เลือกกิจกรรม/วิชา:</span>
                       <div style="display: flex; gap: 4px;">
-                        <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-report-select-all-activities" style="font-size: 10px; padding: 2px 7px;">ทั้งหมด</button>
-                        <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-report-clear-activities" style="font-size: 10px; padding: 2px 7px;">ล้าง</button>
+                        <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-report-select-all-activities" onclick="selectAllReportActivities(event)" style="font-size: 10px; padding: 2px 7px;">ทั้งหมด</button>
+                        <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-report-clear-activities" onclick="clearAllReportActivities(event)" style="font-size: 10px; padding: 2px 7px;">ล้าง</button>
                       </div>
                     </div>
                     <div id="report-activity-checkbox-list" style="display: flex; flex-direction: column; gap: 6px; max-height: 230px; overflow-y: auto;"></div>
@@ -14074,13 +14074,133 @@
     }
 
     
+    function toggleReportClassPopover(e) {
+      if (e) {
+        if (typeof e.preventDefault === 'function') e.preventDefault();
+        if (typeof e.stopPropagation === 'function') e.stopPropagation();
+      }
+      var popClass = document.getElementById('popover-report-class');
+      var popAct = document.getElementById('popover-report-activity');
+      var fgClass = document.getElementById('fg-report-class-container');
+      var fgAct = document.getElementById('fg-report-activity-container');
+      
+      if (!popClass) return;
+      var isShown = (popClass.style.display === 'block');
+      if (popAct) {
+        popAct.style.display = 'none';
+        if (fgAct) fgAct.classList.remove('has-popover-open');
+      }
+      popClass.style.display = isShown ? 'none' : 'block';
+      if (fgClass) {
+        if (!isShown) fgClass.classList.add('has-popover-open');
+        else fgClass.classList.remove('has-popover-open');
+      }
+      if (!isShown) {
+        populateReportMultiSelectFilters();
+      }
+    }
+
+    function toggleReportActivityPopover(e) {
+      if (e) {
+        if (typeof e.preventDefault === 'function') e.preventDefault();
+        if (typeof e.stopPropagation === 'function') e.stopPropagation();
+      }
+      var popClass = document.getElementById('popover-report-class');
+      var popAct = document.getElementById('popover-report-activity');
+      var fgClass = document.getElementById('fg-report-class-container');
+      var fgAct = document.getElementById('fg-report-activity-container');
+      
+      if (!popAct) return;
+      var isShown = (popAct.style.display === 'block');
+      if (popClass) {
+        popClass.style.display = 'none';
+        if (fgClass) fgClass.classList.remove('has-popover-open');
+      }
+      popAct.style.display = isShown ? 'none' : 'block';
+      if (fgAct) {
+        if (!isShown) fgAct.classList.add('has-popover-open');
+        else fgAct.classList.remove('has-popover-open');
+      }
+      if (!isShown) {
+        populateReportMultiSelectFilters();
+      }
+    }
+
+    function selectAllReportClasses(e) {
+      if (e) {
+        if (typeof e.preventDefault === 'function') e.preventDefault();
+        if (typeof e.stopPropagation === 'function') e.stopPropagation();
+      }
+      var allChk = document.getElementById('chk-report-class-all');
+      if (allChk) allChk.checked = true;
+      var container = document.getElementById('report-class-checkbox-list');
+      if (container) {
+        var itemChks = container.querySelectorAll('.report-class-item-chk');
+        for (var i = 0; i < itemChks.length; i++) itemChks[i].checked = true;
+      }
+      updateReportClassBtnLabel();
+      saveReportFilterPreferences();
+      generateReportPreview();
+    }
+
+    function clearAllReportClasses(e) {
+      if (e) {
+        if (typeof e.preventDefault === 'function') e.preventDefault();
+        if (typeof e.stopPropagation === 'function') e.stopPropagation();
+      }
+      var allChk = document.getElementById('chk-report-class-all');
+      if (allChk) allChk.checked = false;
+      var container = document.getElementById('report-class-checkbox-list');
+      if (container) {
+        var itemChks = container.querySelectorAll('.report-class-item-chk');
+        for (var i = 0; i < itemChks.length; i++) itemChks[i].checked = false;
+      }
+      updateReportClassBtnLabel();
+      saveReportFilterPreferences();
+      generateReportPreview();
+    }
+
+    function selectAllReportActivities(e) {
+      if (e) {
+        if (typeof e.preventDefault === 'function') e.preventDefault();
+        if (typeof e.stopPropagation === 'function') e.stopPropagation();
+      }
+      var allChk = document.getElementById('chk-report-act-all');
+      if (allChk) allChk.checked = true;
+      var container = document.getElementById('report-activity-checkbox-list');
+      if (container) {
+        var itemChks = container.querySelectorAll('.report-act-item-chk');
+        for (var i = 0; i < itemChks.length; i++) itemChks[i].checked = true;
+      }
+      updateReportActivityBtnLabel();
+      saveReportFilterPreferences();
+      generateReportPreview();
+    }
+
+    function clearAllReportActivities(e) {
+      if (e) {
+        if (typeof e.preventDefault === 'function') e.preventDefault();
+        if (typeof e.stopPropagation === 'function') e.stopPropagation();
+      }
+      var allChk = document.getElementById('chk-report-act-all');
+      if (allChk) allChk.checked = false;
+      var container = document.getElementById('report-activity-checkbox-list');
+      if (container) {
+        var itemChks = container.querySelectorAll('.report-act-item-chk');
+        for (var i = 0; i < itemChks.length; i++) itemChks[i].checked = false;
+      }
+      updateReportActivityBtnLabel();
+      saveReportFilterPreferences();
+      generateReportPreview();
+    }
+
     function getAllAvailableClasses() {
       var uniqueClasses = [];
       function addClass(cName) {
         if (!cName) return;
         var clean = String(typeof cName === 'object' ? (cName.name || cName.className || '') : cName).trim();
         clean = clean.replace(/^ห้อง\s*/, '');
-        if (clean && uniqueClasses.indexOf(clean) === -1) {
+        if (clean && clean !== 'all' && clean !== 'ทุกห้องเรียน' && uniqueClasses.indexOf(clean) === -1) {
           uniqueClasses.push(clean);
         }
       }
@@ -14109,6 +14229,12 @@
         }
       } catch (e) {}
 
+      // 5. Default classes for fresh session / GitHub Pages
+      if (uniqueClasses.length === 0) {
+        var defaultClassList = ['ปวช.1/1', 'ปวช.1/2', 'ปวส.1/1', 'ปวส.1/2'];
+        for (var d = 0; d < defaultClassList.length; d++) addClass(defaultClassList[d]);
+      }
+
       // Natural Thai sorting
       uniqueClasses.sort(function(a, b) {
         return a.localeCompare(b, 'th', { numeric: true });
@@ -14122,12 +14248,12 @@
       function addAct(aName) {
         if (!aName) return;
         var clean = String(typeof aName === 'object' ? (aName.name || aName.activityName || '') : aName).trim();
-        if (clean && uniqueActs.indexOf(clean) === -1) {
+        if (clean && clean !== 'all' && clean !== 'ทุกกิจกรรม' && clean !== 'ทุกกิจกรรม/วิชา' && uniqueActs.indexOf(clean) === -1) {
           uniqueActs.push(clean);
         }
       }
 
-      // Default standard activities
+      // Always default standard activities
       addAct('เช็คชื่อมาเรียน');
       addAct('กิจกรรมหน้าเสาธง');
       addAct('โฮมรูม (Home Room)');
@@ -14326,7 +14452,6 @@
       updateReportClassBtnLabel();
       updateReportActivityBtnLabel();
     }
-
 
     function getParentReportUrl() {
       var dateRange = getReportDateRange();
