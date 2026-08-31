@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>รายงานสรุปการมาเรียนประจำวัน - สำหรับผู้ปกครองและนักเรียน</title>
+  
+  <!-- Google Fonts: Prompt & Sarabun -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- html2canvas & html2pdf for Parent Export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <style>
+    :root {
+      --bg-dark: #090D16;
+      --bg-card: rgba(17, 24, 39, 0.85);
+      --border-glass: rgba(255, 255, 255, 0.1);
+      --cyan-400: #00F0FF;
+      --orange-400: #FF6B00;
+      --gold-400: #FFD700;
+      --emerald-400: #10B981;
+      --rose-400: #F43F5E;
+      --amber-400: #F59E0B;
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Prompt', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(0, 240, 255, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(255, 107, 0, 0.08) 0px, transparent 50%),
+        radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.06) 0px, transparent 50%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      min-height: 100vh;
+      padding-bottom: 50px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* Glass Card Style */
+    .glass-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Top Navbar */
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 18px;
+      background: rgba(15, 23, 42, 0.85);
+      border-bottom: 1px solid var(--border-glass);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #FFF;
+    }
+
+    .brand-logo i {
+      color: var(--orange-400);
+      font-size: 20px;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border-glass);
+      background: rgba(255, 255, 255, 0.08);
+      color: #FFF;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-action:hover {
+      background: rgba(255, 255, 255, 0.16);
+      transform: translateY(-1px);
+    }
+
+    .btn-cyan {
+      background: rgba(0, 240, 255, 0.15);
+      border-color: rgba(0, 240, 255, 0.4);
+      color: var(--cyan-400);
+    }
+
+    .btn-emerald {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: rgba(16, 185, 129, 0.4);
+      color: var(--emerald-400);
+    }
+
+    /* Hero Header */
+    .hero-header {
+      text-align: center;
+      padding: 16px 10px 10px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      background: rgba(255, 107, 0, 0.15);
+      border: 1px solid rgba(255, 107, 0, 0.4);
+      color: var(--orange-400);
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .hero-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: #FFF;
+      line-height: 1.3;
+      margin-bottom: 4px;
+    }
+
+    .hero-subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    /* 3D Podium Container */
+    .podium-card {
+      background: linear-gradient(180deg, #111827 0%, #0B0F19 100%);
+      border: 1.5px solid rgba(251, 191, 36, 0.4);
+      border-radius: var(--radius-lg);
+      padding: 20px 14px;
+      margin-bottom: 20px;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+
+    .podium-title {
+      text-align: center;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--gold-400);
+      margin-bottom: 18px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .podium-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr 1fr;
+      align-items: end;
+      gap: 8px;
+    }
+
+    .podium-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .crown-icon {
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+
+    .avatar-wrapper {
+      position: relative;
+      margin-bottom: 6px;
+    }
+
+    .avatar-img {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+      background: #1E293B;
+    }
+
+    .avatar-champ {
+      width: 72px;
+      height: 72px;
+      border: 3px solid var(--gold-400);
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+    }
+
+    .avatar-silver {
+      border: 2.5px solid #C0C0C0;
+      box-shadow: 0 0 14px rgba(192, 192, 192, 0.6);
+    }
+
+    .avatar-bronze {
+      border: 2.5px solid #F97316;
+      box-shadow: 0 0 14px rgba(249, 115, 22, 0.6);
+    }
+
+    .champ-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: #FFF;
+      line-height: 1.3;
+      max-width: 110px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 2px;
+    }
+
+    .champ-time {
+      font-size: 11px;
+      color: #FDE047;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .podium-base {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 18px;
+      border-radius: 8px 8px 0 0;
+      box-shadow: inset 0 2px 4px rgba(255,255,255,0.3);
+    }
+
+    .base-gold {
+      height: 60px;
+      background: linear-gradient(180deg, #F59E0B 0%, #B45309 100%);
+      color: #FFF;
+      border: 1px solid #FDE047;
+    }
+
+    .base-silver {
+      height: 42px;
+      background: linear-gradient(180deg, #64748B 0%, #334155 100%);
+      color: #FFF;
+      border: 1px solid #94A3B8;
+    }
+
+    .base-bronze {
+      height: 30px;
+      background: linear-gradient(180deg, #C2410C 0%, #7C2D12 100%);
+      color: #FFF;
+      border: 1px solid #FB923C;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .stat-box {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-md);
+      padding: 14px 10px;
+      text-align: center;
+    }
+
+    .stat-num {
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .stat-lbl {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    /* Search & Filter Toolbar */
+    .search-toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 180px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      color: #FFF;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: var(--cyan-400);
+    }
+
+    .filter-btn-group {
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .filter-chip {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-glass);
+      color: var(--text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .filter-chip.active {
+      background: rgba(0, 240, 255, 0.2);
+      border-color: var(--cyan-400);
+      color: #FFF;
+    }
+
+    /* Student List Cards */
+    .student-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-md);
+      margin-bottom: 8px;
+      transition: all 0.2s;
+    }
+
+    .student-card:hover {
+      background: rgba(30, 41, 59, 0.8);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .student-info-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .student-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #1E293B;
+      border: 1.5px solid var(--border-glass);
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .student-details {
+      min-width: 0;
+    }
+
+    .student-name {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #FFF;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .student-meta {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .badge-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .badge-present {
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.5);
+      color: #34D399;
+    }
+
+    .badge-late {
+      background: rgba(245, 158, 11, 0.2);
+      border: 1px solid rgba(245, 158, 11, 0.5);
+      color: #FBBF24;
+    }
+
+    .badge-sick {
+      background: rgba(234, 179, 8, 0.2);
+      border: 1px solid rgba(234, 179, 8, 0.5);
+      color: #FACC15;
+    }
+
+    .badge-leave {
+      background: rgba(168, 85, 247, 0.2);
+      border: 1px solid rgba(168, 85, 247, 0.5);
+      color: #C084FC;
+    }
+
+    .badge-absent {
+      background: rgba(244, 63, 94, 0.2);
+      border: 1px solid rgba(244, 63, 94, 0.5);
+      color: #FB7185;
+    }
+
+    /* Modal for Selfie Preview */
+    .photo-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 99999;
+      padding: 16px;
+    }
+
+    .photo-modal-content {
+      background: #0F172A;
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      max-width: 360px;
+      width: 100%;
+      text-align: center;
+      position: relative;
+    }
+
+    .photo-modal-img {
+      width: 100%;
+      height: 320px;
+      border-radius: var(--radius-md);
+      object-fit: cover;
+      margin-bottom: 12px;
+      border: 2px solid var(--orange-400);
+    }
+
+    /* Loading Spinner */
+    .loading-box {
+      text-align: center;
+      padding: 50px 20px;
+      color: var(--text-muted);
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255,255,255,0.1);
+      border-radius: 50%;
+      border-top-color: var(--cyan-400);
+      animation: spin 1s ease-in-out infinite;
+      margin-bottom: 12px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media print {
+      body { background: #FFF !important; color: #000 !important; }
+      .top-nav, .search-toolbar, .btn-action { display: none !important; }
+      .glass-card { background: #FFF !important; border: 1px solid #CCC !important; color: #000 !important; box-shadow: none !important; }
+      .hero-title, .champ-name, .student-name { color: #000 !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP NAVBAR -->
+  <header class="top-nav">
+    <div class="brand-logo">
+      <i class="fas fa-graduation-cap"></i>
+      <span>ระบบเช็คชื่อนักเรียน</span>
+    </div>
+    <div class="nav-actions">
+      <button type="button" class="btn-action btn-cyan" onclick="downloadReportImage()" title="บันทึกภาพรายงานเพื่อแชร์">
+        <i class="fas fa-camera"></i> <span>บันทึกภาพ</span>
+      </button>
+      <button type="button" class="btn-action" onclick="copyShareLink()" title="คัดลอกลิงก์แชร์">
+        <i class="fas fa-share-nodes"></i> <span>แชร์</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="container">
+    
+    <!-- REPORT CAPTURE AREA -->
+    <div id="report-capture-area">
+      
+      <!-- HERO HEADER -->
+      <section class="glass-card hero-header" style="margin-bottom: 16px;">
+        <div class="hero-badge">
+          <i class="fas fa-bullhorn"></i> รายงานสรุปการมาเรียนประจำวัน
+        </div>
+        <h1 class="hero-title" id="report-day-title">วัน...</h1>
+        <p class="hero-subtitle" id="report-subtitle">กำลังโหลดข้อมูลรายงาน...</p>
+      </section>
+
+      <!-- 3D PODIUM SECTION -->
+      <section class="podium-card" id="podium-section" style="display: none;">
+        <div class="podium-title">
+          <span>👑 🏆 3 อันดับแรกที่เช็คชื่อไวที่สุดประจำวัน</span>
+        </div>
+        <div class="podium-grid" id="podium-grid-content">
+          <!-- Dynamically populated -->
+        </div>
+      </section>
+
+      <!-- ATTENDANCE OVERVIEW STATS -->
+      <section class="stats-grid" id="stats-grid-container">
+        <div class="stat-box">
+          <div class="stat-num" id="stat-rate" style="color: var(--emerald-400);">-%</div>
+          <div class="stat-lbl">อัตราเข้าเรียน</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" id="stat-present" style="color: #34D399;">-</div>
+          <div class="stat-lbl">ตรงเวลา</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" id="stat-late" style="color: var(--amber-400);">-</div>
+          <div class="stat-lbl">มาสาย</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" id="stat-leave" style="color: #C084FC;">-</div>
+          <div class="stat-lbl">แจ้งลา</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" id="stat-absent" style="color: var(--rose-400);">-</div>
+          <div class="stat-lbl">ขาดเรียน</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" id="stat-total" style="color: var(--cyan-400);">-</div>
+          <div class="stat-lbl">นักศึกษาทั้งหมด</div>
+        </div>
+      </section>
+
+      <!-- SEARCH & FILTER TOOLBAR -->
+      <div class="search-toolbar">
+        <input type="text" id="parent-search-input" class="search-input" placeholder="🔍 ค้นหาชื่อ-สกุล หรือรหัสนักศึกษา..." oninput="filterStudentList()" />
+        <div class="filter-btn-group">
+          <button type="button" class="filter-chip active" onclick="setStatusFilter('all', this)">ทั้งหมด</button>
+          <button type="button" class="filter-chip" onclick="setStatusFilter('Present', this)">มาเรียน</button>
+          <button type="button" class="filter-chip" onclick="setStatusFilter('Late', this)">มาสาย</button>
+          <button type="button" class="filter-chip" onclick="setStatusFilter('Leave', this)">แจ้งลา</button>
+          <button type="button" class="filter-chip" onclick="setStatusFilter('Absent', this)">ขาดเรียน</button>
+        </div>
+      </div>
+
+      <!-- STUDENT LIST CONTAINER -->
+      <section class="glass-card" style="padding: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid var(--border-glass); padding-bottom: 8px;">
+          <h2 style="font-size: 15px; font-weight: 700; color: #FFF;">
+            <i class="fas fa-users" style="color: var(--cyan-400); margin-right: 6px;"></i> รายชื่อนักศึกษาในห้องเรียน
+          </h2>
+          <span id="student-count-badge" style="font-size: 11.5px; color: var(--text-muted);">0 คน</span>
+        </div>
+
+        <div id="student-list-container">
+          <div class="loading-box">
+            <div class="spinner"></div>
+            <div>กำลังดึงข้อมูลรายงานการเช็คชื่อล่าสุด...</div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+  </main>
+
+  <!-- PHOTO ZOOM MODAL -->
+  <div class="photo-modal-overlay" id="photo-modal" onclick="closePhotoModal(event)">
+    <div class="photo-modal-content" onclick="event.stopPropagation()">
+      <img id="photo-modal-img" class="photo-modal-img" src="" alt="ภาพเซลฟี่" />
+      <div id="photo-modal-name" style="font-size: 14px; font-weight: 700; color: #FFF; margin-bottom: 2px;"></div>
+      <div id="photo-modal-desc" style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;"></div>
+      <button type="button" class="btn-action" style="width: 100%; justify-content: center; background: rgba(255,255,255,0.1);" onclick="closePhotoModal()">
+        ปิดหน้าต่าง
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Global Report State
+    var ReportState = {
+      data: null,
+      currentFilter: 'all',
+      searchQuery: ''
+    };
+
+    // Helper functions for safe string extraction
+    function getQueryParam(param) {
+      var urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param) || '';
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // Load Report Data
+    function initReportPage() {
+      var dateParam = getQueryParam('date') || '';
+      var classParam = getQueryParam('class') || getQueryParam('className') || 'all';
+      var actParam = getQueryParam('activity') || getQueryParam('act') || 'all';
+
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(function(res) {
+            if (res && res.status === 'success') {
+              renderReportData(res);
+            } else {
+              renderError('ไม่สามารถดึงข้อมูลรายงานได้');
+            }
+          })
+          .withFailureHandler(function(err) {
+            renderError('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์: ' + (err.message || String(err)));
+          })
+          .getPublicDailyReportData(dateParam, classParam, actParam);
+      } else {
+        fetchReportFromApi(dateParam, classParam, actParam);
+      }
+    }
+
+    function fetchReportFromApi(dateParam, classParam, actParam) {
+      // Offline Demo Fallback
+      setTimeout(function() {
+        var demoData = {
+          status: 'success',
+          date: dateParam || '2026-08-31',
+          dateThai: '31 สิงหาคม 2569',
+          dayName: 'วันจันทร์',
+          className: classParam !== 'all' ? classParam : 'ทุกห้องเรียน',
+          activityName: 'เช็คชื่อมาเรียน',
+          stats: {
+            totalStudents: 20,
+            countPresent: 14,
+            countOnTime: 6,
+            countLate: 8,
+            countSick: 1,
+            countLeave: 1,
+            countAbsent: 4,
+            attRate: '70.0'
+          },
+          topChampions: [
+            { no: 1, name: 'นายพนรัญชน์ ศุกรวรรณ', className: 'ปวส.1/2', time: '08:45', selfiePhoto: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150', rank: 1 },
+            { no: 2, name: 'นายรัญวิทย์ หาญชนะ', className: 'ปวส.1/2', time: '08:45', selfiePhoto: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150', rank: 2 },
+            { no: 3, name: 'นางสาวกัลยกร สุขใจ', className: 'ปวส.1/2', time: '08:47', selfiePhoto: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150', rank: 3 }
+          ],
+          students: [
+            { no: 1, studentId: '66309010001', name: 'นายพนรัญชน์ ศุกรวรรณ', className: 'ปวส.1/2', status: 'Present', statusLabel: 'มาเรียนตรงเวลา', statusClass: 'present', checkinTime: '08:45:12', selfiePhoto: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150', note: '' },
+            { no: 2, studentId: '66309010002', name: 'นายรัญวิทย์ หาญชนะ', className: 'ปวส.1/2', status: 'Present', statusLabel: 'มาเรียนตรงเวลา', statusClass: 'present', checkinTime: '08:45:40', selfiePhoto: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150', note: '' },
+            { no: 3, studentId: '66309010003', name: 'นางสาวกัลยกร สุขใจ', className: 'ปวส.1/2', status: 'Present', statusLabel: 'มาเรียนตรงเวลา', statusClass: 'present', checkinTime: '08:47:05', selfiePhoto: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150', note: '' },
+            { no: 4, studentId: '66309010004', name: 'นายสุรจักร งามคงงาม', className: 'ปวส.1/2', status: 'Present', statusLabel: 'มาเรียนตรงเวลา', statusClass: 'present', checkinTime: '08:50:22', selfiePhoto: '', note: '' },
+            { no: 5, studentId: '66309010005', name: 'นายสิทธิพร นาควรนุช', className: 'ปวส.1/2', status: 'Present', statusLabel: 'มาเรียนตรงเวลา', statusClass: 'present', checkinTime: '08:50:45', selfiePhoto: '', note: '' },
+            { no: 6, studentId: '66309010006', name: 'นางสาวสมิตานัน งามโกศล', className: 'ปวส.1/2', status: 'Present', statusLabel: 'มาเรียนตรงเวลา', statusClass: 'present', checkinTime: '08:53:10', selfiePhoto: '', note: '' },
+            { no: 7, studentId: '66309010007', name: 'นายภานุวัฒน์ ตั้งใจ', className: 'ปวส.1/2', status: 'Late', statusLabel: 'มาสาย', statusClass: 'late', checkinTime: '09:05:12', selfiePhoto: '', note: 'สาย 20 นาที' },
+            { no: 8, studentId: '66309010008', name: 'นางสาวพิมพ์มาดา รักเรียน', className: 'ปวส.1/2', status: 'Sick', statusLabel: 'ลาป่วย', statusClass: 'sick', checkinTime: '-', selfiePhoto: '', note: 'มีใบรับรองแพทย์' },
+            { no: 9, studentId: '66309010009', name: 'นายวิศรุต คงคา', className: 'ปวส.1/2', status: 'Leave', statusLabel: 'ลากิจ', statusClass: 'leave', checkinTime: '-', selfiePhoto: '', note: 'ไปทำธุระกับผู้ปกครอง' },
+            { no: 10, studentId: '66309010010', name: 'นายธนกฤต ขาดเรียน', className: 'ปวส.1/2', status: 'Absent', statusLabel: 'ขาดเรียน', statusClass: 'absent', checkinTime: '-', selfiePhoto: '', note: 'ไม่พบเช็คชื่อ' }
+          ]
+        };
+        renderReportData(demoData);
+      }, 500);
+    }
+
+    function renderReportData(data) {
+      ReportState.data = data;
+
+      // 1. Header Info
+      var dayTitle = document.getElementById('report-day-title');
+      var subtitle = document.getElementById('report-subtitle');
+      if (dayTitle) dayTitle.textContent = (data.dayName || '') + ' ' + (data.dateThai || data.date);
+      if (subtitle) subtitle.textContent = (data.className || 'ทุกห้องเรียน') + ' • กิจกรรม: ' + (data.activityName || 'เช็คชื่อมาเรียน');
+
+      // 2. Stats
+      var s = data.stats || {};
+      var rateEl = document.getElementById('stat-rate');
+      var presEl = document.getElementById('stat-present');
+      var lateEl = document.getElementById('stat-late');
+      var leaveEl = document.getElementById('stat-leave');
+      var absEl = document.getElementById('stat-absent');
+      var totEl = document.getElementById('stat-total');
+
+      if (rateEl) rateEl.textContent = (s.attRate || '0.0') + '%';
+      if (presEl) presEl.textContent = s.countOnTime || s.countPresent || '0';
+      if (lateEl) lateEl.textContent = s.countLate || '0';
+      if (leaveEl) leaveEl.textContent = (s.countSick || 0) + (s.countLeave || 0);
+      if (absEl) absEl.textContent = s.countAbsent || '0';
+      if (totEl) totEl.textContent = s.totalStudents || '0';
+
+      // 3. 3D Podium
+      renderPodium(data.topChampions || []);
+
+      // 4. Student List
+      renderStudentList();
+    }
+
+    function renderPodium(champs) {
+      var podiumSection = document.getElementById('podium-section');
+      var grid = document.getElementById('podium-grid-content');
+      if (!podiumSection || !grid) return;
+
+      if (!champs || champs.length === 0) {
+        podiumSection.style.display = 'none';
+        return;
+      }
+
+      podiumSection.style.display = 'block';
+      grid.innerHTML = '';
+
+      var top1 = champs[0] || null;
+      var top2 = champs[1] || null;
+      var top3 = champs[2] || null;
+
+      function buildColHtml(item, rankNum, medalEmoji, crownColor, baseClass, avatarClass) {
+        if (!item) {
+          return '<div class="podium-col"><div style="height: 120px;"></div></div>';
+        }
+        var photoUrl = item.selfiePhoto || '';
+        var photoTag = (photoUrl && photoUrl.length > 10) 
+          ? '<img src="' + escapeHtml(photoUrl) + '" class="avatar-img ' + avatarClass + '" alt="' + escapeHtml(item.name) + '" onclick="openPhotoModal(\'' + escapeHtml(photoUrl) + '\', \'' + escapeHtml(item.name) + '\', \'⏰ เช็คชื่อ: ' + escapeHtml(item.time) + ' น.\')" />'
+          : '<div class="avatar-img ' + avatarClass + '" style="display:flex; align-items:center; justify-content:center; font-size:24px;">' + medalEmoji + '</div>';
+
+        return '<div class="podium-col">' +
+               '  <div class="crown-icon" style="color:' + crownColor + ';">👑 #' + rankNum + '</div>' +
+               '  <div class="avatar-wrapper">' + photoTag + '</div>' +
+               '  <div class="champ-name" title="' + escapeHtml(item.name) + '">' + escapeHtml(item.name) + '</div>' +
+               '  <div class="champ-time">⏰ ' + escapeHtml(item.time) + ' น.</div>' +
+               '  <div class="podium-base ' + baseClass + '">' + rankNum + '</div>' +
+               '</div>';
+      }
+
+      var html = '';
+      html += buildColHtml(top2, 2, '🥈', '#C0C0C0', 'base-silver', 'avatar-silver');
+      html += buildColHtml(top1, 1, '🥇', '#FFD700', 'base-gold', 'avatar-champ');
+      html += buildColHtml(top3, 3, '🥉', '#F97316', 'base-bronze', 'avatar-bronze');
+
+      grid.innerHTML = html;
+    }
+
+    function renderStudentList() {
+      var container = document.getElementById('student-list-container');
+      var countBadge = document.getElementById('student-count-badge');
+      if (!container) return;
+
+      if (!ReportState.data || !ReportState.data.students) {
+        container.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted);">ไม่พบข้อมูลนักศึกษา</div>';
+        return;
+      }
+
+      var students = ReportState.data.students;
+      var filter = ReportState.currentFilter;
+      var q = ReportState.searchQuery.toLowerCase().trim();
+
+      var filtered = [];
+      for (var i = 0; i < students.length; i++) {
+        var s = students[i];
+        
+        if (filter !== 'all') {
+          if (filter === 'Present' && !(s.status === 'Present' || s.status === 'มาเรียน')) continue;
+          if (filter === 'Late' && !(s.status === 'Late' || s.status === 'มาสาย')) continue;
+          if (filter === 'Sick' && !(s.status === 'Sick' || s.status === 'ลาป่วย')) continue;
+          if (filter === 'Leave' && !(s.status === 'Leave' || s.status === 'ลากิจ' || s.status === 'Sick' || s.status === 'ลาป่วย')) continue;
+          if (filter === 'Absent' && !(s.status === 'Absent' || s.status === 'ขาด' || s.status === 'ขาดเรียน')) continue;
+        }
+
+        if (q) {
+          var matchName = s.name ? s.name.toLowerCase().indexOf(q) > -1 : false;
+          var matchId = s.studentId ? String(s.studentId).toLowerCase().indexOf(q) > -1 : false;
+          var matchNo = s.no ? String(s.no).indexOf(q) > -1 : false;
+          if (!matchName && !matchId && !matchNo) continue;
+        }
+
+        filtered.push(s);
+      }
+
+      if (countBadge) countBadge.textContent = filtered.length + ' จาก ' + students.length + ' คน';
+
+      if (filtered.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding:30px 10px; color:var(--text-muted);"><i class="fas fa-search" style="font-size:24px; margin-bottom:8px; display:block;"></i>ไม่พบรายชื่อที่ตรงกับเงื่อนไขการค้นหา</div>';
+        return;
+      }
+
+      var html = '';
+      for (var j = 0; j < filtered.length; j++) {
+        var st = filtered[j];
+        var photoUrl = st.selfiePhoto || '';
+        var photoTag = (photoUrl && photoUrl.length > 10)
+          ? '<img src="' + escapeHtml(photoUrl) + '" class="student-avatar" alt="' + escapeHtml(st.name) + '" onclick="openPhotoModal(\'' + escapeHtml(photoUrl) + '\', \'' + escapeHtml(st.name) + '\', \'ห้อง ' + escapeHtml(st.className) + ' • เวลา ' + escapeHtml(st.checkinTime) + '\')" />'
+          : '<div class="student-avatar" style="display:flex; align-items:center; justify-content:center; color:var(--text-muted);"><i class="fas fa-user"></i></div>';
+
+        var badgeClass = 'badge-absent';
+        var badgeText = st.statusLabel || 'ขาดเรียน';
+        if (st.status === 'Present' || st.status === 'มาเรียน') {
+          badgeClass = 'badge-present';
+        } else if (st.status === 'Late' || st.status === 'มาสาย') {
+          badgeClass = 'badge-late';
+        } else if (st.status === 'Sick' || st.status === 'ลาป่วย') {
+          badgeClass = 'badge-sick';
+        } else if (st.status === 'Leave' || st.status === 'ลากิจ') {
+          badgeClass = 'badge-leave';
+        }
+
+        var timeStr = (st.checkinTime && st.checkinTime !== '-') ? '⏰ ' + st.checkinTime + ' น.' : '⏰ -';
+        var noteStr = st.note ? ' • 📝 ' + st.note : '';
+
+        html += '<div class="student-card">' +
+                '  <div class="student-info-left">' +
+                '    <div style="font-size:12px; font-weight:700; color:var(--orange-400); width:24px; text-align:center;">' + st.no + '</div>' +
+                photoTag +
+                '    <div class="student-details">' +
+                '      <div class="student-name">' + escapeHtml(st.name) + '</div>' +
+                '      <div class="student-meta">' +
+                '        <span>รหัส ' + escapeHtml(st.studentId) + '</span>' +
+                '        <span>' + escapeHtml(st.className) + '</span>' +
+                '        <span>' + timeStr + '</span>' +
+                escapeHtml(noteStr) +
+                '      </div>' +
+                '    </div>' +
+                '  </div>' +
+                '  <div>' +
+                '    <span class="badge-status ' + badgeClass + '">' + badgeText + '</span>' +
+                '  </div>' +
+                '</div>';
+      }
+
+      container.innerHTML = html;
+    }
+
+    function setStatusFilter(statusVal, btnEl) {
+      ReportState.currentFilter = statusVal;
+      var chips = document.querySelectorAll('.filter-chip');
+      for (var i = 0; i < chips.length; i++) chips[i].classList.remove('active');
+      if (btnEl) btnEl.classList.add('active');
+      renderStudentList();
+    }
+
+    function filterStudentList() {
+      var input = document.getElementById('parent-search-input');
+      ReportState.searchQuery = input ? input.value : '';
+      renderStudentList();
+    }
+
+    function openPhotoModal(imgUrl, name, desc) {
+      var modal = document.getElementById('photo-modal');
+      var img = document.getElementById('photo-modal-img');
+      var nEl = document.getElementById('photo-modal-name');
+      var dEl = document.getElementById('photo-modal-desc');
+      if (modal && img) {
+        img.src = imgUrl;
+        if (nEl) nEl.textContent = name || 'ภาพถ่ายยืนยันตัวตน';
+        if (dEl) dEl.textContent = desc || '';
+        modal.style.display = 'flex';
+      }
+    }
+
+    function closePhotoModal() {
+      var modal = document.getElementById('photo-modal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function downloadReportImage() {
+      var captureArea = document.getElementById('report-capture-area');
+      if (!captureArea || typeof html2canvas === 'undefined') {
+        alert('ไลบรารีแปลงภาพยังไม่พร้อมใช้งาน');
+        return;
+      }
+      var d = ReportState.data || {};
+      var dateTag = d.date || 'today';
+      var classTag = (d.className || 'all').replace(/[,\s]+/g, '_');
+
+      html2canvas(captureArea, {
+        scale: 2.2,
+        useCORS: true,
+        backgroundColor: '#090D16',
+        logging: false
+      }).then(function(canvas) {
+        var imgData = canvas.toDataURL('image/jpeg', 0.95);
+        var link = document.createElement('a');
+        link.download = 'รายงานการมาเรียน_' + classTag + '_' + dateTag + '.jpg';
+        link.href = imgData;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }).catch(function(err) {
+        alert('เกิดข้อผิดพลาดในการบันทึกภาพ: ' + err.message);
+      });
+    }
+
+    function copyShareLink() {
+      var url = window.location.href;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function() {
+          alert('คัดลอกลิงก์รายงานเรียบร้อยแล้ว! สามารถส่งให้ผู้ปกครองใน LINE ได้ทันที 📋✨');
+        });
+      } else {
+        prompt('คัดลอกลิงก์รายงานนี้:', url);
+      }
+    }
+
+    function renderError(msg) {
+      var container = document.getElementById('student-list-container');
+      if (container) {
+        container.innerHTML = '<div style="text-align:center; padding:30px 10px; color:#F87171;"><i class="fas fa-triangle-exclamation" style="font-size:24px; margin-bottom:8px; display:block;"></i>' + escapeHtml(msg) + '</div>';
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', initReportPage);
+  </script>
+</body>
+</html>

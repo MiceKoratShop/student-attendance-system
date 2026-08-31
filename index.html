@@ -3421,6 +3421,12 @@
                 <button type="button" class="btn-glass btn-orange btn-sm-glass" id="btn-download-pdf" title="ดาวน์โหลดรายงานเป็นไฟล์ PDF">
                   <i class="fas fa-file-pdf"></i> โหลด PDF
                 </button>
+                <button type="button" class="btn-glass btn-sm-glass" id="btn-open-parent-report" style="background: rgba(0, 240, 255, 0.15); border-color: rgba(0, 240, 255, 0.4); color: var(--cyan-400); font-weight: 700;" title="เปิดหน้ารายงานสรุปประจำวันออนไลน์สำหรับผู้ปกครองและนักเรียน">
+                  <i class="fas fa-arrow-up-right-from-square"></i> 📱 หน้ารายงานผู้ปกครอง
+                </button>
+                <button type="button" class="btn-glass btn-sm-glass" id="btn-copy-parent-link" style="background: rgba(251, 191, 36, 0.15); border-color: rgba(251, 191, 36, 0.4); color: #FBBF24; font-weight: 700;" title="คัดลอกลิงก์รายงานสำหรับส่งเข้ากลุ่ม LINE ให้ผู้ปกครองคลิกดูได้ทันที">
+                  <i class="fas fa-link"></i> 🔗 ลิงก์ผู้ปกครอง
+                </button>
                 <button type="button" class="btn-glass btn-sm-glass" id="btn-open-line-send" style="background: rgba(6, 199, 85, 0.18); border-color: rgba(6, 199, 85, 0.45); color: #22C55E; font-weight: 600;" title="ส่งสรุปรายงานเข้ากลุ่ม LINE ทันที">
                   <i class="fab fa-line" style="font-size: 14px;"></i> ส่งเข้า LINE
                 </button>
@@ -5334,9 +5340,10 @@
 
     function getTodayDateString() {
       var d = new Date();
+      var year = d.getFullYear();
+      if (year > 2500) year = year - 543;
       var month = '' + (d.getMonth() + 1);
       var day = '' + d.getDate();
-      var year = d.getFullYear();
       if (month.length < 2) month = '0' + month;
       if (day.length < 2) day = '0' + day;
       return year + '-' + month + '-' + day;
@@ -14142,6 +14149,37 @@
       updateReportActivityBtnLabel();
     }
 
+
+    function getParentReportUrl() {
+      var dateRange = getReportDateRange();
+      var className = getSelectedReportClasses();
+      var activityName = getSelectedReportActivities();
+      var dateParam = dateRange.startDate || getTodayDateString();
+      var classParam = (className && className !== 'all') ? className : 'all';
+      var actParam = (activityName && activityName !== 'all') ? activityName : 'all';
+
+      var fullUrl = window.location.href.split('#')[0].split('?')[0];
+      if (fullUrl.indexOf('.html') > -1) {
+        fullUrl = fullUrl.substring(0, fullUrl.lastIndexOf('/')) + '/report.html';
+        return fullUrl + '?date=' + encodeURIComponent(dateParam) + '&class=' + encodeURIComponent(classParam) + '&activity=' + encodeURIComponent(actParam);
+      } else {
+        // Google Apps Script Web App URL
+        return fullUrl + '?page=report&date=' + encodeURIComponent(dateParam) + '&class=' + encodeURIComponent(classParam) + '&activity=' + encodeURIComponent(actParam);
+      }
+    }
+
+    function openParentReportPage() {
+      var url = getParentReportUrl();
+      window.open(url, '_blank');
+    }
+
+    function copyParentReportLink() {
+      var url = getParentReportUrl();
+      copyTextToClipboard(url);
+      showToast('คัดลอกลิงก์หน้ารายงานสำหรับผู้ปกครองเรียบร้อยแล้ว! นำไปส่งใน LINE ได้ทันที 📋✨', 'success');
+    }
+
+
     function renderReportsPage() {
       var startEl = document.getElementById('report-date-start');
       var endEl = document.getElementById('report-date-end');
@@ -14207,6 +14245,20 @@
       if (btnPdf) {
         btnPdf.onclick = function() {
           downloadPDFReport();
+        };
+      }
+
+      var btnParentReport = document.getElementById('btn-open-parent-report');
+      if (btnParentReport) {
+        btnParentReport.onclick = function() {
+          openParentReportPage();
+        };
+      }
+
+      var btnCopyParentLink = document.getElementById('btn-copy-parent-link');
+      if (btnCopyParentLink) {
+        btnCopyParentLink.onclick = function() {
+          copyParentReportLink();
         };
       }
 
