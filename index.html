@@ -9549,22 +9549,40 @@
         hLeft.style.gap = '8px';
         hLeft.style.flexWrap = 'wrap';
 
-        var actBadge = document.createElement('span');
-        actBadge.className = 'badge-glass';
-        actBadge.style.background = 'rgba(255,255,255,0.06)';
-        actBadge.style.border = '1px solid ' + themeCol;
-        actBadge.style.color = themeCol;
-        actBadge.style.fontWeight = '700';
-        actBadge.style.fontSize = '12.5px';
-        actBadge.innerHTML = '<i class="fas fa-tags"></i> ' + (i + 1) + '. ' + s.activityName;
+        var actBadge = document.createElement('div');
+        actBadge.style.background = 'linear-gradient(135deg, ' + themeCol + '22 0%, rgba(15,23,42,0.85) 100%)';
+        actBadge.style.border = '1.5px solid ' + themeCol;
+        actBadge.style.borderRadius = '8px';
+        actBadge.style.padding = '5px 12px';
+        actBadge.style.color = '#FFF';
+        actBadge.style.fontWeight = '800';
+        actBadge.style.fontSize = '14px';
+        actBadge.style.display = 'flex';
+        actBadge.style.alignItems = 'center';
+        actBadge.style.gap = '6px';
+        actBadge.innerHTML = '<i class="fas fa-bookmark" style="color:' + themeCol + '"></i> ' + s.activityName;
         hLeft.appendChild(actBadge);
 
-        var classSpan = document.createElement('span');
+        var classSpan = document.createElement('div');
         classSpan.style.fontWeight = '700';
-        classSpan.style.fontSize = '13.5px';
-        classSpan.style.color = '#FFF';
-        classSpan.innerHTML = '<i class="fas fa-chalkboard-user" style="color:' + themeCol + '"></i> ' + (s.className === 'all' ? 'ทุกห้องเรียน' : s.className);
+        classSpan.style.fontSize = '13px';
+        classSpan.style.color = '#E2E8F0';
+        classSpan.style.background = 'rgba(255,255,255,0.05)';
+        classSpan.style.padding = '4px 10px';
+        classSpan.style.borderRadius = '6px';
+        classSpan.style.border = '1px solid rgba(255,255,255,0.1)';
+        classSpan.innerHTML = '<i class="fas fa-chalkboard-user" style="color:' + themeCol + '; margin-right:4px;"></i> ห้อง: <strong style="color:#FFF;">' + (s.className === 'all' ? 'ทุกห้องเรียน' : s.className) + '</strong>';
         hLeft.appendChild(classSpan);
+
+        var dateSpan = document.createElement('div');
+        dateSpan.style.fontSize = '12px';
+        dateSpan.style.color = '#94A3B8';
+        dateSpan.style.display = 'flex';
+        dateSpan.style.alignItems = 'center';
+        dateSpan.style.gap = '4px';
+        var dateThaiFmt = s.date ? formatThaiDate(s.date) : formatThaiDate(getTodayDateString());
+        dateSpan.innerHTML = '<i class="fas fa-calendar-day" style="color:#FBBF24;"></i> ' + dateThaiFmt;
+        hLeft.appendChild(dateSpan);
 
         // Late Cut-off Badge Indicator
         var lateAtMs = s.lateAtMs || (s.lateAt ? new Date(s.lateAt).getTime() : 0);
@@ -9831,7 +9849,19 @@
       if (!target) return;
       target.innerHTML = '';
 
-      var qrPayload = window.location.href.split('?')[0].split('#')[0] + '#checkin=' + sessionId + '&otp=' + otpCode;
+      var sObj = null;
+      if (AppState.activeSessions) {
+        for (var si = 0; si < AppState.activeSessions.length; si++) {
+          if (AppState.activeSessions[si].sessionId === sessionId) {
+            sObj = AppState.activeSessions[si];
+            break;
+          }
+        }
+      }
+      var actParam = sObj ? encodeURIComponent(sObj.activityName || 'เช็คชื่อมาเรียน') : '';
+      var clsParam = sObj ? encodeURIComponent(sObj.className || 'all') : '';
+      var dateParam = sObj ? encodeURIComponent(sObj.date || getTodayDateString()) : '';
+      var qrPayload = window.location.href.split('?')[0].split('#')[0] + '#checkin=' + sessionId + '&act=' + actParam + '&class=' + clsParam + '&date=' + dateParam + '&otp=' + otpCode;
       var qrSuccess = false;
 
       try {
@@ -11917,6 +11947,21 @@
         AppState.scannedSessionId = sessMatch[1];
       }
 
+      var actMatch = qrText.match(/act=([^&#]+)/i);
+      if (actMatch && actMatch[1]) {
+        AppState.scannedActivityName = decodeURIComponent(actMatch[1]);
+      }
+
+      var classMatch = qrText.match(/class=([^&#]+)/i);
+      if (classMatch && classMatch[1]) {
+        AppState.scannedClassName = decodeURIComponent(classMatch[1]);
+      }
+
+      var dateMatch = qrText.match(/date=([^&#]+)/i);
+      if (dateMatch && dateMatch[1]) {
+        AppState.scannedDate = decodeURIComponent(dateMatch[1]);
+      }
+
       var matchedOtp = null;
       var otpParamMatch = qrText.match(/otp=([0-9]{6})/i);
       if (otpParamMatch && otpParamMatch[1]) {
@@ -12254,6 +12299,7 @@
 
       var payload = {
         sessionId: targetSessionId,
+        activityName: (activeSess && activeSess.activityName) || AppState.scannedActivityName || (AppState.activeSession && AppState.activeSession.activityName) || 'เช็คชื่อมาเรียน',
         studentId: st.selectedStudentId,
         otp: enteredOtp,
         lat: st.gpsLat,
@@ -14684,6 +14730,312 @@
       return map;
     }
 
+    
+    function getRangeAttendanceSummaryFromLocal(startDateStr, endDateStr, className, activityName) {
+      var allAtt = getLocalStorageAttendance();
+      var startD = formatDateString(startDateStr);
+      var endD = endDateStr ? formatDateString(endDateStr) : startD;
+      if (endD < startD) {
+        var tmp = startD; startD = endD; endD = tmp;
+      }
+
+      var cleanClass = String(className || 'all').trim();
+      var cleanAct = String(activityName || 'all').trim();
+
+      var allStudents = AppState.students || [];
+      var studentMap = {};
+      var studentOrder = [];
+
+      for (var s = 0; s < allStudents.length; s++) {
+        var st = allStudents[s];
+        if (!isClassMatch(cleanClass, st.className)) continue;
+        var sId = String(st.studentId).trim();
+        studentMap[sId.toLowerCase()] = {
+          studentId: sId,
+          studentNo: st.studentNo || (s + 1),
+          name: st.name,
+          className: st.className,
+          present: 0,
+          late: 0,
+          sick: 0,
+          leave: 0,
+          absent: 0,
+          totalRecords: 0
+        };
+        studentOrder.push(sId.toLowerCase());
+      }
+
+      var datesWithDataMap = {};
+
+      for (var i = 0; i < allAtt.length; i++) {
+        var row = allAtt[i];
+        var rowD = formatDateString(row.date);
+        if (rowD >= startD && rowD <= endD) {
+          var rowAct = String(row.activityName || 'เช็คชื่อมาเรียน').trim();
+          if (!isActivityMatch(cleanAct, rowAct)) continue;
+
+          var sId = String(row.studentId || '').trim().toLowerCase();
+          var stObj = studentMap[sId];
+          if (!stObj) continue;
+
+          datesWithDataMap[rowD] = true;
+
+          var status = String(row.status || 'Present').trim();
+          if (status === 'Present' || status === 'มาเรียน') {
+            stObj.present++;
+          } else if (status === 'Late' || status === 'มาสาย') {
+            stObj.late++;
+          } else if (status === 'Sick' || status === 'ลาป่วย') {
+            stObj.sick++;
+          } else if (status === 'Leave' || status === 'ลากิจ') {
+            stObj.leave++;
+          } else {
+            stObj.absent++;
+          }
+          stObj.totalRecords++;
+        }
+      }
+
+      var recordedDates = Object.keys(datesWithDataMap).sort();
+      var totalDays = recordedDates.length;
+
+      var resultList = [];
+      var totPresent = 0, totLate = 0, totSick = 0, totLeave = 0, totAbsent = 0;
+
+      for (var k = 0; k < studentOrder.length; k++) {
+        var item = studentMap[studentOrder[k]];
+        if (totalDays > item.totalRecords) {
+          var unrecorded = totalDays - item.totalRecords;
+          item.absent += unrecorded;
+        }
+        var attended = item.present + item.late;
+        var effTotal = Math.max(totalDays, item.present + item.late + item.sick + item.leave + item.absent);
+        var attRate = effTotal > 0 ? ((attended / effTotal) * 100).toFixed(1) : '100.0';
+
+        var evalLabel = 'ดีเยี่ยม';
+        var evalClass = 'excellent';
+        var rNum = parseFloat(attRate);
+        if (rNum >= 85) {
+          evalLabel = 'ดีเยี่ยม';
+          evalClass = 'badge-present';
+        } else if (rNum >= 80) {
+          evalLabel = 'ปกติ';
+          evalClass = 'badge-present';
+        } else if (rNum >= 60) {
+          evalLabel = 'เสี่ยงติด มส.';
+          evalClass = 'badge-warning';
+        } else {
+          evalLabel = 'หมดสิทธิ์สอบ';
+          evalClass = 'badge-late';
+        }
+
+        totPresent += item.present;
+        totLate += item.late;
+        totSick += item.sick;
+        totLeave += item.leave;
+        totAbsent += item.absent;
+
+        resultList.push({
+          studentId: item.studentId,
+          studentNo: item.studentNo,
+          name: item.name,
+          className: item.className,
+          present: item.present,
+          late: item.late,
+          sick: item.sick,
+          leave: item.leave,
+          absent: item.absent,
+          attended: attended,
+          totalDays: effTotal,
+          attendanceRate: attRate,
+          evaluation: evalLabel,
+          evalClass: evalClass
+        });
+      }
+
+      return {
+        status: 'success',
+        startDate: startD,
+        endDate: endD,
+        startDateThai: formatThaiDate(startD),
+        endDateThai: formatThaiDate(endD),
+        className: (cleanClass === 'all' || cleanClass === 'ทุกห้องเรียน') ? 'ทุกห้องเรียน' : ('ห้อง ' + cleanClass.replace(/^ห้อง\s*/, '')),
+        activityName: (cleanAct === 'all' || !cleanAct) ? 'ทุกกิจกรรม/วิชา' : cleanAct,
+        recordedDates: recordedDates,
+        totalRecordedDays: totalDays,
+        summaryTotals: {
+          totalStudents: resultList.length,
+          present: totPresent,
+          late: totLate,
+          sick: totSick,
+          leave: totLeave,
+          absent: totAbsent,
+          avgRate: resultList.length > 0 && totalDays > 0 ? (((totPresent + totLate) / (resultList.length * totalDays)) * 100).toFixed(1) : '100.0'
+        },
+        students: resultList
+      };
+    }
+
+    function renderRangeSummaryReportDocument(data, dateRange, className, activityName, statusFilter) {
+      var container = document.getElementById('report-preview-container');
+      if (!container) return;
+      container.innerHTML = '';
+      AppState.lastRangeReportData = data;
+
+      var paper = document.createElement('div');
+      paper.style.padding = '24px';
+      paper.style.background = '#0F1523';
+      paper.style.borderRadius = 'var(--radius-sm)';
+      paper.id = 'printable-report-area';
+
+      var header = document.createElement('div');
+      header.style.textAlign = 'center';
+      header.style.marginBottom = '20px';
+      
+      var hTitle = document.createElement('div');
+      hTitle.style.fontSize = '19px';
+      hTitle.style.fontWeight = '700';
+      hTitle.style.color = '#FFFFFF';
+      hTitle.innerHTML = '<i class="fas fa-chart-pie" style="color: #FF6B00; margin-right: 8px;"></i>รายงานสรุปยอดสถิติการมาเรียนสะสมรายบุคคล (Student Attendance Range Summary)';
+      header.appendChild(hTitle);
+
+      var hSub = document.createElement('div');
+      hSub.style.fontSize = '13.5px';
+      hSub.style.color = 'var(--orange-400)';
+      hSub.style.marginTop = '4px';
+      hSub.textContent = '📅 ข้อมูลสะสมตั้งแต่วันที่ ' + data.startDateThai + ' ถึงวันที่ ' + data.endDateThai;
+      header.appendChild(hSub);
+      paper.appendChild(header);
+
+      // Meta Info Row
+      var metaRow = document.createElement('div');
+      metaRow.style.display = 'flex';
+      metaRow.style.justifyContent = 'space-between';
+      metaRow.style.fontSize = '13px';
+      metaRow.style.color = 'var(--text-secondary)';
+      metaRow.style.marginBottom = '14px';
+      metaRow.style.paddingBottom = '10px';
+      metaRow.style.borderBottom = '1px solid var(--border-glass)';
+      metaRow.style.flexWrap = 'wrap';
+      metaRow.style.gap = '8px';
+
+      var datesListStr = (data.recordedDates && data.recordedDates.length > 0)
+        ? data.recordedDates.map(function(d) { return formatThaiDate(d); }).join(', ')
+        : 'ไม่พบบันทึกการเช็คชื่อในช่วงนี้';
+
+      metaRow.innerHTML = '<span><strong>📅 ช่วงวันที่:</strong> ' + data.startDateThai + ' - ' + data.endDateThai + '</span>' +
+                          '<span><strong>🏫 ห้องเรียน:</strong> ' + data.className + '</span>' +
+                          '<span><strong>🏷️ กิจกรรม/วิชา:</strong> ' + data.activityName + '</span>' +
+                          '<span><strong>📊 จำนวนวันทำการที่มีข้อมูล:</strong> <strong style="color:#FF6B00;">' + data.totalRecordedDays + ' วัน</strong></span>';
+      paper.appendChild(metaRow);
+
+      // Recorded Dates Notice Banner
+      var dateNotice = document.createElement('div');
+      dateNotice.style.background = 'rgba(15, 23, 42, 0.6)';
+      dateNotice.style.border = '1px solid rgba(255, 107, 0, 0.25)';
+      dateNotice.style.borderRadius = '8px';
+      dateNotice.style.padding = '8px 12px';
+      dateNotice.style.fontSize = '12px';
+      dateNotice.style.color = '#94A3B8';
+      dateNotice.style.marginBottom = '16px';
+      dateNotice.innerHTML = '<strong style="color:#FBBF24;"><i class="fas fa-calendar-check"></i> วันที่มีการบันทึกการเช็คชื่อ (' + data.totalRecordedDays + ' วัน):</strong> ' + datesListStr;
+      paper.appendChild(dateNotice);
+
+      // Overall Summary Stats Bar
+      var totals = data.summaryTotals || {};
+      var statsBar = document.createElement('div');
+      statsBar.style.display = 'grid';
+      statsBar.style.gridTemplateColumns = 'repeat(auto-fit, minmax(110px, 1fr))';
+      statsBar.style.gap = '8px';
+      statsBar.style.marginBottom = '16px';
+
+      statsBar.innerHTML = '<div style="background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); border-radius: 8px; padding: 8px; text-align: center;">' +
+                             '<div style="font-size: 11px; color: #10B981; font-weight: 600;">มาตรงเวลารวม</div>' +
+                             '<div style="font-size: 18px; font-weight: 800; color: #10B981;">' + (totals.present || 0) + ' ครั้ง</div>' +
+                           '</div>' +
+                           '<div style="background: rgba(236,72,153,0.15); border: 1px solid rgba(236,72,153,0.3); border-radius: 8px; padding: 8px; text-align: center;">' +
+                             '<div style="font-size: 11px; color: #EC4899; font-weight: 600;">มาสายรวม</div>' +
+                             '<div style="font-size: 18px; font-weight: 800; color: #EC4899;">' + (totals.late || 0) + ' ครั้ง</div>' +
+                           '</div>' +
+                           '<div style="background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3); border-radius: 8px; padding: 8px; text-align: center;">' +
+                             '<div style="font-size: 11px; color: #F59E0B; font-weight: 600;">ลาป่วยรวม</div>' +
+                             '<div style="font-size: 18px; font-weight: 800; color: #F59E0B;">' + (totals.sick || 0) + ' ครั้ง</div>' +
+                           '</div>' +
+                           '<div style="background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.3); border-radius: 8px; padding: 8px; text-align: center;">' +
+                             '<div style="font-size: 11px; color: #8B5CF6; font-weight: 600;">ลากิจรวม</div>' +
+                             '<div style="font-size: 18px; font-weight: 800; color: #8B5CF6;">' + (totals.leave || 0) + ' ครั้ง</div>' +
+                           '</div>' +
+                           '<div style="background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; padding: 8px; text-align: center;">' +
+                             '<div style="font-size: 11px; color: #EF4444; font-weight: 600;">ขาดเรียนรวม</div>' +
+                             '<div style="font-size: 18px; font-weight: 800; color: #EF4444;">' + (totals.absent || 0) + ' ครั้ง</div>' +
+                           '</div>' +
+                           '<div style="background: rgba(255,107,0,0.15); border: 1px solid rgba(255,107,0,0.3); border-radius: 8px; padding: 8px; text-align: center;">' +
+                             '<div style="font-size: 11px; color: #FF6B00; font-weight: 600;">อัตราเข้าเรียนเฉลี่ย</div>' +
+                             '<div style="font-size: 18px; font-weight: 800; color: #FF6B00;">' + (totals.avgRate || '100.0') + '%</div>' +
+                           '</div>';
+      paper.appendChild(statsBar);
+
+      // Summary Table by Individual Student
+      var table = document.createElement('table');
+      table.className = 'glass-table';
+      var thead = document.createElement('thead');
+      thead.innerHTML = '<tr>' +
+                          '<th style="width: 45px; text-align: center;">เลขที่</th>' +
+                          '<th style="width: 95px;">รหัสนักศึกษา</th>' +
+                          '<th>ชื่อ - นามสกุล</th>' +
+                          '<th style="width: 75px; text-align: center;">ห้องเรียน</th>' +
+                          '<th style="width: 70px; text-align: center; color:#10B981;">🟢 ตรงเวลา</th>' +
+                          '<th style="width: 65px; text-align: center; color:#EC4899;">🌸 มาสาย</th>' +
+                          '<th style="width: 65px; text-align: center; color:#F59E0B;">🟡 ลาป่วย</th>' +
+                          '<th style="width: 65px; text-align: center; color:#8B5CF6;">🔵 ลากิจ</th>' +
+                          '<th style="width: 65px; text-align: center; color:#EF4444;">🔴 ขาด</th>' +
+                          '<th style="width: 80px; text-align: center; color:#38BDF8;">📈 รวมมา</th>' +
+                          '<th style="width: 85px; text-align: center; color:#FF6B00;">% เข้าเรียน</th>' +
+                          '<th style="width: 100px; text-align: center;">ผลการประเมิน</th>' +
+                        '</tr>';
+      table.appendChild(thead);
+
+      var tbody = document.createElement('tbody');
+      var students = data.students || [];
+
+      if (students.length === 0) {
+        var trNone = document.createElement('tr');
+        trNone.innerHTML = '<td colspan="12" style="text-align:center; padding:32px; color:var(--text-muted); font-size:14px;"><i class="fas fa-folder-open" style="font-size:28px; color:#FF6B00; display:block; margin-bottom:8px;"></i>ไม่พบข้อมูลนักเรียนที่ตรงตามเงื่อนไขตัวกรอง</td>';
+        tbody.appendChild(trNone);
+      } else {
+        for (var r = 0; r < students.length; r++) {
+          var stItem = students[r];
+          var tr = document.createElement('tr');
+
+          var evalBadgeClass = 'badge-glass ';
+          var rateNum = parseFloat(stItem.attendanceRate);
+          if (rateNum >= 80) evalBadgeClass += 'badge-present';
+          else if (rateNum >= 60) evalBadgeClass += 'badge-warning';
+          else evalBadgeClass += 'badge-late';
+
+          tr.innerHTML = '<td style="text-align:center; font-weight:700;">' + (stItem.studentNo || (r + 1)) + '</td>' +
+                         '<td style="font-size:12px; color:var(--text-secondary);">' + escapeHtml(stItem.studentId) + '</td>' +
+                         '<td style="font-weight:600; color:#FFF; font-size:13.5px;">' + escapeHtml(stItem.name) + '</td>' +
+                         '<td style="text-align:center; font-size:12px;">' + escapeHtml(stItem.className) + '</td>' +
+                         '<td style="text-align:center; font-weight:700; color:#10B981;">' + stItem.present + '</td>' +
+                         '<td style="text-align:center; font-weight:700; color:#EC4899;">' + stItem.late + '</td>' +
+                         '<td style="text-align:center; font-weight:700; color:#F59E0B;">' + stItem.sick + '</td>' +
+                         '<td style="text-align:center; font-weight:700; color:#8B5CF6;">' + stItem.leave + '</td>' +
+                         '<td style="text-align:center; font-weight:700; color:#EF4444;">' + stItem.absent + '</td>' +
+                         '<td style="text-align:center; font-weight:800; color:#38BDF8;">' + stItem.attended + ' / ' + stItem.totalDays + '</td>' +
+                         '<td style="text-align:center; font-weight:800; color:#FF6B00;">' + stItem.attendanceRate + '%</td>' +
+                         '<td style="text-align:center;"><span class="' + evalBadgeClass + '" style="font-size:11px; padding:3px 8px;">' + stItem.evaluation + '</span></td>';
+
+          tbody.appendChild(tr);
+        }
+      }
+
+      table.appendChild(tbody);
+      paper.appendChild(table);
+      container.appendChild(paper);
+    }
+
+
     function generateReportPreview() {
       var reportType = (document.getElementById('report-type-select') && document.getElementById('report-type-select').value) || 'daily';
       var dateRange = getReportDateRange();
@@ -14698,21 +15050,48 @@
       if (!container) return;
       container.innerHTML = '<div style="padding: 30px; text-align: center; color: var(--text-secondary);"><i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #FF6B00; margin-bottom: 10px; display: block;"></i>กำลังโหลดข้อมูลรายงานและรูปภาพล่าสุด...</div>';
 
+      var isMultiDayRange = (dateRange.isRange || startDate !== endDate || reportType !== 'daily');
+
       function loadData() {
-        if (isGASAvailable()) {
-          google.script.run
-            .withSuccessHandler(function(recordsMap) {
-              renderReportDocument(reportType, dateRange, className, activityName, statusFilter, recordsMap || {});
-            })
-            .withFailureHandler(function(err) {
-              console.warn('Error fetching report records from GAS:', err);
-              var localRecords = getAttendanceMapFromLocalStorage(startDate, activityName, endDate);
-              renderReportDocument(reportType, dateRange, className, activityName, statusFilter, localRecords);
-            })
-            .getAttendanceRecords(startDate, className, activityName, reportType, endDate);
+        if (isMultiDayRange) {
+          // Multi-day Range Summary Report
+          if (isGASAvailable()) {
+            google.script.run
+              .withSuccessHandler(function(summaryRes) {
+                if (summaryRes && summaryRes.status === 'success') {
+                  renderRangeSummaryReportDocument(summaryRes, dateRange, className, activityName, statusFilter);
+                } else {
+                  var localSummary = getRangeAttendanceSummaryFromLocal(startDate, endDate, className, activityName);
+                  renderRangeSummaryReportDocument(localSummary, dateRange, className, activityName, statusFilter);
+                }
+              })
+              .withFailureHandler(function(err) {
+                console.warn('Error fetching range summary from GAS:', err);
+                var localSummary = getRangeAttendanceSummaryFromLocal(startDate, endDate, className, activityName);
+                renderRangeSummaryReportDocument(localSummary, dateRange, className, activityName, statusFilter);
+              })
+              .getRangeAttendanceSummary(startDate, endDate, className, activityName);
+          } else {
+            var localSummary = getRangeAttendanceSummaryFromLocal(startDate, endDate, className, activityName);
+            renderRangeSummaryReportDocument(localSummary, dateRange, className, activityName, statusFilter);
+          }
         } else {
-          var localRecords = getAttendanceMapFromLocalStorage(startDate, activityName, endDate);
-          renderReportDocument(reportType, dateRange, className, activityName, statusFilter, localRecords);
+          // Single-Day Detailed Daily Report
+          if (isGASAvailable()) {
+            google.script.run
+              .withSuccessHandler(function(recordsMap) {
+                renderReportDocument(reportType, dateRange, className, activityName, statusFilter, recordsMap || {});
+              })
+              .withFailureHandler(function(err) {
+                console.warn('Error fetching report records from GAS:', err);
+                var localRecords = getAttendanceMapFromLocalStorage(startDate, activityName, endDate);
+                renderReportDocument(reportType, dateRange, className, activityName, statusFilter, localRecords);
+              })
+              .getAttendanceRecords(startDate, className, activityName, reportType, endDate);
+          } else {
+            var localRecords = getAttendanceMapFromLocalStorage(startDate, activityName, endDate);
+            renderReportDocument(reportType, dateRange, className, activityName, statusFilter, localRecords);
+          }
         }
       }
 
@@ -15126,109 +15505,175 @@
       var repStatSelect = document.getElementById('report-status-select');
       var statusFilter = (repStatSelect && repStatSelect.value) ? repStatSelect.value : 'all';
 
+      var isMultiDay = (dateRange.isRange || startDate !== endDate);
+
       showLoadingPopup('กำลังส่งออกข้อมูล Excel...', 'กำลังรวบรวมข้อมูลและสร้างไฟล์ .xlsx');
 
-      function doExcelExport(recordsMap) {
-        hideLoadingPopup();
-        recordsMap = recordsMap || {};
-        var exportData = [];
-        var studentList = AppState.students || [];
+      if (isMultiDay) {
+        // Multi-day Summary Range Export
+        function doRangeExcelExport(data) {
+          hideLoadingPopup();
+          var students = (data && data.students) ? data.students : [];
+          var exportData = [];
 
-        for (var j = 0; j < studentList.length; j++) {
-          var s = studentList[j];
-          if (!isClassMatch(className, s.className)) continue;
-
-          var cleanId = String(s.studentId).trim().toLowerCase();
-          var rec = recordsMap[s.studentId] || recordsMap[cleanId];
-          var status = 'Absent';
-          var note = '';
-          var hasPhoto = 'ไม่มี';
-          var actName = activityName !== 'all' ? activityName : 'เช็คชื่อมาเรียน';
-          var cTime = '-';
-          var dist = 0;
-
-          if (rec !== undefined && rec !== null) {
-            if (typeof rec === 'object') {
-              status = rec.status || 'Present';
-              note = rec.note || '';
-              if (rec.selfiePhoto && rec.selfiePhoto.length > 50) hasPhoto = 'มีรูปเซลฟี่';
-              actName = rec.activityName || actName;
-              cTime = rec.checkinTime || '-';
-              dist = rec.distanceMeters || 0;
-            } else {
-              status = String(rec);
-            }
+          for (var i = 0; i < students.length; i++) {
+            var st = students[i];
+            exportData.push({
+              'เลขที่': st.studentNo || (i + 1),
+              'รหัสนักศึกษา': st.studentId,
+              'ชื่อ - นามสกุล': st.name,
+              'ห้องเรียน': st.className,
+              'กิจกรรม/วิชา': data.activityName || 'ทุกกิจกรรม/วิชา',
+              'ตรงเวลา (ครั้ง)': st.present,
+              'มาสาย (ครั้ง)': st.late,
+              'ลาป่วย (ครั้ง)': st.sick,
+              'ลากิจ (ครั้ง)': st.leave,
+              'ขาดเรียน (ครั้ง)': st.absent,
+              'รวมเข้าเรียน (ครั้ง)': st.attended,
+              'จำนวนวันทั้งหมด': st.totalDays,
+              '% อัตราเข้าเรียน': st.attendanceRate + '%',
+              'ผลการประเมิน': st.evaluation
+            });
           }
 
-          var isMatchFilter = true;
-          if (statusFilter !== 'all') {
-            if (statusFilter === 'Present' && !(status === 'Present' || status === 'มาเรียน')) isMatchFilter = false;
-            else if (statusFilter === 'Absent' && !(status === 'Absent' || status === 'ขาด' || status === 'ขาดเรียน')) isMatchFilter = false;
-            else if (statusFilter === 'Sick' && !(status === 'Sick' || status === 'ลาป่วย')) isMatchFilter = false;
-            else if (statusFilter === 'Leave' && !(status === 'Leave' || status === 'ลากิจ')) isMatchFilter = false;
-            else if (statusFilter === 'Late' && !(status === 'Late' || status === 'มาสาย')) isMatchFilter = false;
+          if (exportData.length === 0) {
+            showToast('ไม่มีข้อมูลตรงตามเงื่อนไขสำหรับส่งออก', 'warning');
+            return;
           }
 
-          if (!isMatchFilter) continue;
-
-          var stLabel = (status === 'Present' || status === 'มาเรียน') ? 'มาเรียน' : ((status === 'Absent' || status === 'ขาด' || status === 'ขาดเรียน') ? 'ขาดเรียน' : ((status === 'Sick' || status === 'ลาป่วย') ? 'ลาป่วย' : ((status === 'Leave' || status === 'ลากิจ') ? 'ลากิจ' : 'มาสาย')));
-
-          exportData.push({
-            'วันที่': dateStr,
-            'เลขที่': s.studentNo,
-            'รหัสนักเรียน': s.studentId,
-            'ชื่อ-นามสกุล': s.name,
-            'ห้องเรียน': s.className,
-            'กิจกรรม/รายวิชา': actName,
-            'สถานะการมาเรียน': stLabel,
-            'เวลาเช็คชื่อ': cTime,
-            'รูปถ่ายเซลฟี่': hasPhoto,
-            'ระยะทาง GPS (เมตร)': dist,
-            'หมายเหตุ': note
-          });
+          var ws = XLSX.utils.json_to_sheet(exportData);
+          var wb = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(wb, ws, 'สรุปสถิติสะสม');
+          var classTag = (className === 'all' ? 'ทุกห้อง' : className.replace(/[,\s]+/g, '_'));
+          var outFilename = 'สรุปยอดเช็คชื่อ_' + classTag + '_' + startDate + '_ถึง_' + endDate + '.xlsx';
+          XLSX.writeFile(wb, outFilename);
+          showToast('ส่งออกไฟล์ Excel สรุปยอดสะสมเรียบร้อยแล้ว! 📊', 'success');
         }
 
-        if (exportData.length === 0) {
-          showToast('ไม่พบข้อมูลตามเงื่อนไขตัวกรองสำหรับส่งออก Excel', 'error');
-          return;
-        }
-
-        var ws = XLSX.utils.json_to_sheet(exportData);
-        var wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'AttendanceReport');
-        var classTag = (className === 'all' ? 'ทุกห้อง' : className.replace(/[,s]+/g, '_'));
-        var actTag = (activityName === 'all' ? 'ทุกกิจกรรม' : activityName.replace(/[,s]+/g, '_'));
-        var outFilename = 'Student_Attendance_' + dateRange.fileTag + '_' + classTag + '_' + actTag + '.xlsx';
-        XLSX.writeFile(wb, outFilename);
-        showToast('ส่งออกไฟล์ Excel เรียบร้อยแล้ว (' + exportData.length + ' รายการ)', 'success');
-      }
-
-      var reportType = (document.getElementById('report-type-select') && document.getElementById('report-type-select').value) || 'daily';
-
-      function executeExport() {
         if (isGASAvailable()) {
           google.script.run
-            .withSuccessHandler(function(recordsMap) {
-              doExcelExport(recordsMap);
+            .withSuccessHandler(function(summaryRes) {
+              if (summaryRes && summaryRes.status === 'success') {
+                doRangeExcelExport(summaryRes);
+              } else {
+                var localSummary = getRangeAttendanceSummaryFromLocal(startDate, endDate, className, activityName);
+                doRangeExcelExport(localSummary);
+              }
             })
             .withFailureHandler(function(err) {
-              console.warn('Error fetching report records for Excel:', err);
-              var localRecords = getAttendanceMapFromLocalStorage(startDate, activityName, endDate);
-              doExcelExport(localRecords);
+              hideLoadingPopup();
+              var localSummary = getRangeAttendanceSummaryFromLocal(startDate, endDate, className, activityName);
+              doRangeExcelExport(localSummary);
             })
-            .getAttendanceRecords(startDate, className, activityName, reportType, endDate);
+            .getRangeAttendanceSummary(startDate, endDate, className, activityName);
         } else {
-          var localRecords = getAttendanceMapFromLocalStorage(startDate, activityName, endDate);
-          doExcelExport(localRecords);
+          var localSummary = getRangeAttendanceSummaryFromLocal(startDate, endDate, className, activityName);
+          doRangeExcelExport(localSummary);
         }
-      }
-
-      if (!AppState.students || AppState.students.length === 0) {
-        fetchStudents('all', function() {
-          executeExport();
-        });
       } else {
-        executeExport();
+        // Single Day Daily Export
+        function doExcelExport(recordsMap) {
+          hideLoadingPopup();
+          recordsMap = recordsMap || {};
+          var exportData = [];
+          var studentList = AppState.students || [];
+
+          for (var j = 0; j < studentList.length; j++) {
+            var s = studentList[j];
+            if (!isClassMatch(className, s.className)) continue;
+
+            var cleanId = String(s.studentId).trim().toLowerCase();
+            var rec = recordsMap[s.studentId] || recordsMap[cleanId];
+            var status = 'Absent';
+            var note = '';
+            var hasPhoto = 'ไม่มี';
+            var actName = activityName !== 'all' ? activityName : 'เช็คชื่อมาเรียน';
+            var cTime = '-';
+            var dist = 0;
+
+            if (rec !== undefined && rec !== null) {
+              if (typeof rec === 'object') {
+                status = rec.status || 'Present';
+                note = rec.note || '';
+                if (rec.selfiePhoto && rec.selfiePhoto.length > 50) hasPhoto = 'มีรูปเซลฟี่';
+                actName = rec.activityName || actName;
+                cTime = rec.checkinTime || '-';
+                dist = rec.distanceMeters || 0;
+              } else {
+                status = String(rec);
+              }
+            }
+
+            var isMatchFilter = true;
+            if (statusFilter !== 'all') {
+              if (statusFilter === 'Present' && !(status === 'Present' || status === 'มาเรียน')) isMatchFilter = false;
+              else if (statusFilter === 'Absent' && !(status === 'Absent' || status === 'ขาด' || status === 'ขาดเรียน')) isMatchFilter = false;
+              else if (statusFilter === 'Sick' && !(status === 'Sick' || status === 'ลาป่วย')) isMatchFilter = false;
+              else if (statusFilter === 'Leave' && !(status === 'Leave' || status === 'ลากิจ')) isMatchFilter = false;
+              else if (statusFilter === 'Late' && !(status === 'Late' || status === 'มาสาย')) isMatchFilter = false;
+            }
+
+            if (!isMatchFilter) continue;
+
+            var stLabel = (status === 'Present' || status === 'มาเรียน') ? 'มาเรียน' : ((status === 'Absent' || status === 'ขาด' || status === 'ขาดเรียน') ? 'ขาดเรียน' : ((status === 'Sick' || status === 'ลาป่วย') ? 'ลาป่วย' : ((status === 'Leave' || status === 'ลากิจ') ? 'ลากิจ' : 'มาสาย')));
+
+            exportData.push({
+              'วันที่': startDate,
+              'เลขที่': s.studentNo,
+              'รหัสนักเรียน': s.studentId,
+              'ชื่อ-นามสกุล': s.name,
+              'ห้องเรียน': s.className,
+              'กิจกรรม/รายวิชา': actName,
+              'สถานะการมาเรียน': stLabel,
+              'เวลาเช็คชื่อ': cTime,
+              'รูปถ่ายเซลฟี่': hasPhoto,
+              'ระยะทาง GPS (เมตร)': dist,
+              'หมายเหตุ': note
+            });
+          }
+
+          if (exportData.length === 0) {
+            showToast('ไม่พบข้อมูลตามเงื่อนไขตัวกรองสำหรับส่งออก Excel', 'error');
+            return;
+          }
+
+          var ws = XLSX.utils.json_to_sheet(exportData);
+          var wb = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(wb, ws, 'AttendanceReport');
+          var classTag = (className === 'all' ? 'ทุกห้อง' : className.replace(/[,\s]+/g, '_'));
+          var actTag = (activityName === 'all' ? 'ทุกกิจกรรม' : activityName.replace(/[,\s]+/g, '_'));
+          var outFilename = 'Student_Attendance_' + dateRange.fileTag + '_' + classTag + '_' + actTag + '.xlsx';
+          XLSX.writeFile(wb, outFilename);
+          showToast('ส่งออกไฟล์ Excel เรียบร้อยแล้ว (' + exportData.length + ' รายการ)', 'success');
+        }
+
+        var reportType = (document.getElementById('report-type-select') && document.getElementById('report-type-select').value) || 'daily';
+
+        function executeExport() {
+          if (isGASAvailable()) {
+            google.script.run
+              .withSuccessHandler(function(recordsMap) {
+                doExcelExport(recordsMap);
+              })
+              .withFailureHandler(function(err) {
+                console.warn('Error fetching report records for Excel:', err);
+                var localRecords = getAttendanceMapFromLocalStorage(startDate, activityName, endDate);
+                doExcelExport(localRecords);
+              })
+              .getAttendanceRecords(startDate, className, activityName, reportType, endDate);
+          } else {
+            var localRecords = getAttendanceMapFromLocalStorage(startDate, activityName, endDate);
+            doExcelExport(localRecords);
+          }
+        }
+
+        if (!AppState.students || AppState.students.length === 0) {
+          fetchStudents('all', function() {
+            executeExport();
+          });
+        } else {
+          executeExport();
+        }
       }
     }
 
