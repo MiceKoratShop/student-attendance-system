@@ -710,17 +710,33 @@
       var classParam = getQueryParam('class') || getQueryParam('className') || 'all';
       var actParam = getQueryParam('activity') || getQueryParam('act') || 'all';
 
+      // 1. Immediately check if there is a newly published report in localStorage
+      var savedPub = localStorage.getItem('gas_student_latest_published_report');
+      if (savedPub) {
+        try {
+          var parsed = JSON.parse(savedPub);
+          if (parsed && parsed.students && parsed.students.length > 0) {
+            // Check if matches class filter or apply
+            renderReportData(parsed);
+          }
+        } catch (e) {}
+      }
+
+      // 2. Fetch live data from backend to ensure real-time synchronization
       if (typeof google !== 'undefined' && google.script && google.script.run) {
         google.script.run
           .withSuccessHandler(function(res) {
-            if (res && res.status === 'success') {
+            if (res && res.status === 'success' && res.students && res.students.length > 0) {
               renderReportData(res);
-            } else {
-              renderError('ไม่สามารถดึงข้อมูลรายงานได้');
+            } else if (!savedPub) {
+              renderError('ไม่พบข้อมูลการเช็คชื่อสำหรับเงื่อนไขที่เลือก');
             }
           })
           .withFailureHandler(function(err) {
-            renderError('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์: ' + (err.message || String(err)));
+            console.warn('GAS fetch error:', err);
+            if (!savedPub) {
+              renderError('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์: ' + (err.message || String(err)));
+            }
           })
           .getPublicDailyReportData(dateParam, classParam, actParam);
       } else {

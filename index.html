@@ -3424,12 +3424,6 @@
                 <button type="button" class="btn-glass btn-orange btn-sm-glass" id="btn-download-pdf" title="ดาวน์โหลดรายงานเป็นไฟล์ PDF">
                   <i class="fas fa-file-pdf"></i> โหลด PDF
                 </button>
-                <button type="button" class="btn-glass btn-sm-glass" id="btn-open-parent-report" style="background: rgba(0, 240, 255, 0.15); border-color: rgba(0, 240, 255, 0.4); color: var(--cyan-400); font-weight: 700;" title="เปิดหน้ารายงานสรุปประจำวันออนไลน์สำหรับผู้ปกครองและนักเรียน">
-                  <i class="fas fa-arrow-up-right-from-square"></i> 📱 หน้ารายงานผู้ปกครอง
-                </button>
-                <button type="button" class="btn-glass btn-sm-glass" id="btn-copy-parent-link" style="background: rgba(251, 191, 36, 0.15); border-color: rgba(251, 191, 36, 0.4); color: #FBBF24; font-weight: 700;" title="คัดลอกลิงก์รายงานสำหรับส่งเข้ากลุ่ม LINE ให้ผู้ปกครองคลิกดูได้ทันที">
-                  <i class="fas fa-link"></i> 🔗 ลิงก์ผู้ปกครอง
-                </button>
                 <button type="button" class="btn-glass btn-sm-glass" id="btn-open-line-send" style="background: rgba(6, 199, 85, 0.18); border-color: rgba(6, 199, 85, 0.45); color: #22C55E; font-weight: 600;" title="ส่งสรุปรายงานเข้ากลุ่ม LINE ทันที">
                   <i class="fab fa-line" style="font-size: 14px;"></i> ส่งเข้า LINE
                 </button>
@@ -14202,15 +14196,16 @@
       if (titleEl) titleEl.textContent = 'รายงานสรุปการมาเรียน (' + classDisplayTag + ')';
       if (subEl) subEl.textContent = '📅 วันที่: ' + dateRange.displayStr + ' • กิจกรรม: ' + (activityName === 'all' ? 'ทุกกิจกรรม' : activityName);
 
-      // Extract stats from current rendered preview or local state
       var otEl = document.getElementById('pub-stat-ontime');
       var ltEl = document.getElementById('pub-stat-late');
       var lvEl = document.getElementById('pub-stat-leave');
       var abEl = document.getElementById('pub-stat-absent');
 
-      // Count from AppState if available
       var students = AppState.students || [];
-      var recMap = AppState.lastReportRecordsMap || {};
+      var recMap = AppState.lastReportRecordsMap || getAttendanceMapFromLocalStorage(dateRange.startDate, activityName, dateRange.endDate) || {};
+      
+      var studentReports = [];
+      var onTimeChamps = [];
       var cOnTime = 0, cLate = 0, cLeave = 0, cAbsent = 0;
 
       for (var i = 0; i < students.length; i++) {
@@ -14218,19 +14213,114 @@
         if (!isClassMatch(className, s.className)) continue;
         var r = recMap[s.studentId] || recMap[String(s.studentId).toLowerCase()];
         var st = 'Absent';
+        var note = '';
+        var cTime = '-';
+        var photo = s.photo || s.selfiePhoto || s.avatar || s.imageUrl || '';
+        var dist = 0;
+
         if (r) {
-          st = typeof r === 'object' ? (r.status || 'Present') : String(r);
+          if (typeof r === 'object') {
+            st = r.status || 'Present';
+            note = r.note || '';
+            cTime = r.checkinTime || '-';
+            if (r.selfiePhoto && r.selfiePhoto.length > 5) photo = r.selfiePhoto;
+            dist = r.distanceMeters || 0;
+          } else {
+            st = String(r);
+          }
         }
-        if (st === 'Present' || st === 'มาเรียน') cOnTime++;
-        else if (st === 'Late' || st === 'มาสาย') cLate++;
-        else if (st === 'Sick' || st === 'Leave' || st === 'ลาป่วย' || st === 'ลากิจ') cLeave++;
-        else cAbsent++;
+
+        var stLabel = 'ขาดเรียน';
+        var stClass = 'absent';
+        if (st === 'Present' || st === 'มาเรียน') {
+          cOnTime++;
+          stLabel = 'มาเรียนตรงเวลา';
+          stClass = 'present';
+          onTimeChamps.push({
+            no: s.studentNo || (i + 1),
+            studentId: s.studentId,
+            name: s.name,
+            className: s.className,
+            time: cTime,
+            selfiePhoto: photo
+          });
+        } else if (st === 'Late' || st === 'มาสาย') {
+          cLate++;
+          stLabel = 'มาสาย';
+          stClass = 'late';
+        } else if (st === 'Sick' || st === 'ลาป่วย') {
+          cLeave++;
+          stLabel = 'ลาป่วย';
+          stClass = 'sick';
+        } else if (st === 'Leave' || st === 'ลากิจ') {
+          cLeave++;
+          stLabel = 'ลากิจ';
+          stClass = 'leave';
+        } else {
+          cAbsent++;
+          stLabel = 'ขาดเรียน';
+          stClass = 'absent';
+        }
+
+        studentReports.push({
+          no: s.studentNo || (i + 1),
+          studentId: s.studentId,
+          name: s.name,
+          className: s.className,
+          status: st,
+          statusLabel: stLabel,
+          statusClass: stClass,
+          checkinTime: cTime,
+          selfiePhoto: photo,
+          distanceMeters: dist,
+          note: note
+        });
       }
 
       if (otEl) otEl.textContent = cOnTime + ' คน';
       if (ltEl) ltEl.textContent = cLate + ' คน';
       if (lvEl) lvEl.textContent = cLeave + ' คน';
       if (abEl) abEl.textContent = cAbsent + ' คน';
+
+      onTimeChamps.sort(function(a, b) {
+        return String(a.time).localeCompare(String(b.time));
+      });
+
+      var topChamps = [];
+      for (var tc = 0; tc < Math.min(3, onTimeChamps.length); tc++) {
+        var ch = onTimeChamps[tc];
+        ch.rank = tc + 1;
+        topChamps.push(ch);
+      }
+
+      var totStudents = studentReports.length;
+      var attRate = totStudents > 0 ? (((cOnTime + cLate) / totStudents) * 100).toFixed(1) : '0.0';
+
+      var publishedReportData = {
+        status: 'success',
+        date: dateRange.startDate,
+        dateThai: dateRange.displayStr,
+        dayName: getThaiDayOfWeek(dateRange.startDate),
+        className: classDisplayTag,
+        activityName: (activityName === 'all' || !activityName) ? 'เช็คชื่อมาเรียน' : activityName,
+        stats: {
+          totalStudents: totStudents,
+          countPresent: cOnTime + cLate,
+          countOnTime: cOnTime,
+          countLate: cLate,
+          countSick: 0,
+          countLeave: cLeave,
+          countAbsent: cAbsent,
+          attRate: attRate
+        },
+        topChampions: topChamps,
+        students: studentReports
+      };
+
+      // Save live published report to localStorage so report.html updates instantly with zero latency
+      localStorage.setItem('gas_student_latest_published_report', JSON.stringify(publishedReportData));
+
+      showToast('สรุปและเตรียมข้อมูลรายงานสำหรับส่งไปยังผู้ปกครองเรียบร้อยแล้ว!', 'success');
 
       var modal = document.getElementById('modal-publish-parent-report');
       if (modal) modal.style.display = 'flex';
@@ -14643,6 +14733,10 @@
       if (!container) return;
       container.innerHTML = '';
       recordsMap = recordsMap || {};
+      AppState.lastReportRecordsMap = recordsMap;
+      AppState.lastReportDateRange = dateRange;
+      AppState.lastReportClassName = className;
+      AppState.lastReportActivityName = activityName;
 
       var paper = document.createElement('div');
       paper.style.padding = '24px';
