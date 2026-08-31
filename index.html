@@ -2450,11 +2450,11 @@
                 <select class="select-glass" id="self-checkin-class"></select>
               </div>
 
-              <!-- ACTIVE SCHEDULE / LIVE QR & OTP BOX (When active and in time) -->
+              <!-- ACTIVE SCHEDULE / LIVE INFORMATION BOX (When active and in time) -->
               <div id="student-schedule-active-card" style="display: none; background: rgba(16, 185, 129, 0.08); border: 1.5px solid #10B981; border-radius: var(--radius-md); padding: 18px; margin: 18px 0; text-align: center; animation: fadeIn 0.3s ease;">
                 
                 <!-- Live Phase Badge -->
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
                   <span id="student-schedule-status-badge" class="badge-glass badge-present" style="font-size: 13px; padding: 6px 14px; font-weight: 700;">
                     <i class="fas fa-circle-check"></i> <span id="student-schedule-badge-text">🟢 มาเรียนตรงเวลา</span>
                   </span>
@@ -2463,17 +2463,9 @@
                   </span>
                 </div>
 
-                <!-- QR Code & OTP Flex Layout -->
-                <div style="display: flex; gap: 16px; align-items: center; justify-content: center; flex-wrap: wrap; margin-bottom: 16px;">
-                  
-                  <!-- QR Code Box -->
-                  <div style="background: #FFF; padding: 10px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.6); display: inline-block;">
-                    <div id="student-auto-qr-code" style="width: 140px; height: 140px; display: flex; align-items: center; justify-content: center;"></div>
-                    <div style="font-size: 10.5px; color: #1E293B; font-weight: 700; margin-top: 4px;">QR ประจำคาบ</div>
-                  </div>
-
-                  <!-- OTP & Session Codes Box -->
-                  <div style="flex: 1; min-width: 180px; max-width: 240px; text-align: left;">
+                <!-- OTP Display Box (Shown ONLY when Dynamic OTP is enabled) -->
+                <div id="student-auto-otp-section" style="margin-bottom: 14px; display: none;">
+                  <div style="max-width: 280px; margin: 0 auto; text-align: left; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,107,0,0.3);">
                     <div style="font-size: 11.5px; color: var(--text-secondary); margin-bottom: 4px; font-weight: 600;">
                       <i class="fas fa-key" style="color: var(--orange-400);"></i> รหัส OTP ไดนามิก:
                     </div>
@@ -2487,29 +2479,22 @@
                     </div>
 
                     <!-- OTP Timer Bar -->
-                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
                       <div style="flex: 1; height: 5px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
                         <div id="student-otp-countdown-bar" style="width: 100%; height: 100%; background: #38BDF8; transition: width 1s linear;"></div>
                       </div>
                       <span id="student-otp-countdown-text" style="font-size: 11px; color: #94A3B8; font-family: monospace;">15s</span>
                     </div>
-
-                    <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 4px;">
-                      <i class="fas fa-hashtag" style="color: var(--orange-400);"></i> รหัสคาบ (Session):
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 6px;">
-                      <span id="student-auto-session-code" style="font-size: 12px; font-family: monospace; color: #FFF; background: rgba(0,0,0,0.4); padding: 4px 8px; border-radius: 6px; flex: 1;">-</span>
-                      <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-copy-auto-session" style="padding: 5px 8px; font-size: 11px;" title="คัดลอกรหัสคาบ">
-                        <i class="fas fa-copy"></i>
-                      </button>
-                    </div>
                   </div>
                 </div>
 
-                <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
-                  <button type="button" class="btn-glass btn-emerald btn-sm-glass" id="btn-copy-otp-and-fill" style="font-size: 12.5px; padding: 8px 16px; font-weight: 700;">
-                    <i class="fas fa-paste"></i> คัดลอกและกรอก OTP ทันที
-                  </button>
+                <!-- Active Session Notice -->
+                <div id="student-no-otp-notice" style="background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); border-radius: 6px; padding: 8px 12px; font-size: 12.5px; color: #34D399; font-weight: 600; margin-bottom: 12px;">
+                  <i class="fas fa-unlock"></i> คาบนี้เปิดให้เช็คชื่อตรงผ่านรูปถ่ายเซลฟี่ (ไม่ต้องกรอก OTP)
+                </div>
+
+                <div style="display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 11.5px; color: var(--text-secondary);">
+                  <span><i class="fas fa-hashtag" style="color: var(--orange-400);"></i> รหัสคาบ: <strong id="student-auto-session-code" style="color: #FFF; font-family: monospace;">-</strong></span>
                 </div>
               </div>
 
@@ -10693,6 +10678,50 @@
       document.body.removeChild(textArea);
     }
 
+    
+    function isCheckinOtpRequired() {
+      if (AppState.activeSession) {
+        if (AppState.activeSession.requireOTP === false || AppState.activeSession.useOtp === false) {
+          return false;
+        }
+      }
+      var curClass = (document.getElementById('self-checkin-class') && document.getElementById('self-checkin-class').value) || '';
+      if (curClass) {
+        var res = resolveActiveScheduleLocal(curClass);
+        if (res && res.status === 'open' && res.requireOTP === false) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function syncWizardBarForOtpMode() {
+      var reqOtp = isCheckinOtpRequired();
+      var node4 = document.getElementById('wizard-node-4');
+      var line3 = document.getElementById('wizard-line-3');
+      var node3Span = document.querySelector('#wizard-node-3 span');
+      var btnStep3Next = document.getElementById('btn-step-3-next');
+
+      if (!reqOtp) {
+        if (node4) node4.style.display = 'none';
+        if (line3) line3.style.display = 'none';
+        if (node3Span) node3Span.textContent = '3. เซลฟี่ & ยืนยัน';
+        if (btnStep3Next) {
+          btnStep3Next.innerHTML = '<i class="fas fa-circle-check"></i> ยืนยันการเช็คชื่อทันที';
+          btnStep3Next.className = 'btn-glass btn-emerald';
+        }
+      } else {
+        if (node4) node4.style.display = 'flex';
+        if (line3) line3.style.display = 'block';
+        if (node3Span) node3Span.textContent = '3. เซลฟี่';
+        if (btnStep3Next) {
+          btnStep3Next.innerHTML = 'ต่อไป: กรอกรหัส OTP <i class="fas fa-arrow-right"></i>';
+          btnStep3Next.className = 'btn-glass btn-orange';
+        }
+      }
+    }
+
+
     function updateStudentScheduleStatus(className) {
       className = className || (document.getElementById('self-checkin-class') && document.getElementById('self-checkin-class').value) || '';
 
@@ -10732,7 +10761,18 @@
         if (timeLabel) timeLabel.textContent = res.phaseLabel || 'ช่วงเวลาที่เปิดเช็คชื่อ';
         if (sessionCodeEl) sessionCodeEl.textContent = res.sessionId;
 
-        startAutoOtpCountdown(res.secretSeed, res.otpIntervalSeconds, res.sessionId);
+        var otpSection = document.getElementById('student-auto-otp-section');
+        var noOtpNotice = document.getElementById('student-no-otp-notice');
+
+        if (res.requireOTP !== false) {
+          if (otpSection) otpSection.style.display = 'block';
+          if (noOtpNotice) noOtpNotice.style.display = 'none';
+          startAutoOtpCountdown(res.secretSeed, res.otpIntervalSeconds, res.sessionId);
+        } else {
+          if (otpSection) otpSection.style.display = 'none';
+          if (noOtpNotice) noOtpNotice.style.display = 'block';
+          if (autoOtpTimer) clearInterval(autoOtpTimer);
+        }
 
         AppState.activeSession = {
           sessionId: res.sessionId,
@@ -10750,6 +10790,8 @@
           isAutomated: true,
           statusResult: res.statusResult
         };
+
+        syncWizardBarForOtpMode();
 
         if (btnStep1) {
           btnStep1.disabled = false;
@@ -11739,12 +11781,18 @@
       if (btnStep3Next) {
         btnStep3Next.addEventListener('click', function() {
           stopCameraStream();
-          document.getElementById('student-step-3').style.display = 'none';
-          document.getElementById('student-step-4').style.display = 'block';
-          updateWizardProgress(4);
-          
-          var pin1 = document.getElementById('pin-1');
-          if (pin1) pin1.focus();
+          if (!isCheckinOtpRequired()) {
+            // OTP is disabled -> Submit directly from Step 3!
+            submitStudentSelfCheckin();
+          } else {
+            // OTP is required -> Proceed to Step 4
+            document.getElementById('student-step-3').style.display = 'none';
+            document.getElementById('student-step-4').style.display = 'block';
+            updateWizardProgress(4);
+            
+            var pin1 = document.getElementById('pin-1');
+            if (pin1) pin1.focus();
+          }
         });
       }
 
@@ -12263,10 +12311,14 @@
     }
 
     function submitStudentSelfCheckin() {
-      var enteredOtp = getEnteredPin();
-      if (enteredOtp.length !== 6) {
-        showToast('กรุณากรอกรหัส OTP ให้ครบ 6 หลัก', 'error');
-        return;
+      var reqOtp = isCheckinOtpRequired();
+      var enteredOtp = '';
+      if (reqOtp) {
+        enteredOtp = getEnteredPin();
+        if (enteredOtp.length !== 6) {
+          showToast('กรุณากรอกรหัส OTP ให้ครบ 6 หลัก', 'error');
+          return;
+        }
       }
 
       var st = AppState.studentState;
@@ -12333,7 +12385,7 @@
         var validCurrent = generateClientTOTP(sess.secretSeed, intervalSec, nowMs);
         var validPrev = generateClientTOTP(sess.secretSeed, intervalSec, nowMs - intervalMs);
 
-        if (enteredOtp !== validCurrent && enteredOtp !== validPrev) {
+        if (reqOtp && enteredOtp !== validCurrent && enteredOtp !== validPrev) {
           showToast('รหัส OTP ไม่ถูกต้องหรือหมดอายุแล้ว กรุณาดูรหัสล่าสุดบนจอ', 'error');
           return;
         }
@@ -14021,6 +14073,91 @@
       return null;
     }
 
+    
+    function getAllAvailableClasses() {
+      var uniqueClasses = [];
+      function addClass(cName) {
+        if (!cName) return;
+        var clean = String(typeof cName === 'object' ? (cName.name || cName.className || '') : cName).trim();
+        clean = clean.replace(/^ห้อง\s*/, '');
+        if (clean && uniqueClasses.indexOf(clean) === -1) {
+          uniqueClasses.push(clean);
+        }
+      }
+
+      // 1. From AppState.classes
+      var clList = AppState.classes || [];
+      for (var i = 0; i < clList.length; i++) addClass(clList[i]);
+
+      // 2. From AppState.students
+      var stList = AppState.students || [];
+      for (var j = 0; j < stList.length; j++) addClass(stList[j].className);
+
+      // 3. From localStorage classes
+      try {
+        var cachedCls = JSON.parse(localStorage.getItem('gas_cached_classes') || localStorage.getItem('gas_student_app_classes') || '[]');
+        if (Array.isArray(cachedCls)) {
+          for (var k = 0; k < cachedCls.length; k++) addClass(cachedCls[k]);
+        }
+      } catch (e) {}
+
+      // 4. From localStorage students
+      try {
+        var cachedStds = JSON.parse(localStorage.getItem('gas_cached_students') || localStorage.getItem('gas_student_app_students') || '[]');
+        if (Array.isArray(cachedStds)) {
+          for (var m = 0; m < cachedStds.length; m++) addClass(cachedStds[m].className);
+        }
+      } catch (e) {}
+
+      // Natural Thai sorting
+      uniqueClasses.sort(function(a, b) {
+        return a.localeCompare(b, 'th', { numeric: true });
+      });
+
+      return uniqueClasses;
+    }
+
+    function getAllAvailableActivities() {
+      var uniqueActs = [];
+      function addAct(aName) {
+        if (!aName) return;
+        var clean = String(typeof aName === 'object' ? (aName.name || aName.activityName || '') : aName).trim();
+        if (clean && uniqueActs.indexOf(clean) === -1) {
+          uniqueActs.push(clean);
+        }
+      }
+
+      // Default standard activities
+      addAct('เช็คชื่อมาเรียน');
+      addAct('กิจกรรมหน้าเสาธง');
+      addAct('โฮมรูม (Home Room)');
+      addAct('กิจกรรมพัฒนาผู้เรียน');
+      addAct('ชุมนุม/ชมรม');
+      addAct('จิตอาสา/บำเพ็ญประโยชน์');
+
+      // From AppState.activities
+      var acList = AppState.activities || [];
+      for (var i = 0; i < acList.length; i++) addAct(acList[i]);
+
+      // From localStorage activities
+      try {
+        var cachedActs = JSON.parse(localStorage.getItem('gas_cached_activities') || localStorage.getItem('gas_student_app_activities') || '[]');
+        if (Array.isArray(cachedActs)) {
+          for (var k = 0; k < cachedActs.length; k++) addAct(cachedActs[k]);
+        }
+      } catch (e) {}
+
+      // From localStorage attendance records
+      try {
+        var allAtt = getLocalStorageAttendance();
+        for (var a = 0; a < allAtt.length; a++) {
+          if (allAtt[a].activityName) addAct(allAtt[a].activityName);
+        }
+      } catch (e) {}
+
+      return uniqueActs;
+    }
+
     function populateReportMultiSelectFilters() {
       var savedPrefs = getSavedReportFilterPreferences();
 
@@ -14036,24 +14173,19 @@
       var classListContainer = document.getElementById('report-class-checkbox-list');
       if (classListContainer) {
         classListContainer.innerHTML = '';
-        var classes = (AppState.classes || []).slice();
-        var uniqueClasses = [];
-        for (var c = 0; c < classes.length; c++) {
-          var cName = (typeof classes[c] === 'object' ? classes[c].name : classes[c]) || '';
-          cName = String(cName).trim();
-          if (cName && uniqueClasses.indexOf(cName) === -1) uniqueClasses.push(cName);
-        }
+        var uniqueClasses = getAllAvailableClasses();
 
         var isAllClassesDefault = (!savedPrefs || savedPrefs.allClassesChecked === true || !savedPrefs.selectedClasses || savedPrefs.selectedClasses.length === 0);
 
         var allLbl = document.createElement('label');
-        allLbl.style.cssText = 'display:flex; align-items:center; gap:6px; cursor:pointer; font-size:12px; font-weight:700; color:#FFF; padding:5px 8px; border-radius:4px; background:rgba(255,107,0,0.18);';
+        allLbl.style.cssText = 'display:flex; align-items:center; gap:8px; cursor:pointer; font-size:12px; font-weight:700; color:#FFF; padding:6px 8px; border-radius:6px; background:rgba(255,107,0,0.18); border:1px solid rgba(255,107,0,0.3);';
         var allChk = document.createElement('input');
         allChk.type = 'checkbox';
         allChk.id = 'chk-report-class-all';
         allChk.checked = isAllClassesDefault;
         allChk.style.accentColor = '#FF6B00';
         allChk.style.cursor = 'pointer';
+        allChk.style.transform = 'scale(1.15)';
         allChk.addEventListener('change', function() {
           var itemChks = classListContainer.querySelectorAll('.report-class-item-chk');
           for (var i = 0; i < itemChks.length; i++) {
@@ -14073,11 +14205,17 @@
         for (var k = 0; k < uniqueClasses.length; k++) {
           var cls = uniqueClasses[k];
           var lbl = document.createElement('label');
-          lbl.style.cssText = 'display:flex; align-items:center; gap:6px; cursor:pointer; font-size:12px; color:var(--text-secondary); padding:4px 8px; border-radius:4px;';
+          lbl.style.cssText = 'display:flex; align-items:center; gap:8px; cursor:pointer; font-size:12.5px; color:#E2E8F0; padding:5px 8px; border-radius:4px; transition:background 0.15s;';
+          lbl.onmouseenter = function() { this.style.background = 'rgba(255,255,255,0.06)'; };
+          lbl.onmouseleave = function() { this.style.background = 'transparent'; };
+
           var chk = document.createElement('input');
           chk.type = 'checkbox';
           chk.className = 'report-class-item-chk';
           chk.value = cls;
+          chk.style.accentColor = '#FF6B00';
+          chk.style.cursor = 'pointer';
+          chk.style.transform = 'scale(1.15)';
 
           if (isAllClassesDefault) {
             chk.checked = true;
@@ -14088,8 +14226,6 @@
           }
           if (!chk.checked) anyClassUnchecked = true;
 
-          chk.style.accentColor = '#FF6B00';
-          chk.style.cursor = 'pointer';
           chk.addEventListener('change', function() {
             var allItemChks = classListContainer.querySelectorAll('.report-class-item-chk');
             var allChecked = true;
@@ -14103,35 +14239,30 @@
           });
           lbl.appendChild(chk);
           var sp = document.createElement('span');
-          sp.textContent = cls;
+          sp.textContent = 'ห้อง ' + cls;
           lbl.appendChild(sp);
           classListContainer.appendChild(lbl);
         }
-        if (anyClassUnchecked) allChk.checked = false;
+        if (anyClassUnchecked && uniqueClasses.length > 0) allChk.checked = false;
       }
 
       // 2. Populate Activities
       var actListContainer = document.getElementById('report-activity-checkbox-list');
       if (actListContainer) {
         actListContainer.innerHTML = '';
-        var acts = (AppState.activities || []).slice();
-        var uniqueActs = ['เช็คชื่อมาเรียน'];
-        for (var a = 0; a < acts.length; a++) {
-          var aName = (typeof acts[a] === 'object' ? acts[a].name : acts[a]) || '';
-          aName = String(aName).trim();
-          if (aName && uniqueActs.indexOf(aName) === -1) uniqueActs.push(aName);
-        }
+        var uniqueActs = getAllAvailableActivities();
 
         var isAllActsDefault = (!savedPrefs || savedPrefs.allActsChecked === true || !savedPrefs.selectedActivities || savedPrefs.selectedActivities.length === 0);
 
         var allActLbl = document.createElement('label');
-        allActLbl.style.cssText = 'display:flex; align-items:center; gap:6px; cursor:pointer; font-size:12px; font-weight:700; color:#FFF; padding:5px 8px; border-radius:4px; background:rgba(0,240,255,0.15);';
+        allActLbl.style.cssText = 'display:flex; align-items:center; gap:8px; cursor:pointer; font-size:12px; font-weight:700; color:#FFF; padding:6px 8px; border-radius:6px; background:rgba(0,240,255,0.15); border:1px solid rgba(0,240,255,0.3);';
         var allActChk = document.createElement('input');
         allActChk.type = 'checkbox';
         allActChk.id = 'chk-report-act-all';
         allActChk.checked = isAllActsDefault;
         allActChk.style.accentColor = 'var(--cyan-400)';
         allActChk.style.cursor = 'pointer';
+        allActChk.style.transform = 'scale(1.15)';
         allActChk.addEventListener('change', function() {
           var itemChks = actListContainer.querySelectorAll('.report-act-item-chk');
           for (var i = 0; i < itemChks.length; i++) {
@@ -14151,11 +14282,17 @@
         for (var m = 0; m < uniqueActs.length; m++) {
           var act = uniqueActs[m];
           var actLbl = document.createElement('label');
-          actLbl.style.cssText = 'display:flex; align-items:center; gap:6px; cursor:pointer; font-size:12px; color:var(--text-secondary); padding:4px 8px; border-radius:4px;';
+          actLbl.style.cssText = 'display:flex; align-items:center; gap:8px; cursor:pointer; font-size:12.5px; color:#E2E8F0; padding:5px 8px; border-radius:4px; transition:background 0.15s;';
+          actLbl.onmouseenter = function() { this.style.background = 'rgba(255,255,255,0.06)'; };
+          actLbl.onmouseleave = function() { this.style.background = 'transparent'; };
+
           var aChk = document.createElement('input');
           aChk.type = 'checkbox';
           aChk.className = 'report-act-item-chk';
           aChk.value = act;
+          aChk.style.accentColor = 'var(--cyan-400)';
+          aChk.style.cursor = 'pointer';
+          aChk.style.transform = 'scale(1.15)';
 
           if (isAllActsDefault) {
             aChk.checked = true;
@@ -14166,8 +14303,6 @@
           }
           if (!aChk.checked) anyActUnchecked = true;
 
-          aChk.style.accentColor = 'var(--cyan-400)';
-          aChk.style.cursor = 'pointer';
           aChk.addEventListener('change', function() {
             var allItemChks = actListContainer.querySelectorAll('.report-act-item-chk');
             var allChecked = true;
@@ -14185,7 +14320,7 @@
           actLbl.appendChild(asp);
           actListContainer.appendChild(actLbl);
         }
-        if (anyActUnchecked) allActChk.checked = false;
+        if (anyActUnchecked && uniqueActs.length > 0) allActChk.checked = false;
       }
 
       updateReportClassBtnLabel();
@@ -14447,6 +14582,26 @@
         };
       }
 
+      // Populate filters immediately from cache and discoverable lists
+      populateReportMultiSelectFilters();
+
+      // Proactively fetch latest classes & students in background and refresh checkboxes
+      if (typeof fetchClasses === 'function' && (!AppState.classes || AppState.classes.length === 0)) {
+        fetchClasses(function() {
+          populateReportMultiSelectFilters();
+        });
+      }
+      if (typeof fetchStudents === 'function' && (!AppState.students || AppState.students.length === 0)) {
+        fetchStudents('all', function() {
+          populateReportMultiSelectFilters();
+        });
+      }
+      if (typeof fetchActivities === 'function' && (!AppState.activities || AppState.activities.length === 0)) {
+        fetchActivities(function() {
+          populateReportMultiSelectFilters();
+        });
+      }
+
       generateReportPreview();
       
       var btnRefresh = document.getElementById('btn-refresh-report');
@@ -14538,8 +14693,9 @@
 
       if (btnClassMulti && popClass) {
         btnClassMulti.onclick = function(e) {
+          e.preventDefault();
           e.stopPropagation();
-          var isShown = popClass.style.display === 'block';
+          var isShown = (popClass.style.display === 'block');
           if (popAct) {
             popAct.style.display = 'none';
             if (fgAct) fgAct.classList.remove('has-popover-open');
@@ -14557,8 +14713,9 @@
 
       if (btnActMulti && popAct) {
         btnActMulti.onclick = function(e) {
+          e.preventDefault();
           e.stopPropagation();
-          var isShown = popAct.style.display === 'block';
+          var isShown = (popAct.style.display === 'block');
           if (popClass) {
             popClass.style.display = 'none';
             if (fgClass) fgClass.classList.remove('has-popover-open');
@@ -14574,22 +14731,24 @@
         };
       }
 
-      // Close popovers on click outside
-      document.addEventListener('click', function() {
-        if (popClass) popClass.style.display = 'none';
-        if (popAct) popAct.style.display = 'none';
-        if (fgClass) fgClass.classList.remove('has-popover-open');
-        if (fgAct) fgAct.classList.remove('has-popover-open');
-      });
-
       // Quick buttons in popovers
       var btnSelAllRepCls = document.getElementById('btn-report-select-all-classes');
       if (btnSelAllRepCls) {
         btnSelAllRepCls.onclick = function(e) {
           e.preventDefault();
+          e.stopPropagation();
           var allChk = document.getElementById('chk-report-class-all');
-          if (allChk) { allChk.checked = true; allChk.dispatchEvent(new Event('change')); }
+          if (allChk) {
+            allChk.checked = true;
+            var container = document.getElementById('report-class-checkbox-list');
+            if (container) {
+              var itemChks = container.querySelectorAll('.report-class-item-chk');
+              for (var i = 0; i < itemChks.length; i++) itemChks[i].checked = true;
+            }
+          }
+          updateReportClassBtnLabel();
           saveReportFilterPreferences();
+          generateReportPreview();
         };
       }
 
@@ -14597,11 +14756,12 @@
       if (btnClearRepCls) {
         btnClearRepCls.onclick = function(e) {
           e.preventDefault();
+          e.stopPropagation();
           var allChk = document.getElementById('chk-report-class-all');
           if (allChk) allChk.checked = false;
           var container = document.getElementById('report-class-checkbox-list');
           if (container) {
-            var itemChks = container.querySelectorAll('input[type="checkbox"]');
+            var itemChks = container.querySelectorAll('.report-class-item-chk');
             for (var i = 0; i < itemChks.length; i++) itemChks[i].checked = false;
           }
           updateReportClassBtnLabel();
@@ -14614,9 +14774,19 @@
       if (btnSelAllRepAct) {
         btnSelAllRepAct.onclick = function(e) {
           e.preventDefault();
+          e.stopPropagation();
           var allChk = document.getElementById('chk-report-act-all');
-          if (allChk) { allChk.checked = true; allChk.dispatchEvent(new Event('change')); }
+          if (allChk) {
+            allChk.checked = true;
+            var container = document.getElementById('report-activity-checkbox-list');
+            if (container) {
+              var itemChks = container.querySelectorAll('.report-act-item-chk');
+              for (var i = 0; i < itemChks.length; i++) itemChks[i].checked = true;
+            }
+          }
+          updateReportActivityBtnLabel();
           saveReportFilterPreferences();
+          generateReportPreview();
         };
       }
 
@@ -14624,11 +14794,12 @@
       if (btnClearRepAct) {
         btnClearRepAct.onclick = function(e) {
           e.preventDefault();
+          e.stopPropagation();
           var allChk = document.getElementById('chk-report-act-all');
           if (allChk) allChk.checked = false;
           var container = document.getElementById('report-activity-checkbox-list');
           if (container) {
-            var itemChks = container.querySelectorAll('input[type="checkbox"]');
+            var itemChks = container.querySelectorAll('.report-act-item-chk');
             for (var i = 0; i < itemChks.length; i++) itemChks[i].checked = false;
           }
           updateReportActivityBtnLabel();
@@ -14638,12 +14809,26 @@
       }
 
       // Close popovers on click outside
-      document.addEventListener('click', function() {
-        if (popClass) popClass.style.display = 'none';
-        if (popAct) popAct.style.display = 'none';
-      });
+      if (!window.__reportPopoverGlobalListenerAttached) {
+        window.__reportPopoverGlobalListenerAttached = true;
+        document.addEventListener('click', function(e) {
+          var pC = document.getElementById('popover-report-class');
+          var pA = document.getElementById('popover-report-activity');
+          var fC = document.getElementById('fg-report-class-container');
+          var fA = document.getElementById('fg-report-activity-container');
+          var bC = document.getElementById('btn-report-class-multi');
+          var bA = document.getElementById('btn-report-activity-multi');
 
-      populateReportMultiSelectFilters();
+          if (pC && !pC.contains(e.target) && (!bC || !bC.contains(e.target))) {
+            pC.style.display = 'none';
+            if (fC) fC.classList.remove('has-popover-open');
+          }
+          if (pA && !pA.contains(e.target) && (!bA || !bA.contains(e.target))) {
+            pA.style.display = 'none';
+            if (fA) fA.classList.remove('has-popover-open');
+          }
+        });
+      }
 
       var reportStatusSelect = document.getElementById('report-status-select');
       if (reportStatusSelect) {
@@ -14661,6 +14846,7 @@
         };
       }
     }
+
 
     function getReportDateRange() {
       var startEl = document.getElementById('report-date-start');
