@@ -5025,6 +5025,7 @@
           'getStudents', 'addStudent', 'updateStudent', 'deleteStudent', 'deleteStudentsBatch', 'deleteAllStudents',
           'importStudentsBatch', 'createCheckinSession', 'getActiveSession', 'getActiveSessions', 'closeCheckinSession',
           'validateAndCheckinStudent', 'getSessionLiveAttendance', 'deleteLiveCheckinRecord', 'getAttendanceRecords',
+          'getRangeAttendanceSummary', 'getPublicDailyReportData',
           'saveAttendanceBatch', 'getDashboardData', 'getStudentStats',
           'getLineConfig', 'saveLineConfig', 'testLineConnection', 'sendLineReport', 'setupDailyLineTrigger',
           'getDetectedLineGroups', 'authorizePermissions'
@@ -5032,7 +5033,7 @@
 
         var getMethods = [
           'getClassList', 'getStudents', 'getActivityList', 'getDashboardData',
-          'getActiveSessions', 'getActiveSession', 'getAttendanceRecords', 'getSessionLiveAttendance',
+          'getActiveSessions', 'getActiveSession', 'getAttendanceRecords', 'getRangeAttendanceSummary', 'getPublicDailyReportData', 'getSessionLiveAttendance',
           'getStudentStats', 'getLineConfig', 'verifyAdminPassword',
           'getDetectedLineGroups', 'authorizePermissions',
           'deleteStudent', 'deleteStudentsBatch', 'deleteClass', 'deleteActivity', 'deleteAllStudents'
@@ -15374,7 +15375,7 @@
       function loadData() {
         var isRendered = false;
 
-        // Safety fallback timer: If GAS takes > 3.5 seconds, immediately render from local storage without freezing UI
+        // Safety fallback timer: If GAS takes > 12 seconds, render from local cache fallback
         var safetyTimer = setTimeout(function() {
           if (!isRendered) {
             isRendered = true;
@@ -15387,7 +15388,7 @@
               renderReportDocument(reportType, dateRange, className, activityName, statusFilter, localRecords);
             }
           }
-        }, 3500);
+        }, 12000);
 
         if (isMultiDayRange) {
           // Multi-day Range Summary Report

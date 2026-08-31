@@ -277,16 +277,25 @@ function buildLineFlexAttendanceMessage(data) {
 
       // Photo (Convert Base64/Drive to direct public HTTPS CDN URL) or Stylized Avatar Box
       var directPhotoUrl = convertSelfieToPublicUrl(item.selfiePhoto, item.no || item.studentId, targetDate);
-      if (directPhotoUrl && directPhotoUrl.indexOf('https://') === 0) {
+      if (directPhotoUrl && directPhotoUrl.indexOf('https://') === 0 && directPhotoUrl.indexOf('data:') === -1 && directPhotoUrl.length < 1000) {
         colContents.push({
-          "type": "image",
-          "url": directPhotoUrl,
-          "size": isChamp ? "sm" : "xs",
-          "aspectRatio": "1:1",
-          "aspectMode": "cover",
+          "type": "box",
+          "layout": "vertical",
+          "width": isChamp ? "56px" : "44px",
+          "height": isChamp ? "56px" : "44px",
           "cornerRadius": "100px",
+          "borderColor": crownColor,
+          "borderWidth": isChamp ? "bold" : "normal",
           "margin": "xs",
-          "align": "center"
+          "contents": [
+            {
+              "type": "image",
+              "url": directPhotoUrl,
+              "size": "full",
+              "aspectRatio": "1:1",
+              "aspectMode": "cover"
+            }
+          ]
         });
       } else {
         colContents.push({
@@ -374,7 +383,7 @@ function buildLineFlexAttendanceMessage(data) {
     if (top2) {
       championColumns.push(buildFlexChampCol(top2, '#2', '🥈', 'อันดับ 2', '#C0C0C0', '#334155', false));
     } else {
-      championColumns.push({ "type": "box", "layout": "vertical", "flex": 1, "contents": [] });
+      championColumns.push({ "type": "box", "layout": "vertical", "flex": 1, "contents": [{ "type": "text", "text": " ", "size": "xxs" }] });
     }
 
     // 1st Place (Gold Champion) - Center
@@ -384,7 +393,7 @@ function buildLineFlexAttendanceMessage(data) {
     if (top3) {
       championColumns.push(buildFlexChampCol(top3, '#3', '🥉', 'อันดับ 3', '#F97316', '#431407', false));
     } else {
-      championColumns.push({ "type": "box", "layout": "vertical", "flex": 1, "contents": [] });
+      championColumns.push({ "type": "box", "layout": "vertical", "flex": 1, "contents": [{ "type": "text", "text": " ", "size": "xxs" }] });
     }
 
     bodyContents.push({
@@ -818,7 +827,7 @@ function buildLineFlexAttendanceMessage(data) {
               "margin": "md",
               "action": {
                 "type": "uri",
-                "label": "📱 ดูรายงานฉบับเต็มของผู้ปกครอง",
+                "label": "📱 ดูรายงานออนไลน์",
                 "uri": rLink
               }
             });
@@ -1161,9 +1170,11 @@ function handleApiRouter(action, data, args) {
       case 'deleteLiveCheckinRecord':
         return deleteLiveCheckinRecord(arg(0, 'studentId', ''), arg(1, 'dateStr', ''));
       case 'getAttendanceRecords':
-        return getAttendanceRecords(arg(0, 'dateStr', ''), arg(1, 'className', ''), arg(2, 'activityName', ''));
+        return getAttendanceRecords(arg(0, 'dateStr', ''), arg(1, 'className', ''), arg(2, 'activityName', ''), arg(3, 'reportType', 'daily'), arg(4, 'endDateStr', ''));
       case 'getPublicDailyReportData':
         return getPublicDailyReportData(arg(0, 'dateStr', ''), arg(1, 'className', ''), arg(2, 'activityName', ''));
+      case 'getRangeAttendanceSummary':
+        return getRangeAttendanceSummary(arg(0, 'startDateStr', ''), arg(1, 'endDateStr', ''), arg(2, 'className', ''), arg(3, 'activityName', ''));
       case 'saveAttendanceBatch':
         return saveAttendanceBatch(arg(0, 'attendanceList', data), arg(1, 'activityName', ''));
       case 'getDashboardData':
@@ -1932,32 +1943,79 @@ function getActiveSessions() {
   return activeList;
 }
 
-function getActiveSession(className, sessionId) {
+function getActiveSession(className, sessionId, activityName) {
   var activeList = getActiveSessions();
+  var sIdClean = String(sessionId || '').trim();
+  var cNameClean = String(className || 'all').trim();
+  var actNameClean = String(activityName || '').trim();
 
-  if (sessionId && sessionId.indexOf('AUTOSES_') === -1) {
+  // Priority 1: Match EXACT sessionId from active list
+  if (sIdClean && sIdClean !== 'all' && sIdClean !== 'undefined') {
     for (var i = 0; i < activeList.length; i++) {
-      if (activeList[i].sessionId === String(sessionId).trim()) {
+      if (activeList[i].sessionId === sIdClean) {
         return activeList[i];
       }
     }
   }
 
-  if (className && className !== 'all') {
+  // Priority 2: If sessionId is an automated schedule sessionId
+  if (sIdClean && sIdClean.indexOf('AUTOSES_') === 0) {
+    var autoResExact = resolveActiveSchedule(cNameClean);
+    if (autoResExact && autoResExact.status === 'open') {
+      return {
+        sessionId: autoResExact.sessionId,
+        className: autoResExact.className || 'all',
+        activityName: autoResExact.activityName || 'เช็คชื่อมาเรียน',
+        date: autoResExact.dateStr,
+        createdAt: new Date().toISOString(),
+        expiresAt: new Date(Date.now() + 3600000).toISOString(),
+        lat: autoResExact.gpsLat || 0,
+        lng: autoResExact.gpsLng || 0,
+        radiusMeters: autoResExact.radiusMeters || 100,
+        secretSeed: autoResExact.secretSeed,
+        otpIntervalSeconds: autoResExact.otpIntervalSeconds || 15,
+        requireOTP: autoResExact.requireOTP !== false,
+        requireSelfie: autoResExact.requireSelfie !== false,
+        requireGPS: autoResExact.requireGPS === true,
+        requireDeviceBinding: true,
+        status: 'Active',
+        isAutomated: true,
+        sessionPhase: autoResExact.sessionPhase,
+        statusResult: autoResExact.statusResult,
+        serverTimeMs: Date.now()
+      };
+    }
+  }
+
+  // Priority 3: Match both Activity Name & Class Name
+  if (actNameClean && actNameClean !== 'all') {
+    for (var a = 0; a < activeList.length; a++) {
+      var itm = activeList[a];
+      var isActOk = isActivityMatch(actNameClean, itm.activityName);
+      var isClsOk = (cNameClean === 'all' || isClassMatch(itm.className, cNameClean) || isClassMatch(cNameClean, itm.className));
+      if (isActOk && isClsOk) {
+        return itm;
+      }
+    }
+  }
+
+  // Priority 4: Match Class Name
+  if (cNameClean && cNameClean !== 'all') {
     for (var j = 0; j < activeList.length; j++) {
       var cName = activeList[j].className;
-      if (cName === 'all' || isClassMatch(cName, className) || isClassMatch(className, cName)) {
+      if (cName === 'all' || isClassMatch(cName, cNameClean) || isClassMatch(cNameClean, cName)) {
         return activeList[j];
       }
     }
   }
 
-  if (activeList.length > 0 && (!sessionId || sessionId === 'all')) {
+  // Priority 5: Latest active session
+  if (activeList.length > 0) {
     return activeList[activeList.length - 1];
   }
 
-  // Fallback to dynamic automated daily schedule session if active!
-  var autoRes = resolveActiveSchedule(className || 'all');
+  // Priority 6: Fallback to dynamic automated daily schedule session if active!
+  var autoRes = resolveActiveSchedule(cNameClean || 'all');
   if (autoRes && autoRes.status === 'open') {
     return {
       sessionId: autoRes.sessionId,
@@ -1971,6 +2029,7 @@ function getActiveSession(className, sessionId) {
       radiusMeters: autoRes.radiusMeters || 100,
       secretSeed: autoRes.secretSeed,
       otpIntervalSeconds: autoRes.otpIntervalSeconds || 15,
+      requireOTP: autoRes.requireOTP !== false,
       requireSelfie: autoRes.requireSelfie !== false,
       requireGPS: autoRes.requireGPS === true,
       requireDeviceBinding: true,
@@ -2093,7 +2152,7 @@ function validateAndCheckinStudent(payload) {
     return { status: 'error', message: 'ไม่พบรหัสนักศึกษานี้ในระบบ' };
   }
   
-  var activeSession = getActiveSession(studentObj.className, sessionId);
+  var activeSession = getActiveSession(studentObj.className, sessionId, payload.activityName);
   if (!activeSession) {
     return { status: 'error', message: 'ไม่มีคาบเรียนที่เปิดรับเช็คชื่อสำหรับห้องนี้ในขณะนี้' };
   }
@@ -2103,7 +2162,13 @@ function validateAndCheckinStudent(payload) {
   var intervalSec = activeSession.otpIntervalSeconds || 15;
   var intervalMs = intervalSec * 1000;
   
-  if (activeSession.requireOTP !== false) {
+  if (activeSession.requireOTP !== false && activeSession.requireOtp !== false && activeSession.useOtp !== false) {
+    if (!enteredOtp || enteredOtp.length < 6) {
+      return {
+        status: 'error',
+        message: 'กรุณากรอกรหัส OTP 6 หลัก'
+      };
+    }
     var validOtpCurrent = generateTOTP(activeSession.secretSeed, intervalSec, nowMs);
     var validOtpPrev = generateTOTP(activeSession.secretSeed, intervalSec, nowMs - intervalMs);
     
@@ -2373,6 +2438,172 @@ function deleteLiveCheckinRecord(studentId, dateStr) {
     message: found ? 'ลบรายการเช็คชื่อเรียบร้อยแล้ว' : 'ไม่พบรายการเช็คชื่อ'
   };
 }
+
+
+function getRangeAttendanceSummary(startDateStr, endDateStr, className, activityName) {
+  try {
+    var ss = getSpreadsheet();
+    var sheet = ss.getSheetByName(SHEET_ATTENDANCE);
+    if (!sheet) return { status: 'success', recordedDates: [], students: [], totalRecordedDays: 0, summaryTotals: {} };
+
+    var startD = startDateStr ? formatDateString(startDateStr) : formatDateString(new Date());
+    var endD = endDateStr ? formatDateString(endDateStr) : startD;
+    if (endD < startD) {
+      var tmp = startD; startD = endD; endD = tmp;
+    }
+
+    var cleanClass = String(className || 'all').trim();
+    var cleanAct = String(activityName || 'all').trim();
+
+    var allStudents = getStudents(cleanClass) || [];
+    var studentMap = {};
+    var studentOrder = [];
+
+    for (var s = 0; s < allStudents.length; s++) {
+      var st = allStudents[s];
+      var sId = String(st.studentId || '').trim();
+      if (!sId) continue;
+      studentMap[sId.toLowerCase()] = {
+        studentId: sId,
+        studentNo: st.studentNo || (s + 1),
+        name: st.name || '',
+        className: st.className || '',
+        present: 0,
+        late: 0,
+        sick: 0,
+        leave: 0,
+        absent: 0,
+        totalRecords: 0
+      };
+      studentOrder.push(sId.toLowerCase());
+    }
+
+    var datesWithDataMap = {};
+    var lastRow = sheet.getLastRow();
+
+    if (lastRow > 1) {
+      var data = sheet.getDataRange().getValues();
+      for (var i = 1; i < data.length; i++) {
+        var row = data[i];
+        var rowD = formatDateString(row[0]);
+        if (rowD && rowD >= startD && rowD <= endD) {
+          var rowAct = String(row[8] || 'เช็คชื่อมาเรียน').trim();
+          if (!isActivityMatch(cleanAct, rowAct)) continue;
+
+          var sId = String(row[1] || '').trim().toLowerCase();
+          var stObj = studentMap[sId];
+          if (!stObj) continue;
+
+          datesWithDataMap[rowD] = true;
+
+          var status = String(row[2] || 'Present').trim();
+          if (status === 'Present' || status === 'มาเรียน') {
+            stObj.present++;
+          } else if (status === 'Late' || status === 'มาสาย') {
+            stObj.late++;
+          } else if (status === 'Sick' || status === 'ลาป่วย') {
+            stObj.sick++;
+          } else if (status === 'Leave' || status === 'ลากิจ') {
+            stObj.leave++;
+          } else {
+            stObj.absent++;
+          }
+          stObj.totalRecords++;
+        }
+      }
+    }
+
+    var recordedDates = Object.keys(datesWithDataMap).sort();
+    var totalDays = recordedDates.length;
+
+    var resultList = [];
+    var totPresent = 0, totLate = 0, totSick = 0, totLeave = 0, totAbsent = 0;
+
+    for (var k = 0; k < studentOrder.length; k++) {
+      var item = studentMap[studentOrder[k]];
+      if (!item) continue;
+      if (totalDays > item.totalRecords) {
+        var unrecorded = totalDays - item.totalRecords;
+        item.absent += unrecorded;
+      }
+      var attended = item.present + item.late;
+      var effTotal = Math.max(totalDays, item.present + item.late + item.sick + item.leave + item.absent);
+      var attRate = effTotal > 0 ? ((attended / effTotal) * 100).toFixed(1) : '100.0';
+
+      var evalLabel = 'ดีเยี่ยม';
+      var evalClass = 'excellent';
+      var rNum = parseFloat(attRate);
+      if (rNum >= 85) {
+        evalLabel = 'ดีเยี่ยม';
+        evalClass = 'excellent';
+      } else if (rNum >= 80) {
+        evalLabel = 'ปกติ';
+        evalClass = 'good';
+      } else if (rNum >= 60) {
+        evalLabel = 'เสี่ยงติด มส.';
+        evalClass = 'warning';
+      } else {
+        evalLabel = 'หมดสิทธิ์สอบ';
+        evalClass = 'critical';
+      }
+
+      totPresent += item.present;
+      totLate += item.late;
+      totSick += item.sick;
+      totLeave += item.leave;
+      totAbsent += item.absent;
+
+      resultList.push({
+        studentId: item.studentId,
+        studentNo: item.studentNo,
+        name: item.name,
+        className: item.className,
+        present: item.present,
+        late: item.late,
+        sick: item.sick,
+        leave: item.leave,
+        absent: item.absent,
+        attended: attended,
+        totalDays: effTotal,
+        attendanceRate: attRate,
+        evaluation: evalLabel,
+        evalClass: evalClass
+      });
+    }
+
+    return {
+      status: 'success',
+      startDate: startD,
+      endDate: endD,
+      startDateThai: formatThaiDate(startD),
+      endDateThai: formatThaiDate(endD),
+      className: (cleanClass === 'all' || cleanClass === 'ทุกห้องเรียน') ? 'ทุกห้องเรียน' : ('ห้อง ' + cleanClass.replace(/^ห้อง\s*/, '')),
+      activityName: (cleanAct === 'all' || !cleanAct) ? 'ทุกกิจกรรม/วิชา' : cleanAct,
+      recordedDates: recordedDates,
+      totalRecordedDays: totalDays,
+      summaryTotals: {
+        totalStudents: resultList.length,
+        present: totPresent,
+        late: totLate,
+        sick: totSick,
+        leave: totLeave,
+        absent: totAbsent,
+        avgRate: resultList.length > 0 && totalDays > 0 ? (((totPresent + totLate) / (resultList.length * totalDays)) * 100).toFixed(1) : '100.0'
+      },
+      students: resultList
+    };
+  } catch (err) {
+    return {
+      status: 'error',
+      message: 'เกิดข้อผิดพลาดในการดึงข้อมูลสรุป: ' + (err.message || String(err)),
+      recordedDates: [],
+      students: [],
+      totalRecordedDays: 0,
+      summaryTotals: {}
+    };
+  }
+}
+
 
 function getAttendanceRecords(dateStr, className, activityName, reportType, endDateStr) {
   var ss = getSpreadsheet();
@@ -3205,6 +3436,27 @@ function dispatchLineNotification(token, msg, lineGroupId, webhookUrl, flexPaylo
         return { status: 'success', message: succText };
       } else {
         var errText = msgApiRes.getContentText();
+        // If Flex Message fails with 400, attempt automatic resilient fallback to text message
+        if (isFlex && msgApiCode === 400 && msg) {
+          try {
+            var fallbackPayload = { messages: [{ type: 'text', text: msg }] };
+            if (payloadObj.to) fallbackPayload.to = payloadObj.to;
+            var fbOptions = {
+              method: 'post',
+              contentType: 'application/json',
+              headers: { 'Authorization': 'Bearer ' + token },
+              payload: JSON.stringify(fallbackPayload),
+              muteHttpExceptions: true
+            };
+            var fbRes = UrlFetchApp.fetch(endpoint, fbOptions);
+            if (fbRes.getResponseCode() === 200) {
+              return {
+                status: 'success',
+                message: 'ส่งข้อความสรุปรายงานเข้า LINE สำเร็จแล้ว! 📝'
+              };
+            }
+          } catch (fbEx) {}
+        }
         if (msgApiCode === 429 || errText.indexOf('monthly limit') > -1 || errText.indexOf('rate limit') > -1) {
           return {
             status: 'error',
