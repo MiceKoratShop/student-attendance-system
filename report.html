@@ -671,6 +671,19 @@
       return urlParams.get(param) || '';
     }
 
+        function isClassMatch(filter, studentClass) {
+      if (!filter || filter === 'all' || filter === 'ทุกห้องเรียน' || filter === 'ทุกห้อง' || filter === 'undefined') return true;
+      var sClass = String(studentClass || '').trim().toLowerCase().replace(/^ห้อง\s*/, '');
+      if (!sClass) return false;
+      var parts = String(filter).split(',');
+      for (var p = 0; p < parts.length; p++) {
+        var item = parts[p].trim().toLowerCase().replace(/^ห้อง\s*/, '');
+        if (!item || item === 'all' || item === 'ทุกห้องเรียน' || item === 'ทุกห้อง') return true;
+        if (item === sClass || sClass.indexOf(item) > -1 || item.indexOf(sClass) > -1) return true;
+      }
+      return false;
+    }
+
     function escapeHtml(str) {
       if (!str) return '';
       return String(str)
@@ -780,13 +793,72 @@
     }
 
     function renderReportData(data) {
+      var classParam = getQueryParam('class') || getQueryParam('className') || '';
+      if (classParam && classParam !== 'all' && classParam !== 'ทุกห้องเรียน' && data.students) {
+        // Strict client-side filter by selected classParam if needed
+        var filteredList = [];
+        var cPres = 0, cOnTime = 0, cLate = 0, cSick = 0, cLeave = 0, cAbsent = 0;
+        var onTimeChamps = [];
+
+        for (var k = 0; k < data.students.length; k++) {
+          var stItem = data.students[k];
+          if (isClassMatch(classParam, stItem.className)) {
+            filteredList.push(stItem);
+            var st = stItem.status;
+            if (st === 'Present' || st === 'มาเรียน') {
+              cPres++;
+              cOnTime++;
+              onTimeChamps.push(stItem);
+            } else if (st === 'Late' || st === 'มาสาย') {
+              cPres++;
+              cLate++;
+            } else if (st === 'Sick' || st === 'ลาป่วย') {
+              cSick++;
+            } else if (st === 'Leave' || st === 'ลากิจ') {
+              cLeave++;
+            } else {
+              cAbsent++;
+            }
+          }
+        }
+
+        data.students = filteredList;
+        var tot = filteredList.length;
+        data.stats = {
+          totalStudents: tot,
+          countPresent: cPres,
+          countOnTime: cOnTime,
+          countLate: cLate,
+          countSick: cSick,
+          countLeave: cLeave,
+          countAbsent: cAbsent,
+          attRate: tot > 0 ? ((cPres / tot) * 100).toFixed(1) : '0.0'
+        };
+
+        // Recalculate podium for this specific room
+        onTimeChamps.sort(function(a, b) {
+          return String(a.checkinTime || a.time).localeCompare(String(b.checkinTime || b.time));
+        });
+        var roomChamps = [];
+        for (var rc = 0; rc < Math.min(3, onTimeChamps.length); rc++) {
+          var ch = onTimeChamps[rc];
+          ch.rank = rc + 1;
+          ch.time = ch.checkinTime || ch.time;
+          roomChamps.push(ch);
+        }
+        data.topChampions = roomChamps;
+        data.className = (classParam.indexOf('ห้อง') === 0) ? classParam : ('ห้อง ' + classParam);
+      }
+
       ReportState.data = data;
 
       // 1. Header Info
       var dayTitle = document.getElementById('report-day-title');
       var subtitle = document.getElementById('report-subtitle');
       if (dayTitle) dayTitle.textContent = (data.dayName || '') + ' ' + (data.dateThai || data.date);
-      if (subtitle) subtitle.textContent = (data.className || 'ทุกห้องเรียน') + ' • กิจกรรม: ' + (data.activityName || 'เช็คชื่อมาเรียน');
+      var classDisplay = data.className || 'ทุกห้องเรียน';
+      var actDisplay = data.activityName || 'เช็คชื่อมาเรียน';
+      if (subtitle) subtitle.textContent = classDisplay + ' • กิจกรรม: ' + actDisplay + ' (' + ((data.stats && data.stats.totalStudents) || 0) + ' คน)';
 
       // 2. Stats
       var s = data.stats || {};

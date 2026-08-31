@@ -14196,9 +14196,10 @@
       var inputEl = document.getElementById('pub-modal-link-input');
       if (inputEl) inputEl.value = repUrl;
 
+      var classDisplayTag = (className === 'all' || className === 'ทุกห้องเรียน') ? 'ทุกห้องเรียน' : ('ห้อง ' + className.replace(/^ห้อง\s*/, ''));
       var titleEl = document.getElementById('pub-modal-title');
       var subEl = document.getElementById('pub-modal-subtitle');
-      if (titleEl) titleEl.textContent = 'รายงานสรุปการมาเรียน (' + (className === 'all' ? 'ทุกห้องเรียน' : className) + ')';
+      if (titleEl) titleEl.textContent = 'รายงานสรุปการมาเรียน (' + classDisplayTag + ')';
       if (subEl) subEl.textContent = '📅 วันที่: ' + dateRange.displayStr + ' • กิจกรรม: ' + (activityName === 'all' ? 'ทุกกิจกรรม' : activityName);
 
       // Extract stats from current rendered preview or local state
