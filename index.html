@@ -15052,12 +15052,40 @@
 
       var isMultiDayRange = (dateRange.isRange || startDate !== endDate || reportType !== 'daily');
 
+      // Pre-populate students from cache if available
+      if (!AppState.students || AppState.students.length === 0) {
+        try {
+          var cachedStds = localStorage.getItem('gas_cached_students') || localStorage.getItem('gas_student_app_students');
+          if (cachedStds) AppState.students = JSON.parse(cachedStds);
+        } catch (e) {}
+      }
+
       function loadData() {
+        var isRendered = false;
+
+        // Safety fallback timer: If GAS takes > 3.5 seconds, immediately render from local storage without freezing UI
+        var safetyTimer = setTimeout(function() {
+          if (!isRendered) {
+            isRendered = true;
+            console.warn('GAS report fetch timeout, rendering from local cache fallback...');
+            if (isMultiDayRange) {
+              var localSummary = getRangeAttendanceSummaryFromLocal(startDate, endDate, className, activityName);
+              renderRangeSummaryReportDocument(localSummary, dateRange, className, activityName, statusFilter);
+            } else {
+              var localRecords = getAttendanceMapFromLocalStorage(startDate, activityName, endDate);
+              renderReportDocument(reportType, dateRange, className, activityName, statusFilter, localRecords);
+            }
+          }
+        }, 3500);
+
         if (isMultiDayRange) {
           // Multi-day Range Summary Report
           if (isGASAvailable()) {
             google.script.run
               .withSuccessHandler(function(summaryRes) {
+                if (isRendered) return;
+                isRendered = true;
+                clearTimeout(safetyTimer);
                 if (summaryRes && summaryRes.status === 'success') {
                   renderRangeSummaryReportDocument(summaryRes, dateRange, className, activityName, statusFilter);
                 } else {
@@ -15066,12 +15094,17 @@
                 }
               })
               .withFailureHandler(function(err) {
+                if (isRendered) return;
+                isRendered = true;
+                clearTimeout(safetyTimer);
                 console.warn('Error fetching range summary from GAS:', err);
                 var localSummary = getRangeAttendanceSummaryFromLocal(startDate, endDate, className, activityName);
                 renderRangeSummaryReportDocument(localSummary, dateRange, className, activityName, statusFilter);
               })
               .getRangeAttendanceSummary(startDate, endDate, className, activityName);
           } else {
+            clearTimeout(safetyTimer);
+            isRendered = true;
             var localSummary = getRangeAttendanceSummaryFromLocal(startDate, endDate, className, activityName);
             renderRangeSummaryReportDocument(localSummary, dateRange, className, activityName, statusFilter);
           }
@@ -15080,22 +15113,29 @@
           if (isGASAvailable()) {
             google.script.run
               .withSuccessHandler(function(recordsMap) {
+                if (isRendered) return;
+                isRendered = true;
+                clearTimeout(safetyTimer);
                 renderReportDocument(reportType, dateRange, className, activityName, statusFilter, recordsMap || {});
               })
               .withFailureHandler(function(err) {
+                if (isRendered) return;
+                isRendered = true;
+                clearTimeout(safetyTimer);
                 console.warn('Error fetching report records from GAS:', err);
                 var localRecords = getAttendanceMapFromLocalStorage(startDate, activityName, endDate);
                 renderReportDocument(reportType, dateRange, className, activityName, statusFilter, localRecords);
               })
               .getAttendanceRecords(startDate, className, activityName, reportType, endDate);
           } else {
+            clearTimeout(safetyTimer);
+            isRendered = true;
             var localRecords = getAttendanceMapFromLocalStorage(startDate, activityName, endDate);
             renderReportDocument(reportType, dateRange, className, activityName, statusFilter, localRecords);
           }
         }
       }
 
-      // Ensure students list is loaded
       if (!AppState.students || AppState.students.length === 0) {
         fetchStudents('all', function() {
           loadData();
@@ -15421,8 +15461,8 @@
       var dateRange = getReportDateRange();
       var className = getSelectedReportClasses();
       var activityName = getSelectedReportActivities();
-      var classTag = (className === 'all' ? 'ทุกห้อง' : className.replace(/[,s]+/g, '_'));
-      var actTag = (activityName === 'all' ? 'ทุกกิจกรรม' : activityName.replace(/[,s]+/g, '_'));
+      var classTag = (className === 'all' ? 'ทุกห้อง' : className.replace(/[\s,]+/g, '_'));
+      var actTag = (activityName === 'all' ? 'ทุกกิจกรรม' : activityName.replace(/[\s,]+/g, '_'));
 
       if (typeof html2pdf !== 'undefined') {
         showToast('กำลังประมวลผลและสร้างไฟล์ PDF...', 'info');
@@ -15451,8 +15491,8 @@
       var dateRange = getReportDateRange();
       var className = getSelectedReportClasses();
       var activityName = getSelectedReportActivities();
-      var classTag = (className === 'all' ? 'ทุกห้อง' : className.replace(/[,s]+/g, '_'));
-      var actTag = (activityName === 'all' ? 'ทุกกิจกรรม' : activityName.replace(/[,s]+/g, '_'));
+      var classTag = (className === 'all' ? 'ทุกห้อง' : className.replace(/[\s,]+/g, '_'));
+      var actTag = (activityName === 'all' ? 'ทุกกิจกรรม' : activityName.replace(/[\s,]+/g, '_'));
       var filename = 'รายงานการเช็คชื่อ_' + dateRange.fileTag + '_' + classTag + '_' + actTag + '.jpg';
 
       showLoadingPopup('กำลังสร้างภาพรายงาน...', 'กำลังแปลงตารางรายงานและรูปถ่ายเป็นภาพความละเอียดสูง (.JPG)');
