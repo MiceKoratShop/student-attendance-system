@@ -2592,15 +2592,25 @@
               <div class="step-header-badge">
                 <i class="fas fa-key"></i> ขั้นตอนที่ 4 : ยืนยันรหัส OTP / สแกน QR
               </div>
-              <h2 style="font-size: 20px; font-weight: 700; color: #FFF; margin-bottom: 6px;">ยืนยันรหัสจากหน้าจอโปรเจกเตอร์</h2>
-              <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 18px;">สามารถเปิดกล้องสแกน QR Code หรือกรอกรหัส 6 หลักที่แสดงบนจอ</p>
+              <h2 style="font-size: 20px; font-weight: 700; color: #FFF; margin-bottom: 6px;" id="student-step-4-title">ยืนยันรหัส OTP</h2>
+              <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 18px;" id="student-step-4-desc">สามารถเปิดกล้องสแกน QR Code หรือกรอกรหัส 6 หลักที่แสดงบนจอ</p>
 
-              <!-- Option 1: Live QR Scanner Camera Button -->
+              <!-- AUTO-FILL BANNER (For Automated Daily Schedule Check-in) -->
+              <div id="student-schedule-otp-autofill-banner" style="display: none; background: rgba(16, 185, 129, 0.12); border: 1.5px solid #10B981; border-radius: var(--radius-sm); padding: 12px 14px; margin-bottom: 18px; text-align: center; animation: fadeIn 0.3s ease;">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 8px; color: #34D399; font-weight: 800; font-size: 13.5px; margin-bottom: 4px;">
+                  <i class="fas fa-magic" style="color: #FBBF24;"></i> ระบบกรอกรหัส Dynamic OTP อัตโนมัติให้แล้ว
+                </div>
+                <div style="font-size: 11.5px; color: #CBD5E1;">
+                  (สำหรับเช็คชื่อตามตารางสอน รหัสปัจจุบัน: <strong id="student-autofill-otp-code-text" style="color: #38BDF8; font-family: monospace; font-size: 13px; letter-spacing: 2px;">------</strong>)
+                </div>
+              </div>
+
+              <!-- Option 1: Live QR Scanner Camera Button (For Manual Projector Sessions) -->
               <button type="button" class="btn-glass btn-cyan" id="btn-open-qr-scanner" style="width: 100%; margin-bottom: 18px; padding: 14px; font-weight: 700; font-size: 15px; border-color: rgba(0, 240, 255, 0.4); background: rgba(0, 240, 255, 0.1); box-shadow: 0 0 15px rgba(0, 240, 255, 0.15); display: flex; align-items: center; justify-content: center; gap: 8px;">
                 <i class="fas fa-qrcode" style="font-size: 20px; color: var(--cyan-400);"></i> 📷 เปิดกล้องสแกน QR Code จากหน้าจอ
               </button>
 
-              <div style="display: flex; align-items: center; margin-bottom: 16px;">
+              <div id="step-4-or-divider" style="display: flex; align-items: center; margin-bottom: 16px;">
                 <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.12);"></div>
                 <span style="padding: 0 10px; font-size: 11.5px; color: var(--text-muted); text-transform: uppercase;">หรือกรอกรหัสตัวเลข 6 หลัก</span>
                 <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.12);"></div>
@@ -4604,26 +4614,52 @@
         <!-- DURATION & OTP INTERVAL -->
         <div class="grid-2">
           <div class="form-group-glass">
-            <label><i class="fas fa-clock"></i> ระยะเวลาเปิดรับ (นาที)</label>
+            <label><i class="fas fa-clock" style="color: var(--cyan-400);"></i> ระยะเวลาเปิดรับ (นาที)</label>
             <select class="select-glass" id="modal-session-duration-select">
               <option value="5">5 นาที</option>
               <option value="10">10 นาที</option>
               <option value="15" selected>15 นาที</option>
+              <option value="20">20 นาที</option>
               <option value="30">30 นาที</option>
               <option value="45">45 นาที</option>
-              <option value="60">1 ชั่วโมง</option>
-              <option value="120">2 ชั่วโมง</option>
+              <option value="60">1 ชั่วโมง (60 นาที)</option>
+              <option value="90">1.5 ชั่วโมง (90 นาที)</option>
+              <option value="120">2 ชั่วโมง (120 นาที)</option>
+              <option value="180">3 ชั่วโมง (180 นาที)</option>
+              <option value="240">4 ชั่วโมง (240 นาที)</option>
+              <option value="360">6 ชั่วโมง</option>
+              <option value="480">8 ชั่วโมง</option>
+              <option value="custom">✏️ กำหนดระยะเวลาเอง...</option>
             </select>
+            <div id="modal-session-custom-duration-box" style="display: none; margin-top: 6px; gap: 6px; align-items: center;">
+              <input type="number" min="1" max="1440" class="input-glass" id="modal-session-duration-custom-val" placeholder="ระบุตัวเลข" value="15" style="flex: 1; font-size: 12px;" />
+              <select class="select-glass" id="modal-session-duration-custom-unit" style="width: 95px; font-size: 12px;">
+                <option value="minutes" selected>นาที</option>
+                <option value="hours">ชั่วโมง</option>
+              </select>
+            </div>
           </div>
           <div class="form-group-glass">
-            <label><i class="fas fa-rotate"></i> รอบเวลาเปลี่ยน Dynamic OTP</label>
+            <label><i class="fas fa-rotate" style="color: var(--orange-400);"></i> รอบเวลาเปลี่ยน Dynamic OTP</label>
             <select class="select-glass" id="modal-session-otp-interval-select">
+              <option value="5">เปลี่ยนทุก 5 วินาที</option>
               <option value="10">เปลี่ยนทุก 10 วินาที</option>
               <option value="15" selected>เปลี่ยนทุก 15 วินาที (แนะนำ)</option>
+              <option value="20">เปลี่ยนทุก 20 วินาที</option>
               <option value="30">เปลี่ยนทุก 30 วินาที</option>
-              <option value="60">เปลี่ยนทุก 1 นาที</option>
-              <option value="300">เปลี่ยนทุก 5 นาที</option>
+              <option value="45">เปลี่ยนทุก 45 วินาที</option>
+              <option value="60">เปลี่ยนทุก 1 นาที (60 วินาที)</option>
+              <option value="120">เปลี่ยนทุก 2 นาที (120 วินาที)</option>
+              <option value="300">เปลี่ยนทุก 5 นาที (300 วินาที)</option>
+              <option value="custom">✏️ กำหนดรอบเวลาเอง...</option>
             </select>
+            <div id="modal-session-custom-otp-box" style="display: none; margin-top: 6px; gap: 6px; align-items: center;">
+              <input type="number" min="5" max="3600" class="input-glass" id="modal-session-otp-custom-val" placeholder="ระบุตัวเลข" value="15" style="flex: 1; font-size: 12px;" />
+              <select class="select-glass" id="modal-session-otp-custom-unit" style="width: 95px; font-size: 12px;">
+                <option value="seconds" selected>วินาที</option>
+                <option value="minutes">นาที</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -8964,6 +9000,39 @@
         });
       }
 
+      // Custom Duration & OTP Dropdown Listeners
+      var durSelect = document.getElementById('session-duration-select');
+      var durCustomBox = document.getElementById('session-duration-custom-box');
+      if (durSelect && durCustomBox) {
+        durSelect.addEventListener('change', function() {
+          durCustomBox.style.display = (this.value === 'custom') ? 'flex' : 'none';
+        });
+      }
+
+      var modalDurSelect = document.getElementById('modal-session-duration-select');
+      var modalDurCustomBox = document.getElementById('modal-session-custom-duration-box');
+      if (modalDurSelect && modalDurCustomBox) {
+        modalDurSelect.addEventListener('change', function() {
+          modalDurCustomBox.style.display = (this.value === 'custom') ? 'flex' : 'none';
+        });
+      }
+
+      var otpSelect = document.getElementById('session-otp-interval-select');
+      var otpCustomBox = document.getElementById('session-otp-custom-box');
+      if (otpSelect && otpCustomBox) {
+        otpSelect.addEventListener('change', function() {
+          otpCustomBox.style.display = (this.value === 'custom') ? 'flex' : 'none';
+        });
+      }
+
+      var modalOtpSelect = document.getElementById('modal-session-otp-interval-select');
+      var modalOtpCustomBox = document.getElementById('modal-session-custom-otp-box');
+      if (modalOtpSelect && modalOtpCustomBox) {
+        modalOtpSelect.addEventListener('change', function() {
+          modalOtpCustomBox.style.display = (this.value === 'custom') ? 'flex' : 'none';
+        });
+      }
+
       // Late Cut-off Preset Change Listeners
       var lateSelect = document.getElementById('session-late-preset-select');
       var customLateMinsBox = document.getElementById('session-custom-late-mins-box');
@@ -9288,10 +9357,10 @@
       var duration = 15;
       if (durEl) {
         var durPreset = durEl.value;
-        if (durPreset === 'custom' && !isModal) {
-          var customValEl = document.getElementById('session-duration-custom-val');
+        if (durPreset === 'custom') {
+          var customValEl = isModal ? document.getElementById('modal-session-duration-custom-val') : document.getElementById('session-duration-custom-val');
           var customVal = customValEl ? parseFloat(customValEl.value) : 15;
-          var unitEl = document.getElementById('session-duration-custom-unit');
+          var unitEl = isModal ? document.getElementById('modal-session-duration-custom-unit') : document.getElementById('session-duration-custom-unit');
           var unit = unitEl ? unitEl.value : 'minutes';
           duration = unit === 'hours' ? Math.round((customVal || 1) * 60) : Math.round(customVal || 15);
         } else {
@@ -9304,10 +9373,10 @@
       var otpInterval = 15;
       if (otpEl) {
         var otpPreset = otpEl.value;
-        if (otpPreset === 'custom' && !isModal) {
-          var customOtpValEl = document.getElementById('session-otp-custom-val');
+        if (otpPreset === 'custom') {
+          var customOtpValEl = isModal ? document.getElementById('modal-session-otp-custom-val') : document.getElementById('session-otp-custom-val');
           var customOtpVal = customOtpValEl ? parseFloat(customOtpValEl.value) : 15;
-          var otpUnitEl = document.getElementById('session-otp-custom-unit');
+          var otpUnitEl = isModal ? document.getElementById('modal-session-otp-custom-unit') : document.getElementById('session-otp-custom-unit');
           var otpUnit = otpUnitEl ? otpUnitEl.value : 'seconds';
           if (otpUnit === 'hours') otpInterval = Math.round((customOtpVal || 1) * 3600);
           else if (otpUnit === 'minutes') otpInterval = Math.round((customOtpVal || 1) * 60);
@@ -10621,6 +10690,60 @@
       }
     }
 
+    
+    function autoFillOtpIfAutomatedSchedule() {
+      var isAutomated = false;
+      var seed = '';
+      var interval = 15;
+
+      if (AppState.activeSession && AppState.activeSession.isAutomated) {
+        isAutomated = true;
+        seed = AppState.activeSession.secretSeed;
+        interval = AppState.activeSession.otpIntervalSeconds || 15;
+      } else {
+        var curClass = (document.getElementById('self-checkin-class') && document.getElementById('self-checkin-class').value) || '';
+        if (curClass) {
+          var res = resolveActiveScheduleLocal(curClass);
+          if (res && res.status === 'open') {
+            isAutomated = true;
+            seed = res.secretSeed;
+            interval = res.otpIntervalSeconds || 15;
+          }
+        }
+      }
+
+      var bannerEl = document.getElementById('student-schedule-otp-autofill-banner');
+      var qrBtnEl = document.getElementById('btn-open-qr-scanner');
+      var orTextEl = document.getElementById('step-4-or-divider');
+      var titleEl = document.getElementById('student-step-4-title');
+      var descEl = document.getElementById('student-step-4-desc');
+
+      if (isAutomated && seed) {
+        var curOtp = generateTOTP(seed, interval, Date.now());
+        for (var p = 1; p <= 6; p++) {
+          var pinEl = document.getElementById('pin-' + p);
+          if (pinEl) {
+            pinEl.value = curOtp[p - 1] || '';
+          }
+        }
+        if (bannerEl) {
+          bannerEl.style.display = 'block';
+          var codeSpan = document.getElementById('student-autofill-otp-code-text');
+          if (codeSpan) codeSpan.textContent = curOtp;
+        }
+        if (qrBtnEl) qrBtnEl.style.display = 'none';
+        if (orTextEl) orTextEl.style.display = 'none';
+        if (titleEl) titleEl.innerHTML = '<i class="fas fa-key" style="color:#FBBF24;"></i> ยืนยันการเช็คชื่อตามตารางสอน';
+        if (descEl) descEl.textContent = 'ระบบดึงและกรอกรหัส Dynamic OTP ของคาบนี้ให้อัตโนมัติแล้ว กดปุ่มยืนยันการเช็คชื่อได้ทันที';
+      } else {
+        if (bannerEl) bannerEl.style.display = 'none';
+        if (qrBtnEl) qrBtnEl.style.display = 'flex';
+        if (orTextEl) orTextEl.style.display = 'flex';
+        if (titleEl) titleEl.textContent = 'ยืนยันรหัสจากหน้าจอโปรเจกเตอร์';
+        if (descEl) descEl.textContent = 'สามารถเปิดกล้องสแกน QR Code หรือกรอกรหัส 6 หลักที่แสดงบนจอ';
+      }
+    }
+
     function startAutoOtpCountdown(secretSeed, intervalSec, sessionId) {
       if (autoOtpTimer) clearInterval(autoOtpTimer);
       intervalSec = intervalSec || 15;
@@ -10639,10 +10762,16 @@
         if (barEl) barEl.style.width = pctRemaining + '%';
         if (textEl) textEl.textContent = secRemaining + 's';
 
-        var qrTarget = document.getElementById('student-auto-qr-code');
-        if (qrTarget && qrTarget.getAttribute('data-last-otp') !== currentOtp) {
-          qrTarget.setAttribute('data-last-otp', currentOtp);
-          renderDynamicQRCodeToElement(qrTarget, sessionId, currentOtp);
+        var autoCodeSpan = document.getElementById('student-autofill-otp-code-text');
+        if (autoCodeSpan) autoCodeSpan.textContent = currentOtp;
+
+        // Auto-sync PIN boxes on Step 4 if automated schedule checkin
+        var step4Card = document.getElementById('student-step-4');
+        if (step4Card && step4Card.style.display !== 'none' && AppState.activeSession && AppState.activeSession.isAutomated) {
+          for (var p = 1; p <= 6; p++) {
+            var pinEl = document.getElementById('pin-' + p);
+            if (pinEl) pinEl.value = currentOtp[p - 1] || '';
+          }
         }
       }
 
@@ -11791,6 +11920,8 @@
             document.getElementById('student-step-4').style.display = 'block';
             updateWizardProgress(4);
             
+            autoFillOtpIfAutomatedSchedule();
+            
             var pin1 = document.getElementById('pin-1');
             if (pin1) pin1.focus();
           }
@@ -12316,6 +12447,26 @@
       var enteredOtp = '';
       if (reqOtp) {
         enteredOtp = getEnteredPin();
+        if (enteredOtp.length !== 6) {
+          // If automated schedule session, auto-fill it right away!
+          if (AppState.activeSession && AppState.activeSession.isAutomated && AppState.activeSession.secretSeed) {
+            enteredOtp = generateTOTP(AppState.activeSession.secretSeed, AppState.activeSession.otpIntervalSeconds || 15, Date.now());
+            for (var p = 1; p <= 6; p++) {
+              var pinEl = document.getElementById('pin-' + p);
+              if (pinEl && enteredOtp[p - 1]) pinEl.value = enteredOtp[p - 1];
+            }
+          } else {
+            var curClass = (document.getElementById('self-checkin-class') && document.getElementById('self-checkin-class').value) || '';
+            var res = curClass ? resolveActiveScheduleLocal(curClass) : null;
+            if (res && res.status === 'open' && res.secretSeed) {
+              enteredOtp = generateTOTP(res.secretSeed, res.otpIntervalSeconds || 15, Date.now());
+              for (var p = 1; p <= 6; p++) {
+                var pinEl = document.getElementById('pin-' + p);
+                if (pinEl && enteredOtp[p - 1]) pinEl.value = enteredOtp[p - 1];
+              }
+            }
+          }
+        }
         if (enteredOtp.length !== 6) {
           showToast('กรุณากรอกรหัส OTP ให้ครบ 6 หลัก', 'error');
           return;
