@@ -712,12 +712,17 @@
 
       // 1. Immediately check if there is a newly published report in localStorage
       var savedPub = localStorage.getItem('gas_student_latest_published_report');
+      var isRenderedFromCache = false;
       if (savedPub) {
         try {
           var parsed = JSON.parse(savedPub);
           if (parsed && parsed.students && parsed.students.length > 0) {
-            // Check if matches class filter or apply
-            renderReportData(parsed);
+            var isDateMatch = (!dateParam || parsed.date === dateParam);
+            var isClassOk = (classParam === 'all' || isClassMatch(classParam, parsed.className));
+            if (isDateMatch && isClassOk) {
+              renderReportData(parsed);
+              isRenderedFromCache = true;
+            }
           }
         } catch (e) {}
       }
@@ -728,13 +733,13 @@
           .withSuccessHandler(function(res) {
             if (res && res.status === 'success' && res.students && res.students.length > 0) {
               renderReportData(res);
-            } else if (!savedPub) {
+            } else if (!isRenderedFromCache) {
               renderError('ไม่พบข้อมูลการเช็คชื่อสำหรับเงื่อนไขที่เลือก');
             }
           })
           .withFailureHandler(function(err) {
             console.warn('GAS fetch error:', err);
-            if (!savedPub) {
+            if (!isRenderedFromCache) {
               renderError('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์: ' + (err.message || String(err)));
             }
           })

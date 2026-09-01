@@ -4535,6 +4535,14 @@
               </div>
             </div>
           </div>
+          <div style="display: flex; gap: 8px; margin-bottom: 16px; justify-content: center; flex-wrap: wrap;">
+            <button type="button" class="btn-glass btn-emerald btn-sm-glass" onclick="downloadFlexCardAsImage(getTodayDateString(), 'ทุกห้อง', 'line-flex-card-box')" style="font-weight: 700; font-size: 12px; padding: 7px 14px;">
+              <i class="fas fa-camera"></i> 📸 บันทึกการ์ด Flex เป็นรูปภาพ (ส่งใน LINE)
+            </button>
+            <button type="button" class="btn-glass btn-cyan btn-sm-glass" onclick="copyFlexCardAsImageToClipboard('line-flex-card-box')" style="font-weight: 700; font-size: 12px; padding: 7px 14px;">
+              <i class="fas fa-copy"></i> 📋 คัดลอกรูปภาพการ์ด
+            </button>
+          </div>
 
           <div style="font-size: 11.5px; font-weight: 700; color: var(--orange-400); margin-bottom: 4px;">
             <i class="fas fa-pen-to-square"></i> ข้อความแบบข้อความล้วน (Fallback / แก้ไขเองได้):
@@ -11289,9 +11297,33 @@
           e.stopPropagation();
           var id = this.getAttribute('data-id');
           var idx = parseInt(this.getAttribute('data-index'), 10);
-          if (confirm('คุณต้องการลบตารางเวลานี้ใช่หรือไม่? (การลบจะมีผลทันที)')) {
-            deleteScheduleRule(id, idx);
+          var targetRule = null;
+          var schedules = getAutoCheckinSchedulesLocal();
+          for (var s = 0; s < schedules.length; s++) {
+            if (String(schedules[s].id || '') === String(id)) {
+              targetRule = schedules[s];
+              break;
+            }
           }
+          var ruleName = targetRule ? (targetRule.title || targetRule.activityName || 'ตารางเวลานี้') : 'ตารางเวลานี้';
+          var roomLabel = targetRule ? (targetRule.className === 'all' ? 'ทุกห้องเรียน' : targetRule.className) : '';
+          var timeLabel = targetRule ? (targetRule.startTime + ' - ' + targetRule.endTime + ' น.') : '';
+
+          openConfirmModal({
+            title: '🗑️ ยืนยันการลบตารางเวลาเช็คชื่อ',
+            desc: '<div style="font-size:13.5px; line-height:1.6; color:#E2E8F0; text-align:left;">' +
+                  '  คุณต้องการลบตารางเวลา <strong>"' + escapeHtml(ruleName) + '"</strong> ' + (roomLabel ? ('(ห้อง ' + escapeHtml(roomLabel) + ')') : '') + ' ใช่หรือไม่?<br>' +
+                  '  ' + (timeLabel ? ('<span style="color:var(--orange-400); font-size:12px;"><i class="fas fa-clock"></i> ' + escapeHtml(timeLabel) + '</span><br>') : '') +
+                  '  <span style="color:#F87171; font-size:12px; font-weight:600;"><i class="fas fa-triangle-exclamation"></i> การลบจะมีผลทันทีและไม่สามารถกู้คืนได้</span>' +
+                  '</div>',
+            icon: 'fa-trash-can',
+            btnIcon: 'fa-trash',
+            okText: 'ยืนยันลบตารางเวลา',
+            btnClass: 'btn-danger',
+            onConfirm: function() {
+              deleteScheduleRule(id, idx);
+            }
+          });
         });
       }
 
@@ -14938,14 +14970,15 @@
       var dateParam = dateRange.startDate || getTodayDateString();
       var classParam = (className && className !== 'all') ? className : 'all';
       var actParam = (activityName && activityName !== 'all') ? activityName : 'all';
+      var cacheBust = Date.now();
 
       var fullUrl = window.location.href.split('#')[0].split('?')[0];
       if (fullUrl.indexOf('.html') > -1) {
         fullUrl = fullUrl.substring(0, fullUrl.lastIndexOf('/')) + '/report.html';
-        return fullUrl + '?date=' + encodeURIComponent(dateParam) + '&class=' + encodeURIComponent(classParam) + '&activity=' + encodeURIComponent(actParam);
+        return fullUrl + '?date=' + encodeURIComponent(dateParam) + '&class=' + encodeURIComponent(classParam) + '&activity=' + encodeURIComponent(actParam) + '&t=' + cacheBust;
       } else {
         // Google Apps Script Web App URL
-        return fullUrl + '?page=report&date=' + encodeURIComponent(dateParam) + '&class=' + encodeURIComponent(classParam) + '&activity=' + encodeURIComponent(actParam);
+        return fullUrl + '?page=report&date=' + encodeURIComponent(dateParam) + '&class=' + encodeURIComponent(classParam) + '&activity=' + encodeURIComponent(actParam) + '&t=' + cacheBust;
       }
     }
 
@@ -17692,8 +17725,8 @@
 
 
 
-    function downloadFlexCardAsImage(dateStr, className) {
-      var targetEl = document.getElementById('flex-card-capture-area') || document.querySelector('#quick-preview-flex-wrapper > div:last-child');
+function downloadFlexCardAsImage(dateStr, className, targetId) {
+      var targetEl = targetId ? document.getElementById(targetId) : (document.getElementById('flex-card-capture-area') || document.querySelector('#quick-preview-flex-wrapper > div:last-child') || document.getElementById('line-flex-card-box'));
       if (!targetEl) {
         showToast('ไม่พบองค์ประกอบการ์ดสำหรับสร้างรูปภาพ', 'error');
         return;
@@ -17724,6 +17757,47 @@
       }).catch(function(err) {
         hideLoadingPopup();
         console.error('Error creating image card:', err);
+        showToast('เกิดข้อผิดพลาดในการสร้างภาพ: ' + (err.message || String(err)), 'error');
+      });
+    }
+
+    function copyFlexCardAsImageToClipboard(targetId) {
+      var targetEl = targetId ? document.getElementById(targetId) : (document.getElementById('flex-card-capture-area') || document.querySelector('#quick-preview-flex-wrapper > div:last-child') || document.getElementById('line-flex-card-box'));
+      if (!targetEl) {
+        showToast('ไม่พบองค์ประกอบการ์ดสำหรับคัดลอกรูปภาพ', 'error');
+        return;
+      }
+      showLoadingPopup('กำลังคัดลอกรูปภาพการ์ด...', 'กำลังสร้างภาพความละเอียดสูงเพื่อวางใน LINE');
+      var captureLib = (typeof html2canvas !== 'undefined') ? html2canvas : (typeof window.html2canvas !== 'undefined' ? window.html2canvas : null);
+      if (!captureLib) {
+        hideLoadingPopup();
+        showToast('ไลบรารี html2canvas ยังไม่พร้อมใช้งาน', 'error');
+        return;
+      }
+      captureLib(targetEl, {
+        scale: 2.5,
+        useCORS: true,
+        backgroundColor: '#0F172A',
+        logging: false
+      }).then(function(canvas) {
+        hideLoadingPopup();
+        if (navigator.clipboard && window.ClipboardItem) {
+          canvas.toBlob(function(blob) {
+            if (blob) {
+              navigator.clipboard.write([
+                new ClipboardItem({ 'image/png': blob })
+              ]).then(function() {
+                showToast('คัดลอกรูปภาพการ์ดเรียบร้อยแล้ว! นำไปกดวาง (Paste / Ctrl+V) ใน LINE ได้ทันที 📋✨', 'success');
+              }).catch(function(err) {
+                downloadFlexCardAsImage(getTodayDateString(), 'การ์ดสรุป', targetId);
+              });
+            }
+          }, 'image/png');
+        } else {
+          downloadFlexCardAsImage(getTodayDateString(), 'การ์ดสรุป', targetId);
+        }
+      }).catch(function(err) {
+        hideLoadingPopup();
         showToast('เกิดข้อผิดพลาดในการสร้างภาพ: ' + (err.message || String(err)), 'error');
       });
     }
