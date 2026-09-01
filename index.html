@@ -3207,10 +3207,10 @@
               </div>
 
               <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-                <button type="button" class="btn-glass btn-emerald btn-sm-glass" <button type="button" class="btn-glass btn-cyan btn-sm-glass" onclick="openAIFaceScannerModal()" style="font-weight: 700; padding: 7px 14px;" title="เปิดกล้องสแกนใบหน้าเช็คชื่ออัตโนมัติด้วย AI">
+                <button type="button" class="btn-glass btn-cyan btn-sm-glass" onclick="openAIFaceScannerModal()" style="font-weight: 700; padding: 7px 14px;" title="เปิดกล้องสแกนใบหน้าเช็คชื่ออัตโนมัติด้วย AI">
                   <i class="fas fa-camera-viewfinder"></i> 📷 สแกนหน้า AI
                 </button>
-                id="btn-load-attendance-db" onclick="loadAttendanceDataForSelectedDate()" style="font-weight: 800; padding: 7px 16px; background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: #FFF; box-shadow: 0 4px 15px rgba(16,185,129,0.4);" title="โหลดข้อมูลจากฐานข้อมูล Google Sheets ตามห้องและวันที่ที่เลือก">
+                <button type="button" class="btn-glass btn-emerald btn-sm-glass" id="btn-load-attendance-db" onclick="loadAttendanceDataForSelectedDate()" style="font-weight: 800; padding: 7px 16px; background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: #FFF; box-shadow: 0 4px 15px rgba(16,185,129,0.4);" title="โหลดข้อมูลจากฐานข้อมูล Google Sheets ตามห้องและวันที่ที่เลือก">
                   <i class="fas fa-arrows-rotate"></i> 🔄 โหลดฐานข้อมูลเพื่อประมวลผล
                 </button>
                 <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-pull-live-attendance-direct" title="ดึงรายชื่อที่เช็คชื่อผ่าน Dynamic OTP / QR Code ล่าสุด">
@@ -4070,8 +4070,8 @@
   </div>
 
   <!-- MODAL: LUXURY CUSTOM CONFIRMATION POPUP (High Priority z-index) -->
-  <div class="modal-backdrop-glass" id="modal-custom-confirm" style="display: none; z-index: 99999999;">
-    <div class="modal-window-glass" style="max-width: 440px; text-align: center; border: 1.5px solid rgba(239, 68, 68, 0.4); box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 35px rgba(239,68,68,0.25);">
+  <div class="modal-backdrop-glass" id="modal-custom-confirm" style="display: none; z-index: 100000000 !important; position: fixed; inset: 0;">
+    <div class="modal-window-glass" id="confirm-modal-window" style="max-width: 460px; text-align: center; border: 1.5px solid rgba(239, 68, 68, 0.4); box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 35px rgba(239,68,68,0.25); position: relative; z-index: 100000001 !important;">
       <div id="confirm-icon-box" style="width: 64px; height: 64px; border-radius: var(--radius-full); background: rgba(239, 68, 68, 0.15); border: 2px solid #EF4444; color: #EF4444; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 16px auto; animation: pulseGlow 2s infinite;">
         <i class="fas fa-trash-can"></i>
       </div>
@@ -11354,7 +11354,15 @@
           }
           var ruleName = targetRule ? (targetRule.title || targetRule.activityName || 'ตารางเวลานี้') : 'ตารางเวลานี้';
           var roomLabel = targetRule ? (targetRule.className === 'all' ? 'ทุกห้องเรียน' : targetRule.className) : '';
-          var timeLabel = targetRule ? (targetRule.startTime + ' - ' + targetRule.endTime + ' น.') : '';
+          var timeLabel = '';
+          if (targetRule) {
+            var mS = targetRule.morningStart || '07:00';
+            var mE = targetRule.morningLateEnd || targetRule.morningOnTimeEnd || '09:00';
+            timeLabel = 'รอบเช้า ' + mS + ' - ' + mE + ' น.';
+            if (targetRule.afternoonEnabled !== false && targetRule.afternoonStart) {
+              timeLabel += ' / รอบบ่าย ' + targetRule.afternoonStart + ' - ' + (targetRule.afternoonOnTimeEnd || '13:30') + ' น.';
+            }
+          }
 
           openConfirmModal({
             title: '🗑️ ยืนยันการลบตารางเวลาเช็คชื่อ',
