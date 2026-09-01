@@ -11871,8 +11871,48 @@
             showToast('กรุณาเลือกนักศึกษา (หรือให้อาจารย์เพิ่มรายชื่อก่อน)', 'error');
             return;
           }
+          var selClass = document.getElementById('self-checkin-class').value;
+
+          // Multi-Roster / Classroom Security Check:
+          var isAllowed = false;
+          var activeClassName = '';
+          var activeActivityName = '';
+
+          if (AppState.activeSessions && AppState.activeSessions.length > 0) {
+            for (var a = 0; a < AppState.activeSessions.length; a++) {
+              var sess = AppState.activeSessions[a];
+              if (sess.className === 'all' || isClassMatch(sess.className, selClass) || isClassMatch(selClass, sess.className)) {
+                isAllowed = true;
+                break;
+              }
+              activeClassName = sess.className;
+              activeActivityName = sess.activityName;
+            }
+          } else if (AppState.activeSession) {
+            var s = AppState.activeSession;
+            if (s.className === 'all' || isClassMatch(s.className, selClass) || isClassMatch(selClass, s.className)) {
+              isAllowed = true;
+            }
+            activeClassName = s.className;
+            activeActivityName = s.activityName;
+          } else {
+            var schRes = resolveActiveScheduleLocal(selClass);
+            if (schRes && schRes.status === 'open') {
+              isAllowed = true;
+            }
+          }
+
+          if (!isAllowed) {
+            if (activeClassName) {
+              showToast('ห้อง/กลุ่มนี้ ("' + selClass + '") ยังไม่ได้เปิดให้เช็คชื่อ (ขณะนี้เปิดเฉพาะ: ห้อง ' + activeClassName + ' - ' + activeActivityName + ')', 'error');
+            } else {
+              showToast('ห้อง/กลุ่มนี้ยังไม่เปิดให้เช็คชื่อในขณะนี้ กรุณาเลือกห้องที่อาจารย์เปิดรับ', 'error');
+            }
+            return;
+          }
+
           AppState.studentState.selectedStudentId = sId;
-          AppState.studentState.selectedClass = document.getElementById('self-checkin-class').value;
+          AppState.studentState.selectedClass = selClass;
           
           document.getElementById('student-step-1').style.display = 'none';
           document.getElementById('student-step-2').style.display = 'block';
@@ -12908,6 +12948,8 @@
 
       var payload = {
         sessionId: targetSessionId,
+        className: st.selectedClass,
+        selectedClass: st.selectedClass,
         activityName: (activeSess && activeSess.activityName) || AppState.scannedActivityName || (AppState.activeSession && AppState.activeSession.activityName) || 'เช็คชื่อมาเรียน',
         studentId: st.selectedStudentId,
         otp: enteredOtp,
@@ -12955,8 +12997,11 @@
         var studentObj = null;
         for (var s = 0; s < AppState.students.length; s++) {
           if (AppState.students[s].studentId === st.selectedStudentId) {
-            studentObj = AppState.students[s];
-            break;
+            if (!studentObj) studentObj = AppState.students[s];
+            if (st.selectedClass && isClassMatch(st.selectedClass, AppState.students[s].className)) {
+              studentObj = AppState.students[s];
+              break;
+            }
           }
         }
 
@@ -15046,37 +15091,59 @@
       var selClass = document.getElementById('pub-select-class');
       var selAct = document.getElementById('pub-select-activity');
       var inputDate = document.getElementById('pub-input-date');
+      var inputDateEnd = document.getElementById('pub-input-date-end');
 
       var curDateRange = getReportDateRange();
       if (inputDate) {
         inputDate.value = curDateRange.startDate || getTodayDateString();
       }
+      if (inputDateEnd) {
+        inputDateEnd.value = curDateRange.endDate || (inputDate ? inputDate.value : getTodayDateString());
+      }
 
       if (selClass) {
         var curVal = getSelectedReportClasses() || 'all';
         selClass.innerHTML = '<option value="all">🌟 ทุกห้องเรียน</option>';
+        
+        var classNamesSeen = {};
         var classes = AppState.classes || [];
         for (var c = 0; c < classes.length; c++) {
           var cObj = classes[c];
           var cName = (typeof cObj === 'object' && cObj) ? (cObj.name || cObj.className || '') : String(cObj || '');
-          if (cName) {
+          if (cName && !classNamesSeen[cName]) {
+            classNamesSeen[cName] = true;
             var opt = document.createElement('option');
             opt.value = cName;
             opt.textContent = 'ห้อง ' + cName.replace(/^ห้อง\s*/, '');
             selClass.appendChild(opt);
           }
         }
+        // Also check from students if classes list was empty
+        var students = AppState.students || [];
+        for (var s = 0; s < students.length; s++) {
+          var scName = students[s].className;
+          if (scName && !classNamesSeen[scName]) {
+            classNamesSeen[scName] = true;
+            var opt2 = document.createElement('option');
+            opt2.value = scName;
+            opt2.textContent = 'ห้อง ' + scName.replace(/^ห้อง\s*/, '');
+            selClass.appendChild(opt2);
+          }
+        }
+
         selClass.value = (curVal && selClass.querySelector('option[value="' + curVal + '"]')) ? curVal : 'all';
       }
 
       if (selAct) {
         var curActVal = getSelectedReportActivities() || 'all';
         selAct.innerHTML = '<option value="all">🌟 ทุกกิจกรรม/วิชา</option>';
+        var actsSeen = {};
         var acts = AppState.activities || [];
         for (var a = 0; a < acts.length; a++) {
           var aObj = acts[a];
           var aName = (typeof aObj === 'object' && aObj) ? (aObj.name || aObj.activityName || '') : String(aObj || '');
-          if (aName) {
+          if (aName && !actsSeen[aName]) {
+            actsSeen[aName] = true;
             var aOpt = document.createElement('option');
             aOpt.value = aName;
             aOpt.textContent = aName;
@@ -15089,10 +15156,12 @@
 
     function refreshPublishModalData() {
       var inputDate = document.getElementById('pub-input-date');
+      var inputDateEnd = document.getElementById('pub-input-date-end');
       var selClass = document.getElementById('pub-select-class');
       var selAct = document.getElementById('pub-select-activity');
 
       var targetDate = (inputDate && inputDate.value) ? inputDate.value : getTodayDateString();
+      var targetDateEnd = (inputDateEnd && inputDateEnd.value) ? inputDateEnd.value : targetDate;
       var targetClass = (selClass && selClass.value) ? selClass.value : 'all';
       var targetAct = (selAct && selAct.value) ? selAct.value : 'all';
 
@@ -15101,18 +15170,22 @@
       var subEl = document.getElementById('pub-modal-subtitle');
       var linkInput = document.getElementById('pub-modal-link-input');
 
-      var dateThaiStr = formatThaiDate(targetDate);
+      var dateDisplayStr = formatThaiDate(targetDate);
+      if (targetDateEnd && targetDateEnd !== targetDate) {
+        dateDisplayStr += ' ถึง ' + formatThaiDate(targetDateEnd);
+      }
+
       if (titleEl) titleEl.textContent = 'รายงานสรุปการมาเรียน (' + classDisplayTag + ')';
-      if (subEl) subEl.textContent = '📅 วันที่: ' + dateThaiStr + ' • กิจกรรม: ' + (targetAct === 'all' ? 'ทุกกิจกรรม/วิชา' : targetAct);
+      if (subEl) subEl.textContent = '📅 วันที่: ' + dateDisplayStr + ' • กิจกรรม: ' + (targetAct === 'all' ? 'ทุกกิจกรรม/วิชา' : targetAct);
 
       var fullUrl = window.location.href.split('#')[0].split('?')[0];
       var liveUrl = '';
       var cacheBust = Date.now();
       if (fullUrl.indexOf('.html') > -1) {
         fullUrl = fullUrl.substring(0, fullUrl.lastIndexOf('/')) + '/report.html';
-        liveUrl = fullUrl + '?date=' + encodeURIComponent(targetDate) + '&class=' + encodeURIComponent(targetClass) + '&activity=' + encodeURIComponent(targetAct) + '&t=' + cacheBust;
+        liveUrl = fullUrl + '?date=' + encodeURIComponent(targetDate) + '&endDate=' + encodeURIComponent(targetDateEnd) + '&class=' + encodeURIComponent(targetClass) + '&activity=' + encodeURIComponent(targetAct) + '&t=' + cacheBust;
       } else {
-        liveUrl = fullUrl + '?page=report&date=' + encodeURIComponent(targetDate) + '&class=' + encodeURIComponent(targetClass) + '&activity=' + encodeURIComponent(targetAct) + '&t=' + cacheBust;
+        liveUrl = fullUrl + '?page=report&date=' + encodeURIComponent(targetDate) + '&endDate=' + encodeURIComponent(targetDateEnd) + '&class=' + encodeURIComponent(targetClass) + '&activity=' + encodeURIComponent(targetAct) + '&t=' + cacheBust;
       }
       if (linkInput) linkInput.value = liveUrl;
 
@@ -15122,7 +15195,7 @@
       var abEl = document.getElementById('pub-stat-absent');
 
       var students = AppState.students || [];
-      var recMap = AppState.lastReportRecordsMap || getAttendanceMapFromLocalStorage(targetDate, targetAct) || {};
+      var recMap = AppState.lastReportRecordsMap || getAttendanceMapFromLocalStorage(targetDate, targetAct, targetDateEnd) || {};
       
       var studentReports = [];
       var onTimeChamps = [];
@@ -15219,7 +15292,8 @@
       var publishedReportData = {
         status: 'success',
         date: targetDate,
-        dateThai: dateThaiStr,
+        endDate: targetDateEnd,
+        dateThai: dateDisplayStr,
         dayName: getThaiDayOfWeek(targetDate),
         className: classDisplayTag,
         activityName: (targetAct === 'all' || !targetAct) ? 'เช็คชื่อมาเรียน' : targetAct,
@@ -15244,13 +15318,11 @@
     function openPublishParentReportModal() {
       populatePublishModalDropdowns();
       refreshPublishModalData();
-      var modal = document.getElementById('modal-publish-parent-report');
-      if (modal) modal.style.display = 'flex';
+      openModal('modal-publish-parent-report');
     }
 
     function closePublishParentReportModal() {
-      var modal = document.getElementById('modal-publish-parent-report');
-      if (modal) modal.style.display = 'none';
+      closeModal('modal-publish-parent-report');
     }
 
     function copyPublishModalLink() {
@@ -18435,30 +18507,39 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
   </button>
 
 
-  <!-- MODAL: PUBLISH PARENT REPORT DIALOG -->
-  <div class="modal-overlay-glass" id="modal-publish-parent-report" style="display: none; z-index: 10005;">
-    <div class="modal-card-glass" style="max-width: 620px; width: 95%;">
-      <div class="modal-header-glass" style="background: linear-gradient(135deg, rgba(255,107,0,0.2) 0%, rgba(245,158,11,0.15) 100%); border-bottom: 1.5px solid rgba(255,107,0,0.35);">
-        <h3 class="modal-title-glass" style="color: #FFF; display: flex; align-items: center; gap: 8px;">
+    <!-- MODAL: PUBLISH PARENT REPORT DIALOG -->
+  <div class="modal-backdrop-glass" id="modal-publish-parent-report" style="z-index: 10005;">
+    <div class="modal-window-glass" style="max-width: 620px; width: 95%;">
+      <div class="modal-header-flex" style="border-bottom: 1.5px solid rgba(255,107,0,0.35); padding-bottom: 12px; margin-bottom: 16px;">
+        <div class="modal-title" style="color: #FFF; display: flex; align-items: center; gap: 8px;">
           <i class="fas fa-paper-plane" style="color: #FF6B00;"></i> 🚀 ตั้งค่าและส่งข้อมูลไปยังหน้ารายงาน (Report)
-        </h3>
-        <button type="button" class="btn-close-glass" onclick="closePublishParentReportModal()">&times;</button>
+        </div>
+        <button type="button" class="modal-close btn-close-modal" onclick="closePublishParentReportModal()">&times;</button>
       </div>
 
-      <div class="modal-body-glass" style="padding: 18px 18px;">
+      <div>
         <!-- FILTER CONFIGURATION SECTION -->
         <div style="background: rgba(15, 23, 42, 0.85); border: 1.5px solid rgba(255, 107, 0, 0.35); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
           <div style="font-size: 13px; font-weight: 800; color: #FF6B00; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
-            <i class="fas fa-sliders"></i> เลือกข้อมูลที่ต้องการส่งไปยังหน้ารีพอร์ท:
+            <i class="fas fa-sliders"></i> ตั้งค่าข้อมูลที่ต้องการส่งไปยังหน้ารีพอร์ท:
           </div>
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
             <div class="form-group-glass" style="margin-bottom: 0;">
               <label style="font-size: 11.5px; margin-bottom: 4px; font-weight: 700; color: #FFF;">
-                <i class="fas fa-calendar-day" style="color: var(--cyan-400);"></i> 📅 วันที่
+                <i class="fas fa-calendar-day" style="color: var(--cyan-400);"></i> 📅 ตั้งแต่วันที่
               </label>
               <input type="date" class="input-glass" id="pub-input-date" onchange="refreshPublishModalData()" style="width: 100%; font-size: 12px; padding: 6px 10px;" />
             </div>
+            <div class="form-group-glass" style="margin-bottom: 0;">
+              <label style="font-size: 11.5px; margin-bottom: 4px; font-weight: 700; color: #FFF;">
+                <i class="fas fa-calendar-check" style="color: #FBBF24;"></i> 📅 ถึงวันที่
+              </label>
+              <input type="date" class="input-glass" id="pub-input-date-end" onchange="refreshPublishModalData()" style="width: 100%; font-size: 12px; padding: 6px 10px;" />
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
             <div class="form-group-glass" style="margin-bottom: 0;">
               <label style="font-size: 11.5px; margin-bottom: 4px; font-weight: 700; color: #FFF;">
                 <i class="fas fa-chalkboard" style="color: var(--orange-400);"></i> 🏫 ห้องเรียน
@@ -18467,15 +18548,14 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
                 <option value="all">🌟 ทุกห้องเรียน</option>
               </select>
             </div>
-          </div>
-
-          <div class="form-group-glass" style="margin-bottom: 0;">
-            <label style="font-size: 11.5px; margin-bottom: 4px; font-weight: 700; color: #FFF;">
-              <i class="fas fa-tags" style="color: #A78BFA;"></i> 📚 รายวิชา / รายการกิจกรรม
-            </label>
-            <select class="select-glass" id="pub-select-activity" onchange="refreshPublishModalData()" style="width: 100%; font-size: 12px; padding: 6px 10px;">
-              <option value="all">🌟 ทุกกิจกรรม/วิชา</option>
-            </select>
+            <div class="form-group-glass" style="margin-bottom: 0;">
+              <label style="font-size: 11.5px; margin-bottom: 4px; font-weight: 700; color: #FFF;">
+                <i class="fas fa-tags" style="color: #A78BFA;"></i> 📚 รายวิชา / กิจกรรม
+              </label>
+              <select class="select-glass" id="pub-select-activity" onchange="refreshPublishModalData()" style="width: 100%; font-size: 12px; padding: 6px 10px;">
+                <option value="all">🌟 ทุกกิจกรรม/วิชา</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -18518,7 +18598,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
         </div>
 
         <!-- Action Buttons -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 6px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px;">
           <button type="button" class="btn-glass btn-orange" onclick="confirmAndPublishReportLive()" style="padding: 11px; font-weight: 800; font-size: 13.5px; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 0 15px rgba(255,107,0,0.4);">
             <i class="fas fa-paper-plane"></i> 🚀 ยืนยัน & ส่งไปยังรีพอร์ต
           </button>
@@ -18536,7 +18616,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
         </div>
       </div>
 
-      <div class="modal-footer-glass" style="padding: 10px 18px; display: flex; justify-content: flex-end;">
+      <div style="padding-top: 14px; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: flex-end;">
         <button type="button" class="btn-glass btn-dark btn-sm-glass" onclick="closePublishParentReportModal()">
           ปิดหน้าต่าง
         </button>
