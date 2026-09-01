@@ -5135,7 +5135,7 @@
           'getRangeAttendanceSummary', 'getPublicDailyReportData', 'getStudentPortalLiveAttendance',
           'saveAttendanceBatch', 'getDashboardData', 'getStudentStats',
           'getLineConfig', 'saveLineConfig', 'testLineConnection', 'sendLineReport', 'setupDailyLineTrigger',
-          'getDetectedLineGroups', 'authorizePermissions'
+          'getDetectedLineGroups', 'authorizePermissions', 'saveStudentFacePhoto'
         ];
 
         var getMethods = [
@@ -5827,6 +5827,14 @@
         btnPrintRep.addEventListener('click', function(e) {
           e.preventDefault();
           printReport();
+        });
+      }
+
+      var btnOpenFaceEnroll = document.getElementById('btn-open-face-enrollment');
+      if (btnOpenFaceEnroll) {
+        btnOpenFaceEnroll.addEventListener('click', function(e) {
+          e.preventDefault();
+          openAIFaceEnrollmentModal();
         });
       }
 
@@ -18557,6 +18565,32 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
      * Zero ES6 Template Literals (Strict GAS Compatibility)
      * =========================================================================
      */
+    
+    function getClassListLocal() {
+      var raw = AppState.classes;
+      if (!raw || raw.length === 0) {
+        var cached = localStorage.getItem('gas_student_app_classes') || localStorage.getItem('gas_cached_classes');
+        if (cached) {
+          try {
+            raw = JSON.parse(cached);
+          } catch (e) {
+            raw = [];
+          }
+        }
+      }
+      raw = raw || [];
+      var result = [];
+      for (var i = 0; i < raw.length; i++) {
+        var item = raw[i];
+        var cName = (typeof item === 'object' && item) ? (item.name || item.className || '') : String(item || '');
+        cName = cName.trim();
+        if (cName && cName !== 'undefined' && result.indexOf(cName) === -1) {
+          result.push(cName);
+        }
+      }
+      return result;
+    }
+
     var AIFaceEnrollmentState = {
       stream: null,
       facingMode: 'user',
