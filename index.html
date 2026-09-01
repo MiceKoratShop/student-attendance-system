@@ -5813,6 +5813,105 @@
     }
 
     function bindActionEvents() {
+      // --- REPORT TOOLBAR BUTTONS ---
+      var btnRefRep = document.getElementById('btn-refresh-report');
+      if (btnRefRep) {
+        btnRefRep.addEventListener('click', function(e) {
+          e.preventDefault();
+          generateReportPreview();
+        });
+      }
+
+      var btnPrintRep = document.getElementById('btn-print-report');
+      if (btnPrintRep) {
+        btnPrintRep.addEventListener('click', function(e) {
+          e.preventDefault();
+          printReport();
+        });
+      }
+
+      var btnExpExcel = document.getElementById('btn-export-excel');
+      if (btnExpExcel) {
+        btnExpExcel.addEventListener('click', function(e) {
+          e.preventDefault();
+          exportReportToExcel();
+        });
+      }
+
+      var btnDownPdf = document.getElementById('btn-download-pdf');
+      if (btnDownPdf) {
+        btnDownPdf.addEventListener('click', function(e) {
+          e.preventDefault();
+          downloadReportPDF();
+        });
+      }
+
+      var btnDownJpg = document.getElementById('btn-download-jpg');
+      if (btnDownJpg) {
+        btnDownJpg.addEventListener('click', function(e) {
+          e.preventDefault();
+          downloadReportJPG();
+        });
+      }
+
+      var btnLineSend = document.getElementById('btn-open-line-send');
+      if (btnLineSend) {
+        btnLineSend.addEventListener('click', function(e) {
+          e.preventDefault();
+          openLineSendModal();
+        });
+      }
+
+      var btnLineSettings = document.getElementById('btn-open-line-settings');
+      if (btnLineSettings) {
+        btnLineSettings.addEventListener('click', function(e) {
+          e.preventDefault();
+          openLineSettingsModal();
+        });
+      }
+
+      var btnRepClassMulti = document.getElementById('btn-report-class-multi');
+      if (btnRepClassMulti) {
+        btnRepClassMulti.addEventListener('click', function(e) {
+          toggleReportClassPopover(e);
+        });
+      }
+
+      var btnRepActMulti = document.getElementById('btn-report-activity-multi');
+      if (btnRepActMulti) {
+        btnRepActMulti.addEventListener('click', function(e) {
+          toggleReportActivityPopover(e);
+        });
+      }
+
+      var btnRepSelAllCls = document.getElementById('btn-report-select-all-classes');
+      if (btnRepSelAllCls) {
+        btnRepSelAllCls.addEventListener('click', function(e) {
+          selectAllReportClasses(e);
+        });
+      }
+
+      var btnRepClrCls = document.getElementById('btn-report-clear-classes');
+      if (btnRepClrCls) {
+        btnRepClrCls.addEventListener('click', function(e) {
+          clearAllReportClasses(e);
+        });
+      }
+
+      var btnRepSelAllActs = document.getElementById('btn-report-select-all-activities');
+      if (btnRepSelAllActs) {
+        btnRepSelAllActs.addEventListener('click', function(e) {
+          selectAllReportActivities(e);
+        });
+      }
+
+      var btnRepClrActs = document.getElementById('btn-report-clear-activities');
+      if (btnRepClrActs) {
+        btnRepClrActs.addEventListener('click', function(e) {
+          clearAllReportActivities(e);
+        });
+      }
+
       var btnAttClassMulti = document.getElementById('btn-att-class-multi');
       var popAttClass = document.getElementById('popover-att-class');
       var fgAttClass = document.getElementById('fg-att-class-container');
@@ -5905,6 +6004,22 @@
       if (btnSaveAttendance) {
         btnSaveAttendance.addEventListener('click', function() {
           saveAttendanceBatch();
+        });
+      }
+
+      var btnLoadRep = document.getElementById('btn-load-report-db');
+      if (btnLoadRep) {
+        btnLoadRep.addEventListener('click', function(e) {
+          e.preventDefault();
+          generateReportPreview();
+        });
+      }
+
+      var btnLoadAtt = document.getElementById('btn-load-attendance-db');
+      if (btnLoadAtt) {
+        btnLoadAtt.addEventListener('click', function(e) {
+          e.preventDefault();
+          loadAttendanceDataForSelectedDate();
         });
       }
 
@@ -15006,6 +15121,244 @@
       return uniqueActs;
     }
 
+    
+    // =========================================================================
+    // REPORT DATE RANGE & LOCAL STORAGE SUMMARY HELPERS (GITHUB & STANDALONE SAFE)
+    // =========================================================================
+    function getReportDateRange() {
+      var startEl = document.getElementById('report-date-start');
+      var endEl = document.getElementById('report-date-end');
+      var legacyEl = document.getElementById('report-date-select');
+      var today = getTodayDateString();
+
+      var startDate = (startEl && startEl.value) ? startEl.value : (legacyEl && legacyEl.value ? legacyEl.value : (AppState.selectedDate || today));
+      var endDate = (endEl && endEl.value) ? endEl.value : startDate;
+
+      if (endDate < startDate) {
+        endDate = startDate;
+        if (endEl) endEl.value = startDate;
+      }
+
+      var isRange = (startDate !== endDate);
+      var displayStr = isRange ? (formatThaiDate(startDate) + ' ถึง ' + formatThaiDate(endDate)) : formatThaiDate(startDate);
+
+      return {
+        startDate: startDate,
+        endDate: endDate,
+        isRange: isRange,
+        displayStr: displayStr
+      };
+    }
+
+    function getAttendanceMapFromLocalStorage(startDate, activityName, endDate) {
+      var recordsMap = {};
+      startDate = startDate || getTodayDateString();
+      endDate = endDate || startDate;
+      var allAtt = getLocalStorageAttendance();
+
+      for (var i = 0; i < allAtt.length; i++) {
+        var r = allAtt[i];
+        if (!r || !r.studentId) continue;
+        var rDate = r.date || r.dateStr || '';
+        if (!rDate || (rDate >= startDate && rDate <= endDate)) {
+          var rAct = r.activityName || r.activity || 'เช็คชื่อมาเรียน';
+          if (!activityName || activityName === 'all' || activityName === 'ทุกกิจกรรม' || rAct === activityName || (!r.activityName && activityName === 'เช็คชื่อมาเรียน')) {
+            recordsMap[r.studentId] = {
+              status: r.status || 'Present',
+              checkinTime: r.time || r.checkinTime || '-',
+              selfiePhoto: r.selfiePhoto || r.photo || '',
+              note: r.note || '',
+              distanceMeters: r.distanceMeters || 0,
+              activityName: rAct,
+              date: rDate
+            };
+          }
+        }
+      }
+      return recordsMap;
+    }
+
+    function getRangeAttendanceSummaryFromLocal(startDate, endDate, className, activityName) {
+      var allAtt = getLocalStorageAttendance();
+      var students = AppState.students || [];
+      var summary = {
+        status: 'success',
+        startDate: startDate,
+        endDate: endDate,
+        totalStudents: 0,
+        totalPresent: 0,
+        totalLate: 0,
+        totalSick: 0,
+        totalLeave: 0,
+        totalAbsent: 0,
+        students: []
+      };
+
+      for (var i = 0; i < students.length; i++) {
+        var s = students[i];
+        if (!isClassMatch(className, s.className)) continue;
+        summary.totalStudents++;
+
+        var pCount = 0, lCount = 0, sCount = 0, lvCount = 0, aCount = 0;
+        for (var j = 0; j < allAtt.length; j++) {
+          var r = allAtt[j];
+          if (String(r.studentId).trim().toLowerCase() === String(s.studentId).trim().toLowerCase()) {
+            var rDate = r.date || r.dateStr || '';
+            if (rDate >= startDate && rDate <= endDate) {
+              var rAct = r.activityName || r.activity || 'เช็คชื่อมาเรียน';
+              if (!activityName || activityName === 'all' || activityName === 'ทุกกิจกรรม' || rAct === activityName) {
+                var st = r.status;
+                if (st === 'Present' || st === 'มาเรียน') pCount++;
+                else if (st === 'Late' || st === 'มาสาย') lCount++;
+                else if (st === 'Sick' || st === 'ลาป่วย') sCount++;
+                else if (st === 'Leave' || st === 'ลากิจ') lvCount++;
+                else if (st === 'Absent' || st === 'ขาดเรียน') aCount++;
+              }
+            }
+          }
+        }
+
+        summary.totalPresent += pCount;
+        summary.totalLate += lCount;
+        summary.totalSick += sCount;
+        summary.totalLeave += lvCount;
+        summary.totalAbsent += aCount;
+
+        summary.students.push({
+          studentId: s.studentId,
+          studentNo: s.studentNo,
+          name: s.name,
+          className: s.className,
+          present: pCount,
+          late: lCount,
+          sick: sCount,
+          leave: lvCount,
+          absent: aCount,
+          total: pCount + lCount + sCount + lvCount + aCount
+        });
+      }
+      return summary;
+    }
+
+    function renderRangeSummaryReportDocument(summaryRes, dateRange, className, activityName, statusFilter) {
+      var container = document.getElementById('report-preview-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      var dateDisplay = (typeof dateRange === 'object' && dateRange.displayStr) ? dateRange.displayStr : (formatThaiDate(summaryRes.startDate) + ' ถึง ' + formatThaiDate(summaryRes.endDate));
+      var classDisplay = (className === 'all' || className === 'ทุกห้องเรียน') ? 'ทุกห้องเรียน' : ('ห้อง ' + className);
+      var actDisplay = (activityName === 'all' || activityName === 'ทุกกิจกรรม') ? 'ทุกกิจกรรม/วิชา' : activityName;
+
+      var paper = document.createElement('div');
+      paper.style.padding = '24px';
+      paper.style.background = '#0F1523';
+      paper.style.borderRadius = 'var(--radius-sm)';
+      paper.id = 'printable-report-area';
+
+      var header = document.createElement('div');
+      header.style.textAlign = 'center';
+      header.style.marginBottom = '20px';
+
+      var hTitle = document.createElement('div');
+      hTitle.style.fontSize = '19px';
+      hTitle.style.fontWeight = '700';
+      hTitle.style.color = '#FFFFFF';
+      hTitle.innerHTML = '<i class="fas fa-chart-line" style="color: #10B981; margin-right: 8px;"></i>รายงานสรุปสถิติการเช็คชื่อตามช่วงเวลา (Attendance Range Summary)';
+      header.appendChild(hTitle);
+
+      var hSub = document.createElement('div');
+      hSub.style.fontSize = '13.5px';
+      hSub.style.color = 'var(--emerald-400)';
+      hSub.style.marginTop = '4px';
+      hSub.textContent = 'ช่วงวันที่: ' + dateDisplay + ' • ' + classDisplay + ' • กิจกรรม/วิชา: ' + actDisplay;
+      header.appendChild(hSub);
+      paper.appendChild(header);
+
+      // KPI Summary Row
+      var stds = summaryRes.students || [];
+      var totPresent = summaryRes.totalPresent || 0;
+      var totLate = summaryRes.totalLate || 0;
+      var totLeave = (summaryRes.totalSick || 0) + (summaryRes.totalLeave || 0);
+      var totAbsent = summaryRes.totalAbsent || 0;
+      var grandTotalChecks = totPresent + totLate + totLeave + totAbsent;
+      var avgRate = grandTotalChecks > 0 ? (((totPresent + totLate) / grandTotalChecks) * 100).toFixed(1) : '100.0';
+
+      var kpiRow = document.createElement('div');
+      kpiRow.className = 'grid-4';
+      kpiRow.style.gap = '12px';
+      kpiRow.style.marginBottom = '20px';
+      kpiRow.innerHTML = '<div class="glass-card" style="padding:14px; text-align:center; background:rgba(16,185,129,0.1); border-color:#10B981;">' +
+                         '  <div style="font-size:12px; color:#A7F3D0; font-weight:600;">มาเรียนปกติ (ครั้ง)</div>' +
+                         '  <div style="font-size:22px; font-weight:800; color:#10B981;">' + totPresent + '</div>' +
+                         '</div>' +
+                         '<div class="glass-card" style="padding:14px; text-align:center; background:rgba(255,107,0,0.1); border-color:#FF6B00;">' +
+                         '  <div style="font-size:12px; color:#FED7AA; font-weight:600;">มาสาย (ครั้ง)</div>' +
+                         '  <div style="font-size:22px; font-weight:800; color:#FF6B00;">' + totLate + '</div>' +
+                         '</div>' +
+                         '<div class="glass-card" style="padding:14px; text-align:center; background:rgba(234,179,8,0.1); border-color:#EAB308;">' +
+                         '  <div style="font-size:12px; color:#FEF08A; font-weight:600;">ลากิจ/ป่วย (ครั้ง)</div>' +
+                         '  <div style="font-size:22px; font-weight:800; color:#EAB308;">' + totLeave + '</div>' +
+                         '</div>' +
+                         '<div class="glass-card" style="padding:14px; text-align:center; background:rgba(0,240,255,0.1); border-color:var(--cyan-400);">' +
+                         '  <div style="font-size:12px; color:#BAE6FD; font-weight:600;">อัตราการเข้าเรียนเฉลี่ย</div>' +
+                         '  <div style="font-size:22px; font-weight:800; color:var(--cyan-400);">' + avgRate + '%</div>' +
+                         '</div>';
+      paper.appendChild(kpiRow);
+
+      // Student Summary Table
+      var tableContainer = document.createElement('div');
+      tableContainer.className = 'table-container-glass';
+      var table = document.createElement('table');
+      table.className = 'table-glass';
+      table.style.width = '100%';
+      table.style.fontSize = '12.5px';
+
+      table.innerHTML = '<thead>' +
+                        '  <tr>' +
+                        '    <th style="width: 50px; text-align: center;">ลำดับ</th>' +
+                        '    <th style="width: 110px;">รหัส</th>' +
+                        '    <th>ชื่อ - นามสกุล</th>' +
+                        '    <th style="width: 100px;">ห้อง</th>' +
+                        '    <th style="text-align: center; color: #10B981;">มาเรียน</th>' +
+                        '    <th style="text-align: center; color: #FF6B00;">มาสาย</th>' +
+                        '    <th style="text-align: center; color: #EAB308;">ลา</th>' +
+                        '    <th style="text-align: center; color: #EF4444;">ขาด</th>' +
+                        '    <th style="text-align: center;">รวม (ครั้ง)</th>' +
+                        '    <th style="text-align: center; color: var(--cyan-400);">ร้อยละ (%)</th>' +
+                        '  </tr>' +
+                        '</thead>' +
+                        '<tbody></tbody>';
+
+      var tbody = table.querySelector('tbody');
+      if (stds.length === 0) {
+        var emptyTr = document.createElement('tr');
+        emptyTr.innerHTML = '<td colspan="10" style="text-align:center; color:var(--text-muted); padding:24px;">ไม่พบข้อมูลการเช็คชื่อตามเงื่อนไขที่เลือก</td>';
+        tbody.appendChild(emptyTr);
+      } else {
+        for (var i = 0; i < stds.length; i++) {
+          var s = stds[i];
+          var sTot = (s.present || 0) + (s.late || 0) + (s.sick || 0) + (s.leave || 0) + (s.absent || 0);
+          var sRate = sTot > 0 ? ((((s.present || 0) + (s.late || 0)) / sTot) * 100).toFixed(1) : '100.0';
+          var tr = document.createElement('tr');
+          tr.innerHTML = '<td style="text-align:center;">' + (i + 1) + '</td>' +
+                         '<td><span style="font-family:monospace; font-weight:700;">' + escapeHtml(s.studentId) + '</span></td>' +
+                         '<td><strong>' + escapeHtml(s.name) + '</strong></td>' +
+                         '<td>' + escapeHtml(s.className) + '</td>' +
+                         '<td style="text-align:center; font-weight:700; color:#10B981;">' + (s.present || 0) + '</td>' +
+                         '<td style="text-align:center; font-weight:700; color:#FF6B00;">' + (s.late || 0) + '</td>' +
+                         '<td style="text-align:center; font-weight:700; color:#EAB308;">' + ((s.sick || 0) + (s.leave || 0)) + '</td>' +
+                         '<td style="text-align:center; font-weight:700; color:#EF4444;">' + (s.absent || 0) + '</td>' +
+                         '<td style="text-align:center; font-weight:700;">' + sTot + '</td>' +
+                         '<td style="text-align:center; font-weight:800; color:var(--cyan-400);">' + sRate + '%</td>';
+          tbody.appendChild(tr);
+        }
+      }
+
+      tableContainer.appendChild(table);
+      paper.appendChild(tableContainer);
+      container.appendChild(paper);
+    }
+
     function populateReportMultiSelectFilters() {
       var savedPrefs = getSavedReportFilterPreferences();
 
@@ -15545,6 +15898,188 @@
           '  <i class="fas fa-arrows-rotate"></i> 🔄 โหลดฐานข้อมูลเพื่อประมวลผล' +
           '</button>' +
         '</div>';
+      }
+    }
+
+    
+    // =========================================================================
+    // REPORT EXPORT & PRINT HANDLERS (EXCEL, PDF, JPG, PRINT)
+    // =========================================================================
+    function printReport() {
+      window.print();
+    }
+
+    function exportReportToExcel() {
+      var dateRange = getReportDateRange();
+      var startDate = dateRange.startDate || getTodayDateString();
+      var endDate = dateRange.endDate || startDate;
+      var className = getSelectedReportClasses() || 'all';
+      var activityName = getSelectedReportActivities() || 'all';
+      var repStatSelect = document.getElementById('report-status-select');
+      var statusFilter = (repStatSelect && repStatSelect.value) ? repStatSelect.value : 'all';
+
+      showLoadingPopup('กำลังส่งออกไฟล์ Excel (.xlsx)...', 'ระบบกำลังรวบรวมข้อมูลและจัดรูปแบบตาราง');
+
+      var isMultiDayRange = (dateRange.isRange || startDate !== endDate);
+
+      function doExport(recordsMap) {
+        hideLoadingPopup();
+        recordsMap = recordsMap || {};
+        var exportData = [];
+        var studentList = AppState.students || [];
+
+        for (var j = 0; j < studentList.length; j++) {
+          var s = studentList[j];
+          if (!isClassMatch(className, s.className)) continue;
+
+          var cleanId = String(s.studentId).trim().toLowerCase();
+          var rec = recordsMap[s.studentId] || recordsMap[cleanId];
+          var status = 'Absent';
+          var note = '';
+          var actName = (activityName !== 'all' && activityName !== 'ทุกกิจกรรม') ? activityName : 'เช็คชื่อมาเรียน';
+          var cTime = '-';
+
+          if (rec !== undefined && rec !== null) {
+            if (typeof rec === 'object') {
+              status = rec.status || 'Present';
+              note = rec.note || '';
+              actName = rec.activityName || actName;
+              cTime = rec.checkinTime || '-';
+            } else {
+              status = String(rec);
+            }
+          }
+
+          var isMatchFilter = true;
+          if (statusFilter !== 'all') {
+            if (statusFilter === 'Present' && !(status === 'Present' || status === 'มาเรียน')) isMatchFilter = false;
+            else if (statusFilter === 'Absent' && !(status === 'Absent' || status === 'ขาด' || status === 'ขาดเรียน')) isMatchFilter = false;
+            else if (statusFilter === 'Sick' && !(status === 'Sick' || status === 'ลาป่วย')) isMatchFilter = false;
+            else if (statusFilter === 'Leave' && !(status === 'Leave' || status === 'ลากิจ')) isMatchFilter = false;
+            else if (statusFilter === 'Late' && !(status === 'Late' || status === 'มาสาย')) isMatchFilter = false;
+          }
+
+          if (!isMatchFilter) continue;
+
+          var stLabel = (status === 'Present' || status === 'มาเรียน') ? 'มาเรียน' : ((status === 'Absent' || status === 'ขาด' || status === 'ขาดเรียน') ? 'ขาดเรียน' : ((status === 'Sick' || status === 'ลาป่วย') ? 'ลาป่วย' : ((status === 'Leave' || status === 'ลากิจ') ? 'ลากิจ' : 'มาสาย')));
+
+          exportData.push({
+            'วันที่': startDate,
+            'เลขที่': s.studentNo || (j + 1),
+            'รหัสนักศึกษา': s.studentId,
+            'ชื่อ-นามสกุล': s.name,
+            'ห้องเรียน': s.className,
+            'กิจกรรม/วิชา': actName,
+            'สถานะ': stLabel,
+            'เวลาเช็คชื่อ': cTime,
+            'หมายเหตุ': note
+          });
+        }
+
+        if (exportData.length === 0) {
+          showToast('ไม่พบข้อมูลการเช็คชื่อสำหรับส่งออก Excel', 'error');
+          return;
+        }
+
+        if (typeof XLSX === 'undefined') {
+          showToast('กำลังโหลดไลบรารี XLSX กรุณาลองใหม่อีกครั้ง', 'info');
+          return;
+        }
+
+        var ws = XLSX.utils.json_to_sheet(exportData);
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'รายงานเช็คชื่อ');
+        var classTag = (className === 'all' || className === 'ทุกห้องเรียน') ? 'ทุกห้อง' : className.replace(/[\s,]+/g, '_');
+        var fileName = 'รายงานการเช็คชื่อ_' + startDate + (isMultiDayRange ? ('_ถึง_' + endDate) : '') + '_' + classTag + '.xlsx';
+        XLSX.writeFile(wb, fileName);
+        showToast('ดาวน์โหลดไฟล์ Excel เรียบร้อยแล้ว! 📊✨', 'success');
+      }
+
+      if (isGASAvailable()) {
+        google.script.run
+          .withSuccessHandler(function(recMap) {
+            doExport(recMap);
+          })
+          .withFailureHandler(function(err) {
+            console.warn('Error fetching records for Excel from GAS:', err);
+            var localRecords = getAttendanceMapFromLocalStorage(startDate, activityName, endDate);
+            doExport(localRecords);
+          })
+          .getAttendanceRecords(startDate, className, activityName, 'daily', endDate);
+      } else {
+        var localRecords = getAttendanceMapFromLocalStorage(startDate, activityName, endDate);
+        doExport(localRecords);
+      }
+    }
+
+    function downloadReportPDF() {
+      var targetEl = document.getElementById('printable-report-area');
+      if (!targetEl) {
+        showToast('กรุณากดปุ่มโหลดฐานข้อมูลเพื่อประมวลผลรายงานก่อนดาวน์โหลด PDF', 'error');
+        return;
+      }
+
+      showLoadingPopup('กำลังสร้างไฟล์ PDF...', 'กรุณารอสักครู่ ระบบกำลังเรนเดอร์เอกสาร');
+
+      var dateRange = getReportDateRange();
+      var className = getSelectedReportClasses();
+      var fileName = 'รายงานการเช็คชื่อ_' + (dateRange.startDate || getTodayDateString()) + '_' + (className === 'all' ? 'ทุกห้อง' : className) + '.pdf';
+
+      if (typeof html2pdf !== 'undefined') {
+        var opt = {
+          margin: 10,
+          filename: fileName,
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+        html2pdf().set(opt).from(targetEl).save().then(function() {
+          hideLoadingPopup();
+          showToast('ดาวน์โหลดไฟล์ PDF เรียบร้อยแล้ว! 📄✨', 'success');
+        }).catch(function(err) {
+          hideLoadingPopup();
+          console.warn('html2pdf error:', err);
+          window.print();
+        });
+      } else {
+        hideLoadingPopup();
+        window.print();
+      }
+    }
+
+    function downloadReportJPG() {
+      var targetEl = document.getElementById('printable-report-area');
+      if (!targetEl) {
+        showToast('กรุณากดปุ่มโหลดฐานข้อมูลเพื่อประมวลผลรายงานก่อนดาวน์โหลดภาพ', 'error');
+        return;
+      }
+
+      showLoadingPopup('กำลังบันทึกภาพรายงาน .JPG...', 'กรุณารอสักครู่');
+
+      var dateRange = getReportDateRange();
+      var className = getSelectedReportClasses();
+      var fileName = 'รายงานการเช็คชื่อ_' + (dateRange.startDate || getTodayDateString()) + '_' + (className === 'all' ? 'ทุกห้อง' : className) + '.jpg';
+
+      if (typeof html2canvas !== 'undefined') {
+        html2canvas(targetEl, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#0F1523'
+        }).then(function(canvas) {
+          hideLoadingPopup();
+          var link = document.createElement('a');
+          link.download = fileName;
+          link.href = canvas.toDataURL('image/jpeg', 0.95);
+          link.click();
+          showToast('ดาวน์โหลดภาพรายงาน .JPG เรียบร้อยแล้ว! 📸✨', 'success');
+        }).catch(function(err) {
+          hideLoadingPopup();
+          console.warn('html2canvas error:', err);
+          showToast('ไม่สามารถสร้างภาพได้: ' + (err.message || String(err)), 'error');
+        });
+      } else {
+        hideLoadingPopup();
+        showToast('ไม่พบไลบรารี html2canvas ในระบบ', 'error');
       }
     }
 
@@ -16381,6 +16916,22 @@
         btnTest.addEventListener('click', function(e) {
           e.preventDefault();
           testLineConnectionHandler();
+        });
+      }
+
+      var btnTestFlex = document.getElementById('btn-test-line-flex');
+      if (btnTestFlex) {
+        btnTestFlex.addEventListener('click', function(e) {
+          e.preventDefault();
+          testLineConnectionHandler('flex');
+        });
+      }
+
+      var btnTestText = document.getElementById('btn-test-line-text');
+      if (btnTestText) {
+        btnTestText.addEventListener('click', function(e) {
+          e.preventDefault();
+          testLineConnectionHandler('text');
         });
       }
 
@@ -18824,7 +19375,53 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
     }
 
     
-</script>
+
+    // =========================================================================
+    // EXPOSE GLOBAL FUNCTIONS TO WINDOW (ENSURES INLINE ONCLICK WORKS ON GITHUB & STANDALONE)
+    // =========================================================================
+    window.openAIFaceScannerModal = typeof openAIFaceScannerModal !== 'undefined' ? openAIFaceScannerModal : function(){};
+    window.loadAttendanceDataForSelectedDate = typeof loadAttendanceDataForSelectedDate !== 'undefined' ? loadAttendanceDataForSelectedDate : function(){};
+    window.openAIFaceEnrollmentModal = typeof openAIFaceEnrollmentModal !== 'undefined' ? openAIFaceEnrollmentModal : function(){};
+    window.toggleReportClassPopover = typeof toggleReportClassPopover !== 'undefined' ? toggleReportClassPopover : function(){};
+    window.selectAllReportClasses = typeof selectAllReportClasses !== 'undefined' ? selectAllReportClasses : function(){};
+    window.clearAllReportClasses = typeof clearAllReportClasses !== 'undefined' ? clearAllReportClasses : function(){};
+    window.toggleReportActivityPopover = typeof toggleReportActivityPopover !== 'undefined' ? toggleReportActivityPopover : function(){};
+    window.selectAllReportActivities = typeof selectAllReportActivities !== 'undefined' ? selectAllReportActivities : function(){};
+    window.clearAllReportActivities = typeof clearAllReportActivities !== 'undefined' ? clearAllReportActivities : function(){};
+    window.generateReportPreview = typeof generateReportPreview !== 'undefined' ? generateReportPreview : function(){};
+    window.openPublishParentReportModal = typeof openPublishParentReportModal !== 'undefined' ? openPublishParentReportModal : function(){};
+    window.downloadReportFlexCardImage = typeof downloadReportFlexCardImage !== 'undefined' ? downloadReportFlexCardImage : function(){};
+    window.downloadFlexCardAsImage = typeof downloadFlexCardAsImage !== 'undefined' ? downloadFlexCardAsImage : function(){};
+    window.openLineSettingsModal = typeof openLineSettingsModal !== 'undefined' ? openLineSettingsModal : function(){};
+    window.closePublishParentReportModal = typeof closePublishParentReportModal !== 'undefined' ? closePublishParentReportModal : function(){};
+    window.copyPublishModalLink = typeof copyPublishModalLink !== 'undefined' ? copyPublishModalLink : function(){};
+    window.confirmAndPublishReportLive = typeof confirmAndPublishReportLive !== 'undefined' ? confirmAndPublishReportLive : function(){};
+    window.downloadPublishModalFlexCard = typeof downloadPublishModalFlexCard !== 'undefined' ? downloadPublishModalFlexCard : function(){};
+    window.openPublishReportLive = typeof openPublishReportLive !== 'undefined' ? openPublishReportLive : function(){};
+    window.openLineFromPublishModal = typeof openLineFromPublishModal !== 'undefined' ? openLineFromPublishModal : function(){};
+    window.closeAIFaceEnrollmentModal = typeof closeAIFaceEnrollmentModal !== 'undefined' ? closeAIFaceEnrollmentModal : function(){};
+    window.enrollNavigateStudent = typeof enrollNavigateStudent !== 'undefined' ? enrollNavigateStudent : function(){};
+    window.captureAndEnrollCurrentStudent = typeof captureAndEnrollCurrentStudent !== 'undefined' ? captureAndEnrollCurrentStudent : function(){};
+    window.enrollNextStudentBatch = typeof enrollNextStudentBatch !== 'undefined' ? enrollNextStudentBatch : function(){};
+    window.closeAIFaceScannerModal = typeof closeAIFaceScannerModal !== 'undefined' ? closeAIFaceScannerModal : function(){};
+    window.toggleFaceCameraFacingMode = typeof toggleFaceCameraFacingMode !== 'undefined' ? toggleFaceCameraFacingMode : function(){};
+    window.toggleFaceScannerSound = typeof toggleFaceScannerSound !== 'undefined' ? toggleFaceScannerSound : function(){};
+    window.getReportDateRange = typeof getReportDateRange !== 'undefined' ? getReportDateRange : function(){};
+    window.getAttendanceMapFromLocalStorage = typeof getAttendanceMapFromLocalStorage !== 'undefined' ? getAttendanceMapFromLocalStorage : function(){};
+    window.getRangeAttendanceSummaryFromLocal = typeof getRangeAttendanceSummaryFromLocal !== 'undefined' ? getRangeAttendanceSummaryFromLocal : function(){};
+    window.renderRangeSummaryReportDocument = typeof renderRangeSummaryReportDocument !== 'undefined' ? renderRangeSummaryReportDocument : function(){};
+    window.printReport = typeof printReport !== 'undefined' ? printReport : function(){};
+    window.exportReportToExcel = typeof exportReportToExcel !== 'undefined' ? exportReportToExcel : function(){};
+    window.downloadReportPDF = typeof downloadReportPDF !== 'undefined' ? downloadReportPDF : function(){};
+    window.downloadReportJPG = typeof downloadReportJPG !== 'undefined' ? downloadReportJPG : function(){};
+    window.openAddStudentModal = typeof openAddStudentModal !== 'undefined' ? openAddStudentModal : function(){};
+    window.openEditStudentModal = typeof openEditStudentModal !== 'undefined' ? openEditStudentModal : function(){};
+    window.deleteStudentHandler = typeof deleteStudentHandler !== 'undefined' ? deleteStudentHandler : function(){};
+    window.executeExcelImport = typeof executeExcelImport !== 'undefined' ? executeExcelImport : function(){};
+    window.renderClassManageModal = typeof renderClassManageModal !== 'undefined' ? renderClassManageModal : function(){};
+
+
+  </script>
   <!-- FLOATING THEME TOGGLE BUTTON -->
   <button type="button" class="floating-theme-btn" id="btn-floating-theme" title="สลับโหมดมืด / โหมดสว่าง">
     <i class="fas fa-moon" id="floating-theme-icon"></i>
