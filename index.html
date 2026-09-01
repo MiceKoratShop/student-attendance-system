@@ -3444,15 +3444,13 @@
 
               <!-- ROW 2: ACTION BUTTONS TOOLBAR -->
               <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; align-items: center; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px;">
-                <button type="button" class="btn-glass btn-sm-glass" id="btn-publish-parent-report" style="background: linear-gradient(135deg, #FF6B00 0%, #F59E0B 100%); border: none; color: #FFF; font-weight: 800; padding: 7px 18px; box-shadow: 0 4px 15px rgba(255, 107, 0, 0.45); font-size: 13px; cursor: pointer; border-radius: 8px;" title="ตั้งค่าและส่งข้อมูลไปยังหน้ารายงานผู้ปกครอง & กลุ่ม LINE">
+                <button type="button" class="btn-glass btn-sm-glass" id="btn-publish-parent-report" onclick="openPublishParentReportModal()" style="background: linear-gradient(135deg, #FF6B00 0%, #F59E0B 100%); border: none; color: #FFF; font-weight: 800; padding: 7px 18px; box-shadow: 0 4px 15px rgba(255, 107, 0, 0.45); font-size: 13px; cursor: pointer; border-radius: 8px;" title="ตั้งค่าและส่งข้อมูลไปยังหน้ารายงาน">
                   <i class="fas fa-paper-plane" style="margin-right: 6px;"></i> 🚀 ส่งไปยังรีพอร์ต
                 </button>
                 <button type="button" class="btn-glass btn-emerald btn-sm-glass" id="btn-report-download-flex-card" onclick="downloadReportFlexCardImage()" title="บันทึกภาพการ์ด Flex สีสันสวยงาม เพื่อนำไปส่งในกลุ่ม LINE" style="font-weight: 700;">
                   <i class="fas fa-camera"></i> 📸 บันทึกการ์ด Flex เป็นรูปภาพ
                 </button>
-                <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-report-copy-flex-card" onclick="copyReportFlexCardImage()" title="คัดลอกรูปภาพการ์ด Flex ไปวางใน LINE ทันที" style="font-weight: 700;">
-                  <i class="fas fa-copy"></i> 📋 คัดลอกการ์ด Flex
-                </button>
+
                 <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-refresh-report" title="ดึงข้อมูลล่าสุดจาก Google Sheets และฐานข้อมูล">
                   <i class="fas fa-arrows-rotate"></i> รีเฟรชข้อมูล
                 </button>
@@ -4545,9 +4543,7 @@
             <button type="button" class="btn-glass btn-emerald btn-sm-glass" onclick="downloadFlexCardAsImage(getTodayDateString(), 'ทุกห้อง', 'line-flex-card-box')" style="font-weight: 700; font-size: 12px; padding: 7px 14px;">
               <i class="fas fa-camera"></i> 📸 บันทึกการ์ด Flex เป็นรูปภาพ (ส่งใน LINE)
             </button>
-            <button type="button" class="btn-glass btn-cyan btn-sm-glass" onclick="copyFlexCardAsImageToClipboard('line-flex-card-box')" style="font-weight: 700; font-size: 12px; padding: 7px 14px;">
-              <i class="fas fa-copy"></i> 📋 คัดลอกรูปภาพการ์ด
-            </button>
+
           </div>
 
           <div style="font-size: 11.5px; font-weight: 700; color: var(--orange-400); margin-bottom: 4px;">
@@ -15046,23 +15042,79 @@
 
 
 
-    function openPublishParentReportModal() {
-      var dateRange = getReportDateRange();
-      var className = getSelectedReportClasses();
-      var activityName = getSelectedReportActivities();
-      var dateParam = dateRange.startDate || getTodayDateString();
-      var classParam = (className && className !== 'all') ? className : 'all';
-      var actParam = (activityName && activityName !== 'all') ? activityName : 'all';
+    function populatePublishModalDropdowns() {
+      var selClass = document.getElementById('pub-select-class');
+      var selAct = document.getElementById('pub-select-activity');
+      var inputDate = document.getElementById('pub-input-date');
 
-      var repUrl = getParentReportUrl();
-      var inputEl = document.getElementById('pub-modal-link-input');
-      if (inputEl) inputEl.value = repUrl;
+      var curDateRange = getReportDateRange();
+      if (inputDate) {
+        inputDate.value = curDateRange.startDate || getTodayDateString();
+      }
 
-      var classDisplayTag = (className === 'all' || className === 'ทุกห้องเรียน') ? 'ทุกห้องเรียน' : ('ห้อง ' + className.replace(/^ห้อง\s*/, ''));
+      if (selClass) {
+        var curVal = getSelectedReportClasses() || 'all';
+        selClass.innerHTML = '<option value="all">🌟 ทุกห้องเรียน</option>';
+        var classes = AppState.classes || [];
+        for (var c = 0; c < classes.length; c++) {
+          var cObj = classes[c];
+          var cName = (typeof cObj === 'object' && cObj) ? (cObj.name || cObj.className || '') : String(cObj || '');
+          if (cName) {
+            var opt = document.createElement('option');
+            opt.value = cName;
+            opt.textContent = 'ห้อง ' + cName.replace(/^ห้อง\s*/, '');
+            selClass.appendChild(opt);
+          }
+        }
+        selClass.value = (curVal && selClass.querySelector('option[value="' + curVal + '"]')) ? curVal : 'all';
+      }
+
+      if (selAct) {
+        var curActVal = getSelectedReportActivities() || 'all';
+        selAct.innerHTML = '<option value="all">🌟 ทุกกิจกรรม/วิชา</option>';
+        var acts = AppState.activities || [];
+        for (var a = 0; a < acts.length; a++) {
+          var aObj = acts[a];
+          var aName = (typeof aObj === 'object' && aObj) ? (aObj.name || aObj.activityName || '') : String(aObj || '');
+          if (aName) {
+            var aOpt = document.createElement('option');
+            aOpt.value = aName;
+            aOpt.textContent = aName;
+            selAct.appendChild(aOpt);
+          }
+        }
+        selAct.value = (curActVal && selAct.querySelector('option[value="' + curActVal + '"]')) ? curActVal : 'all';
+      }
+    }
+
+    function refreshPublishModalData() {
+      var inputDate = document.getElementById('pub-input-date');
+      var selClass = document.getElementById('pub-select-class');
+      var selAct = document.getElementById('pub-select-activity');
+
+      var targetDate = (inputDate && inputDate.value) ? inputDate.value : getTodayDateString();
+      var targetClass = (selClass && selClass.value) ? selClass.value : 'all';
+      var targetAct = (selAct && selAct.value) ? selAct.value : 'all';
+
+      var classDisplayTag = (targetClass === 'all' || targetClass === 'ทุกห้องเรียน') ? 'ทุกห้องเรียน' : ('ห้อง ' + targetClass.replace(/^ห้อง\s*/, ''));
       var titleEl = document.getElementById('pub-modal-title');
       var subEl = document.getElementById('pub-modal-subtitle');
+      var linkInput = document.getElementById('pub-modal-link-input');
+
+      var dateThaiStr = formatThaiDate(targetDate);
       if (titleEl) titleEl.textContent = 'รายงานสรุปการมาเรียน (' + classDisplayTag + ')';
-      if (subEl) subEl.textContent = '📅 วันที่: ' + dateRange.displayStr + ' • กิจกรรม: ' + (activityName === 'all' ? 'ทุกกิจกรรม' : activityName);
+      if (subEl) subEl.textContent = '📅 วันที่: ' + dateThaiStr + ' • กิจกรรม: ' + (targetAct === 'all' ? 'ทุกกิจกรรม/วิชา' : targetAct);
+
+      var fullUrl = window.location.href.split('#')[0].split('?')[0];
+      var liveUrl = '';
+      var cacheBust = Date.now();
+      if (fullUrl.indexOf('.html') > -1) {
+        fullUrl = fullUrl.substring(0, fullUrl.lastIndexOf('/')) + '/report.html';
+        liveUrl = fullUrl + '?date=' + encodeURIComponent(targetDate) + '&class=' + encodeURIComponent(targetClass) + '&activity=' + encodeURIComponent(targetAct) + '&t=' + cacheBust;
+      } else {
+        liveUrl = fullUrl + '?page=report&date=' + encodeURIComponent(targetDate) + '&class=' + encodeURIComponent(targetClass) + '&activity=' + encodeURIComponent(targetAct) + '&t=' + cacheBust;
+      }
+      if (linkInput) linkInput.value = liveUrl;
 
       var otEl = document.getElementById('pub-stat-ontime');
       var ltEl = document.getElementById('pub-stat-late');
@@ -15070,7 +15122,7 @@
       var abEl = document.getElementById('pub-stat-absent');
 
       var students = AppState.students || [];
-      var recMap = AppState.lastReportRecordsMap || getAttendanceMapFromLocalStorage(dateRange.startDate, activityName, dateRange.endDate) || {};
+      var recMap = AppState.lastReportRecordsMap || getAttendanceMapFromLocalStorage(targetDate, targetAct) || {};
       
       var studentReports = [];
       var onTimeChamps = [];
@@ -15078,7 +15130,7 @@
 
       for (var i = 0; i < students.length; i++) {
         var s = students[i];
-        if (!isClassMatch(className, s.className)) continue;
+        if (!isClassMatch(targetClass, s.className)) continue;
         var r = recMap[s.studentId] || recMap[String(s.studentId).toLowerCase()];
         var st = 'Absent';
         var note = '';
@@ -15166,11 +15218,11 @@
 
       var publishedReportData = {
         status: 'success',
-        date: dateRange.startDate,
-        dateThai: dateRange.displayStr,
-        dayName: getThaiDayOfWeek(dateRange.startDate),
+        date: targetDate,
+        dateThai: dateThaiStr,
+        dayName: getThaiDayOfWeek(targetDate),
         className: classDisplayTag,
-        activityName: (activityName === 'all' || !activityName) ? 'เช็คชื่อมาเรียน' : activityName,
+        activityName: (targetAct === 'all' || !targetAct) ? 'เช็คชื่อมาเรียน' : targetAct,
         stats: {
           totalStudents: totStudents,
           countPresent: cOnTime + cLate,
@@ -15185,11 +15237,13 @@
         students: studentReports
       };
 
-      // Save live published report to localStorage so report.html updates instantly with zero latency
       localStorage.setItem('gas_student_latest_published_report', JSON.stringify(publishedReportData));
+      return publishedReportData;
+    }
 
-      showToast('สรุปและเตรียมข้อมูลรายงานสำหรับส่งไปยังผู้ปกครองเรียบร้อยแล้ว!', 'success');
-
+    function openPublishParentReportModal() {
+      populatePublishModalDropdowns();
+      refreshPublishModalData();
       var modal = document.getElementById('modal-publish-parent-report');
       if (modal) modal.style.display = 'flex';
     }
@@ -15203,20 +15257,38 @@
       var inputEl = document.getElementById('pub-modal-link-input');
       if (inputEl && inputEl.value) {
         copyTextToClipboard(inputEl.value);
-        showToast('คัดลอกลิงก์หน้ารายงานสำหรับผู้ปกครองเรียบร้อยแล้ว! 📋✨', 'success');
+        showToast('คัดลอกลิงก์หน้ารายงานออนไลน์เรียบร้อยแล้ว! 📋✨', 'success');
       }
     }
 
     function openPublishReportLive() {
-      var repUrl = getParentReportUrl();
+      var inputEl = document.getElementById('pub-modal-link-input');
+      var repUrl = (inputEl && inputEl.value) ? inputEl.value : getParentReportUrl();
       window.open(repUrl, '_blank');
+    }
+
+    function confirmAndPublishReportLive() {
+      refreshPublishModalData();
+      var inputEl = document.getElementById('pub-modal-link-input');
+      var url = (inputEl && inputEl.value) ? inputEl.value : getParentReportUrl();
+      
+      showToast('บันทึกและส่งข้อมูลไปยังหน้ารายงานเรียบร้อยแล้ว! 🚀✨', 'success');
+      window.open(url, '_blank');
+      closePublishParentReportModal();
+    }
+
+    function downloadPublishModalFlexCard() {
+      var inputDate = document.getElementById('pub-input-date');
+      var selClass = document.getElementById('pub-select-class');
+      var targetDate = (inputDate && inputDate.value) ? inputDate.value : getTodayDateString();
+      var targetClass = (selClass && selClass.value) ? selClass.value : 'ทุกห้อง';
+      downloadFlexCardAsImage(targetDate, targetClass, null);
     }
 
     function openLineFromPublishModal() {
       closePublishParentReportModal();
       openLineSendModal();
     }
-
 
     function renderReportsPage() {
       var startEl = document.getElementById('report-date-start');
@@ -17776,135 +17848,100 @@
 
 
 
-function getOrBuildFlexCardElement(dateStr, className, targetId) {
-      var targetEl = null;
-      if (targetId) targetEl = document.getElementById(targetId);
-      if (!targetEl) targetEl = document.getElementById('line-flex-card-box');
-      if (!targetEl) targetEl = document.getElementById('flex-card-capture-area');
-      if (!targetEl) targetEl = document.querySelector('.flex-card-capture-target');
-      if (!targetEl) {
-        var container = document.getElementById('line-flex-card-container') || document.getElementById('quick-preview-flex-wrapper');
-        if (container && container.firstElementChild) {
-          targetEl = container.firstElementChild;
-        }
+function renderFlexCardForExport(targetDate, targetClass, targetAct) {
+      var recMap = AppState.lastReportRecordsMap || getAttendanceMapFromLocalStorage(targetDate, targetAct) || {};
+      var stats = calculateAttendanceStats(targetDate, targetClass, targetAct, recMap);
+      
+      var mount = document.getElementById('flex-card-render-mount');
+      if (!mount) {
+        mount = document.createElement('div');
+        mount.id = 'flex-card-render-mount';
+        mount.style.cssText = 'position:fixed; left:0; top:0; z-index:-99999; opacity:1; visibility:visible; pointer-events:none; background:#0B0F19; padding:16px; width:380px; box-sizing:border-box;';
+        document.body.appendChild(mount);
       }
-
-      // If still not found, construct dynamic offscreen card element on-the-fly
-      if (!targetEl) {
-        var targetDate = dateStr || getTodayDateString();
-        var targetClass = className || getSelectedReportClasses() || 'all';
-        var targetAct = getSelectedReportActivities() || 'all';
-        var recMap = AppState.lastReportRecordsMap || getAttendanceMapFromLocalStorage(targetDate, targetAct) || {};
-        var stats = calculateAttendanceStats(targetDate, targetClass, targetAct, recMap);
-        
-        var tempDiv = document.createElement('div');
-        tempDiv.id = 'temp-flex-capture-holder';
-        tempDiv.style.position = 'fixed';
-        tempDiv.style.top = '-9999px';
-        tempDiv.style.left = '-9999px';
-        tempDiv.style.width = '360px';
-        tempDiv.style.zIndex = '-999';
-        tempDiv.innerHTML = renderFlexCardHtml(stats);
-        document.body.appendChild(tempDiv);
-        targetEl = tempDiv.firstElementChild || tempDiv;
-        targetEl._isTemporary = true;
-      }
-      return targetEl;
+      mount.innerHTML = renderFlexCardHtml(stats);
+      return mount.firstElementChild || mount;
     }
 
     function downloadFlexCardAsImage(dateStr, className, targetId) {
       var targetDate = dateStr || getTodayDateString();
       var targetClass = className || 'ทุกห้อง';
-      var targetEl = getOrBuildFlexCardElement(targetDate, targetClass, targetId);
+      var targetAct = getSelectedReportActivities() || 'all';
 
-      if (!targetEl) {
-        showToast('ไม่พบองค์ประกอบการ์ดสำหรับสร้างรูปภาพ', 'error');
-        return;
-      }
+      showLoadingPopup('กำลังสร้างรูปภาพการ์ด Flex...', 'กำลังเรนเดอร์ภาพ HD เพื่อส่งเข้ากลุ่ม LINE');
 
-      showLoadingPopup('กำลังสร้างรูปภาพการ์ด Flex...', 'กำลังแปลงเป็นภาพคมชัดสูง HD เพื่อส่งเข้ากลุ่ม LINE');
       var captureLib = (typeof html2canvas !== 'undefined') ? html2canvas : (typeof window.html2canvas !== 'undefined' ? window.html2canvas : null);
       if (!captureLib) {
         hideLoadingPopup();
-        if (targetEl._isTemporary && targetEl.parentNode) targetEl.parentNode.removeChild(targetEl);
         showToast('ไลบรารีแปลงภาพ html2canvas ยังไม่พร้อมใช้งาน', 'error');
         return;
       }
 
-      captureLib(targetEl, {
-        scale: 2.5,
-        useCORS: true,
-        backgroundColor: '#0F172A',
-        logging: false
-      }).then(function(canvas) {
+      var cardEl = renderFlexCardForExport(targetDate, targetClass, targetAct);
+      if (!cardEl) {
         hideLoadingPopup();
-        if (targetEl._isTemporary && targetEl.parentNode) targetEl.parentNode.removeChild(targetEl);
-
-        var imgData = canvas.toDataURL('image/jpeg', 0.95);
-        var filename = 'การ์ดสรุปการเช็คชื่อ_' + targetClass + '_' + targetDate + '.jpg';
-        var link = document.createElement('a');
-        link.download = filename;
-        link.href = imgData;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        showToast('บันทึกรูปภาพการ์ด Flex เรียบร้อยแล้ว! ส่งเข้ากลุ่ม LINE ได้ทันที 📸✨', 'success');
-      }).catch(function(err) {
-        hideLoadingPopup();
-        if (targetEl._isTemporary && targetEl.parentNode) targetEl.parentNode.removeChild(targetEl);
-        console.error('Error creating image card:', err);
-        showToast('เกิดข้อผิดพลาดในการสร้างภาพ: ' + (err.message || String(err)), 'error');
-      });
-    }
-
-    function copyFlexCardAsImageToClipboard(targetId) {
-      var targetDate = getTodayDateString();
-      var targetClass = getSelectedReportClasses() || 'ทุกห้อง';
-      var targetEl = getOrBuildFlexCardElement(targetDate, targetClass, targetId);
-
-      if (!targetEl) {
-        showToast('ไม่พบองค์ประกอบการ์ดสำหรับคัดลอกรูปภาพ', 'error');
+        showToast('ไม่สามารถสร้างองค์ประกอบการ์ดได้', 'error');
         return;
       }
 
-      showLoadingPopup('กำลังคัดลอกรูปภาพการ์ด...', 'กำลังสร้างภาพความละเอียดสูงเพื่อวางใน LINE');
-      var captureLib = (typeof html2canvas !== 'undefined') ? html2canvas : (typeof window.html2canvas !== 'undefined' ? window.html2canvas : null);
-      if (!captureLib) {
-        hideLoadingPopup();
-        if (targetEl._isTemporary && targetEl.parentNode) targetEl.parentNode.removeChild(targetEl);
-        showToast('ไลบรารี html2canvas ยังไม่พร้อมใช้งาน', 'error');
-        return;
-      }
+      setTimeout(function() {
+        captureLib(cardEl, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#0B0F19',
+          logging: false,
+          width: 360,
+          scrollX: 0,
+          scrollY: 0
+        }).then(function(canvas) {
+          hideLoadingPopup();
+          if (!canvas || canvas.width === 0 || canvas.height === 0) {
+            showToast('เกิดข้อผิดพลาด: ไม่สามารถสร้างภาพ Canvas ได้', 'error');
+            return;
+          }
 
-      captureLib(targetEl, {
-        scale: 2.5,
-        useCORS: true,
-        backgroundColor: '#0F172A',
-        logging: false
-      }).then(function(canvas) {
-        hideLoadingPopup();
-        if (targetEl._isTemporary && targetEl.parentNode) targetEl.parentNode.removeChild(targetEl);
-
-        if (navigator.clipboard && window.ClipboardItem) {
-          canvas.toBlob(function(blob) {
-            if (blob) {
-              navigator.clipboard.write([
-                new ClipboardItem({ 'image/png': blob })
-              ]).then(function() {
-                showToast('คัดลอกรูปภาพการ์ดเรียบร้อยแล้ว! นำไปกดวาง (Paste / Ctrl+V) ใน LINE ได้ทันที 📋✨', 'success');
-              }).catch(function(err) {
-                downloadFlexCardAsImage(targetDate, targetClass, targetId);
-              });
-            }
-          }, 'image/png');
-        } else {
-          downloadFlexCardAsImage(targetDate, targetClass, targetId);
-        }
-      }).catch(function(err) {
-        hideLoadingPopup();
-        if (targetEl._isTemporary && targetEl.parentNode) targetEl.parentNode.removeChild(targetEl);
-        showToast('เกิดข้อผิดพลาดในการสร้างภาพ: ' + (err.message || String(err)), 'error');
-      });
+          var filename = 'การ์ดสรุปการเช็คชื่อ_' + targetClass + '_' + targetDate + '.jpg';
+          
+          if (canvas.toBlob) {
+            canvas.toBlob(function(blob) {
+              if (blob) {
+                var blobUrl = URL.createObjectURL(blob);
+                var link = document.createElement('a');
+                link.download = filename;
+                link.href = blobUrl;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                setTimeout(function() { URL.revokeObjectURL(blobUrl); }, 5000);
+                showToast('บันทึกรูปภาพการ์ด Flex เรียบร้อยแล้ว! ส่งเข้า LINE ได้ทันที 📸✨', 'success');
+              } else {
+                var dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+                var link2 = document.createElement('a');
+                link2.download = filename;
+                link2.href = dataUrl;
+                document.body.appendChild(link2);
+                link2.click();
+                document.body.removeChild(link2);
+                showToast('บันทึกรูปภาพการ์ด Flex เรียบร้อยแล้ว! 📸✨', 'success');
+              }
+            }, 'image/jpeg', 0.95);
+          } else {
+            var dataUrl2 = canvas.toDataURL('image/jpeg', 0.95);
+            var link3 = document.createElement('a');
+            link3.download = filename;
+            link3.href = dataUrl2;
+            document.body.appendChild(link3);
+            link3.click();
+            document.body.removeChild(link3);
+            showToast('บันทึกรูปภาพการ์ด Flex เรียบร้อยแล้ว! 📸✨', 'success');
+          }
+        }).catch(function(err) {
+          hideLoadingPopup();
+          console.error('Error creating image card:', err);
+          showToast('เกิดข้อผิดพลาดในการสร้างภาพ: ' + (err.message || String(err)), 'error');
+        });
+      }, 100);
     }
 
     function downloadReportFlexCardImage() {
@@ -17913,11 +17950,6 @@ function getOrBuildFlexCardElement(dateStr, className, targetId) {
       var targetClass = getSelectedReportClasses() || 'ทุกห้อง';
       downloadFlexCardAsImage(targetDate, targetClass, null);
     }
-
-    function copyReportFlexCardImage() {
-      copyFlexCardAsImageToClipboard(null);
-    }
-
 
     function testLineConnectionHandler(sendType) {
       sendType = sendType || 'flex';
