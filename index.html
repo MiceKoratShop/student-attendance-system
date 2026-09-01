@@ -3444,8 +3444,14 @@
 
               <!-- ROW 2: ACTION BUTTONS TOOLBAR -->
               <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; align-items: center; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px;">
-                <button type="button" class="btn-glass btn-sm-glass" id="btn-publish-parent-report" style="background: linear-gradient(135deg, #FF6B00 0%, #F59E0B 100%); border: none; color: #FFF; font-weight: 800; padding: 7px 18px; box-shadow: 0 4px 15px rgba(255, 107, 0, 0.45); font-size: 13px; cursor: pointer; border-radius: 8px;" title="สรุปข้อมูลการมาเรียนวันนี้ และส่งต่อไปยังหน้ารายงานผู้ปกครอง & กลุ่ม LINE">
+                <button type="button" class="btn-glass btn-sm-glass" id="btn-publish-parent-report" style="background: linear-gradient(135deg, #FF6B00 0%, #F59E0B 100%); border: none; color: #FFF; font-weight: 800; padding: 7px 18px; box-shadow: 0 4px 15px rgba(255, 107, 0, 0.45); font-size: 13px; cursor: pointer; border-radius: 8px;" title="ตั้งค่าและส่งข้อมูลไปยังหน้ารายงานผู้ปกครอง & กลุ่ม LINE">
                   <i class="fas fa-paper-plane" style="margin-right: 6px;"></i> 🚀 ส่งไปยังรีพอร์ต
+                </button>
+                <button type="button" class="btn-glass btn-emerald btn-sm-glass" id="btn-report-download-flex-card" onclick="downloadReportFlexCardImage()" title="บันทึกภาพการ์ด Flex สีสันสวยงาม เพื่อนำไปส่งในกลุ่ม LINE" style="font-weight: 700;">
+                  <i class="fas fa-camera"></i> 📸 บันทึกการ์ด Flex เป็นรูปภาพ
+                </button>
+                <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-report-copy-flex-card" onclick="copyReportFlexCardImage()" title="คัดลอกรูปภาพการ์ด Flex ไปวางใน LINE ทันที" style="font-weight: 700;">
+                  <i class="fas fa-copy"></i> 📋 คัดลอกการ์ด Flex
                 </button>
                 <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-refresh-report" title="ดึงข้อมูลล่าสุดจาก Google Sheets และฐานข้อมูล">
                   <i class="fas fa-arrows-rotate"></i> รีเฟรชข้อมูล
@@ -9955,13 +9961,24 @@
       }
     }
 
+    function getAppBaseUrl() {
+      var saved = localStorage.getItem('gas_student_web_app_url');
+      if (saved && saved.indexOf('http') === 0) return saved.split('?')[0].split('#')[0];
+      if (window.location && window.location.href) {
+        var cur = window.location.href.split('?')[0].split('#')[0];
+        if (cur && cur.indexOf('http') === 0) return cur;
+      }
+      return (typeof GAS_WEBAPP_URL !== 'undefined' ? GAS_WEBAPP_URL : 'https://script.google.com/macros/s/AKfycbyENNsNjTy8YvyBsm73Ab68GUkKklL_E-nuKWWehPzT8C-AlatfNy0IHLaY-F390TYmng/exec');
+    }
+
     function renderSessionDynamicQRCode(sessionId, otpCode) {
       var target = document.getElementById('qr-target-' + sessionId);
       if (!target) return;
       target.innerHTML = '';
 
-      // Ultra-compact payload (Version 1 QR / 21x21 matrix) for extreme coarseness and effortless long-distance scanning
-      var qrPayload = 'OTP:' + otpCode + '#' + sessionId;
+      // URL payload with #checkin=sessionId&otp=otpCode: clickable in mobile camera and auto-fills OTP in-app
+      var baseUrl = getAppBaseUrl();
+      var qrPayload = baseUrl + '#checkin=' + sessionId + '&otp=' + otpCode;
       var qrSuccess = false;
 
       try {
@@ -10713,7 +10730,8 @@
     function renderDynamicQRCodeToElement(targetEl, sessionId, otpCode) {
       if (!targetEl) return;
       targetEl.innerHTML = '';
-      var qrPayload = 'OTP:' + otpCode + '#' + sessionId;
+      var baseUrl = getAppBaseUrl();
+      var qrPayload = baseUrl + '#checkin=' + sessionId + '&otp=' + otpCode;
 
       if (typeof QRCode !== 'undefined') {
         try {
@@ -11987,6 +12005,14 @@
             updateWizardProgress(4);
             
             autoFillOtpIfAutomatedSchedule();
+
+            // If scanned earlier from QR Code or URL hash, auto-populate PIN boxes
+            if (AppState.scannedOtp && AppState.scannedOtp.length === 6) {
+              for (var sp = 1; sp <= 6; sp++) {
+                var sPinEl = document.getElementById('pin-' + sp);
+                if (sPinEl) sPinEl.value = AppState.scannedOtp.charAt(sp - 1);
+              }
+            }
             
             var pin1 = document.getElementById('pin-1');
             if (pin1) pin1.focus();
@@ -12189,9 +12215,9 @@
     function handleScannedQRCodeResult(qrText) {
       if (!qrText) return;
 
-      // Extract Session ID from various QR formats (#SES123, checkin=SES123, sessionId:"SES123")
-      var sessMatch = qrText.match(/#([A-Za-z0-9_]+)/) ||
-                      qrText.match(/checkin=([A-Za-z0-9_]+)/i) ||
+      // Extract Session ID from various QR formats (checkin=SES123, #SES123, sessionId:"SES123")
+      var sessMatch = qrText.match(/checkin=([A-Za-z0-9_]+)/i) ||
+                      qrText.match(/#([A-Za-z0-9_]+)/) ||
                       qrText.match(/sessionId["']?\s*:\s*["']?([A-Za-z0-9_]+)/i);
       if (sessMatch && sessMatch[1]) {
         AppState.scannedSessionId = sessMatch[1];
@@ -12212,9 +12238,11 @@
         AppState.scannedDate = decodeURIComponent(dateMatch[1]);
       }
 
-      // Extract OTP: supports OTP:123456, otp=123456, or any 6-digit PIN
+      // Extract OTP: supports otp=123456, OTP:123456, or any 6-digit PIN
       var matchedOtp = null;
-      var otpExplicitMatch = qrText.match(/OTP[:=]([0-9]{6})/i) || qrText.match(/otp["']?\s*:\s*["']?([0-9]{6})/i);
+      var otpExplicitMatch = qrText.match(/otp=([0-9]{6})/i) ||
+                             qrText.match(/OTP[:=]([0-9]{6})/i) ||
+                             qrText.match(/otp["']?\s*:\s*["']?([0-9]{6})/i);
       if (otpExplicitMatch && otpExplicitMatch[1]) {
         matchedOtp = otpExplicitMatch[1];
       } else {
@@ -12231,6 +12259,29 @@
         }, 1500);
         return;
       }
+
+      AppState.scannedOtp = matchedOtp;
+
+      // Stop Camera & Close Scanner Modal
+      stopQRScannerCamera();
+      closeModal('modal-qr-scanner');
+
+      // Auto-populate 6 PIN Digit Boxes
+      for (var i = 1; i <= 6; i++) {
+        var box = document.getElementById('pin-' + i);
+        if (box) {
+          box.value = matchedOtp.charAt(i - 1);
+        }
+      }
+
+      showToast('📷 สแกน QR Code สำเร็จ! กรอกรหัส OTP ' + matchedOtp + ' ให้อัตโนมัติแล้ว', 'success');
+
+      // Focus on submit button so student can submit immediately
+      var btnSubmit = document.getElementById('btn-submit-self-checkin');
+      if (btnSubmit) {
+        btnSubmit.focus();
+      }
+      return;
 
       // Success Scan
       stopQRScannerCamera();
@@ -17566,7 +17617,7 @@
                     '</div>';
       }
 
-      var fullCardHtml = '<div style="width: 100%; max-width: 360px; margin: 0 auto; border-radius: 16px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.8), 0 0 15px rgba(255,107,0,0.15); font-family: sans-serif; text-align: left;">' +
+      var fullCardHtml = '<div id="line-flex-card-box" class="flex-card-capture-target" style="width: 100%; max-width: 360px; margin: 0 auto; border-radius: 16px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.8), 0 0 15px rgba(255,107,0,0.15); font-family: sans-serif; text-align: left;">' +
                          '  <div style="background: #18181B; padding: 18px 20px; color: #FFF;">' +
                          '    <div style="color: #FF6B00; font-weight: 700; font-size: 12.5px; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">' +
                          '      <span style="display: inline-block; width: 9px; height: 9px; background: #FF6B00; border-radius: 50%;"></span>' +
@@ -17725,19 +17776,61 @@
 
 
 
-function downloadFlexCardAsImage(dateStr, className, targetId) {
-      var targetEl = targetId ? document.getElementById(targetId) : (document.getElementById('flex-card-capture-area') || document.querySelector('#quick-preview-flex-wrapper > div:last-child') || document.getElementById('line-flex-card-box'));
+function getOrBuildFlexCardElement(dateStr, className, targetId) {
+      var targetEl = null;
+      if (targetId) targetEl = document.getElementById(targetId);
+      if (!targetEl) targetEl = document.getElementById('line-flex-card-box');
+      if (!targetEl) targetEl = document.getElementById('flex-card-capture-area');
+      if (!targetEl) targetEl = document.querySelector('.flex-card-capture-target');
+      if (!targetEl) {
+        var container = document.getElementById('line-flex-card-container') || document.getElementById('quick-preview-flex-wrapper');
+        if (container && container.firstElementChild) {
+          targetEl = container.firstElementChild;
+        }
+      }
+
+      // If still not found, construct dynamic offscreen card element on-the-fly
+      if (!targetEl) {
+        var targetDate = dateStr || getTodayDateString();
+        var targetClass = className || getSelectedReportClasses() || 'all';
+        var targetAct = getSelectedReportActivities() || 'all';
+        var recMap = AppState.lastReportRecordsMap || getAttendanceMapFromLocalStorage(targetDate, targetAct) || {};
+        var stats = calculateAttendanceStats(targetDate, targetClass, targetAct, recMap);
+        
+        var tempDiv = document.createElement('div');
+        tempDiv.id = 'temp-flex-capture-holder';
+        tempDiv.style.position = 'fixed';
+        tempDiv.style.top = '-9999px';
+        tempDiv.style.left = '-9999px';
+        tempDiv.style.width = '360px';
+        tempDiv.style.zIndex = '-999';
+        tempDiv.innerHTML = renderFlexCardHtml(stats);
+        document.body.appendChild(tempDiv);
+        targetEl = tempDiv.firstElementChild || tempDiv;
+        targetEl._isTemporary = true;
+      }
+      return targetEl;
+    }
+
+    function downloadFlexCardAsImage(dateStr, className, targetId) {
+      var targetDate = dateStr || getTodayDateString();
+      var targetClass = className || 'ทุกห้อง';
+      var targetEl = getOrBuildFlexCardElement(targetDate, targetClass, targetId);
+
       if (!targetEl) {
         showToast('ไม่พบองค์ประกอบการ์ดสำหรับสร้างรูปภาพ', 'error');
         return;
       }
-      showLoadingPopup('กำลังสร้างรูปภาพการ์ด...', 'กำลังแปลงเป็นภาพคมชัดสูง HD เพื่อส่งเข้ากลุ่ม LINE');
+
+      showLoadingPopup('กำลังสร้างรูปภาพการ์ด Flex...', 'กำลังแปลงเป็นภาพคมชัดสูง HD เพื่อส่งเข้ากลุ่ม LINE');
       var captureLib = (typeof html2canvas !== 'undefined') ? html2canvas : (typeof window.html2canvas !== 'undefined' ? window.html2canvas : null);
       if (!captureLib) {
         hideLoadingPopup();
+        if (targetEl._isTemporary && targetEl.parentNode) targetEl.parentNode.removeChild(targetEl);
         showToast('ไลบรารีแปลงภาพ html2canvas ยังไม่พร้อมใช้งาน', 'error');
         return;
       }
+
       captureLib(targetEl, {
         scale: 2.5,
         useCORS: true,
@@ -17745,35 +17838,44 @@ function downloadFlexCardAsImage(dateStr, className, targetId) {
         logging: false
       }).then(function(canvas) {
         hideLoadingPopup();
+        if (targetEl._isTemporary && targetEl.parentNode) targetEl.parentNode.removeChild(targetEl);
+
         var imgData = canvas.toDataURL('image/jpeg', 0.95);
-        var filename = 'สรุปการเช็คชื่อ_' + (className || 'ทุกห้อง') + '_' + (dateStr || getTodayDateString()) + '.jpg';
+        var filename = 'การ์ดสรุปการเช็คชื่อ_' + targetClass + '_' + targetDate + '.jpg';
         var link = document.createElement('a');
         link.download = filename;
         link.href = imgData;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        showToast('บันทึกรูปภาพการ์ดรายงานเรียบร้อยแล้ว! ส่งเข้ากลุ่ม LINE ได้ทันที 📸✨', 'success');
+        showToast('บันทึกรูปภาพการ์ด Flex เรียบร้อยแล้ว! ส่งเข้ากลุ่ม LINE ได้ทันที 📸✨', 'success');
       }).catch(function(err) {
         hideLoadingPopup();
+        if (targetEl._isTemporary && targetEl.parentNode) targetEl.parentNode.removeChild(targetEl);
         console.error('Error creating image card:', err);
         showToast('เกิดข้อผิดพลาดในการสร้างภาพ: ' + (err.message || String(err)), 'error');
       });
     }
 
     function copyFlexCardAsImageToClipboard(targetId) {
-      var targetEl = targetId ? document.getElementById(targetId) : (document.getElementById('flex-card-capture-area') || document.querySelector('#quick-preview-flex-wrapper > div:last-child') || document.getElementById('line-flex-card-box'));
+      var targetDate = getTodayDateString();
+      var targetClass = getSelectedReportClasses() || 'ทุกห้อง';
+      var targetEl = getOrBuildFlexCardElement(targetDate, targetClass, targetId);
+
       if (!targetEl) {
         showToast('ไม่พบองค์ประกอบการ์ดสำหรับคัดลอกรูปภาพ', 'error');
         return;
       }
+
       showLoadingPopup('กำลังคัดลอกรูปภาพการ์ด...', 'กำลังสร้างภาพความละเอียดสูงเพื่อวางใน LINE');
       var captureLib = (typeof html2canvas !== 'undefined') ? html2canvas : (typeof window.html2canvas !== 'undefined' ? window.html2canvas : null);
       if (!captureLib) {
         hideLoadingPopup();
+        if (targetEl._isTemporary && targetEl.parentNode) targetEl.parentNode.removeChild(targetEl);
         showToast('ไลบรารี html2canvas ยังไม่พร้อมใช้งาน', 'error');
         return;
       }
+
       captureLib(targetEl, {
         scale: 2.5,
         useCORS: true,
@@ -17781,6 +17883,8 @@ function downloadFlexCardAsImage(dateStr, className, targetId) {
         logging: false
       }).then(function(canvas) {
         hideLoadingPopup();
+        if (targetEl._isTemporary && targetEl.parentNode) targetEl.parentNode.removeChild(targetEl);
+
         if (navigator.clipboard && window.ClipboardItem) {
           canvas.toBlob(function(blob) {
             if (blob) {
@@ -17789,17 +17893,29 @@ function downloadFlexCardAsImage(dateStr, className, targetId) {
               ]).then(function() {
                 showToast('คัดลอกรูปภาพการ์ดเรียบร้อยแล้ว! นำไปกดวาง (Paste / Ctrl+V) ใน LINE ได้ทันที 📋✨', 'success');
               }).catch(function(err) {
-                downloadFlexCardAsImage(getTodayDateString(), 'การ์ดสรุป', targetId);
+                downloadFlexCardAsImage(targetDate, targetClass, targetId);
               });
             }
           }, 'image/png');
         } else {
-          downloadFlexCardAsImage(getTodayDateString(), 'การ์ดสรุป', targetId);
+          downloadFlexCardAsImage(targetDate, targetClass, targetId);
         }
       }).catch(function(err) {
         hideLoadingPopup();
+        if (targetEl._isTemporary && targetEl.parentNode) targetEl.parentNode.removeChild(targetEl);
         showToast('เกิดข้อผิดพลาดในการสร้างภาพ: ' + (err.message || String(err)), 'error');
       });
+    }
+
+    function downloadReportFlexCardImage() {
+      var dateRange = getReportDateRange();
+      var targetDate = dateRange.startDate || getTodayDateString();
+      var targetClass = getSelectedReportClasses() || 'ทุกห้อง';
+      downloadFlexCardAsImage(targetDate, targetClass, null);
+    }
+
+    function copyReportFlexCardImage() {
+      copyFlexCardAsImageToClipboard(null);
     }
 
 
@@ -18289,65 +18405,106 @@ function downloadFlexCardAsImage(dateStr, className, targetId) {
 
   <!-- MODAL: PUBLISH PARENT REPORT DIALOG -->
   <div class="modal-overlay-glass" id="modal-publish-parent-report" style="display: none; z-index: 10005;">
-    <div class="modal-card-glass" style="max-width: 580px; width: 95%;">
+    <div class="modal-card-glass" style="max-width: 620px; width: 95%;">
       <div class="modal-header-glass" style="background: linear-gradient(135deg, rgba(255,107,0,0.2) 0%, rgba(245,158,11,0.15) 100%); border-bottom: 1.5px solid rgba(255,107,0,0.35);">
         <h3 class="modal-title-glass" style="color: #FFF; display: flex; align-items: center; gap: 8px;">
-          <i class="fas fa-paper-plane" style="color: #FF6B00;"></i> 🚀 สรุปและส่งต่อรายงานไปยังผู้ปกครอง
+          <i class="fas fa-paper-plane" style="color: #FF6B00;"></i> 🚀 ตั้งค่าและส่งข้อมูลไปยังหน้ารายงาน (Report)
         </h3>
         <button type="button" class="btn-close-glass" onclick="closePublishParentReportModal()">&times;</button>
       </div>
 
-      <div class="modal-body-glass" style="padding: 20px 18px;">
-        <div style="text-align: center; margin-bottom: 16px;">
-          <div style="font-size: 16px; font-weight: 800; color: #FFF;" id="pub-modal-title">รายงานการมาเรียน</div>
-          <div style="font-size: 12.5px; color: #94A3B8; margin-top: 3px;" id="pub-modal-subtitle">ข้อมูลประจำวันที่...</div>
+      <div class="modal-body-glass" style="padding: 18px 18px;">
+        <!-- FILTER CONFIGURATION SECTION -->
+        <div style="background: rgba(15, 23, 42, 0.85); border: 1.5px solid rgba(255, 107, 0, 0.35); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+          <div style="font-size: 13px; font-weight: 800; color: #FF6B00; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+            <i class="fas fa-sliders"></i> เลือกข้อมูลที่ต้องการส่งไปยังหน้ารีพอร์ท:
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+            <div class="form-group-glass" style="margin-bottom: 0;">
+              <label style="font-size: 11.5px; margin-bottom: 4px; font-weight: 700; color: #FFF;">
+                <i class="fas fa-calendar-day" style="color: var(--cyan-400);"></i> 📅 วันที่
+              </label>
+              <input type="date" class="input-glass" id="pub-input-date" onchange="refreshPublishModalData()" style="width: 100%; font-size: 12px; padding: 6px 10px;" />
+            </div>
+            <div class="form-group-glass" style="margin-bottom: 0;">
+              <label style="font-size: 11.5px; margin-bottom: 4px; font-weight: 700; color: #FFF;">
+                <i class="fas fa-chalkboard" style="color: var(--orange-400);"></i> 🏫 ห้องเรียน
+              </label>
+              <select class="select-glass" id="pub-select-class" onchange="refreshPublishModalData()" style="width: 100%; font-size: 12px; padding: 6px 10px;">
+                <option value="all">🌟 ทุกห้องเรียน</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group-glass" style="margin-bottom: 0;">
+            <label style="font-size: 11.5px; margin-bottom: 4px; font-weight: 700; color: #FFF;">
+              <i class="fas fa-tags" style="color: #A78BFA;"></i> 📚 รายวิชา / รายการกิจกรรม
+            </label>
+            <select class="select-glass" id="pub-select-activity" onchange="refreshPublishModalData()" style="width: 100%; font-size: 12px; padding: 6px 10px;">
+              <option value="all">🌟 ทุกกิจกรรม/วิชา</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-bottom: 12px;">
+          <div style="font-size: 15.5px; font-weight: 800; color: #FFF;" id="pub-modal-title">รายงานการมาเรียน</div>
+          <div style="font-size: 12px; color: #94A3B8; margin-top: 2px;" id="pub-modal-subtitle">ข้อมูลประจำวันที่...</div>
         </div>
 
         <!-- Quick Stats Overview -->
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; text-align: center;">
-          <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 10px; padding: 10px 4px;">
-            <div style="font-size: 18px; font-weight: 800; color: #34D399;" id="pub-stat-ontime">-</div>
-            <div style="font-size: 11px; color: #94A3B8; margin-top: 2px; font-weight: 600;">ตรงเวลา</div>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px; text-align: center;">
+          <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 10px; padding: 8px 4px;">
+            <div style="font-size: 17px; font-weight: 800; color: #34D399;" id="pub-stat-ontime">-</div>
+            <div style="font-size: 10.5px; color: #94A3B8; margin-top: 1px; font-weight: 600;">ตรงเวลา</div>
           </div>
-          <div style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 10px; padding: 10px 4px;">
-            <div style="font-size: 18px; font-weight: 800; color: #FBBF24;" id="pub-stat-late">-</div>
-            <div style="font-size: 11px; color: #94A3B8; margin-top: 2px; font-weight: 600;">มาสาย</div>
+          <div style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 10px; padding: 8px 4px;">
+            <div style="font-size: 17px; font-weight: 800; color: #FBBF24;" id="pub-stat-late">-</div>
+            <div style="font-size: 10.5px; color: #94A3B8; margin-top: 1px; font-weight: 600;">มาสาย</div>
           </div>
-          <div style="background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.4); border-radius: 10px; padding: 10px 4px;">
-            <div style="font-size: 18px; font-weight: 800; color: #C084FC;" id="pub-stat-leave">-</div>
-            <div style="font-size: 11px; color: #94A3B8; margin-top: 2px; font-weight: 600;">แจ้งลา</div>
+          <div style="background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.4); border-radius: 10px; padding: 8px 4px;">
+            <div style="font-size: 17px; font-weight: 800; color: #C084FC;" id="pub-stat-leave">-</div>
+            <div style="font-size: 10.5px; color: #94A3B8; margin-top: 1px; font-weight: 600;">แจ้งลา</div>
           </div>
-          <div style="background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.4); border-radius: 10px; padding: 10px 4px;">
-            <div style="font-size: 18px; font-weight: 800; color: #FB7185;" id="pub-stat-absent">-</div>
-            <div style="font-size: 11px; color: #94A3B8; margin-top: 2px; font-weight: 600;">ขาดเรียน</div>
+          <div style="background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.4); border-radius: 10px; padding: 8px 4px;">
+            <div style="font-size: 17px; font-weight: 800; color: #FB7185;" id="pub-stat-absent">-</div>
+            <div style="font-size: 10.5px; color: #94A3B8; margin-top: 1px; font-weight: 600;">ขาดเรียน</div>
           </div>
         </div>
 
         <!-- Share Link Box -->
-        <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(0, 240, 255, 0.35); border-radius: 12px; padding: 14px; margin-bottom: 18px;">
-          <label style="font-size: 12px; font-weight: 700; color: var(--cyan-400); display: block; margin-bottom: 6px;">
-            <i class="fas fa-link"></i> 🔗 ลิงก์หน้ารายงานออนไลน์สำหรับผู้ปกครอง:
+        <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(0, 240, 255, 0.35); border-radius: 12px; padding: 12px; margin-bottom: 14px;">
+          <label style="font-size: 11.5px; font-weight: 700; color: var(--cyan-400); display: block; margin-bottom: 5px;">
+            <i class="fas fa-link"></i> 🔗 ลิงก์หน้ารายงานออนไลน์:
           </label>
           <div style="display: flex; gap: 8px;">
-            <input type="text" id="pub-modal-link-input" class="input-glass" readonly style="flex: 1; font-size: 12px; color: #FFF; background: rgba(0,0,0,0.4);" />
-            <button type="button" class="btn-glass btn-cyan btn-sm-glass" onclick="copyPublishModalLink()" style="font-weight: 700;">
+            <input type="text" id="pub-modal-link-input" class="input-glass" readonly style="flex: 1; font-size: 12px; padding: 7px 10px; background: rgba(0,0,0,0.4); color: #FFF;" />
+            <button type="button" class="btn-glass btn-cyan btn-sm-glass" onclick="copyPublishModalLink()" style="white-space: nowrap; font-weight: 700;">
               <i class="fas fa-copy"></i> คัดลอก
             </button>
           </div>
         </div>
 
-        <!-- Action Buttons Grid -->
+        <!-- Action Buttons -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 6px;">
+          <button type="button" class="btn-glass btn-orange" onclick="confirmAndPublishReportLive()" style="padding: 11px; font-weight: 800; font-size: 13.5px; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 0 15px rgba(255,107,0,0.4);">
+            <i class="fas fa-paper-plane"></i> 🚀 ยืนยัน & ส่งไปยังรีพอร์ต
+          </button>
+          <button type="button" class="btn-glass btn-emerald" onclick="downloadPublishModalFlexCard()" style="padding: 11px; font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+            <i class="fas fa-camera"></i> 📸 บันทึกการ์ด Flex (ภาพ)
+          </button>
+        </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-          <button type="button" class="btn-glass btn-cyan" onclick="openPublishReportLive()" style="padding: 10px; font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+          <button type="button" class="btn-glass btn-cyan" onclick="openPublishReportLive()" style="padding: 9px; font-weight: 700; font-size: 12.5px; display: flex; align-items: center; justify-content: center; gap: 6px;">
             <i class="fas fa-arrow-up-right-from-square"></i> 👁️ เปิดดูหน้ารายงาน
           </button>
-          <button type="button" class="btn-glass" onclick="openLineFromPublishModal()" style="background: rgba(6, 199, 85, 0.2); border-color: rgba(6, 199, 85, 0.5); color: #22C55E; padding: 10px; font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 6px;">
-            <i class="fab fa-line" style="font-size: 16px;"></i> 📲 ส่งเข้ากลุ่ม LINE
+          <button type="button" class="btn-glass" onclick="openLineFromPublishModal()" style="background: rgba(6, 199, 85, 0.2); border-color: rgba(6, 199, 85, 0.5); color: #22C55E; padding: 9px; font-weight: 700; font-size: 12.5px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+            <i class="fab fa-line"></i> 💬 ส่งเข้า LINE
           </button>
         </div>
       </div>
 
-      <div class="modal-footer-glass" style="display: flex; justify-content: flex-end; padding: 12px 18px; border-top: 1px solid rgba(255,255,255,0.08);">
+      <div class="modal-footer-glass" style="padding: 10px 18px; display: flex; justify-content: flex-end;">
         <button type="button" class="btn-glass btn-dark btn-sm-glass" onclick="closePublishParentReportModal()">
           ปิดหน้าต่าง
         </button>
