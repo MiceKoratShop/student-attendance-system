@@ -40,6 +40,9 @@
   <!-- jsQR CDN (Client-side QR Code Camera Scanner) -->
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 
+  <!-- face-api.js CDN (Client-side AI Real-Time Face Recognition Engine) -->
+  <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.12/dist/face-api.js"></script>
+
   <style>
     :root {
       --bg-space: #07090E;
@@ -3140,6 +3143,9 @@
                   </span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                  <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-projector-face-scan" onclick="openAIFaceScannerModal()" style="font-weight: 800; font-size: 13.5px; box-shadow: 0 0 16px rgba(0,240,255,0.4);" title="เปิดกล้องสแกนใบหน้าเช็คชื่ออัตโนมัติ">
+                    <i class="fas fa-camera-viewfinder"></i> 📷 เปิดกล้องสแกนหน้า AI
+                  </button>
                   <button type="button" class="btn-glass btn-orange btn-sm-glass" id="btn-add-new-session" style="font-weight: 700; font-size: 13.5px; box-shadow: 0 0 16px rgba(255,107,0,0.4);">
                     <i class="fas fa-plus"></i> ➕ เพิ่มการเช็คชื่อใหม่
                   </button>
@@ -3200,7 +3206,13 @@
                 </div>
               </div>
 
-              <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                <button type="button" class="btn-glass btn-emerald btn-sm-glass" <button type="button" class="btn-glass btn-cyan btn-sm-glass" onclick="openAIFaceScannerModal()" style="font-weight: 700; padding: 7px 14px;" title="เปิดกล้องสแกนใบหน้าเช็คชื่ออัตโนมัติด้วย AI">
+                  <i class="fas fa-camera-viewfinder"></i> 📷 สแกนหน้า AI
+                </button>
+                id="btn-load-attendance-db" onclick="loadAttendanceDataForSelectedDate()" style="font-weight: 800; padding: 7px 16px; background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: #FFF; box-shadow: 0 4px 15px rgba(16,185,129,0.4);" title="โหลดข้อมูลจากฐานข้อมูล Google Sheets ตามห้องและวันที่ที่เลือก">
+                  <i class="fas fa-arrows-rotate"></i> 🔄 โหลดฐานข้อมูลเพื่อประมวลผล
+                </button>
                 <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-pull-live-attendance-direct" title="ดึงรายชื่อที่เช็คชื่อผ่าน Dynamic OTP / QR Code ล่าสุด">
                   <i class="fas fa-bolt"></i> 📥 ดึงข้อมูลจากจอโปรเจกเตอร์
                 </button>
@@ -3234,6 +3246,9 @@
                 </button>
                 <button type="button" class="btn-glass btn-emerald btn-sm-glass" id="btn-open-excel-import">
                   <i class="fas fa-file-excel"></i> 📥 นำเข้าจาก Excel (.xlsx)
+                </button>
+                <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-open-face-enrollment" onclick="openAIFaceEnrollmentModal()" style="font-weight: 800; box-shadow: 0 0 15px rgba(0, 240, 255, 0.35);" title="เปิดสตูดิโอถ่ายรูป/ลงทะเบียนใบหน้าหลักสำหรับระบบ AI สแกนชื่อ">
+                  <i class="fas fa-camera-retro"></i> 📸 ถ่ายรูป/ลงทะเบียนใบหน้า AI
                 </button>
                 <button type="button" class="btn-glass btn-orange btn-sm-glass" id="btn-add-student-single">
                   <i class="fas fa-user-plus"></i> + เพิ่มนักเรียน
@@ -3444,6 +3459,9 @@
 
               <!-- ROW 2: ACTION BUTTONS TOOLBAR -->
               <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; align-items: center; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px;">
+                <button type="button" class="btn-glass btn-emerald btn-sm-glass" id="btn-load-report-db" onclick="generateReportPreview()" style="font-weight: 800; padding: 7px 18px; background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: #FFF; box-shadow: 0 4px 15px rgba(16,185,129,0.4);" title="โหลดข้อมูลจากฐานข้อมูล Google Sheets และประมวลผลรายงาน">
+                  <i class="fas fa-arrows-rotate"></i> 🔄 โหลดฐานข้อมูลเพื่อประมวลผล
+                </button>
                 <button type="button" class="btn-glass btn-sm-glass" id="btn-publish-parent-report" onclick="openPublishParentReportModal()" style="background: linear-gradient(135deg, #FF6B00 0%, #F59E0B 100%); border: none; color: #FFF; font-weight: 800; padding: 7px 18px; box-shadow: 0 4px 15px rgba(255, 107, 0, 0.45); font-size: 13px; cursor: pointer; border-radius: 8px;" title="ตั้งค่าและส่งข้อมูลไปยังหน้ารายงาน">
                   <i class="fas fa-paper-plane" style="margin-right: 6px;"></i> 🚀 ส่งไปยังรีพอร์ต
                 </button>
@@ -9734,6 +9752,21 @@
         timePill.innerHTML = '<i class="fas fa-stopwatch"></i> <span id="time-rem-' + s.sessionId + '" style="font-family:monospace; font-weight:800;">15:00</span>';
         hRight.appendChild(timePill);
 
+        var btnFaceScan = document.createElement('button');
+        btnFaceScan.type = 'button';
+        btnFaceScan.className = 'btn-glass btn-cyan btn-sm-glass';
+        btnFaceScan.style.fontSize = '11px';
+        btnFaceScan.style.padding = '4px 10px';
+        btnFaceScan.style.fontWeight = '700';
+        btnFaceScan.innerHTML = '<i class="fas fa-camera-viewfinder"></i> 📷 สแกนหน้า AI';
+        (function(sessId) {
+          btnFaceScan.addEventListener('click', function(e) {
+            e.preventDefault();
+            openAIFaceScannerModal(sessId);
+          });
+        })(s.sessionId);
+        hRight.appendChild(btnFaceScan);
+
         var btnClose = document.createElement('button');
         btnClose.type = 'button';
         btnClose.className = 'btn-glass btn-danger-glass btn-sm-glass';
@@ -13508,7 +13541,18 @@
         }
       }
       populateAttendanceClassCheckboxes();
-      loadAttendanceDataForSelectedDate();
+
+      var listContainer = document.getElementById('attendance-student-list');
+      if (listContainer && (!listContainer.innerHTML || listContainer.innerHTML.trim() === '')) {
+        listContainer.innerHTML = '<div class="glass-card" style="text-align: center; padding: 40px 20px; border: 1.5px dashed rgba(16,185,129,0.35); background: rgba(15,23,42,0.6);">' +
+          '<i class="fas fa-chalkboard-user" style="font-size: 42px; color: var(--emerald-400); margin-bottom: 14px; display: inline-block;"></i>' +
+          '<h3 style="font-size: 16.5px; font-weight: 800; color: #FFF; margin-bottom: 8px;">พร้อมประมวลผลการเช็คชื่อรายห้อง</h3>' +
+          '<p style="font-size: 13px; color: var(--text-muted); max-width: 480px; margin: 0 auto 18px;">กรุณาเลือกห้องเรียน, วันที่ และกิจกรรมที่ต้องการ จากนั้นกดปุ่มด้านล่างเพื่อดึงข้อมูลจากฐานข้อมูล</p>' +
+          '<button type="button" class="btn-glass btn-emerald" onclick="loadAttendanceDataForSelectedDate()" style="padding: 10px 24px; font-weight: 800; font-size: 14px; box-shadow: 0 0 20px rgba(16,185,129,0.4);">' +
+          '  <i class="fas fa-arrows-rotate"></i> 🔄 โหลดฐานข้อมูลเพื่อประมวลผล' +
+          '</button>' +
+        '</div>';
+      }
     }
 
     function loadAttendanceDataForSelectedDate() {
@@ -14033,7 +14077,57 @@
           var tdName = document.createElement('td');
           tdName.style.fontWeight = '600';
           tdName.style.color = '#FFFFFF';
-          tdName.textContent = s.name;
+          
+          var nameWrapper = document.createElement('div');
+          nameWrapper.style.display = 'flex';
+          nameWrapper.style.alignItems = 'center';
+          nameWrapper.style.gap = '10px';
+
+          var hasPhoto = (s.photo && s.photo.length > 15 && s.photo !== '-');
+          var avatarDiv = document.createElement('div');
+          avatarDiv.style.width = '32px';
+          avatarDiv.style.height = '32px';
+          avatarDiv.style.borderRadius = '50%';
+          avatarDiv.style.overflow = 'hidden';
+          avatarDiv.style.flexShrink = '0';
+          avatarDiv.style.cursor = 'pointer';
+          avatarDiv.style.border = hasPhoto ? '2px solid #10B981' : '1.5px dashed #64748B';
+          avatarDiv.style.display = 'flex';
+          avatarDiv.style.alignItems = 'center';
+          avatarDiv.style.justifyContent = 'center';
+          avatarDiv.style.background = '#1E293B';
+          avatarDiv.title = hasPhoto ? 'มีใบหน้าหลัก AI แล้ว (คลิกเพื่อถ่ายใหม่/แก้ไข)' : 'ยังไม่มีรูปใบหน้า (คลิกเพื่อถ่ายรูป)';
+
+          if (hasPhoto) {
+            avatarDiv.innerHTML = '<img src="' + escapeHtml(s.photo) + '" style="width: 100%; height: 100%; object-fit: cover;" />';
+          } else {
+            avatarDiv.innerHTML = '<i class="fas fa-camera" style="font-size: 12px; color: #94A3B8;"></i>';
+          }
+
+          (function(stObj) {
+            avatarDiv.addEventListener('click', function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              openAIFaceEnrollmentModal(stObj.studentId, stObj.className);
+            });
+          })(s);
+
+          nameWrapper.appendChild(avatarDiv);
+
+          var nameTextSpan = document.createElement('span');
+          nameTextSpan.textContent = s.name;
+          nameWrapper.appendChild(nameTextSpan);
+
+          if (hasPhoto) {
+            var faceBadge = document.createElement('span');
+            faceBadge.className = 'badge-glass badge-present';
+            faceBadge.style.fontSize = '9.5px';
+            faceBadge.style.padding = '1px 6px';
+            faceBadge.innerHTML = '<i class="fas fa-check"></i> AI Ready';
+            nameWrapper.appendChild(faceBadge);
+          }
+
+          tdName.appendChild(nameWrapper);
           tr.appendChild(tdName);
 
           var tdClass = document.createElement('td');
@@ -14043,6 +14137,24 @@
           var tdActions = document.createElement('td');
           tdActions.style.textAlign = 'right';
           
+          var btnFace = document.createElement('button');
+          btnFace.type = 'button';
+          btnFace.className = 'btn-glass btn-cyan btn-sm-glass';
+          btnFace.style.fontSize = '11px';
+          btnFace.title = 'ถ่ายรูป/ลงทะเบียนใบหน้า AI ของนักศึกษาคนนี้';
+          btnFace.innerHTML = '<i class="fas fa-camera"></i> 📸 ใบหน้า';
+          (function(stObj) {
+            btnFace.addEventListener('click', function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              openAIFaceEnrollmentModal(stObj.studentId, stObj.className);
+            });
+          })(s);
+          tdActions.appendChild(btnFace);
+
+          var space0 = document.createTextNode(' ');
+          tdActions.appendChild(space0);
+
           var btnEdit = document.createElement('button');
           btnEdit.type = 'button';
           btnEdit.className = 'btn-glass btn-dark btn-sm-glass';
@@ -15399,7 +15511,6 @@
           }
           if (legacyEl) legacyEl.value = startEl.value;
           saveReportFilterPreferences();
-          generateReportPreview();
         };
       }
 
@@ -15409,649 +15520,25 @@
             startEl.value = endEl.value;
           }
           saveReportFilterPreferences();
-          generateReportPreview();
         };
       }
 
       // Populate filters immediately from cache and discoverable lists
       populateReportMultiSelectFilters();
 
-      // Proactively fetch latest classes & students in background and refresh checkboxes
-      if (typeof fetchClasses === 'function' && (!AppState.classes || AppState.classes.length === 0)) {
-        fetchClasses(function() {
-          populateReportMultiSelectFilters();
-        });
-      }
-      if (typeof fetchStudents === 'function' && (!AppState.students || AppState.students.length === 0)) {
-        fetchStudents('all', function() {
-          populateReportMultiSelectFilters();
-        });
-      }
-      if (typeof fetchActivities === 'function' && (!AppState.activities || AppState.activities.length === 0)) {
-        fetchActivities(function() {
-          populateReportMultiSelectFilters();
-        });
-      }
-
-      generateReportPreview();
-      
-      var btnRefresh = document.getElementById('btn-refresh-report');
-      if (btnRefresh) {
-        btnRefresh.onclick = function() {
-          generateReportPreview();
-          showToast('รีเฟรชข้อมูลรายงานล่าสุดเรียบร้อยแล้ว', 'info');
-        };
-      }
-
-      var btnPdf = document.getElementById('btn-download-pdf');
-      if (btnPdf) {
-        btnPdf.onclick = function() {
-          downloadPDFReport();
-        };
-      }
-
-      var btnPublishReport = document.getElementById('btn-publish-parent-report');
-      if (btnPublishReport) {
-        btnPublishReport.onclick = function() {
-          openPublishParentReportModal();
-        };
-      }
-
-      var btnParentReport = document.getElementById('btn-open-parent-report');
-      if (btnParentReport) {
-        btnParentReport.onclick = function() {
-          openParentReportPage();
-        };
-      }
-
-      var btnCopyParentLink = document.getElementById('btn-copy-parent-link');
-      if (btnCopyParentLink) {
-        btnCopyParentLink.onclick = function() {
-          copyParentReportLink();
-        };
-      }
-
-      var btnJpg = document.getElementById('btn-download-jpg');
-      if (btnJpg) {
-        btnJpg.onclick = function() {
-          downloadJPGReport();
-        };
-      }
-
-      var btnExcel = document.getElementById('btn-export-excel');
-      if (btnExcel) {
-        btnExcel.onclick = function() {
-          exportExcelReport();
-        };
-      }
-
-      var btnPrint = document.getElementById('btn-print-report');
-      if (btnPrint) {
-        btnPrint.onclick = function() {
-          window.print();
-        };
-      }
-
-      var btnLineSend = document.getElementById('btn-open-line-send');
-      if (btnLineSend) {
-        btnLineSend.onclick = function() {
-          sendLineSummaryNow();
-        };
-      }
-
-      var btnLineSettings = document.getElementById('btn-open-line-settings');
-      if (btnLineSettings) {
-        btnLineSettings.onclick = function() {
-          openLineSettingsModal();
-        };
-      }
-
-      var reportTypeSelect = document.getElementById('report-type-select');
-      if (reportTypeSelect) {
-        reportTypeSelect.onchange = function() {
-          saveReportFilterPreferences();
-          generateReportPreview();
-        };
-      }
-
-      // Multi-Select Popover Toggles with Stacking Context Protection
-      var btnClassMulti = document.getElementById('btn-report-class-multi');
-      var popClass = document.getElementById('popover-report-class');
-      var fgClass = document.getElementById('fg-report-class-container');
-      var btnActMulti = document.getElementById('btn-report-activity-multi');
-      var popAct = document.getElementById('popover-report-activity');
-      var fgAct = document.getElementById('fg-report-activity-container');
-
-      if (btnClassMulti && popClass) {
-        btnClassMulti.onclick = function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          var isShown = (popClass.style.display === 'block');
-          if (popAct) {
-            popAct.style.display = 'none';
-            if (fgAct) fgAct.classList.remove('has-popover-open');
-          }
-          popClass.style.display = isShown ? 'none' : 'block';
-          if (fgClass) {
-            if (!isShown) fgClass.classList.add('has-popover-open');
-            else fgClass.classList.remove('has-popover-open');
-          }
-        };
-        popClass.onclick = function(e) {
-          e.stopPropagation();
-        };
-      }
-
-      if (btnActMulti && popAct) {
-        btnActMulti.onclick = function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          var isShown = (popAct.style.display === 'block');
-          if (popClass) {
-            popClass.style.display = 'none';
-            if (fgClass) fgClass.classList.remove('has-popover-open');
-          }
-          popAct.style.display = isShown ? 'none' : 'block';
-          if (fgAct) {
-            if (!isShown) fgAct.classList.add('has-popover-open');
-            else fgAct.classList.remove('has-popover-open');
-          }
-        };
-        popAct.onclick = function(e) {
-          e.stopPropagation();
-        };
-      }
-
-      // Quick buttons in popovers
-      var btnSelAllRepCls = document.getElementById('btn-report-select-all-classes');
-      if (btnSelAllRepCls) {
-        btnSelAllRepCls.onclick = function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          var allChk = document.getElementById('chk-report-class-all');
-          if (allChk) {
-            allChk.checked = true;
-            var container = document.getElementById('report-class-checkbox-list');
-            if (container) {
-              var itemChks = container.querySelectorAll('.report-class-item-chk');
-              for (var i = 0; i < itemChks.length; i++) itemChks[i].checked = true;
-            }
-          }
-          updateReportClassBtnLabel();
-          saveReportFilterPreferences();
-          generateReportPreview();
-        };
-      }
-
-      var btnClearRepCls = document.getElementById('btn-report-clear-classes');
-      if (btnClearRepCls) {
-        btnClearRepCls.onclick = function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          var allChk = document.getElementById('chk-report-class-all');
-          if (allChk) allChk.checked = false;
-          var container = document.getElementById('report-class-checkbox-list');
-          if (container) {
-            var itemChks = container.querySelectorAll('.report-class-item-chk');
-            for (var i = 0; i < itemChks.length; i++) itemChks[i].checked = false;
-          }
-          updateReportClassBtnLabel();
-          saveReportFilterPreferences();
-          generateReportPreview();
-        };
-      }
-
-      var btnSelAllRepAct = document.getElementById('btn-report-select-all-activities');
-      if (btnSelAllRepAct) {
-        btnSelAllRepAct.onclick = function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          var allChk = document.getElementById('chk-report-act-all');
-          if (allChk) {
-            allChk.checked = true;
-            var container = document.getElementById('report-activity-checkbox-list');
-            if (container) {
-              var itemChks = container.querySelectorAll('.report-act-item-chk');
-              for (var i = 0; i < itemChks.length; i++) itemChks[i].checked = true;
-            }
-          }
-          updateReportActivityBtnLabel();
-          saveReportFilterPreferences();
-          generateReportPreview();
-        };
-      }
-
-      var btnClearRepAct = document.getElementById('btn-report-clear-activities');
-      if (btnClearRepAct) {
-        btnClearRepAct.onclick = function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          var allChk = document.getElementById('chk-report-act-all');
-          if (allChk) allChk.checked = false;
-          var container = document.getElementById('report-activity-checkbox-list');
-          if (container) {
-            var itemChks = container.querySelectorAll('.report-act-item-chk');
-            for (var i = 0; i < itemChks.length; i++) itemChks[i].checked = false;
-          }
-          updateReportActivityBtnLabel();
-          saveReportFilterPreferences();
-          generateReportPreview();
-        };
-      }
-
-      // Close popovers on click outside
-      if (!window.__reportPopoverGlobalListenerAttached) {
-        window.__reportPopoverGlobalListenerAttached = true;
-        document.addEventListener('click', function(e) {
-          var pC = document.getElementById('popover-report-class');
-          var pA = document.getElementById('popover-report-activity');
-          var fC = document.getElementById('fg-report-class-container');
-          var fA = document.getElementById('fg-report-activity-container');
-          var bC = document.getElementById('btn-report-class-multi');
-          var bA = document.getElementById('btn-report-activity-multi');
-
-          if (pC && !pC.contains(e.target) && (!bC || !bC.contains(e.target))) {
-            pC.style.display = 'none';
-            if (fC) fC.classList.remove('has-popover-open');
-          }
-          if (pA && !pA.contains(e.target) && (!bA || !bA.contains(e.target))) {
-            pA.style.display = 'none';
-            if (fA) fA.classList.remove('has-popover-open');
-          }
-        });
-      }
-
-      var reportStatusSelect = document.getElementById('report-status-select');
-      if (reportStatusSelect) {
-        reportStatusSelect.onchange = function() {
-          saveReportFilterPreferences();
-          generateReportPreview();
-        };
-      }
-
-      var reportDateSelect = document.getElementById('report-date-select');
-      if (reportDateSelect) {
-        reportDateSelect.onchange = function() {
-          AppState.selectedDate = this.value;
-          generateReportPreview();
-        };
+      // Show initial clean placeholder guide until user clicks "🔄 โหลดฐานข้อมูลเพื่อประมวลผล"
+      var repContainer = document.getElementById('report-preview-container') || document.getElementById('report-table-container');
+      if (repContainer && (!repContainer.innerHTML || repContainer.innerHTML.trim() === '')) {
+        repContainer.innerHTML = '<div class="glass-card" style="text-align: center; padding: 40px 20px; border: 1.5px dashed rgba(16,185,129,0.35); background: rgba(15,23,42,0.6);">' +
+          '<i class="fas fa-file-chart-column" style="font-size: 42px; color: var(--emerald-400); margin-bottom: 14px; display: inline-block;"></i>' +
+          '<h3 style="font-size: 16.5px; font-weight: 800; color: #FFF; margin-bottom: 8px;">พร้อมออกรายงาน PDF / Excel</h3>' +
+          '<p style="font-size: 13px; color: var(--text-muted); max-width: 480px; margin: 0 auto 18px;">กรุณาเลือกรูปแบบรายงาน, ห้องเรียน, กิจกรรม และช่วงวันที่ที่ต้องการ จากนั้นกดปุ่มด้านล่างเพื่อประมวลผล</p>' +
+          '<button type="button" class="btn-glass btn-emerald" onclick="generateReportPreview()" style="padding: 10px 24px; font-weight: 800; font-size: 14px; box-shadow: 0 0 20px rgba(16,185,129,0.4);">' +
+          '  <i class="fas fa-arrows-rotate"></i> 🔄 โหลดฐานข้อมูลเพื่อประมวลผล' +
+          '</button>' +
+        '</div>';
       }
     }
-
-
-    function getReportDateRange() {
-      var startEl = document.getElementById('report-date-start');
-      var endEl = document.getElementById('report-date-end');
-      var legacyEl = document.getElementById('report-date-select');
-      var today = getTodayDateString();
-
-      var start = (startEl && startEl.value) || (legacyEl && legacyEl.value) || today;
-      var end = (endEl && endEl.value) || start;
-
-      if (end < start) {
-        var tmp = start;
-        start = end;
-        end = tmp;
-        if (startEl) startEl.value = start;
-        if (endEl) endEl.value = end;
-      }
-
-      if (legacyEl) legacyEl.value = start;
-
-      var isRange = (start !== end);
-      var displayStr = isRange ? (formatThaiDate(start) + ' ถึง ' + formatThaiDate(end)) : formatThaiDate(start);
-      var fileTag = isRange ? (start + '_to_' + end) : start;
-
-      return {
-        startDate: start,
-        endDate: end,
-        isRange: isRange,
-        displayStr: displayStr,
-        fileTag: fileTag
-      };
-    }
-
-    function getAttendanceMapFromLocalStorage(dateStr, activityName, endDateStr) {
-      var allAtt = getLocalStorageAttendance();
-      var startD = formatDateString(dateStr);
-      var endD = endDateStr ? formatDateString(endDateStr) : startD;
-      if (endD < startD) {
-        var tD = startD;
-        startD = endD;
-        endD = tD;
-      }
-      var map = {};
-      for (var i = 0; i < allAtt.length; i++) {
-        var it = allAtt[i];
-        var itemD = formatDateString(it.date);
-        var isMatchDate = (startD === endD) ? (itemD === startD) : (itemD >= startD && itemD <= endD);
-        if (isMatchDate) {
-          var act = it.activityName || 'เช็คชื่อมาเรียน';
-          if (isActivityMatch(activityName, act)) {
-            var attObj = {
-              status: it.status,
-              selfiePhoto: it.selfiePhoto || '',
-              distanceMeters: it.distanceMeters || 0,
-              activityName: act,
-              checkinTime: it.checkinTime || '',
-              note: it.note || '',
-              date: itemD
-            };
-            if (!map[it.studentId] || it.status === 'Present' || it.status === 'มาเรียน') {
-              map[it.studentId] = attObj;
-              map[String(it.studentId).toLowerCase()] = attObj;
-            }
-          }
-        }
-      }
-      return map;
-    }
-
-    
-    function getRangeAttendanceSummaryFromLocal(startDateStr, endDateStr, className, activityName) {
-      var allAtt = getLocalStorageAttendance();
-      var startD = formatDateString(startDateStr);
-      var endD = endDateStr ? formatDateString(endDateStr) : startD;
-      if (endD < startD) {
-        var tmp = startD; startD = endD; endD = tmp;
-      }
-
-      var cleanClass = String(className || 'all').trim();
-      var cleanAct = String(activityName || 'all').trim();
-
-      var allStudents = AppState.students || [];
-      var studentMap = {};
-      var studentOrder = [];
-
-      for (var s = 0; s < allStudents.length; s++) {
-        var st = allStudents[s];
-        if (!isClassMatch(cleanClass, st.className)) continue;
-        var sId = String(st.studentId).trim();
-        studentMap[sId.toLowerCase()] = {
-          studentId: sId,
-          studentNo: st.studentNo || (s + 1),
-          name: st.name,
-          className: st.className,
-          present: 0,
-          late: 0,
-          sick: 0,
-          leave: 0,
-          absent: 0,
-          totalRecords: 0
-        };
-        studentOrder.push(sId.toLowerCase());
-      }
-
-      var datesWithDataMap = {};
-
-      for (var i = 0; i < allAtt.length; i++) {
-        var row = allAtt[i];
-        var rowD = formatDateString(row.date);
-        if (rowD >= startD && rowD <= endD) {
-          var rowAct = String(row.activityName || 'เช็คชื่อมาเรียน').trim();
-          if (!isActivityMatch(cleanAct, rowAct)) continue;
-
-          var sId = String(row.studentId || '').trim().toLowerCase();
-          var stObj = studentMap[sId];
-          if (!stObj) continue;
-
-          datesWithDataMap[rowD] = true;
-
-          var status = String(row.status || 'Present').trim();
-          if (status === 'Present' || status === 'มาเรียน') {
-            stObj.present++;
-          } else if (status === 'Late' || status === 'มาสาย') {
-            stObj.late++;
-          } else if (status === 'Sick' || status === 'ลาป่วย') {
-            stObj.sick++;
-          } else if (status === 'Leave' || status === 'ลากิจ') {
-            stObj.leave++;
-          } else {
-            stObj.absent++;
-          }
-          stObj.totalRecords++;
-        }
-      }
-
-      var recordedDates = Object.keys(datesWithDataMap).sort();
-      var totalDays = recordedDates.length;
-
-      var resultList = [];
-      var totPresent = 0, totLate = 0, totSick = 0, totLeave = 0, totAbsent = 0;
-
-      for (var k = 0; k < studentOrder.length; k++) {
-        var item = studentMap[studentOrder[k]];
-        if (totalDays > item.totalRecords) {
-          var unrecorded = totalDays - item.totalRecords;
-          item.absent += unrecorded;
-        }
-        var attended = item.present + item.late;
-        var effTotal = Math.max(totalDays, item.present + item.late + item.sick + item.leave + item.absent);
-        var attRate = effTotal > 0 ? ((attended / effTotal) * 100).toFixed(1) : '100.0';
-
-        var evalLabel = 'ดีเยี่ยม';
-        var evalClass = 'excellent';
-        var rNum = parseFloat(attRate);
-        if (rNum >= 85) {
-          evalLabel = 'ดีเยี่ยม';
-          evalClass = 'badge-present';
-        } else if (rNum >= 80) {
-          evalLabel = 'ปกติ';
-          evalClass = 'badge-present';
-        } else if (rNum >= 60) {
-          evalLabel = 'เสี่ยงติด มส.';
-          evalClass = 'badge-warning';
-        } else {
-          evalLabel = 'หมดสิทธิ์สอบ';
-          evalClass = 'badge-late';
-        }
-
-        totPresent += item.present;
-        totLate += item.late;
-        totSick += item.sick;
-        totLeave += item.leave;
-        totAbsent += item.absent;
-
-        resultList.push({
-          studentId: item.studentId,
-          studentNo: item.studentNo,
-          name: item.name,
-          className: item.className,
-          present: item.present,
-          late: item.late,
-          sick: item.sick,
-          leave: item.leave,
-          absent: item.absent,
-          attended: attended,
-          totalDays: effTotal,
-          attendanceRate: attRate,
-          evaluation: evalLabel,
-          evalClass: evalClass
-        });
-      }
-
-      return {
-        status: 'success',
-        startDate: startD,
-        endDate: endD,
-        startDateThai: formatThaiDate(startD),
-        endDateThai: formatThaiDate(endD),
-        className: (cleanClass === 'all' || cleanClass === 'ทุกห้องเรียน') ? 'ทุกห้องเรียน' : ('ห้อง ' + cleanClass.replace(/^ห้อง\s*/, '')),
-        activityName: (cleanAct === 'all' || !cleanAct) ? 'ทุกกิจกรรม/วิชา' : cleanAct,
-        recordedDates: recordedDates,
-        totalRecordedDays: totalDays,
-        summaryTotals: {
-          totalStudents: resultList.length,
-          present: totPresent,
-          late: totLate,
-          sick: totSick,
-          leave: totLeave,
-          absent: totAbsent,
-          avgRate: resultList.length > 0 && totalDays > 0 ? (((totPresent + totLate) / (resultList.length * totalDays)) * 100).toFixed(1) : '100.0'
-        },
-        students: resultList
-      };
-    }
-
-    function renderRangeSummaryReportDocument(data, dateRange, className, activityName, statusFilter) {
-      var container = document.getElementById('report-preview-container');
-      if (!container) return;
-      container.innerHTML = '';
-      AppState.lastRangeReportData = data;
-
-      var paper = document.createElement('div');
-      paper.style.padding = '24px';
-      paper.style.background = '#0F1523';
-      paper.style.borderRadius = 'var(--radius-sm)';
-      paper.id = 'printable-report-area';
-
-      var header = document.createElement('div');
-      header.style.textAlign = 'center';
-      header.style.marginBottom = '20px';
-      
-      var hTitle = document.createElement('div');
-      hTitle.style.fontSize = '19px';
-      hTitle.style.fontWeight = '700';
-      hTitle.style.color = '#FFFFFF';
-      hTitle.innerHTML = '<i class="fas fa-chart-pie" style="color: #FF6B00; margin-right: 8px;"></i>รายงานสรุปยอดสถิติการมาเรียนสะสมรายบุคคล (Student Attendance Range Summary)';
-      header.appendChild(hTitle);
-
-      var hSub = document.createElement('div');
-      hSub.style.fontSize = '13.5px';
-      hSub.style.color = 'var(--orange-400)';
-      hSub.style.marginTop = '4px';
-      hSub.textContent = '📅 ข้อมูลสะสมตั้งแต่วันที่ ' + data.startDateThai + ' ถึงวันที่ ' + data.endDateThai;
-      header.appendChild(hSub);
-      paper.appendChild(header);
-
-      // Meta Info Row
-      var metaRow = document.createElement('div');
-      metaRow.style.display = 'flex';
-      metaRow.style.justifyContent = 'space-between';
-      metaRow.style.fontSize = '13px';
-      metaRow.style.color = 'var(--text-secondary)';
-      metaRow.style.marginBottom = '14px';
-      metaRow.style.paddingBottom = '10px';
-      metaRow.style.borderBottom = '1px solid var(--border-glass)';
-      metaRow.style.flexWrap = 'wrap';
-      metaRow.style.gap = '8px';
-
-      var datesListStr = (data.recordedDates && data.recordedDates.length > 0)
-        ? data.recordedDates.map(function(d) { return formatThaiDate(d); }).join(', ')
-        : 'ไม่พบบันทึกการเช็คชื่อในช่วงนี้';
-
-      metaRow.innerHTML = '<span><strong>📅 ช่วงวันที่:</strong> ' + data.startDateThai + ' - ' + data.endDateThai + '</span>' +
-                          '<span><strong>🏫 ห้องเรียน:</strong> ' + data.className + '</span>' +
-                          '<span><strong>🏷️ กิจกรรม/วิชา:</strong> ' + data.activityName + '</span>' +
-                          '<span><strong>📊 จำนวนวันทำการที่มีข้อมูล:</strong> <strong style="color:#FF6B00;">' + data.totalRecordedDays + ' วัน</strong></span>';
-      paper.appendChild(metaRow);
-
-      // Recorded Dates Notice Banner
-      var dateNotice = document.createElement('div');
-      dateNotice.style.background = 'rgba(15, 23, 42, 0.6)';
-      dateNotice.style.border = '1px solid rgba(255, 107, 0, 0.25)';
-      dateNotice.style.borderRadius = '8px';
-      dateNotice.style.padding = '8px 12px';
-      dateNotice.style.fontSize = '12px';
-      dateNotice.style.color = '#94A3B8';
-      dateNotice.style.marginBottom = '16px';
-      dateNotice.innerHTML = '<strong style="color:#FBBF24;"><i class="fas fa-calendar-check"></i> วันที่มีการบันทึกการเช็คชื่อ (' + data.totalRecordedDays + ' วัน):</strong> ' + datesListStr;
-      paper.appendChild(dateNotice);
-
-      // Overall Summary Stats Bar
-      var totals = data.summaryTotals || {};
-      var statsBar = document.createElement('div');
-      statsBar.style.display = 'grid';
-      statsBar.style.gridTemplateColumns = 'repeat(auto-fit, minmax(110px, 1fr))';
-      statsBar.style.gap = '8px';
-      statsBar.style.marginBottom = '16px';
-
-      statsBar.innerHTML = '<div style="background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); border-radius: 8px; padding: 8px; text-align: center;">' +
-                             '<div style="font-size: 11px; color: #10B981; font-weight: 600;">มาตรงเวลารวม</div>' +
-                             '<div style="font-size: 18px; font-weight: 800; color: #10B981;">' + (totals.present || 0) + ' ครั้ง</div>' +
-                           '</div>' +
-                           '<div style="background: rgba(236,72,153,0.15); border: 1px solid rgba(236,72,153,0.3); border-radius: 8px; padding: 8px; text-align: center;">' +
-                             '<div style="font-size: 11px; color: #EC4899; font-weight: 600;">มาสายรวม</div>' +
-                             '<div style="font-size: 18px; font-weight: 800; color: #EC4899;">' + (totals.late || 0) + ' ครั้ง</div>' +
-                           '</div>' +
-                           '<div style="background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3); border-radius: 8px; padding: 8px; text-align: center;">' +
-                             '<div style="font-size: 11px; color: #F59E0B; font-weight: 600;">ลาป่วยรวม</div>' +
-                             '<div style="font-size: 18px; font-weight: 800; color: #F59E0B;">' + (totals.sick || 0) + ' ครั้ง</div>' +
-                           '</div>' +
-                           '<div style="background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.3); border-radius: 8px; padding: 8px; text-align: center;">' +
-                             '<div style="font-size: 11px; color: #8B5CF6; font-weight: 600;">ลากิจรวม</div>' +
-                             '<div style="font-size: 18px; font-weight: 800; color: #8B5CF6;">' + (totals.leave || 0) + ' ครั้ง</div>' +
-                           '</div>' +
-                           '<div style="background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; padding: 8px; text-align: center;">' +
-                             '<div style="font-size: 11px; color: #EF4444; font-weight: 600;">ขาดเรียนรวม</div>' +
-                             '<div style="font-size: 18px; font-weight: 800; color: #EF4444;">' + (totals.absent || 0) + ' ครั้ง</div>' +
-                           '</div>' +
-                           '<div style="background: rgba(255,107,0,0.15); border: 1px solid rgba(255,107,0,0.3); border-radius: 8px; padding: 8px; text-align: center;">' +
-                             '<div style="font-size: 11px; color: #FF6B00; font-weight: 600;">อัตราเข้าเรียนเฉลี่ย</div>' +
-                             '<div style="font-size: 18px; font-weight: 800; color: #FF6B00;">' + (totals.avgRate || '100.0') + '%</div>' +
-                           '</div>';
-      paper.appendChild(statsBar);
-
-      // Summary Table by Individual Student
-      var table = document.createElement('table');
-      table.className = 'glass-table';
-      var thead = document.createElement('thead');
-      thead.innerHTML = '<tr>' +
-                          '<th style="width: 45px; text-align: center;">เลขที่</th>' +
-                          '<th style="width: 95px;">รหัสนักศึกษา</th>' +
-                          '<th>ชื่อ - นามสกุล</th>' +
-                          '<th style="width: 75px; text-align: center;">ห้องเรียน</th>' +
-                          '<th style="width: 70px; text-align: center; color:#10B981;">🟢 ตรงเวลา</th>' +
-                          '<th style="width: 65px; text-align: center; color:#EC4899;">🌸 มาสาย</th>' +
-                          '<th style="width: 65px; text-align: center; color:#F59E0B;">🟡 ลาป่วย</th>' +
-                          '<th style="width: 65px; text-align: center; color:#8B5CF6;">🔵 ลากิจ</th>' +
-                          '<th style="width: 65px; text-align: center; color:#EF4444;">🔴 ขาด</th>' +
-                          '<th style="width: 80px; text-align: center; color:#38BDF8;">📈 รวมมา</th>' +
-                          '<th style="width: 85px; text-align: center; color:#FF6B00;">% เข้าเรียน</th>' +
-                          '<th style="width: 100px; text-align: center;">ผลการประเมิน</th>' +
-                        '</tr>';
-      table.appendChild(thead);
-
-      var tbody = document.createElement('tbody');
-      var students = data.students || [];
-
-      if (students.length === 0) {
-        var trNone = document.createElement('tr');
-        trNone.innerHTML = '<td colspan="12" style="text-align:center; padding:32px; color:var(--text-muted); font-size:14px;"><i class="fas fa-folder-open" style="font-size:28px; color:#FF6B00; display:block; margin-bottom:8px;"></i>ไม่พบข้อมูลนักเรียนที่ตรงตามเงื่อนไขตัวกรอง</td>';
-        tbody.appendChild(trNone);
-      } else {
-        for (var r = 0; r < students.length; r++) {
-          var stItem = students[r];
-          var tr = document.createElement('tr');
-
-          var evalBadgeClass = 'badge-glass ';
-          var rateNum = parseFloat(stItem.attendanceRate);
-          if (rateNum >= 80) evalBadgeClass += 'badge-present';
-          else if (rateNum >= 60) evalBadgeClass += 'badge-warning';
-          else evalBadgeClass += 'badge-late';
-
-          tr.innerHTML = '<td style="text-align:center; font-weight:700;">' + (stItem.studentNo || (r + 1)) + '</td>' +
-                         '<td style="font-size:12px; color:var(--text-secondary);">' + escapeHtml(stItem.studentId) + '</td>' +
-                         '<td style="font-weight:600; color:#FFF; font-size:13.5px;">' + escapeHtml(stItem.name) + '</td>' +
-                         '<td style="text-align:center; font-size:12px;">' + escapeHtml(stItem.className) + '</td>' +
-                         '<td style="text-align:center; font-weight:700; color:#10B981;">' + stItem.present + '</td>' +
-                         '<td style="text-align:center; font-weight:700; color:#EC4899;">' + stItem.late + '</td>' +
-                         '<td style="text-align:center; font-weight:700; color:#F59E0B;">' + stItem.sick + '</td>' +
-                         '<td style="text-align:center; font-weight:700; color:#8B5CF6;">' + stItem.leave + '</td>' +
-                         '<td style="text-align:center; font-weight:700; color:#EF4444;">' + stItem.absent + '</td>' +
-                         '<td style="text-align:center; font-weight:800; color:#38BDF8;">' + stItem.attended + ' / ' + stItem.totalDays + '</td>' +
-                         '<td style="text-align:center; font-weight:800; color:#FF6B00;">' + stItem.attendanceRate + '%</td>' +
-                         '<td style="text-align:center;"><span class="' + evalBadgeClass + '" style="font-size:11px; padding:3px 8px;">' + stItem.evaluation + '</span></td>';
-
-          tbody.appendChild(tr);
-        }
-      }
-
-      table.appendChild(tbody);
-      paper.appendChild(table);
-      container.appendChild(paper);
-    }
-
 
     function generateReportPreview() {
       var reportType = (document.getElementById('report-type-select') && document.getElementById('report-type-select').value) || 'daily';
@@ -18494,7 +17981,842 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
         });
       }
     }
-  </script>
+  
+
+    /**
+     * =========================================================================
+     * AI REAL-TIME FACE RECOGNITION ATTENDANCE SYSTEM
+     * Powered by face-api.js & Web Audio API Synthesizer
+     * Zero ES6 Template Literals (Strict GAS Compatibility)
+     * =========================================================================
+     */
+    
+    /**
+     * =========================================================================
+     * AI FACE ENROLLMENT STUDIO JAVASCRIPT ENGINE
+     * Captures, crops, optimizes, and stores student reference face in database
+     * Zero ES6 Template Literals (Strict GAS Compatibility)
+     * =========================================================================
+     */
+    var AIFaceEnrollmentState = {
+      stream: null,
+      facingMode: 'user',
+      selectedStudentId: '',
+      selectedClass: 'all',
+      filteredStudents: []
+    };
+
+    function openAIFaceEnrollmentModal(preselectStudentId, preselectClass) {
+      AIFaceEnrollmentState.selectedStudentId = preselectStudentId || '';
+      AIFaceEnrollmentState.selectedClass = preselectClass || 'all';
+
+      populateEnrollClassDropdown();
+      populateEnrollStudentDropdown();
+
+      openModal('modal-ai-face-enrollment');
+      startEnrollCameraStream();
+    }
+
+    function closeAIFaceEnrollmentModal() {
+      if (AIFaceEnrollmentState.stream) {
+        try {
+          var tracks = AIFaceEnrollmentState.stream.getTracks();
+          for (var t = 0; t < tracks.length; t++) tracks[t].stop();
+        } catch (e) {}
+        AIFaceEnrollmentState.stream = null;
+      }
+      var video = document.getElementById('enroll-video');
+      if (video) video.srcObject = null;
+      closeModal('modal-ai-face-enrollment');
+    }
+
+    function populateEnrollClassDropdown() {
+      var sel = document.getElementById('enroll-class-select');
+      if (!sel) return;
+      sel.innerHTML = '<option value="all">🌟 ทุกห้องเรียน</option>';
+
+      var classes = getClassListLocal();
+      for (var i = 0; i < classes.length; i++) {
+        var opt = document.createElement('option');
+        opt.value = classes[i];
+        opt.textContent = 'ห้อง ' + classes[i].replace(/^ห้อง\s*/, '');
+        sel.appendChild(opt);
+      }
+      sel.value = AIFaceEnrollmentState.selectedClass || 'all';
+    }
+
+    function onEnrollClassChange() {
+      var sel = document.getElementById('enroll-class-select');
+      AIFaceEnrollmentState.selectedClass = sel ? sel.value : 'all';
+      populateEnrollStudentDropdown();
+    }
+
+    function populateEnrollStudentDropdown() {
+      var sel = document.getElementById('enroll-student-select');
+      if (!sel) return;
+      sel.innerHTML = '<option value="">-- กรุณาเลือกนักศึกษา --</option>';
+
+      var students = AppState.students || [];
+      var curClass = AIFaceEnrollmentState.selectedClass;
+      var filtered = [];
+
+      for (var i = 0; i < students.length; i++) {
+        if (curClass === 'all' || isClassMatch(curClass, students[i].className)) {
+          filtered.push(students[i]);
+        }
+      }
+
+      AIFaceEnrollmentState.filteredStudents = filtered;
+
+      for (var k = 0; k < filtered.length; k++) {
+        var s = filtered[k];
+        var opt = document.createElement('option');
+        opt.value = s.studentId;
+        var hasFaceIcon = (s.photo && s.photo.length > 15 && s.photo !== '-') ? '🟢 ' : '⚪ ';
+        opt.textContent = hasFaceIcon + 'เลขที่ ' + (s.studentNo || (k + 1)) + ' ' + s.name + ' (' + s.className + ')';
+        sel.appendChild(opt);
+      }
+
+      if (AIFaceEnrollmentState.selectedStudentId && sel.querySelector('option[value="' + AIFaceEnrollmentState.selectedStudentId + '"]')) {
+        sel.value = AIFaceEnrollmentState.selectedStudentId;
+      } else if (filtered.length > 0) {
+        sel.value = filtered[0].studentId;
+        AIFaceEnrollmentState.selectedStudentId = filtered[0].studentId;
+      }
+
+      updateEnrollStudentCard();
+    }
+
+    function onEnrollStudentChange() {
+      var sel = document.getElementById('enroll-student-select');
+      AIFaceEnrollmentState.selectedStudentId = sel ? sel.value : '';
+      updateEnrollStudentCard();
+    }
+
+    function enrollNavigateStudent(dir) {
+      var list = AIFaceEnrollmentState.filteredStudents || [];
+      if (list.length === 0) return;
+
+      var curId = AIFaceEnrollmentState.selectedStudentId;
+      var curIdx = -1;
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].studentId === curId) {
+          curIdx = i;
+          break;
+        }
+      }
+
+      var nextIdx = curIdx + dir;
+      if (nextIdx < 0) nextIdx = list.length - 1;
+      if (nextIdx >= list.length) nextIdx = 0;
+
+      AIFaceEnrollmentState.selectedStudentId = list[nextIdx].studentId;
+      var sel = document.getElementById('enroll-student-select');
+      if (sel) sel.value = list[nextIdx].studentId;
+      updateEnrollStudentCard();
+    }
+
+    function updateEnrollStudentCard() {
+      var curId = AIFaceEnrollmentState.selectedStudentId;
+      var students = AppState.students || [];
+      var curStudent = null;
+      for (var i = 0; i < students.length; i++) {
+        if (students[i].studentId === curId) {
+          curStudent = students[i];
+          break;
+        }
+      }
+
+      var nameEl = document.getElementById('enroll-current-student-name');
+      var metaEl = document.getElementById('enroll-current-student-meta');
+      var badgeEl = document.getElementById('enroll-current-status-badge');
+      var previewEl = document.getElementById('enroll-current-photo-preview');
+
+      if (!curStudent) {
+        if (nameEl) nameEl.textContent = 'ยังไม่ได้เลือกนักศึกษา';
+        if (metaEl) metaEl.textContent = 'กรุณาเลือกนักศึกษาจากรายการด้านบน';
+        if (badgeEl) {
+          badgeEl.className = 'badge-glass badge-absent';
+          badgeEl.textContent = '⚪ กรุณาเลือกนักศึกษา';
+        }
+        if (previewEl) previewEl.innerHTML = '<i class="fas fa-user" style="color: #64748B;"></i>';
+        return;
+      }
+
+      if (nameEl) nameEl.textContent = curStudent.name;
+      if (metaEl) metaEl.textContent = 'รหัส: ' + curStudent.studentId + ' • ห้อง: ' + curStudent.className + ' • เลขที่: ' + (curStudent.studentNo || '-');
+
+      var hasFace = (curStudent.photo && curStudent.photo.length > 15 && curStudent.photo !== '-');
+      if (badgeEl) {
+        if (hasFace) {
+          badgeEl.className = 'badge-glass badge-present';
+          badgeEl.innerHTML = '<i class="fas fa-circle-check"></i> 🟢 มีใบหน้าหลักในระบบแล้ว (AI Ready)';
+        } else {
+          badgeEl.className = 'badge-glass badge-absent';
+          badgeEl.innerHTML = '<i class="fas fa-circle-exclamation"></i> ⚪ ยังไม่มีรูปใบหน้าในระบบ';
+        }
+      }
+
+      if (previewEl) {
+        if (hasFace) {
+          previewEl.innerHTML = '<img src="' + escapeHtml(curStudent.photo) + '" style="width: 100%; height: 100%; object-fit: cover;" />';
+        } else {
+          previewEl.innerHTML = '<i class="fas fa-user" style="color: #64748B;"></i>';
+        }
+      }
+    }
+
+    function startEnrollCameraStream() {
+      if (AIFaceEnrollmentState.stream) {
+        try {
+          var tracks = AIFaceEnrollmentState.stream.getTracks();
+          for (var t = 0; t < tracks.length; t++) tracks[t].stop();
+        } catch (e) {}
+      }
+
+      var video = document.getElementById('enroll-video');
+      var constraints = {
+        audio: false,
+        video: {
+          facingMode: AIFaceEnrollmentState.facingMode,
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }
+      };
+
+      navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
+        AIFaceEnrollmentState.stream = stream;
+        if (video) {
+          video.srcObject = stream;
+          video.play();
+        }
+      }).catch(function(err) {
+        console.error('Enroll camera error:', err);
+        showToast('ไม่สามารถเปิดกล้องได้: ' + (err.message || 'โปรดอนุญาตสิทธิ์กล้อง'), 'error');
+      });
+    }
+
+    function captureAndEnrollCurrentStudent() {
+      var sId = AIFaceEnrollmentState.selectedStudentId;
+      if (!sId) {
+        showToast('กรุณาเลือกนักศึกษาที่ต้องการลงทะเบียนใบหน้าก่อน', 'warning');
+        return;
+      }
+
+      var video = document.getElementById('enroll-video');
+      var canvas = document.getElementById('enroll-canvas');
+      if (!video || !canvas) return;
+
+      var vW = video.videoWidth || 640;
+      var vH = video.videoHeight || 480;
+
+      // Crop center square to focus on face
+      var size = Math.min(vW, vH);
+      var startX = (vW - size) / 2;
+      var startY = (vH - size) / 2;
+
+      canvas.width = 400;
+      canvas.height = 400;
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(video, startX, startY, size, size, 0, 0, 400, 400);
+
+      var photoBase64 = canvas.toDataURL('image/jpeg', 0.85);
+
+      saveEnrolledFaceToStudent(sId, photoBase64);
+    }
+
+    function onEnrollFileUpload(e) {
+      var sId = AIFaceEnrollmentState.selectedStudentId;
+      if (!sId) {
+        showToast('กรุณาเลือกนักศึกษาที่ต้องการลงทะเบียนใบหน้าก่อน', 'warning');
+        return;
+      }
+
+      var file = e.target.files[0];
+      if (!file) return;
+
+      var reader = new FileReader();
+      reader.onload = function(evt) {
+        var img = new Image();
+        img.onload = function() {
+          var canvas = document.getElementById('enroll-canvas');
+          var ctx = canvas.getContext('2d');
+          var minDim = Math.min(img.width, img.height);
+          var sX = (img.width - minDim) / 2;
+          var sY = (img.height - minDim) / 2;
+
+          canvas.width = 400;
+          canvas.height = 400;
+          ctx.drawImage(img, sX, sY, minDim, minDim, 0, 0, 400, 400);
+          var croppedBase64 = canvas.toDataURL('image/jpeg', 0.85);
+          saveEnrolledFaceToStudent(sId, croppedBase64);
+        };
+        img.src = evt.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function saveEnrolledFaceToStudent(sId, photoBase64) {
+      // 1. Update AppState and localStorage
+      var students = AppState.students || [];
+      var targetStudent = null;
+      for (var i = 0; i < students.length; i++) {
+        if (students[i].studentId === sId) {
+          students[i].photo = photoBase64;
+          targetStudent = students[i];
+          break;
+        }
+      }
+      localStorage.setItem('gas_student_app_students', JSON.stringify(students));
+
+      // 2. Clear cached descriptor so faceapi recomputes on next scan
+      if (AIFaceScannerState.studentDescriptorsMap) {
+        delete AIFaceScannerState.studentDescriptorsMap[sId];
+      }
+
+      playFaceRecognitionSuccessChime();
+      updateEnrollStudentCard();
+      populateEnrollStudentDropdown();
+      showToast('บันทึกใบหน้าหลักของ "' + (targetStudent ? targetStudent.name : sId) + '" สำเร็จ! 🎉', 'success');
+
+      // 3. Sync to Google Sheets backend
+      if (isGASAvailable()) {
+        google.script.run
+          .withSuccessHandler(function(res) {
+            console.log('Face photo saved to Google Sheet:', res);
+          })
+          .withFailureHandler(function(err) {
+            console.warn('Failed to sync face photo to GAS:', err);
+          })
+          .saveStudentFacePhoto(sId, photoBase64);
+      }
+    }
+
+    function enrollNextStudentBatch() {
+      enrollNavigateStudent(1);
+    }
+
+    
+
+    var AIFaceScannerState = {
+      stream: null,
+      facingMode: 'environment', // 'user' (front) or 'environment' (back)
+      isDetecting: false,
+      modelsLoaded: false,
+      faceMatcher: null,
+      soundEnabled: true,
+      audioCtx: null,
+      maxDescriptorDistance: 0.40, // default match threshold (lower = stricter)
+      targetSession: null,
+      targetClass: 'all',
+      targetActivity: 'เช็คชื่อมาเรียน',
+      targetDate: '',
+      checkedInCooldown: {}, // studentId -> expiryMs
+      studentDescriptorsMap: {}, // studentId -> Float32Array
+      recentRecognizedList: []
+    };
+
+    function playFaceRecognitionSuccessChime() {
+      if (AIFaceScannerState.soundEnabled === false) return;
+      try {
+        var AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtxClass) return;
+        if (!AIFaceScannerState.audioCtx) {
+          AIFaceScannerState.audioCtx = new AudioCtxClass();
+        }
+        var ctx = AIFaceScannerState.audioCtx;
+        if (ctx.state === 'suspended') ctx.resume();
+
+        var now = ctx.currentTime;
+        var osc1 = ctx.createOscillator();
+        var gain1 = ctx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(659.25, now); // E5
+        osc1.frequency.exponentialRampToValueAtTime(1318.51, now + 0.12); // E6
+        gain1.gain.setValueAtTime(0.18, now);
+        gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+        osc1.connect(gain1);
+        gain1.connect(ctx.destination);
+        osc1.start(now);
+        osc1.stop(now + 0.35);
+      } catch (e) {}
+    }
+
+    function toggleFaceCameraFacingMode() {
+      AIFaceScannerState.facingMode = (AIFaceScannerState.facingMode === 'user') ? 'environment' : 'user';
+      var lbl = document.getElementById('face-cam-mode-label');
+      if (lbl) lbl.textContent = (AIFaceScannerState.facingMode === 'user') ? 'หน้า' : 'หลัง';
+      startFaceCameraStream();
+    }
+
+    function toggleFaceScannerSound() {
+      AIFaceScannerState.soundEnabled = !AIFaceScannerState.soundEnabled;
+      var lbl = document.getElementById('face-sound-label');
+      var icon = document.getElementById('face-sound-icon');
+      if (lbl) lbl.textContent = AIFaceScannerState.soundEnabled ? 'เสียง: เปิด' : 'เสียง: ปิด';
+      if (icon) icon.style.color = AIFaceScannerState.soundEnabled ? '#22C55E' : '#94A3B8';
+    }
+
+    function updateFaceMatchThreshold(val) {
+      var numVal = parseInt(val, 10) || 60;
+      var lbl = document.getElementById('face-match-threshold-val');
+      if (lbl) lbl.textContent = numVal + '%';
+      // Convert slider (40-80%) to distance threshold (0.60 to 0.35)
+      AIFaceScannerState.maxDescriptorDistance = 1.0 - (numVal / 100);
+      if (AIFaceScannerState.faceMatcher && AIFaceScannerState.labeledDescriptors) {
+        AIFaceScannerState.faceMatcher = new faceapi.FaceMatcher(AIFaceScannerState.labeledDescriptors, AIFaceScannerState.maxDescriptorDistance);
+      }
+    }
+
+    function openAIFaceScannerModal(sessionId) {
+      // 1. Identify active session or classroom
+      var sess = null;
+      if (sessionId && AppState.activeSessions) {
+        for (var i = 0; i < AppState.activeSessions.length; i++) {
+          if (AppState.activeSessions[i].sessionId === sessionId) {
+            sess = AppState.activeSessions[i];
+            break;
+          }
+        }
+      }
+      if (!sess && AppState.activeSessions && AppState.activeSessions.length > 0) {
+        sess = AppState.activeSessions[0];
+      }
+      if (!sess && AppState.activeSession) {
+        sess = AppState.activeSession;
+      }
+
+      var targetClass = sess ? sess.className : (getSelectedAttendanceClasses() || 'all');
+      var targetAct = sess ? sess.activityName : ((document.getElementById('att-activity-select') && document.getElementById('att-activity-select').value) || 'เช็คชื่อมาเรียน');
+      var targetDate = sess ? (sess.date || getTodayDateString()) : ((document.getElementById('att-date-select') && document.getElementById('att-date-select').value) || getTodayDateString());
+
+      AIFaceScannerState.targetSession = sess;
+      AIFaceScannerState.targetClass = targetClass;
+      AIFaceScannerState.targetActivity = targetAct;
+      AIFaceScannerState.targetDate = targetDate;
+      AIFaceScannerState.recentRecognizedList = [];
+
+      var infoEl = document.getElementById('face-scanner-session-info');
+      var classDisplay = (targetClass === 'all' || targetClass === 'ทุกห้องเรียน') ? 'ทุกห้องเรียน' : ('ห้อง ' + targetClass.replace(/^ห้อง\s*/, ''));
+      if (infoEl) infoEl.textContent = 'ห้อง: ' + classDisplay + ' • วิชา: ' + targetAct + ' (' + targetDate + ')';
+
+      updateFaceScanLiveCounters();
+      openModal('modal-ai-face-scanner');
+
+      // 2. Load models & build face matcher
+      loadFaceApiModelsAndDescriptors(targetClass);
+    }
+
+    function closeAIFaceScannerModal() {
+      AIFaceScannerState.isDetecting = false;
+      if (AIFaceScannerState.stream) {
+        try {
+          var tracks = AIFaceScannerState.stream.getTracks();
+          for (var t = 0; t < tracks.length; t++) tracks[t].stop();
+        } catch (e) {}
+        AIFaceScannerState.stream = null;
+      }
+      var video = document.getElementById('face-scanner-video');
+      if (video) video.srcObject = null;
+      closeModal('modal-ai-face-scanner');
+    }
+
+    function loadFaceApiModelsAndDescriptors(targetClass) {
+      var loadingOverlay = document.getElementById('face-scanner-loading-overlay');
+      var loadTitle = document.getElementById('face-loading-title');
+      var loadDesc = document.getElementById('face-loading-desc');
+      var loadBar = document.getElementById('face-loading-bar');
+
+      if (loadingOverlay) loadingOverlay.style.display = 'flex';
+      if (loadTitle) loadTitle.textContent = 'กำลังโหลดโมเดล AI ตรวจจับใบหน้า...';
+      if (loadBar) loadBar.style.width = '20%';
+
+      var modelBaseUrl = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
+
+      var loadPromise = AIFaceScannerState.modelsLoaded
+        ? Promise.resolve()
+        : Promise.all([
+            faceapi.nets.tinyFaceDetector.loadFromUri(modelBaseUrl),
+            faceapi.nets.faceLandmark68Net.loadFromUri(modelBaseUrl),
+            faceapi.nets.faceRecognitionNet.loadFromUri(modelBaseUrl)
+          ]).then(function() {
+            AIFaceScannerState.modelsLoaded = true;
+          });
+
+      loadPromise.then(function() {
+        if (loadTitle) loadTitle.textContent = 'กำลังคำนวณข้อมูลใบหน้านักศึกษาในห้อง...';
+        if (loadBar) loadBar.style.width = '60%';
+
+        return buildStudentFaceMatcher(targetClass, function(cur, tot) {
+          if (loadDesc) loadDesc.textContent = 'กำลังประมวลผลรูปโปรไฟล์ (' + cur + '/' + tot + ' คน)...';
+          if (loadBar) loadBar.style.width = (60 + Math.round((cur / Math.max(1, tot)) * 35)) + '%';
+        });
+      }).then(function(matcher) {
+        AIFaceScannerState.faceMatcher = matcher;
+        if (loadingOverlay) loadingOverlay.style.display = 'none';
+        startFaceCameraStream();
+      }).catch(function(err) {
+        console.error('Face API model loading error:', err);
+        if (loadTitle) loadTitle.textContent = 'เกิดข้อผิดพลาดในการโหลดโมเดล AI';
+        if (loadDesc) loadDesc.textContent = 'กำลังเริ่มกล้องด้วยโหมดสำรอง (Fallback Detection)...';
+        setTimeout(function() {
+          if (loadingOverlay) loadingOverlay.style.display = 'none';
+          startFaceCameraStream();
+        }, 1500);
+      });
+    }
+
+    function buildStudentFaceMatcher(targetClass, progressCb) {
+      var students = AppState.students || [];
+      var roomStudents = [];
+      for (var s = 0; s < students.length; s++) {
+        if (isClassMatch(targetClass, students[s].className)) {
+          roomStudents.push(students[s]);
+        }
+      }
+      if (roomStudents.length === 0) roomStudents = students;
+
+      var labeledDescriptors = [];
+      var total = roomStudents.length;
+      var processed = 0;
+
+      var processChain = Promise.resolve();
+
+      roomStudents.forEach(function(std) {
+        processChain = processChain.then(function() {
+          processed++;
+          if (progressCb) progressCb(processed, total);
+
+          var photoUrl = std.photo || std.selfiePhoto || std.avatar || std.imageUrl || '';
+          if (!photoUrl || photoUrl.length < 15 || photoUrl === '-' || photoUrl === 'null') {
+            return Promise.resolve();
+          }
+
+          // Check memory cache first
+          if (AIFaceScannerState.studentDescriptorsMap[std.studentId]) {
+            labeledDescriptors.push(new faceapi.LabeledFaceDescriptors(std.studentId, [AIFaceScannerState.studentDescriptorsMap[std.studentId]]));
+            return Promise.resolve();
+          }
+
+          return faceapi.fetchImage(photoUrl).then(function(img) {
+            return faceapi.detectSingleFace(img, new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.45 }))
+              .withFaceLandmarks()
+              .withFaceDescriptor();
+          }).then(function(detection) {
+            if (detection && detection.descriptor) {
+              AIFaceScannerState.studentDescriptorsMap[std.studentId] = detection.descriptor;
+              labeledDescriptors.push(new faceapi.LabeledFaceDescriptors(std.studentId, [detection.descriptor]));
+            }
+          }).catch(function(e) {
+            // Ignore single image fetch/CORS error gracefully
+          });
+        });
+      });
+
+      return processChain.then(function() {
+        AIFaceScannerState.labeledDescriptors = labeledDescriptors;
+        if (labeledDescriptors.length > 0) {
+          return new faceapi.FaceMatcher(labeledDescriptors, AIFaceScannerState.maxDescriptorDistance);
+        }
+        return null;
+      });
+    }
+
+    function startFaceCameraStream() {
+      if (AIFaceScannerState.stream) {
+        try {
+          var tracks = AIFaceScannerState.stream.getTracks();
+          for (var t = 0; t < tracks.length; t++) tracks[t].stop();
+        } catch (e) {}
+      }
+
+      var video = document.getElementById('face-scanner-video');
+      var statusText = document.getElementById('face-scanner-status-text');
+
+      var constraints = {
+        audio: false,
+        video: {
+          facingMode: AIFaceScannerState.facingMode,
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }
+      };
+
+      navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
+        AIFaceScannerState.stream = stream;
+        if (video) {
+          video.srcObject = stream;
+          video.onloadedmetadata = function() {
+            video.play();
+            AIFaceScannerState.isDetecting = true;
+            if (statusText) statusText.textContent = '🟢 กำลังตรวจจับใบหน้าแบบเรียลไทม์...';
+            startFaceRecognitionLoop();
+          };
+        }
+      }).catch(function(err) {
+        console.error('Camera stream error:', err);
+        if (statusText) statusText.textContent = '⚠️ ไม่สามารถเปิดกล้องได้: ' + (err.message || 'โปรดอนุญาตสิทธิ์กล้อง');
+      });
+    }
+
+    function startFaceRecognitionLoop() {
+      var video = document.getElementById('face-scanner-video');
+      var canvas = document.getElementById('face-scanner-canvas');
+      if (!video || !canvas) return;
+
+      function renderFrame() {
+        if (!AIFaceScannerState.isDetecting || video.paused || video.ended) return;
+
+        var displaySize = { width: video.clientWidth || 640, height: video.clientHeight || 480 };
+        faceapi.matchDimensions(canvas, displaySize);
+
+        var options = new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.45 });
+
+        faceapi.detectAllFaces(video, options)
+          .withFaceLandmarks()
+          .withFaceDescriptors()
+          .then(function(detections) {
+            var resizedDetections = faceapi.resizeResults(detections, displaySize);
+            var ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (resizedDetections && resizedDetections.length > 0) {
+              for (var i = 0; i < resizedDetections.length; i++) {
+                var det = resizedDetections[i];
+                var box = det.detection.box;
+                var descriptor = det.descriptor;
+
+                var bestMatch = AIFaceScannerState.faceMatcher
+                  ? AIFaceScannerState.faceMatcher.findBestMatch(descriptor)
+                  : { label: 'unknown', distance: 1.0 };
+
+                var isMatched = (bestMatch.label !== 'unknown' && bestMatch.distance <= AIFaceScannerState.maxDescriptorDistance);
+                var studentObj = null;
+
+                if (isMatched) {
+                  var sList = AppState.students || [];
+                  for (var s = 0; s < sList.length; s++) {
+                    if (sList[s].studentId === bestMatch.label) {
+                      studentObj = sList[s];
+                      break;
+                    }
+                  }
+                }
+
+                // Visual Bounding Box
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = isMatched ? '#10B981' : '#00F0FF';
+                ctx.shadowColor = isMatched ? 'rgba(16,185,129,0.8)' : 'rgba(0,240,255,0.8)';
+                ctx.shadowBlur = 12;
+
+                // Draw Rounded Box
+                var x = box.x, y = box.y, w = box.width, h = box.height;
+                var r = 8;
+                ctx.beginPath();
+                ctx.moveTo(x + r, y);
+                ctx.lineTo(x + w - r, y);
+                ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+                ctx.lineTo(x + w, y + h - r);
+                ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+                ctx.lineTo(x + r, y + h);
+                ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+                ctx.lineTo(x, y + r);
+                ctx.quadraticCurveTo(x, y, x + r, y);
+                ctx.closePath();
+                ctx.stroke();
+
+                // Draw Name / Status Tag
+                var confPct = Math.round((1.0 - Math.min(1.0, bestMatch.distance)) * 100);
+                var tagText = studentObj
+                  ? ('✨ ' + studentObj.name + ' (' + confPct + '%)')
+                  : '🔍 ตรวจพบใบหน้า';
+
+                ctx.font = 'bold 12.5px Prompt, Kanit, sans-serif';
+                var textWidth = ctx.measureText(tagText).width;
+                ctx.fillStyle = isMatched ? 'rgba(16, 185, 129, 0.92)' : 'rgba(15, 23, 42, 0.85)';
+                ctx.shadowBlur = 0;
+                ctx.fillRect(x, Math.max(0, y - 24), textWidth + 16, 22);
+
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillText(tagText, x + 8, Math.max(16, y - 8));
+
+                // Process check-in if recognized
+                if (isMatched && studentObj) {
+                  processStudentFaceCheckin(studentObj, confPct);
+                }
+              }
+            }
+
+            if (AIFaceScannerState.isDetecting) {
+              requestAnimationFrame(renderFrame);
+            }
+          }).catch(function(err) {
+            if (AIFaceScannerState.isDetecting) {
+              setTimeout(renderFrame, 100);
+            }
+          });
+      }
+
+      requestAnimationFrame(renderFrame);
+    }
+
+    function processStudentFaceCheckin(studentObj, confPct) {
+      var sId = studentObj.studentId;
+      var nowMs = Date.now();
+
+      // Check cooldown (5 seconds)
+      if (AIFaceScannerState.checkedInCooldown[sId] && nowMs < AIFaceScannerState.checkedInCooldown[sId]) {
+        return;
+      }
+      AIFaceScannerState.checkedInCooldown[sId] = nowMs + 6000;
+
+      playFaceRecognitionSuccessChime();
+
+      var targetDate = AIFaceScannerState.targetDate || getTodayDateString();
+      var targetAct = AIFaceScannerState.targetActivity || 'เช็คชื่อมาเรียน';
+      var sess = AIFaceScannerState.targetSession;
+
+      var checkinTimeStr = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+      // Determine Present vs Late
+      var checkinStatus = 'Present';
+      if (sess && sess.lateAtMs && nowMs > sess.lateAtMs) {
+        checkinStatus = 'Late';
+      }
+
+      // Update LocalStorage attendance
+      var allAtt = getLocalStorageAttendance();
+      var foundIdx = -1;
+      for (var a = 0; a < allAtt.length; a++) {
+        if (allAtt[a].date === targetDate && allAtt[a].studentId === sId && isActivityMatch(allAtt[a].activityName, targetAct)) {
+          foundIdx = a;
+          break;
+        }
+      }
+
+      var attRecord = {
+        date: targetDate,
+        studentId: sId,
+        status: checkinStatus,
+        checkinTime: checkinTimeStr,
+        gpsLocation: 'Face-Scan-AI',
+        distanceMeters: 0,
+        deviceId: 'AI-FaceScan',
+        selfiePhoto: studentObj.photo || studentObj.selfiePhoto || '',
+        checkinType: targetAct,
+        activityName: targetAct,
+        sessionId: sess ? sess.sessionId : ''
+      };
+
+      if (foundIdx > -1) {
+        allAtt[foundIdx] = attRecord;
+      } else {
+        allAtt.push(attRecord);
+      }
+      localStorage.setItem('gas_student_app_attendance', JSON.stringify(allAtt));
+
+      // Add to recognized chips UI
+      addRecognizedFaceChip(studentObj, checkinTimeStr, checkinStatus, confPct);
+      updateFaceScanLiveCounters();
+
+      // Sync with Google Sheets backend
+      if (isGASAvailable()) {
+        var payload = {
+          sessionId: sess ? sess.sessionId : 'AUTO_FACE',
+          className: studentObj.className,
+          activityName: targetAct,
+          studentId: sId,
+          otp: (sess && sess.secretSeed) ? generateClientTOTP(sess.secretSeed, sess.otpIntervalSeconds || 15, nowMs) : '000000',
+          lat: 0,
+          lng: 0,
+          deviceId: 'AI-FaceScan',
+          selfieBase64: studentObj.photo || studentObj.selfiePhoto || ''
+        };
+        google.script.run
+          .withSuccessHandler(function(res) {
+            console.log('Face checkin synced to GAS:', res);
+          })
+          .validateAndCheckinStudent(payload);
+      }
+    }
+
+    function addRecognizedFaceChip(studentObj, timeStr, status, confPct) {
+      var container = document.getElementById('face-scan-recent-chips');
+      if (!container) return;
+
+      // Check if already in chip container
+      var existing = document.getElementById('face-chip-' + studentObj.studentId);
+      if (existing) {
+        existing.style.animation = 'none';
+        setTimeout(function() { existing.style.animation = 'pulse-live 0.6s ease'; }, 10);
+        return;
+      }
+
+      // Remove initial placeholder if present
+      if (container.firstElementChild && container.firstElementChild.textContent.indexOf('ระบบพร้อมสแกน') > -1) {
+        container.innerHTML = '';
+      }
+
+      var photoUrl = studentObj.photo || studentObj.selfiePhoto || studentObj.avatar || '';
+      var photoTag = (photoUrl && photoUrl.length > 15 && photoUrl !== '-')
+        ? '<img src="' + escapeHtml(photoUrl) + '" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1.5px solid #10B981;" />'
+        : '<div style="width: 28px; height: 28px; border-radius: 50%; background: #1E293B; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #10B981;"><i class="fas fa-check"></i></div>';
+
+      var chip = document.createElement('div');
+      chip.id = 'face-chip-' + studentObj.studentId;
+      chip.style.cssText = 'background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.45); border-radius: 20px; padding: 4px 10px 4px 6px; display: flex; align-items: center; gap: 8px; flex-shrink: 0; animation: fadeIn 0.3s ease; box-shadow: 0 0 10px rgba(16,185,129,0.3);';
+
+      var statusColor = (status === 'Late') ? '#FBBF24' : '#34D399';
+      var statusTag = (status === 'Late') ? 'มาสาย' : 'มาเรียน';
+
+      chip.innerHTML = photoTag +
+        '<div>' +
+        '  <div style="font-size: 11.5px; font-weight: 700; color: #FFF; white-space: nowrap;">' + escapeHtml(studentObj.name) + '</div>' +
+        '  <div style="font-size: 10px; color: ' + statusColor + ';">' + statusTag + ' • ' + timeStr + ' (' + confPct + '%)</div>' +
+        '</div>';
+
+      container.insertBefore(chip, container.firstChild);
+    }
+
+    function updateFaceScanLiveCounters() {
+      var presEl = document.getElementById('face-scan-count-pres');
+      var totEl = document.getElementById('face-scan-count-tot');
+      if (!presEl || !totEl) return;
+
+      var targetDate = AIFaceScannerState.targetDate || getTodayDateString();
+      var targetClass = AIFaceScannerState.targetClass || 'all';
+      var targetAct = AIFaceScannerState.targetActivity || 'เช็คชื่อมาเรียน';
+
+      var students = AppState.students || [];
+      var roomStudents = [];
+      for (var s = 0; s < students.length; s++) {
+        if (isClassMatch(targetClass, students[s].className)) {
+          roomStudents.push(students[s]);
+        }
+      }
+      if (roomStudents.length === 0) roomStudents = students;
+
+      var allAtt = getLocalStorageAttendance();
+      var presCount = 0;
+      for (var i = 0; i < roomStudents.length; i++) {
+        var sId = roomStudents[i].studentId;
+        for (var a = 0; a < allAtt.length; a++) {
+          if (allAtt[a].date === targetDate && allAtt[a].studentId === sId && isActivityMatch(allAtt[a].activityName, targetAct)) {
+            if (allAtt[a].status === 'Present' || allAtt[a].status === 'มาเรียน' || allAtt[a].status === 'Late' || allAtt[a].status === 'มาสาย') {
+              presCount++;
+            }
+            break;
+          }
+        }
+      }
+
+      presEl.textContent = presCount;
+      totEl.textContent = roomStudents.length;
+    }
+
+    
+</script>
   <!-- FLOATING THEME TOGGLE BUTTON -->
   <button type="button" class="floating-theme-btn" id="btn-floating-theme" title="สลับโหมดมืด / โหมดสว่าง">
     <i class="fas fa-moon" id="floating-theme-icon"></i>
@@ -18619,6 +18941,224 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
       <div style="padding-top: 14px; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: flex-end;">
         <button type="button" class="btn-glass btn-dark btn-sm-glass" onclick="closePublishParentReportModal()">
           ปิดหน้าต่าง
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================= -->
+  <!-- MODAL: AI FACE RECOGNITION ATTENDANCE SCANNER -->
+  <!-- ============================================================= -->
+    <!-- ============================================================= -->
+  <!-- MODAL: AI FACE ENROLLMENT STUDIO (ถ่ายรูป/ลงทะเบียนใบหน้าหลัก) -->
+  <!-- ============================================================= -->
+  <div class="modal-backdrop-glass" id="modal-ai-face-enrollment" style="z-index: 10009;">
+    <div class="modal-window-glass" style="max-width: 780px; width: 95%; padding: 22px;">
+      <div class="modal-header-flex" style="margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1.5px solid rgba(0, 240, 255, 0.35);">
+        <div class="modal-title" style="display: flex; align-items: center; gap: 10px; color: #FFF; font-size: 16px;">
+          <div style="background: rgba(0, 240, 255, 0.15); width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--cyan-400); border: 1px solid rgba(0, 240, 255, 0.4);">
+            <i class="fas fa-id-badge" style="font-size: 18px;"></i>
+          </div>
+          <div>
+            <div style="font-weight: 800; line-height: 1.2;">📸 ถ่ายรูป / ลงทะเบียนใบหน้าหลัก AI (Face Enrollment)</div>
+            <div style="font-size: 11.5px; color: var(--text-muted); font-weight: 500;">บันทึกภาพถ่ายหน้าตรงสำหรับระบบสแกนใบหน้าเช็คชื่ออัตโนมัติ</div>
+          </div>
+        </div>
+        <button type="button" class="modal-close btn-close-modal" onclick="closeAIFaceEnrollmentModal()">&times;</button>
+      </div>
+
+      <!-- SELECT STUDENT SECTION -->
+      <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px; margin-bottom: 14px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; align-items: end;">
+          <div>
+            <label style="font-size: 12px; font-weight: 700; color: #FFF; display: block; margin-bottom: 4px;">
+              <i class="fas fa-chalkboard-user" style="color: var(--orange-400);"></i> 1. เลือกห้องเรียน:
+            </label>
+            <select id="enroll-class-select" onchange="onEnrollClassChange()" style="width: 100%; padding: 8px 12px; background: #0F172A; border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: #FFF; font-size: 13px; outline: none; cursor: pointer;">
+              <option value="all">🌟 ทุกห้องเรียน</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size: 12px; font-weight: 700; color: #FFF; display: block; margin-bottom: 4px;">
+              <i class="fas fa-user-graduate" style="color: var(--cyan-400);"></i> 2. เลือกนักศึกษา:
+            </label>
+            <select id="enroll-student-select" onchange="onEnrollStudentChange()" style="width: 100%; padding: 8px 12px; background: #0F172A; border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: #FFF; font-size: 13px; outline: none; cursor: pointer;">
+              <option value="">-- กรุณาเลือกนักศึกษา --</option>
+            </select>
+          </div>
+
+          <div style="display: flex; gap: 6px;">
+            <button type="button" class="btn-glass btn-dark btn-sm-glass" onclick="enrollNavigateStudent(-1)" title="นักศึกษาคนก่อนหน้า" style="flex: 1; padding: 8px; justify-content: center; height: 38px;">
+              <i class="fas fa-chevron-left"></i> ก่อนหน้า
+            </button>
+            <button type="button" class="btn-glass btn-dark btn-sm-glass" onclick="enrollNavigateStudent(1)" title="นักศึกษาคนถัดไป" style="flex: 1; padding: 8px; justify-content: center; height: 38px;">
+              ถัดไป <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Selected Student Mini Card -->
+        <div id="enroll-student-info-card" style="margin-top: 10px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; background: rgba(0, 240, 255, 0.06); border: 1px dashed rgba(0, 240, 255, 0.35); padding: 8px 14px; border-radius: 8px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div id="enroll-current-photo-preview" style="width: 38px; height: 38px; border-radius: 50%; background: #1E293B; border: 2px solid var(--cyan-400); display: flex; align-items: center; justify-content: center; overflow: hidden;">
+              <i class="fas fa-user" style="color: #64748B;"></i>
+            </div>
+            <div>
+              <div id="enroll-current-student-name" style="font-weight: 800; color: #FFF; font-size: 13.5px;">-</div>
+              <div id="enroll-current-student-meta" style="font-size: 11px; color: var(--text-muted);">-</div>
+            </div>
+          </div>
+          <span id="enroll-current-status-badge" class="badge-glass badge-absent" style="font-size: 11px;">
+            ⚪ ยังไม่มีรูปใบหน้าในระบบ
+          </span>
+        </div>
+      </div>
+
+      <!-- CAMERA VIEWPORT WITH OVAL FACE GUIDE -->
+      <div style="position: relative; width: 100%; height: 340px; max-height: 48vh; background: #000; border-radius: 14px; overflow: hidden; border: 2px solid rgba(0, 240, 255, 0.5); box-shadow: 0 0 25px rgba(0, 240, 255, 0.25); margin-bottom: 14px; display: flex; align-items: center; justify-content: center;">
+        
+        <!-- Live Video -->
+        <video id="enroll-video" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover;"></video>
+        
+        <!-- Canvas for Snapshot & Analysis -->
+        <canvas id="enroll-canvas" style="display: none;"></canvas>
+
+        <!-- Oval Face Guide Frame -->
+        <div style="position: absolute; width: 190px; height: 250px; border-radius: 50%; border: 2.5px dashed #00F0FF; box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45), 0 0 20px rgba(0, 240, 255, 0.4); pointer-events: none; display: flex; align-items: center; justify-content: center;" id="enroll-oval-guide">
+          <div style="color: rgba(255,255,255,0.7); font-size: 11px; font-weight: 700; text-align: center; text-shadow: 0 2px 4px rgba(0,0,0,0.8); pointer-events: none;">
+            <i class="fas fa-expand" style="display: block; font-size: 16px; margin-bottom: 4px; color: var(--cyan-400);"></i>
+            จัดใบหน้าให้อยู่ในกรอบ
+          </div>
+        </div>
+
+        <!-- Live Status Guide Text -->
+        <div style="position: absolute; bottom: 12px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); border: 1px solid rgba(0, 240, 255, 0.4); padding: 5px 14px; border-radius: 20px; font-size: 11.5px; font-weight: 700; color: #FFF; display: flex; align-items: center; gap: 8px;" id="enroll-live-status">
+          <span class="gps-status-dot green" style="width: 8px; height: 8px;"></span>
+          <span id="enroll-status-text">กรุณาให้นักศึกษามองตรงที่กล้อง แสงสว่างพอเหมาะ</span>
+        </div>
+      </div>
+
+      <!-- ACTION BUTTONS -->
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+          <button type="button" class="btn-glass btn-cyan" id="btn-enroll-capture" onclick="captureAndEnrollCurrentStudent()" style="padding: 10px 20px; font-weight: 800; font-size: 13.5px; box-shadow: 0 0 18px rgba(0,240,255,0.45);">
+            <i class="fas fa-camera"></i> 📸 ถ่ายภาพ & บันทึกใบหน้าหลัก
+          </button>
+          <button type="button" class="btn-glass btn-emerald btn-sm-glass" onclick="document.getElementById('enroll-file-input').click()" style="font-weight: 700; padding: 10px 16px;">
+            <i class="fas fa-file-arrow-up"></i> 📁 อัปโหลดรูปภาพ
+          </button>
+          <input type="file" id="enroll-file-input" accept="image/*" style="display: none;" onchange="onEnrollFileUpload(event)" />
+        </div>
+
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn-glass btn-orange btn-sm-glass" onclick="enrollNextStudentBatch()" style="font-weight: 800; padding: 10px 18px;" title="บันทึกและข้ามไปถ่ายนักศึกษาคนถัดไปทันที">
+            <i class="fas fa-forward-step"></i> คนถัดไป (Batch)
+          </button>
+          <button type="button" class="btn-glass btn-dark btn-sm-glass" onclick="closeAIFaceEnrollmentModal()">
+            ปิดหน้าต่าง
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop-glass" id="modal-ai-face-scanner" style="z-index: 10008;">
+    <div class="modal-window-glass" style="max-width: 820px; width: 95%; padding: 22px;">
+      <div class="modal-header-flex" style="margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1.5px solid rgba(0, 240, 255, 0.35);">
+        <div class="modal-title" style="display: flex; align-items: center; gap: 10px; color: #FFF; font-size: 16px;">
+          <div style="background: rgba(0, 240, 255, 0.15); width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--cyan-400); border: 1px solid rgba(0, 240, 255, 0.4);">
+            <i class="fas fa-camera-viewfinder" style="font-size: 18px;"></i>
+          </div>
+          <div>
+            <div style="font-weight: 800; line-height: 1.2;">📷 สแกนใบหน้าเช็คชื่ออัตโนมัติ (AI Face Scan)</div>
+            <div style="font-size: 11.5px; color: var(--text-muted); font-weight: 500;" id="face-scanner-session-info">ห้อง: ทุกห้อง • วิชา: เช็คชื่อมาเรียน</div>
+          </div>
+        </div>
+        <button type="button" class="modal-close btn-close-modal" onclick="closeAIFaceScannerModal()">&times;</button>
+      </div>
+
+      <!-- CAMERA VIEWPORT & HUD OVERLAY -->
+      <div style="position: relative; width: 100%; height: 380px; max-height: 55vh; background: #000; border-radius: 14px; overflow: hidden; border: 2px solid rgba(0, 240, 255, 0.5); box-shadow: 0 0 25px rgba(0, 240, 255, 0.25); margin-bottom: 14px; display: flex; align-items: center; justify-content: center;" id="face-scanner-viewport-container">
+        
+        <!-- Live Video Stream -->
+        <video id="face-scanner-video" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover;"></video>
+        
+        <!-- AI Bounding Box & HUD Canvas Overlay -->
+        <canvas id="face-scanner-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;"></canvas>
+
+        <!-- HUD Corner Brackets -->
+        <div style="position: absolute; top: 12px; left: 12px; width: 24px; height: 24px; border-top: 3px solid var(--cyan-400); border-left: 3px solid var(--cyan-400); pointer-events: none;"></div>
+        <div style="position: absolute; top: 12px; right: 12px; width: 24px; height: 24px; border-top: 3px solid var(--cyan-400); border-right: 3px solid var(--cyan-400); pointer-events: none;"></div>
+        <div style="position: absolute; bottom: 12px; left: 12px; width: 24px; height: 24px; border-bottom: 3px solid var(--cyan-400); border-left: 3px solid var(--cyan-400); pointer-events: none;"></div>
+        <div style="position: absolute; bottom: 12px; right: 12px; width: 24px; height: 24px; border-bottom: 3px solid var(--cyan-400); border-right: 3px solid var(--cyan-400); pointer-events: none;"></div>
+
+        <!-- Top Status HUD Badge -->
+        <div style="position: absolute; top: 12px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); border: 1px solid rgba(0, 240, 255, 0.4); padding: 5px 14px; border-radius: 20px; font-size: 11.5px; font-weight: 700; color: #FFF; display: flex; align-items: center; gap: 8px; z-index: 10;" id="face-scanner-status-badge">
+          <span class="gps-status-dot green" style="animation: pulse-live 1.2s infinite; width: 8px; height: 8px;"></span>
+          <span id="face-scanner-status-text">กำลังสแกน... กรุณาแพนกล้องส่องไปที่ใบหน้านักศึกษา</span>
+        </div>
+
+        <!-- AI Model / Student Descriptors Loading Overlay -->
+        <div id="face-scanner-loading-overlay" style="position: absolute; inset: 0; background: rgba(7, 9, 14, 0.94); backdrop-filter: blur(12px); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; z-index: 20; text-align: center;">
+          <i class="fas fa-brain-circuit fa-spin" style="font-size: 44px; color: var(--cyan-400); margin-bottom: 16px;"></i>
+          <h4 style="font-size: 16px; font-weight: 800; color: #FFF; margin-bottom: 6px;" id="face-loading-title">กำลังโหลดโมเดล AI ตรวจจับใบหน้า...</h4>
+          <p style="font-size: 12px; color: var(--text-muted); max-width: 360px; margin-bottom: 14px;" id="face-loading-desc">กำลังเตรียมความพร้อมของระบบประมวลผลและการจับคู่ภาพถ่ายนักศึกษา</p>
+          <div style="width: 240px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
+            <div id="face-loading-bar" style="width: 30%; height: 100%; background: linear-gradient(90deg, #00F0FF, #10B981); transition: width 0.3s ease;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTROLS & SETTINGS TOOLBAR -->
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 10px 14px; margin-bottom: 14px;">
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+          <button type="button" class="btn-glass btn-orange btn-sm-glass" onclick="openAIFaceEnrollmentModal('', AIFaceScannerState.targetClass)" style="font-weight: 800;" title="เปิดหน้าต่างถ่ายรูป/ลงทะเบียนใบหน้าให้นักศึกษาใหม่">
+            <i class="fas fa-user-plus"></i> + ลงทะเบียนใบหน้า
+          </button>
+          <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-toggle-face-camera" onclick="toggleFaceCameraFacingMode()" title="สลับกล้องหน้า / กล้องหลัง">
+            <i class="fas fa-camera-rotate"></i> สลับกล้อง (<span id="face-cam-mode-label">หลัง</span>)
+          </button>
+          <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-toggle-face-sound" onclick="toggleFaceScannerSound()" title="เปิด/ปิดเสียงติ๊งแจ้งเตือน">
+            <i class="fas fa-volume-high" id="face-sound-icon" style="color: #22C55E;"></i> <span id="face-sound-label">เสียง: เปิด</span>
+          </button>
+        </div>
+
+        <!-- Confidence Slider -->
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); white-space: nowrap;">
+            ความแม่นยำ AI: <span id="face-match-threshold-val" style="color: var(--cyan-400); font-weight: 800;">60%</span>
+          </label>
+          <input type="range" id="face-match-threshold" min="40" max="80" value="60" oninput="updateFaceMatchThreshold(this.value)" style="width: 90px; accent-color: var(--cyan-400); cursor: pointer;" />
+        </div>
+      </div>
+
+      <!-- LIVE RECOGNIZED STUDENTS FEED -->
+      <div style="background: rgba(10, 14, 24, 0.75); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 12px 14px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
+          <div style="font-size: 12.5px; font-weight: 800; color: #FFF; display: flex; align-items: center; gap: 6px;">
+            <i class="fas fa-user-check" style="color: #10B981;"></i> รายชื่อที่สแกนติดแล้วในคาบนี้:
+          </div>
+          <div style="font-size: 12px; font-weight: 800;">
+            <span class="badge-glass badge-present" id="face-scan-counter-badge" style="font-size: 12px; padding: 3px 10px;">
+              เช็คแล้ว: <span id="face-scan-count-pres">0</span> / <span id="face-scan-count-tot">0</span> คน
+            </span>
+          </div>
+        </div>
+
+        <div id="face-scan-recent-chips" style="display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 8px; min-height: 50px; scrollbar-width: thin;">
+          <div style="color: #64748B; font-size: 12px; display: flex; align-items: center; gap: 6px; padding: 10px 0;">
+            <i class="fas fa-sparkles" style="color: var(--cyan-400);"></i> ระบบพร้อมสแกน... แพนกล้องส่องไปที่ใบหน้านักศึกษาได้ทันที
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 14px; display: flex; justify-content: space-between; align-items: center;">
+        <div style="font-size: 11px; color: var(--text-muted);">
+          💡 <span style="color: #FBBF24;">คำแนะนำ:</span> ถือกล้องให้อยู่ในระดับสายตา ระยะห่าง 1-4 เมตร และมีแสงสว่างพอเหมาะ
+        </div>
+        <button type="button" class="btn-glass btn-dark btn-sm-glass" onclick="closeAIFaceScannerModal()">
+          เสร็จสิ้น / ปิดกล้อง
         </button>
       </div>
     </div>
