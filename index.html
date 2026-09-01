@@ -2533,6 +2533,43 @@
               </button>
             </div>
 
+            <!-- LIVE ACTIVE SESSION & CHECKED-IN STUDENTS FEED (Displayed ONLY while session is active/open) -->
+            <div id="student-live-feed-card" style="display: none; margin-top: 24px; background: rgba(15, 23, 42, 0.75); border: 1.5px solid rgba(0, 240, 255, 0.35); border-radius: var(--radius-md); padding: 18px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); backdrop-filter: blur(12px); animation: fadeIn 0.4s ease;">
+              <!-- Header & Active Session Badge -->
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <span class="gps-status-dot green" style="animation: pulse-live 1.5s infinite; width: 10px; height: 10px;"></span>
+                  <h3 style="font-size: 14.5px; font-weight: 700; color: #FFF; margin: 0;">
+                    📡 รายชื่อผู้ที่เช็คชื่อแล้วในขณะนี้
+                  </h3>
+                </div>
+                <span id="student-live-activity-badge" class="badge-glass badge-info" style="font-size: 12px; font-weight: 700; color: var(--cyan-400); border-color: rgba(0,240,255,0.4); padding: 4px 10px;">
+                  เช็คชื่อมาเรียน
+                </span>
+              </div>
+
+              <!-- Stats Pill Bar -->
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px;">
+                <div style="background: rgba(0,240,255,0.08); border: 1px solid rgba(0,240,255,0.25); border-radius: 8px; padding: 6px 10px; text-align: center;">
+                  <div style="font-size: 10.5px; color: var(--cyan-400);">เช็คชื่อแล้ว</div>
+                  <div id="student-live-count-total" style="font-size: 16px; font-weight: 800; color: #FFF;">0 คน</div>
+                </div>
+                <div style="background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25); border-radius: 8px; padding: 6px 10px; text-align: center;">
+                  <div style="font-size: 10.5px; color: #10B981;">ตรงเวลา</div>
+                  <div id="student-live-count-present" style="font-size: 16px; font-weight: 800; color: #10B981;">0 คน</div>
+                </div>
+                <div style="background: rgba(236,72,153,0.08); border: 1px solid rgba(236,72,153,0.25); border-radius: 8px; padding: 6px 10px; text-align: center;">
+                  <div style="font-size: 10.5px; color: #F472B6;">มาสาย</div>
+                  <div id="student-live-count-late" style="font-size: 16px; font-weight: 800; color: #F472B6;">0 คน</div>
+                </div>
+              </div>
+
+              <!-- Live Student Feed List (Matches Teacher View) -->
+              <div id="student-live-feed-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 280px; overflow-y: auto; padding-right: 4px;">
+                <!-- Populated dynamically via JS -->
+              </div>
+            </div>
+
             <!-- STEP 2: GPS Geofencing Check -->
             <div class="checkin-step-card" id="student-step-2" style="display: none;">
               <div class="step-header-badge">
@@ -2634,13 +2671,19 @@
             </div>
 
             <!-- SUCCESS PASS DIGITAL CARD -->
-            <div class="success-pass-card" id="student-step-success" style="display: none;">
-              <div class="success-selfie-frame">
-                <img id="pass-selfie-img" src="" alt="Verified Selfie" />
+            <div class="success-pass-card" id="student-step-success" style="display: none; animation: fadeIn 0.4s ease;">
+              <div style="background: rgba(16, 185, 129, 0.15); border: 2px solid #10B981; border-radius: 12px; padding: 14px; margin-bottom: 18px; text-align: center;">
+                <i class="fas fa-circle-check" style="font-size: 32px; color: #10B981; margin-bottom: 6px; display: block; animation: bounceIn 0.5s ease;"></i>
+                <div style="font-size: 18px; font-weight: 800; color: #34D399;">เช็คชื่อสำเร็จเรียบร้อยแล้ว!</div>
+                <div style="font-size: 12px; color: #CBD5E1; margin-top: 2px;">ระบบได้บันทึกข้อมูลการเข้าเรียนของท่านลงฐานข้อมูลแล้ว</div>
+              </div>
+
+              <div class="success-selfie-frame" style="margin-bottom: 14px;">
+                <img id="pass-selfie-img" src="" alt="Verified Selfie" style="border: 2px solid #10B981; box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);" />
               </div>
               <div id="pass-status-badge-container" style="margin-bottom: 12px;">
-                <span class="badge-glass badge-present" id="pass-status-badge" style="font-size: 13.5px; padding: 6px 16px; font-weight: 700;">
-                  <i class="fas fa-shield-check"></i> เช็คชื่อสำเร็จ (Verified)
+                <span class="badge-glass badge-present" id="pass-status-badge" style="font-size: 14px; padding: 6px 18px; font-weight: 800;">
+                  <i class="fas fa-shield-check"></i> เช็คชื่อสำเร็จ: มาเรียน (Present)
                 </span>
               </div>
               <h2 style="font-size: 22px; font-weight: 800; color: #FFF; margin-bottom: 4px;" id="pass-student-name">-</h2>
@@ -5061,7 +5104,7 @@
           'getStudents', 'addStudent', 'updateStudent', 'deleteStudent', 'deleteStudentsBatch', 'deleteAllStudents',
           'importStudentsBatch', 'createCheckinSession', 'getActiveSession', 'getActiveSessions', 'closeCheckinSession',
           'validateAndCheckinStudent', 'getSessionLiveAttendance', 'deleteLiveCheckinRecord', 'getAttendanceRecords',
-          'getRangeAttendanceSummary', 'getPublicDailyReportData',
+          'getRangeAttendanceSummary', 'getPublicDailyReportData', 'getStudentPortalLiveAttendance',
           'saveAttendanceBatch', 'getDashboardData', 'getStudentStats',
           'getLineConfig', 'saveLineConfig', 'testLineConnection', 'sendLineReport', 'setupDailyLineTrigger',
           'getDetectedLineGroups', 'authorizePermissions'
@@ -5069,7 +5112,7 @@
 
         var getMethods = [
           'getClassList', 'getStudents', 'getActivityList', 'getDashboardData',
-          'getActiveSessions', 'getActiveSession', 'getAttendanceRecords', 'getRangeAttendanceSummary', 'getPublicDailyReportData', 'getSessionLiveAttendance',
+          'getActiveSessions', 'getActiveSession', 'getAttendanceRecords', 'getRangeAttendanceSummary', 'getPublicDailyReportData', 'getStudentPortalLiveAttendance', 'getSessionLiveAttendance',
           'getStudentStats', 'getLineConfig', 'verifyAdminPassword',
           'getDetectedLineGroups', 'authorizePermissions',
           'deleteStudent', 'deleteStudentsBatch', 'deleteClass', 'deleteActivity', 'deleteAllStudents'
@@ -5719,7 +5762,12 @@
 
       if (viewName === 'student-checkin') {
         renderStudentCheckinPage();
-      } else if (viewName === 'dashboard') {
+        startStudentPortalLiveFeedPolling();
+      } else {
+        stopStudentPortalLiveFeedPolling();
+      }
+
+      if (viewName === 'dashboard') {
         renderDashboard();
       } else if (viewName === 'projector') {
         renderProjectorPage();
@@ -9904,29 +9952,19 @@
       if (!target) return;
       target.innerHTML = '';
 
-      var sObj = null;
-      if (AppState.activeSessions) {
-        for (var si = 0; si < AppState.activeSessions.length; si++) {
-          if (AppState.activeSessions[si].sessionId === sessionId) {
-            sObj = AppState.activeSessions[si];
-            break;
-          }
-        }
-      }
-      var actParam = sObj ? encodeURIComponent(sObj.activityName || 'เช็คชื่อมาเรียน') : '';
-      var clsParam = sObj ? encodeURIComponent(sObj.className || 'all') : '';
-      var dateParam = sObj ? encodeURIComponent(sObj.date || getTodayDateString()) : '';
-      var qrPayload = window.location.href.split('?')[0].split('#')[0] + '#checkin=' + sessionId + '&act=' + actParam + '&class=' + clsParam + '&date=' + dateParam + '&otp=' + otpCode;
+      // Ultra-compact payload (Version 1 QR / 21x21 matrix) for extreme coarseness and effortless long-distance scanning
+      var qrPayload = 'OTP:' + otpCode + '#' + sessionId;
       var qrSuccess = false;
 
       try {
         if (typeof QRCode !== 'undefined') {
           new QRCode(target, {
             text: qrPayload,
-            width: 170,
-            height: 170,
-            colorDark: "#0A0D14",
-            colorLight: "#FFFFFF"
+            width: 180,
+            height: 180,
+            colorDark: "#000000",
+            colorLight: "#FFFFFF",
+            correctLevel: (typeof QRCode.CorrectLevel !== 'undefined') ? QRCode.CorrectLevel.L : 1
           });
           qrSuccess = true;
         }
@@ -9937,13 +9975,13 @@
       if (!qrSuccess) {
         try {
           var qrImg = document.createElement('img');
-          qrImg.style.width = '170px';
-          qrImg.style.height = '170px';
+          qrImg.style.width = '180px';
+          qrImg.style.height = '180px';
           qrImg.style.borderRadius = '6px';
           qrImg.style.background = '#FFF';
           qrImg.style.padding = '6px';
           qrImg.alt = 'QR Code';
-          qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=170x170&data=' + encodeURIComponent(qrPayload);
+          qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&ecc=L&data=' + encodeURIComponent(qrPayload);
           target.appendChild(qrImg);
         } catch (err) {}
       }
@@ -10667,22 +10705,17 @@
     function renderDynamicQRCodeToElement(targetEl, sessionId, otpCode) {
       if (!targetEl) return;
       targetEl.innerHTML = '';
-      var qrPayload = JSON.stringify({
-        type: 'ATTENDANCE_OTP',
-        sessionId: sessionId,
-        otp: otpCode,
-        timestamp: Date.now()
-      });
+      var qrPayload = 'OTP:' + otpCode + '#' + sessionId;
 
       if (typeof QRCode !== 'undefined') {
         try {
           new QRCode(targetEl, {
             text: qrPayload,
-            width: 140,
-            height: 140,
-            colorDark: '#0B0F19',
+            width: 160,
+            height: 160,
+            colorDark: '#000000',
             colorLight: '#FFFFFF',
-            correctLevel: (typeof QRCode.CorrectLevel !== 'undefined') ? QRCode.CorrectLevel.M : 2
+            correctLevel: (typeof QRCode.CorrectLevel !== 'undefined') ? QRCode.CorrectLevel.L : 1
           });
         } catch (e) {
           console.warn('QRCode render error:', e);
@@ -11626,6 +11659,7 @@
         classSelect.addEventListener('change', function() {
           populateStudentSelectForClass(this.value);
           updateStudentScheduleStatus(this.value);
+          refreshStudentPortalLiveFeed();
         });
       }
 
@@ -11974,6 +12008,7 @@
           document.getElementById('student-step-success').style.display = 'none';
           document.getElementById('student-step-1').style.display = 'block';
           updateWizardProgress(1);
+          refreshStudentPortalLiveFeed();
         });
       }
 
@@ -12122,7 +12157,10 @@
     function handleScannedQRCodeResult(qrText) {
       if (!qrText) return;
 
-      var sessMatch = qrText.match(/checkin=([A-Za-z0-9_]+)/i);
+      // Extract Session ID from various QR formats (#SES123, checkin=SES123, sessionId:"SES123")
+      var sessMatch = qrText.match(/#([A-Za-z0-9_]+)/) ||
+                      qrText.match(/checkin=([A-Za-z0-9_]+)/i) ||
+                      qrText.match(/sessionId["']?\s*:\s*["']?([A-Za-z0-9_]+)/i);
       if (sessMatch && sessMatch[1]) {
         AppState.scannedSessionId = sessMatch[1];
       }
@@ -12142,10 +12180,11 @@
         AppState.scannedDate = decodeURIComponent(dateMatch[1]);
       }
 
+      // Extract OTP: supports OTP:123456, otp=123456, or any 6-digit PIN
       var matchedOtp = null;
-      var otpParamMatch = qrText.match(/otp=([0-9]{6})/i);
-      if (otpParamMatch && otpParamMatch[1]) {
-        matchedOtp = otpParamMatch[1];
+      var otpExplicitMatch = qrText.match(/OTP[:=]([0-9]{6})/i) || qrText.match(/otp["']?\s*:\s*["']?([0-9]{6})/i);
+      if (otpExplicitMatch && otpExplicitMatch[1]) {
+        matchedOtp = otpExplicitMatch[1];
       } else {
         var sixDigitMatch = qrText.match(/([0-9]{6})/);
         if (sixDigitMatch && sixDigitMatch[1]) {
@@ -12179,6 +12218,293 @@
       setTimeout(function() {
         submitStudentSelfCheckin();
       }, 400);
+    }
+
+    // =========================================================================
+    // STUDENT PORTAL LIVE ATTENDANCE FEED ENGINE
+    // =========================================================================
+    var studentPortalLiveTimer = null;
+
+    function startStudentPortalLiveFeedPolling() {
+      stopStudentPortalLiveFeedPolling();
+      refreshStudentPortalLiveFeed();
+      studentPortalLiveTimer = setInterval(function() {
+        refreshStudentPortalLiveFeed();
+      }, 5000);
+    }
+
+    function stopStudentPortalLiveFeedPolling() {
+      if (studentPortalLiveTimer) {
+        clearInterval(studentPortalLiveTimer);
+        studentPortalLiveTimer = null;
+      }
+    }
+
+    function refreshStudentPortalLiveFeed() {
+      var classSelect = document.getElementById('self-checkin-class');
+      var curClass = (classSelect && classSelect.value) ? classSelect.value : 'all';
+      var activeSessId = (AppState.activeSession && AppState.activeSession.sessionId) ? AppState.activeSession.sessionId : '';
+
+      if (isGASAvailable()) {
+        google.script.run
+          .withSuccessHandler(function(res) {
+            renderStudentPortalLiveFeedUI(res);
+          })
+          .withFailureHandler(function(err) {
+            console.warn('Live feed fetch error:', err);
+          })
+          .getStudentPortalLiveAttendance(curClass, activeSessId);
+      } else {
+        var localRes = getStudentPortalLiveAttendanceLocal(curClass, activeSessId);
+        renderStudentPortalLiveFeedUI(localRes);
+      }
+    }
+
+    function getStudentPortalLiveAttendanceLocal(className, sessionId) {
+      className = String(className || 'all').trim();
+      var todayStr = getTodayDateString();
+      var activeSessions = AppState.activeSessions || [];
+      var matchedManual = null;
+
+      if (sessionId) {
+        for (var m = 0; m < activeSessions.length; m++) {
+          if (String(activeSessions[m].sessionId) === String(sessionId)) {
+            matchedManual = activeSessions[m];
+            break;
+          }
+        }
+      }
+      if (!matchedManual && className !== 'all' && className !== '') {
+        for (var m2 = 0; m2 < activeSessions.length; m2++) {
+          if (isClassMatch(activeSessions[m2].className, className)) {
+            matchedManual = activeSessions[m2];
+            break;
+          }
+        }
+      }
+      if (!matchedManual && activeSessions.length > 0) {
+        matchedManual = activeSessions[0];
+      }
+
+      var targetSession = null;
+      if (matchedManual) {
+        targetSession = {
+          sessionId: matchedManual.sessionId,
+          className: matchedManual.className,
+          activityName: matchedManual.activityName || 'เช็คชื่อมาเรียน',
+          date: matchedManual.date || todayStr,
+          isAutomated: false
+        };
+      } else {
+        var autoRes = resolveActiveScheduleLocal(className || 'all');
+        if (autoRes && autoRes.status === 'open') {
+          targetSession = {
+            sessionId: autoRes.sessionId,
+            className: autoRes.className,
+            activityName: autoRes.activityName || 'เช็คชื่อมาเรียน',
+            date: autoRes.dateStr || todayStr,
+            isAutomated: true,
+            phaseLabel: autoRes.phaseLabel
+          };
+        }
+      }
+
+      // If no open session -> Return closed state so UI stops displaying
+      if (!targetSession) {
+        return {
+          status: 'closed',
+          isOpen: false,
+          list: [],
+          count: 0,
+          countPresent: 0,
+          countLate: 0,
+          total: 0
+        };
+      }
+
+      var allAtt = getLocalStorageAttendance();
+      var students = AppState.students || [];
+      var stdMap = {};
+      for (var s = 0; s < students.length; s++) {
+        stdMap[String(students[s].studentId).trim().toLowerCase()] = students[s];
+      }
+
+      var checkedList = [];
+      var countPresent = 0;
+      var countLate = 0;
+
+      for (var a = 0; a < allAtt.length; a++) {
+        var item = allAtt[a];
+        var itemDate = item.date;
+        var sIdKey = String(item.studentId || '').trim().toLowerCase();
+        var stObj = stdMap[sIdKey];
+        var status = item.status;
+        var actName = item.activityName || item.checkinType || 'เช็คชื่อมาเรียน';
+        var itemSes = item.sessionId || '';
+
+        if (itemDate === targetSession.date && (status === 'Present' || status === 'มาเรียน' || status === 'Late' || status === 'มาสาย')) {
+          var isActMatch = isActivityMatch(targetSession.activityName, actName);
+          var isSesMatch = (itemSes === targetSession.sessionId || !itemSes || !targetSession.sessionId);
+          var isClassOk = true;
+          if (className && className !== 'all' && stObj) {
+            isClassOk = isClassMatch(targetSession.className, stObj.className) || isClassMatch(className, stObj.className);
+          }
+
+          if (isActMatch && isSesMatch && isClassOk) {
+            var isLate = (status === 'Late' || status === 'มาสาย');
+            if (isLate) countLate++;
+            else countPresent++;
+
+            checkedList.push({
+              studentId: item.studentId,
+              studentNo: stObj ? stObj.studentNo : '',
+              name: stObj ? stObj.name : 'นักศึกษา',
+              className: stObj ? stObj.className : (className !== 'all' ? className : 'ห้องเรียน'),
+              status: isLate ? 'Late' : 'Present',
+              statusText: isLate ? 'มาสาย' : 'มาเรียน',
+              checkinTime: item.checkinTime || '',
+              gpsLocation: item.gpsLocation || '-',
+              distanceMeters: item.distanceMeters || 0,
+              selfiePhoto: item.selfiePhoto || '',
+              activityName: actName
+            });
+          }
+        }
+      }
+
+      checkedList.reverse();
+
+      return {
+        status: 'open',
+        isOpen: true,
+        session: {
+          sessionId: targetSession.sessionId,
+          className: targetSession.className,
+          activityName: targetSession.activityName,
+          date: targetSession.date,
+          isAutomated: !!targetSession.isAutomated,
+          phaseLabel: targetSession.phaseLabel || ''
+        },
+        list: checkedList,
+        count: checkedList.length,
+        countPresent: countPresent,
+        countLate: countLate,
+        total: students.length
+      };
+    }
+
+    function renderStudentPortalLiveFeedUI(res) {
+      var card = document.getElementById('student-live-feed-card');
+      if (!card) return;
+
+      // When session is closed or inactive -> STOP DISPLAYING IMMEDIATELY
+      if (!res || res.status === 'closed' || !res.isOpen) {
+        card.style.display = 'none';
+        return;
+      }
+
+      // When session is open -> SHOW LIVE FEED
+      card.style.display = 'block';
+
+      var badgeEl = document.getElementById('student-live-activity-badge');
+      if (badgeEl) {
+        var actName = (res.session && res.session.activityName) ? res.session.activityName : 'เช็คชื่อมาเรียน';
+        badgeEl.textContent = actName;
+      }
+
+      var totalEl = document.getElementById('student-live-count-total');
+      var presentEl = document.getElementById('student-live-count-present');
+      var lateEl = document.getElementById('student-live-count-late');
+
+      if (totalEl) totalEl.textContent = (res.count || 0) + ' คน';
+      if (presentEl) presentEl.textContent = (res.countPresent !== undefined ? res.countPresent : res.count) + ' คน';
+      if (lateEl) lateEl.textContent = (res.countLate || 0) + ' คน';
+
+      var listContainer = document.getElementById('student-live-feed-list');
+      if (!listContainer) return;
+      listContainer.innerHTML = '';
+
+      if (!res.list || res.list.length === 0) {
+        var emptyDiv = document.createElement('div');
+        emptyDiv.style.textAlign = 'center';
+        emptyDiv.style.padding = '18px 10px';
+        emptyDiv.style.color = '#94A3B8';
+        emptyDiv.style.fontSize = '12px';
+        emptyDiv.innerHTML = '<i class="fas fa-satellite-dish" style="font-size:18px; color:var(--cyan-400); margin-bottom:6px; display:block;"></i>ยังไม่มีผู้เช็คชื่อในคาบนี้ (เลือกชื่อด้านบนเพื่อเช็คชื่อได้ทันที)';
+        listContainer.appendChild(emptyDiv);
+        return;
+      }
+
+      for (var i = 0; i < res.list.length; i++) {
+        var item = res.list[i];
+        var itemRow = document.createElement('div');
+        itemRow.className = 'live-student-item';
+
+        var leftBox = document.createElement('div');
+        leftBox.className = 'live-student-left';
+
+        if (item.selfiePhoto && item.selfiePhoto.length > 50) {
+          var img = document.createElement('img');
+          img.className = 'live-student-selfie-thumb';
+          img.src = item.selfiePhoto;
+          img.alt = item.name || '';
+          img.title = 'แตะหรือชี้เมาส์เพื่อดูภาพขนาดใหญ่';
+
+          (function(photoUrl, sName, sClass, distVal, timeVal) {
+            img.addEventListener('mouseenter', function() {
+              showLiveSelfieHoverPreview(photoUrl, sName, sClass, distVal, timeVal, this);
+            });
+            img.addEventListener('mousemove', function() {
+              updateLiveSelfieHoverPosition(this);
+            });
+            img.addEventListener('mouseleave', function() {
+              hideLiveSelfieHoverPreview();
+            });
+            img.addEventListener('click', function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              hideLiveSelfieHoverPreview();
+              openSelfieProofModal(photoUrl, sName, distVal, timeVal);
+            });
+          })(item.selfiePhoto, item.name, item.className, item.distanceMeters || 0, item.checkinTime || '');
+
+          leftBox.appendChild(img);
+        } else {
+          var noPill = document.createElement('div');
+          noPill.className = 'student-no-pill';
+          noPill.textContent = item.studentNo || (i + 1);
+          leftBox.appendChild(noPill);
+        }
+
+        var infoBox = document.createElement('div');
+        var nameDiv = document.createElement('div');
+        nameDiv.style.fontSize = '13px';
+        nameDiv.style.fontWeight = '700';
+        nameDiv.style.color = '#FFF';
+        nameDiv.innerHTML = (item.studentNo ? (item.studentNo + '. ') : '') + item.name + ' <span style="font-size:11px; color:var(--orange-400); font-weight:500;">(' + item.studentId + ')</span>';
+        infoBox.appendChild(nameDiv);
+
+        var metaDiv = document.createElement('div');
+        metaDiv.style.fontSize = '11px';
+        metaDiv.style.color = '#94A3B8';
+        metaDiv.innerHTML = 'ห้อง ' + item.className + ' • 🕒 ' + item.checkinTime + (item.distanceMeters ? (' • 📍 ' + item.distanceMeters + 'm') : '');
+        infoBox.appendChild(metaDiv);
+
+        leftBox.appendChild(infoBox);
+        itemRow.appendChild(leftBox);
+
+        var rightBox = document.createElement('div');
+        var isLate = (item.status === 'Late' || item.status === 'มาสาย');
+        var badge = document.createElement('span');
+        badge.className = 'badge-glass ' + (isLate ? 'badge-late' : 'badge-present');
+        badge.style.fontSize = '11px';
+        badge.style.fontWeight = '700';
+        badge.innerHTML = isLate ? '<i class="fas fa-clock"></i> มาสาย' : '<i class="fas fa-check"></i> ตรงเวลา';
+        rightBox.appendChild(badge);
+
+        itemRow.appendChild(rightBox);
+        listContainer.appendChild(itemRow);
+      }
     }
 
     function renderStudentCheckinPage() {
