@@ -2617,6 +2617,7 @@
 
               <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 18px;">
                 <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-start-camera"><i class="fas fa-video"></i> เปิดกล้อง</button>
+                <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-toggle-selfie-camera" onclick="toggleSelfieCameraFacingMode()" title="สลับกล้องหน้า / กล้องหลัง"><i class="fas fa-camera-rotate"></i> สลับกล้อง (<span id="selfie-cam-mode-label">หน้า</span>)</button>
                 <button type="button" class="btn-glass btn-orange btn-sm-glass" id="btn-snap-selfie" disabled><i class="fas fa-camera-retro"></i> ถ่ายรูปสด</button>
                 <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-retake-selfie" style="display: none;"><i class="fas fa-rotate-left"></i> ถ่ายใหม่</button>
               </div>
@@ -3387,7 +3388,7 @@
                   <label style="font-size: 11.5px; margin-bottom: 3px; font-weight: 700; color: #FFF;">
                     <i class="fas fa-chalkboard-user" style="color: var(--orange-400);"></i> ห้องเรียน (เลือกได้หลายห้อง)
                   </label>
-                  <button type="button" class="select-glass" id="btn-report-class-multi" onclick="toggleReportClassPopover(event)" style="width: 100%; text-align: left; display: flex; align-items: center; justify-content: space-between; cursor: pointer; padding: 8px 12px;">
+                  <button type="button" class="select-glass" id="btn-report-class-multi" style="width: 100%; text-align: left; display: flex; align-items: center; justify-content: space-between; cursor: pointer; padding: 8px 12px;">
                     <span id="report-class-selected-label" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;">🌟 ทุกห้องเรียน</span>
                     <i class="fas fa-chevron-down" style="font-size: 10px; color: var(--orange-400); margin-left: 6px;"></i>
                   </button>
@@ -3395,8 +3396,8 @@
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px;">
                       <span style="font-size: 11.5px; font-weight: 700; color: #FFF;">เลือกห้องเรียน:</span>
                       <div style="display: flex; gap: 4px;">
-                        <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-report-select-all-classes" onclick="selectAllReportClasses(event)" style="font-size: 10px; padding: 2px 7px;">ทุกห้อง</button>
-                        <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-report-clear-classes" onclick="clearAllReportClasses(event)" style="font-size: 10px; padding: 2px 7px;">ล้าง</button>
+                        <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-report-select-all-classes" style="font-size: 10px; padding: 2px 7px;">ทุกห้อง</button>
+                        <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-report-clear-classes" style="font-size: 10px; padding: 2px 7px;">ล้าง</button>
                       </div>
                     </div>
                     <div id="report-class-checkbox-list" style="display: flex; flex-direction: column; gap: 6px; max-height: 230px; overflow-y: auto;"></div>
@@ -3408,7 +3409,7 @@
                   <label style="font-size: 11.5px; margin-bottom: 3px; font-weight: 700; color: #FFF;">
                     <i class="fas fa-tags" style="color: #F472B6;"></i> กิจกรรม/วิชา (เลือกได้หลายวิชา)
                   </label>
-                  <button type="button" class="select-glass" id="btn-report-activity-multi" onclick="toggleReportActivityPopover(event)" style="width: 100%; text-align: left; display: flex; align-items: center; justify-content: space-between; cursor: pointer; padding: 8px 12px;">
+                  <button type="button" class="select-glass" id="btn-report-activity-multi" style="width: 100%; text-align: left; display: flex; align-items: center; justify-content: space-between; cursor: pointer; padding: 8px 12px;">
                     <span id="report-activity-selected-label" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;">🌟 ทุกกิจกรรม</span>
                     <i class="fas fa-chevron-down" style="font-size: 10px; color: #F472B6; margin-left: 6px;"></i>
                   </button>
@@ -3416,8 +3417,8 @@
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px;">
                       <span style="font-size: 11.5px; font-weight: 700; color: #FFF;">เลือกกิจกรรม/วิชา:</span>
                       <div style="display: flex; gap: 4px;">
-                        <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-report-select-all-activities" onclick="selectAllReportActivities(event)" style="font-size: 10px; padding: 2px 7px;">ทั้งหมด</button>
-                        <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-report-clear-activities" onclick="clearAllReportActivities(event)" style="font-size: 10px; padding: 2px 7px;">ล้าง</button>
+                        <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-report-select-all-activities" style="font-size: 10px; padding: 2px 7px;">ทั้งหมด</button>
+                        <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-report-clear-activities" style="font-size: 10px; padding: 2px 7px;">ล้าง</button>
                       </div>
                     </div>
                     <div id="report-activity-checkbox-list" style="display: flex; flex-direction: column; gap: 6px; max-height: 230px; overflow-y: auto;"></div>
@@ -3956,6 +3957,9 @@
       </div>
 
       <div style="position: relative; width: 100%; max-width: 320px; margin: 0 auto 16px auto; border-radius: 18px; overflow: hidden; background: #000; aspect-ratio: 1/1; box-shadow: 0 0 25px rgba(0, 240, 255, 0.25); border: 2px solid var(--cyan-400);">
+        <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-toggle-qr-camera" onclick="toggleQRCameraFacingMode()" style="position: absolute; top: 10px; right: 10px; z-index: 15; font-size: 11px; padding: 4px 10px; background: rgba(15,23,42,0.85); box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+          <i class="fas fa-camera-rotate"></i> สลับกล้อง (<span id="qr-cam-mode-label">หลัง</span>)
+        </button>
         <video id="qr-scanner-video" playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
         <canvas id="qr-scanner-canvas" style="display: none;"></canvas>
         
@@ -4900,6 +4904,7 @@
         gpsAccuracy: 0,
         gpsDistance: 0,
         cameraStream: null,
+        cameraFacingMode: 'user',
         selfieBase64: ''
       }
     };
@@ -5470,6 +5475,12 @@
       var rDateInput = document.getElementById('report-date-select');
       if (rDateInput) rDateInput.value = today;
 
+      var repStartInput = document.getElementById('report-date-start');
+      if (repStartInput) repStartInput.value = today;
+
+      var repEndInput = document.getElementById('report-date-end');
+      if (repEndInput) repEndInput.value = today;
+
       var devLabel = document.getElementById('self-device-token-label');
       if (devLabel) devLabel.textContent = AppState.studentState.deviceId.substring(0, 16) + '...';
     }
@@ -5878,46 +5889,84 @@
         });
       }
 
+      // REPORT CLASS MULTI-SELECT POPOVER
       var btnRepClassMulti = document.getElementById('btn-report-class-multi');
-      if (btnRepClassMulti) {
-        btnRepClassMulti.addEventListener('click', function(e) {
-          toggleReportClassPopover(e);
-        });
+      var popRepClass = document.getElementById('popover-report-class');
+      var fgRepClass = document.getElementById('fg-report-class-container');
+
+      if (btnRepClassMulti && popRepClass) {
+        btnRepClassMulti.onclick = function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleReportClassPopover();
+        };
+        popRepClass.onclick = function(e) {
+          e.stopPropagation();
+        };
       }
 
+      // REPORT ACTIVITY MULTI-SELECT POPOVER
       var btnRepActMulti = document.getElementById('btn-report-activity-multi');
-      if (btnRepActMulti) {
-        btnRepActMulti.addEventListener('click', function(e) {
-          toggleReportActivityPopover(e);
-        });
+      var popRepAct = document.getElementById('popover-report-activity');
+      var fgRepAct = document.getElementById('fg-report-activity-container');
+
+      if (btnRepActMulti && popRepAct) {
+        btnRepActMulti.onclick = function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleReportActivityPopover();
+        };
+        popRepAct.onclick = function(e) {
+          e.stopPropagation();
+        };
       }
+
+      // GLOBAL CLICK-OUTSIDE LISTENER FOR REPORT POPOVERS
+      document.addEventListener('click', function(e) {
+        if (fgRepClass && !fgRepClass.contains(e.target)) {
+          if (popRepClass) popRepClass.style.display = 'none';
+          fgRepClass.classList.remove('has-popover-open');
+        }
+        if (fgRepAct && !fgRepAct.contains(e.target)) {
+          if (popRepAct) popRepAct.style.display = 'none';
+          fgRepAct.classList.remove('has-popover-open');
+        }
+      });
 
       var btnRepSelAllCls = document.getElementById('btn-report-select-all-classes');
       if (btnRepSelAllCls) {
-        btnRepSelAllCls.addEventListener('click', function(e) {
+        btnRepSelAllCls.onclick = function(e) {
+          e.preventDefault();
+          e.stopPropagation();
           selectAllReportClasses(e);
-        });
+        };
       }
 
       var btnRepClrCls = document.getElementById('btn-report-clear-classes');
       if (btnRepClrCls) {
-        btnRepClrCls.addEventListener('click', function(e) {
+        btnRepClrCls.onclick = function(e) {
+          e.preventDefault();
+          e.stopPropagation();
           clearAllReportClasses(e);
-        });
+        };
       }
 
       var btnRepSelAllActs = document.getElementById('btn-report-select-all-activities');
       if (btnRepSelAllActs) {
-        btnRepSelAllActs.addEventListener('click', function(e) {
+        btnRepSelAllActs.onclick = function(e) {
+          e.preventDefault();
+          e.stopPropagation();
           selectAllReportActivities(e);
-        });
+        };
       }
 
       var btnRepClrActs = document.getElementById('btn-report-clear-activities');
       if (btnRepClrActs) {
-        btnRepClrActs.addEventListener('click', function(e) {
+        btnRepClrActs.onclick = function(e) {
+          e.preventDefault();
+          e.stopPropagation();
           clearAllReportActivities(e);
-        });
+        };
       }
 
       var btnAttClassMulti = document.getElementById('btn-att-class-multi');
@@ -5958,7 +6007,7 @@
           var itemChks = container.querySelectorAll('.att-class-item-chk');
           for (var i = 0; i < itemChks.length; i++) itemChks[i].checked = true;
           updateAttendanceClassBtnLabel();
-          loadAttendanceDataForSelectedDate();
+          AppState.selectedClass = getSelectedAttendanceClasses();
         };
       }
 
@@ -5973,7 +6022,7 @@
           var itemChks = container.querySelectorAll('.att-class-item-chk');
           for (var i = 0; i < itemChks.length; i++) itemChks[i].checked = false;
           updateAttendanceClassBtnLabel();
-          loadAttendanceDataForSelectedDate();
+          AppState.selectedClass = getSelectedAttendanceClasses();
         };
       }
 
@@ -5983,14 +6032,13 @@
           AppState.selectedDate = this.value;
           var headerDateLabel = document.getElementById('header-date-text');
           if (headerDateLabel) headerDateLabel.textContent = formatThaiDate(this.value);
-          loadAttendanceDataForSelectedDate();
         });
       }
 
       var attActivitySelect = document.getElementById('att-activity-select');
       if (attActivitySelect) {
         attActivitySelect.addEventListener('change', function() {
-          loadAttendanceDataForSelectedDate();
+          // Manual loading via "🔄 โหลดฐานข้อมูลเพื่อประมวลผล" button to save time & requests
         });
       }
 
@@ -12311,7 +12359,9 @@
     // =========================================================================
     var qrScannerState = {
       stream: null,
-      animId: null
+      animId: null,
+      scanning: false,
+      facingMode: 'environment'
     };
 
     function openQRScannerModal() {
@@ -12343,9 +12393,10 @@
         closeModal('modal-camera-permission-guide');
       };
 
-      // Tier 1: Back camera ideal
+      var targetFacing = (qrScannerState && qrScannerState.facingMode) ? qrScannerState.facingMode : 'environment';
+      // Tier 1: Target camera ideal
       navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } },
+        video: { facingMode: { ideal: targetFacing }, width: { ideal: 1280 }, height: { ideal: 720 } },
         audio: false
       })
       .then(handleSuccess)
@@ -12917,16 +12968,17 @@
         closeModal('modal-camera-permission-guide');
       };
 
-      // Tier 1: Front camera ideal
+      var targetFacing = AppState.studentState.cameraFacingMode || 'user';
+      // Tier 1: Ideal facingMode
       navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
+        video: { facingMode: { ideal: targetFacing }, width: { ideal: 640 }, height: { ideal: 480 } },
         audio: false
       })
       .then(handleSuccess)
       .catch(function(err) {
-        // Tier 2: Simple front camera
+        // Tier 2: Simple facingMode
         navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'user' },
+          video: { facingMode: targetFacing },
           audio: false
         })
         .then(handleSuccess)
@@ -13623,7 +13675,7 @@
           itemChks[i].checked = allChk.checked;
         }
         updateAttendanceClassBtnLabel();
-        loadAttendanceDataForSelectedDate();
+        AppState.selectedClass = getSelectedAttendanceClasses();
       });
       allLbl.appendChild(allChk);
       var allSpan = document.createElement('span');
@@ -13650,7 +13702,7 @@
           }
           allChk.checked = allChecked;
           updateAttendanceClassBtnLabel();
-          loadAttendanceDataForSelectedDate();
+          AppState.selectedClass = getSelectedAttendanceClasses();
         });
         lbl.appendChild(chk);
         var sp = document.createElement('span');
@@ -13698,13 +13750,7 @@
       var headerDateLabel = document.getElementById('header-date-text');
       if (headerDateLabel) headerDateLabel.textContent = formatThaiDate(targetDate);
 
-      var attDateSelect = document.getElementById('att-date-select');
-      if (attDateSelect) {
-        attDateSelect.addEventListener('change', function() {
-          AppState.selectedDate = this.value;
-          loadAttendanceDataForSelectedDate();
-        });
-      }
+
 
       var attActSelect = document.getElementById('att-activity-select');
       var targetActivity = attActSelect ? attActSelect.value : 'all';
@@ -15402,7 +15448,6 @@
           }
           updateReportClassBtnLabel();
           saveReportFilterPreferences();
-          generateReportPreview();
         });
         allLbl.appendChild(allChk);
         var allSpan = document.createElement('span');
@@ -15479,7 +15524,6 @@
           }
           updateReportActivityBtnLabel();
           saveReportFilterPreferences();
-          generateReportPreview();
         });
         allActLbl.appendChild(allActChk);
         var allActSpan = document.createElement('span');
@@ -15849,24 +15893,14 @@
       var legacyEl = document.getElementById('report-date-select');
       var today = getTodayDateString();
 
-      var savedPrefs = getSavedReportFilterPreferences();
-
       if (startEl) {
-        if (savedPrefs && savedPrefs.startDate) {
-          startEl.value = savedPrefs.startDate;
-        } else if (AppState.selectedDate) {
-          startEl.value = AppState.selectedDate;
-        } else if (!startEl.value) {
+        if (!startEl.value) {
           startEl.value = today;
         }
       }
 
       if (endEl) {
-        if (savedPrefs && savedPrefs.endDate) {
-          endEl.value = savedPrefs.endDate;
-        } else if (AppState.selectedDate) {
-          endEl.value = AppState.selectedDate;
-        } else if (!endEl.value) {
+        if (!endEl.value) {
           endEl.value = (startEl && startEl.value) ? startEl.value : today;
         }
       }
@@ -18768,10 +18802,11 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
       }
 
       var video = document.getElementById('enroll-video');
+      var targetFacing = AIFaceEnrollmentState.facingMode || 'user';
       var constraints = {
         audio: false,
         video: {
-          facingMode: AIFaceEnrollmentState.facingMode,
+          facingMode: { ideal: targetFacing },
           width: { ideal: 1280 },
           height: { ideal: 720 }
         }
@@ -18784,9 +18819,27 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
           video.play();
         }
       }).catch(function(err) {
-        console.error('Enroll camera error:', err);
-        showToast('ไม่สามารถเปิดกล้องได้: ' + (err.message || 'โปรดอนุญาตสิทธิ์กล้อง'), 'error');
+        navigator.mediaDevices.getUserMedia({ video: true, audio: false }).then(function(stream) {
+          AIFaceEnrollmentState.stream = stream;
+          if (video) {
+            video.srcObject = stream;
+            video.play();
+          }
+        }).catch(function(finalErr) {
+          console.error('Enroll camera error:', finalErr);
+          showToast('ไม่สามารถเปิดกล้องได้: ' + (finalErr.message || 'โปรดอนุญาตสิทธิ์กล้อง'), 'error');
+        });
       });
+    }
+
+    function toggleEnrollCameraFacingMode() {
+      AIFaceEnrollmentState.facingMode = (AIFaceEnrollmentState.facingMode === 'user') ? 'environment' : 'user';
+      var text = (AIFaceEnrollmentState.facingMode === 'user') ? 'หน้า' : 'หลัง';
+      var lbl1 = document.getElementById('enroll-cam-mode-label');
+      if (lbl1) lbl1.textContent = text;
+      var lbl2 = document.getElementById('enroll-cam-mode-floating-label');
+      if (lbl2) lbl2.textContent = text;
+      startEnrollCameraStream();
     }
 
     function captureAndEnrollCurrentStudent() {
@@ -19439,6 +19492,9 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
     window.enrollNextStudentBatch = typeof enrollNextStudentBatch !== 'undefined' ? enrollNextStudentBatch : function(){};
     window.closeAIFaceScannerModal = typeof closeAIFaceScannerModal !== 'undefined' ? closeAIFaceScannerModal : function(){};
     window.toggleFaceCameraFacingMode = typeof toggleFaceCameraFacingMode !== 'undefined' ? toggleFaceCameraFacingMode : function(){};
+    window.toggleEnrollCameraFacingMode = typeof toggleEnrollCameraFacingMode !== 'undefined' ? toggleEnrollCameraFacingMode : function(){};
+    window.toggleSelfieCameraFacingMode = typeof toggleSelfieCameraFacingMode !== 'undefined' ? toggleSelfieCameraFacingMode : function(){};
+    window.toggleQRCameraFacingMode = typeof toggleQRCameraFacingMode !== 'undefined' ? toggleQRCameraFacingMode : function(){};
     window.toggleFaceScannerSound = typeof toggleFaceScannerSound !== 'undefined' ? toggleFaceScannerSound : function(){};
     window.getReportDateRange = typeof getReportDateRange !== 'undefined' ? getReportDateRange : function(){};
     window.getAttendanceMapFromLocalStorage = typeof getAttendanceMapFromLocalStorage !== 'undefined' ? getAttendanceMapFromLocalStorage : function(){};
@@ -19658,6 +19714,9 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
       <div style="position: relative; width: 100%; height: 340px; max-height: 48vh; background: #000; border-radius: 14px; overflow: hidden; border: 2px solid rgba(0, 240, 255, 0.5); box-shadow: 0 0 25px rgba(0, 240, 255, 0.25); margin-bottom: 14px; display: flex; align-items: center; justify-content: center;">
         
         <!-- Live Video -->
+        <button type="button" class="btn-glass btn-cyan btn-sm-glass" onclick="toggleEnrollCameraFacingMode()" style="position: absolute; top: 12px; right: 12px; z-index: 15; font-size: 11.5px; padding: 6px 12px; background: rgba(15,23,42,0.85); box-shadow: 0 4px 15px rgba(0,0,0,0.5); backdrop-filter: blur(8px); border-radius: 20px; font-weight: 700; border: 1.5px solid var(--cyan-400);" title="สลับกล้องหน้า / กล้องหลัง">
+          <i class="fas fa-camera-rotate"></i> สลับกล้อง (<span id="enroll-cam-mode-floating-label">หน้า</span>)
+        </button>
         <video id="enroll-video" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover;"></video>
         
         <!-- Canvas for Snapshot & Analysis -->
@@ -19681,6 +19740,9 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
       <!-- ACTION BUTTONS -->
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
         <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+          <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-toggle-enroll-camera" onclick="toggleEnrollCameraFacingMode()" title="สลับกล้องหน้า / กล้องหลัง" style="font-weight: 700; padding: 10px 16px;">
+            <i class="fas fa-camera-rotate"></i> สลับกล้อง (<span id="enroll-cam-mode-label">หน้า</span>)
+          </button>
           <button type="button" class="btn-glass btn-cyan" id="btn-enroll-capture" onclick="captureAndEnrollCurrentStudent()" style="padding: 10px 20px; font-weight: 800; font-size: 13.5px; box-shadow: 0 0 18px rgba(0,240,255,0.45);">
             <i class="fas fa-camera"></i> 📸 ถ่ายภาพ & บันทึกใบหน้าหลัก
           </button>
