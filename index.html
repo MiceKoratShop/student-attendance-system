@@ -19033,9 +19033,11 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
         sess = AppState.activeSession;
       }
 
-      var targetClass = sess ? sess.className : (getSelectedAttendanceClasses() || 'all');
+      var targetClass = sess ? sess.className : (getSelectedAttendanceClasses() || AppState.selectedClass || 'all');
       var targetAct = sess ? sess.activityName : ((document.getElementById('att-activity-select') && document.getElementById('att-activity-select').value) || 'เช็คชื่อมาเรียน');
-      var targetDate = sess ? (sess.date || getTodayDateString()) : ((document.getElementById('att-date-select') && document.getElementById('att-date-select').value) || getTodayDateString());
+      if (targetAct === 'all' || !targetAct) targetAct = 'เช็คชื่อมาเรียน';
+
+      var targetDate = sess ? (sess.date || getTodayDateString()) : ((document.getElementById('att-date-select') && document.getElementById('att-date-select').value) || AppState.selectedDate || getTodayDateString());
 
       AIFaceScannerState.targetSession = sess;
       AIFaceScannerState.targetClass = targetClass;
@@ -19045,7 +19047,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
 
       var infoEl = document.getElementById('face-scanner-session-info');
       var classDisplay = (targetClass === 'all' || targetClass === 'ทุกห้องเรียน') ? 'ทุกห้องเรียน' : ('ห้อง ' + targetClass.replace(/^ห้อง\s*/, ''));
-      if (infoEl) infoEl.textContent = 'ห้อง: ' + classDisplay + ' • วิชา: ' + targetAct + ' (' + targetDate + ')';
+      if (infoEl) infoEl.textContent = 'ห้อง: ' + classDisplay + ' • วิชา: ' + targetAct + ' (วันที่ ' + formatThaiDate(targetDate) + ')';
 
       updateFaceScanLiveCounters();
       openModal('modal-ai-face-scanner');
@@ -19066,6 +19068,12 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
       var video = document.getElementById('face-scanner-video');
       if (video) video.srcObject = null;
       closeModal('modal-ai-face-scanner');
+
+      // Refresh attendance list if currently on attendance page
+      var attSection = document.getElementById('view-attendance');
+      if (attSection && attSection.classList.contains('active')) {
+        loadAttendanceDataForSelectedDate();
+      }
     }
 
     function loadFaceApiModelsAndDescriptors(targetClass) {
@@ -19366,24 +19374,23 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
       addRecognizedFaceChip(studentObj, checkinTimeStr, checkinStatus, confPct);
       updateFaceScanLiveCounters();
 
-      // Sync with Google Sheets backend
+      // Sync with Google Sheets Attendance Database directly
       if (isGASAvailable()) {
-        var payload = {
-          sessionId: sess ? sess.sessionId : 'AUTO_FACE',
-          className: studentObj.className,
-          activityName: targetAct,
+        var recordToSave = [{
+          date: targetDate,
           studentId: sId,
-          otp: (sess && sess.secretSeed) ? generateClientTOTP(sess.secretSeed, sess.otpIntervalSeconds || 15, nowMs) : '000000',
-          lat: 0,
-          lng: 0,
-          deviceId: 'AI-FaceScan',
-          selfieBase64: studentObj.photo || studentObj.selfiePhoto || ''
-        };
+          status: checkinStatus,
+          activityName: targetAct,
+          note: 'สแกนใบหน้า AI (' + confPct + '%)'
+        }];
         google.script.run
           .withSuccessHandler(function(res) {
-            console.log('Face checkin synced to GAS:', res);
+            console.log('Face checkin saved to Google Sheets Attendance:', res);
           })
-          .validateAndCheckinStudent(payload);
+          .withFailureHandler(function(err) {
+            console.warn('Failed to save face checkin to Google Sheets:', err);
+          })
+          .saveAttendanceBatch(recordToSave, targetAct);
       }
     }
 
