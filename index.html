@@ -46,25 +46,26 @@
   <style>
     :root {
       --bg-space: #07090E;
-      --bg-surface-1: rgba(18, 23, 34, 0.85);
-      --bg-surface-2: rgba(28, 35, 51, 0.72);
-      --bg-surface-card: rgba(15, 20, 31, 0.88);
-      --bg-glass-modal: rgba(14, 18, 28, 0.98);
+      --bg-surface-1: rgba(16, 21, 32, 0.85);
+      --bg-surface-2: rgba(24, 31, 46, 0.78);
+      --bg-surface-card: rgba(14, 18, 28, 0.88);
+      --bg-glass-modal: rgba(11, 15, 24, 0.98);
 
       --orange-500: #FF6B00;
       --orange-400: #FF8533;
       --orange-600: #E65A00;
-      --orange-glow: rgba(255, 107, 0, 0.4);
+      --orange-glow: rgba(255, 107, 0, 0.45);
       --orange-subtle: rgba(255, 107, 0, 0.12);
-      --orange-gradient: linear-gradient(135deg, #FF6B00 0%, #FF9033 100%);
+      --orange-gradient: linear-gradient(135deg, #FF6B00 0%, #FF8533 100%);
+      --orange-gradient-hover: linear-gradient(135deg, #FF7A00 0%, #FF944D 100%);
       --orange-gradient-dark: linear-gradient(135deg, #1C120C 0%, #2E190E 100%);
 
       --text-pure-white: #FFFFFF;
-      --text-primary: #F3F5F9;
+      --text-primary: #F8FAFC;
       --text-secondary: #94A3B8;
       --text-muted: #64748B;
       --border-glass: rgba(255, 255, 255, 0.08);
-      --border-glass-light: rgba(255, 255, 255, 0.15);
+      --border-glass-light: rgba(255, 255, 255, 0.14);
       --border-orange-glow: rgba(255, 107, 0, 0.45);
 
       --status-present: #10B981;
@@ -87,27 +88,27 @@
       --status-late-bg: rgba(236, 72, 153, 0.14);
       --status-late-border: rgba(236, 72, 153, 0.3);
 
-      --radius-xs: 6px;
-      --radius-sm: 10px;
-      --radius-md: 16px;
-      --radius-lg: 22px;
-      --radius-xl: 28px;
+      --radius-xs: 7px;
+      --radius-sm: 11px;
+      --radius-md: 18px;
+      --radius-lg: 24px;
+      --radius-xl: 30px;
       --radius-full: 9999px;
 
       --sidebar-w: 270px;
       --header-h: 72px;
 
-      --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
-      --shadow-glass-lg: 0 16px 45px 0 rgba(0, 0, 0, 0.65);
+      --shadow-glass: 0 14px 35px -8px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      --shadow-glass-lg: 0 20px 50px -10px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.15);
       --shadow-orange: 0 8px 25px -4px rgba(255, 107, 0, 0.45);
-      --blur-val: blur(18px) saturate(180%);
+      --blur-val: blur(24px) saturate(190%);
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Prompt', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Prompt', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
 
@@ -421,44 +422,62 @@
       padding: 24px;
       position: relative;
       overflow: hidden;
-      transition: transform 0.25s ease, border-color 0.25s ease;
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+
+    .glass-card:hover {
+      border-color: rgba(255, 107, 0, 0.3);
+      box-shadow: 0 18px 45px -8px rgba(0, 0, 0, 0.75), 0 0 25px rgba(255, 107, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.15);
     }
 
     .stat-card {
       display: flex;
       align-items: center;
-      gap: 18px;
-      padding: 20px 22px;
+      gap: 20px;
+      padding: 22px 24px;
+      border-radius: var(--radius-md);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-3px);
     }
 
     .stat-icon-wrapper {
-      width: 52px;
-      height: 52px;
-      border-radius: var(--radius-sm);
+      width: 58px;
+      height: 58px;
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 22px;
+      font-size: 26px;
       flex-shrink: 0;
+      transition: transform 0.25s ease;
+    }
+
+    .stat-card:hover .stat-icon-wrapper {
+      transform: scale(1.1);
     }
 
     .stat-info {
       display: flex;
       flex-direction: column;
+      min-width: 0;
     }
 
     .stat-value {
-      font-size: 28px;
+      font-size: clamp(28px, 2.3vw, 36px);
       font-weight: 800;
       color: var(--text-pure-white);
       line-height: 1.1;
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-family: 'Prompt', sans-serif;
+      letter-spacing: -0.5px;
     }
 
     .stat-label {
-      font-size: 13px;
+      font-size: 13.5px;
       color: var(--text-secondary);
-      font-weight: 500;
+      font-weight: 600;
       margin-top: 4px;
     }
 
@@ -564,65 +583,110 @@
       min-height: 42px;
       border-radius: var(--radius-sm);
       font-size: 14px;
-      font-weight: 600;
+      font-weight: 700;
+      font-family: 'Prompt', sans-serif;
       border: 1px solid transparent;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       text-decoration: none;
       touch-action: manipulation;
+      white-space: nowrap;
     }
 
+    .btn-glass i {
+      font-size: 15px;
+      transition: transform 0.2s ease;
+    }
+
+    .btn-glass:hover i {
+      transform: scale(1.12);
+    }
+
+    /* Orange Button: Radiant Orange Gradient with Pure White Text and Deep Glow */
     .btn-orange {
-      background: var(--orange-gradient);
-      color: #FFFFFF;
-      box-shadow: var(--shadow-orange);
+      background: linear-gradient(135deg, #FF6B00 0%, #FF8533 100%);
+      color: #FFFFFF !important;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 0 6px 20px -3px rgba(255, 107, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.3);
     }
 
     .btn-orange:hover, .btn-orange:active {
+      background: linear-gradient(135deg, #FF7A00 0%, #FF944D 100%);
+      color: #FFFFFF !important;
       transform: translateY(-2px);
-      box-shadow: 0 10px 28px -4px rgba(255, 107, 0, 0.6);
+      box-shadow: 0 12px 28px -3px rgba(255, 107, 0, 0.65), 0 4px 10px rgba(0, 0, 0, 0.4);
     }
 
+    /* Dark Button: Obsidian Black with Warm Orange Rim & Orange Icon */
     .btn-dark {
-      background: var(--bg-surface-2);
-      color: var(--text-primary);
-      border-color: var(--border-glass);
+      background: #0B0F19;
+      color: #FFFFFF !important;
+      border: 1.5px solid rgba(255, 107, 0, 0.45);
+      box-shadow: 0 6px 18px -4px rgba(0, 0, 0, 0.55);
+    }
+
+    .btn-dark i {
+      color: #FF8533;
     }
 
     .btn-dark:hover, .btn-dark:active {
-      background: rgba(45, 55, 78, 0.8);
-      color: #FFF;
-      border-color: rgba(255, 255, 255, 0.2);
+      background: #151C2C;
+      color: #FFFFFF !important;
+      border-color: #FF6B00;
+      box-shadow: 0 10px 25px -4px rgba(255, 107, 0, 0.35), 0 0 18px rgba(255, 107, 0, 0.25);
+      transform: translateY(-2px);
     }
 
+    .btn-dark:hover i {
+      color: #FFA366;
+    }
+
+    /* Emerald Button */
     .btn-emerald {
       background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-      color: #FFF;
-      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
+      color: #FFFFFF !important;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 6px 20px -3px rgba(16, 185, 129, 0.45);
+    }
+
+    .btn-emerald:hover, .btn-emerald:active {
+      background: linear-gradient(135deg, #22C55E 0%, #10B981 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px -3px rgba(16, 185, 129, 0.6);
+    }
+
+    /* Cyan Button */
+    .btn-cyan {
+      background: linear-gradient(135deg, #0EA5E9 0%, #0284C7 100%);
+      color: #FFFFFF !important;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 6px 20px -3px rgba(14, 165, 233, 0.45);
+    }
+
+    .btn-cyan:hover, .btn-cyan:active {
+      background: linear-gradient(135deg, #38BDF8 0%, #0EA5E9 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px -3px rgba(14, 165, 233, 0.6);
     }
 
     .btn-danger-glass {
       background: rgba(239, 68, 68, 0.15);
-      color: #F87171;
-      border: 1px solid var(--status-absent-border);
+      color: #F87171 !important;
+      border: 1.5px solid rgba(239, 68, 68, 0.4);
     }
 
     .btn-danger-glass:hover, .btn-danger-glass:active {
-      background: var(--status-absent);
-      color: #FFF;
+      background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+      color: #FFFFFF !important;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 22px -3px rgba(239, 68, 68, 0.5);
     }
 
     .btn-sm-glass {
-      padding: 6px 14px;
-      min-height: 36px;
-      font-size: 12.5px;
+      padding: 7px 15px;
+      min-height: 38px;
+      font-size: 13px;
       border-radius: var(--radius-xs);
-    }
-
-    .btn-cyan {
-      background: linear-gradient(135deg, #06B6D4 0%, #0891B2 100%);
-      color: #FFF;
-      box-shadow: 0 4px 15px rgba(6, 182, 212, 0.35);
     }
 
     /* Projector Fullscreen Enhanced Architecture */
@@ -2117,39 +2181,39 @@
     /* ☀️ LIGHT MODE & THEME SYSTEM STYLES */
     /* ============================================================= */
     [data-theme="light"] {
-      --bg-space: #F1F5F9;
+      --bg-space: #FFF9F5;
       --bg-surface-1: rgba(255, 255, 255, 0.95);
-      --bg-surface-2: rgba(248, 250, 252, 0.92);
-      --bg-surface-card: rgba(255, 255, 255, 0.96);
+      --bg-surface-2: rgba(255, 248, 242, 0.92);
+      --bg-surface-card: rgba(255, 255, 255, 0.92);
       --bg-glass-modal: rgba(255, 255, 255, 0.98);
 
-      --text-pure-white: #0F172A;
-      --text-primary: #0F172A;
-      --text-secondary: #334155;
-      --text-muted: #64748B;
-      --border-glass: rgba(0, 0, 0, 0.09);
-      --border-glass-light: rgba(0, 0, 0, 0.15);
+      --text-pure-white: #1A1612;
+      --text-primary: #1A1612;
+      --text-secondary: #5C4F46;
+      --text-muted: #7E7067;
+      --border-glass: rgba(255, 107, 0, 0.12);
+      --border-glass-light: rgba(255, 107, 0, 0.22);
       --border-orange-glow: rgba(255, 107, 0, 0.45);
 
-      --shadow-glass: 0 8px 30px 0 rgba(0, 0, 0, 0.07);
-      --shadow-glass-lg: 0 16px 45px 0 rgba(0, 0, 0, 0.12);
+      --shadow-glass: 0 12px 30px -5px rgba(255, 107, 0, 0.08), 0 4px 14px rgba(0, 0, 0, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+      --shadow-glass-lg: 0 20px 50px -8px rgba(255, 107, 0, 0.12), 0 6px 18px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 1);
     }
 
     [data-theme="light"] body {
-      background-color: #F8FAFC !important;
-      color: #0F172A !important;
+      background-color: #FFF8F3 !important;
+      color: #1A1612 !important;
       background-image: 
-        radial-gradient(circle at 10% 15%, rgba(255, 107, 0, 0.08) 0%, transparent 35%),
-        radial-gradient(circle at 90% 85%, rgba(56, 189, 248, 0.08) 0%, transparent 40%),
-        radial-gradient(circle at 50% 50%, rgba(241, 245, 249, 0.8) 0%, transparent 70%) !important;
+        radial-gradient(circle at 10% 15%, rgba(255, 107, 0, 0.09) 0%, transparent 40%),
+        radial-gradient(circle at 90% 85%, rgba(255, 133, 51, 0.07) 0%, transparent 45%),
+        radial-gradient(circle at 50% 50%, rgba(255, 246, 240, 0.85) 0%, transparent 70%) !important;
     }
 
     [data-theme="light"] .sidebar,
     [data-theme="light"] .top-header,
     [data-theme="light"] .mobile-bottom-nav {
       background: rgba(255, 255, 255, 0.94) !important;
-      border-color: rgba(0, 0, 0, 0.08) !important;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
+      border-color: rgba(255, 107, 0, 0.14) !important;
+      box-shadow: 0 4px 20px rgba(255, 107, 0, 0.06) !important;
     }
 
     [data-theme="light"] .card-glass,
@@ -2158,88 +2222,161 @@
     [data-theme="light"] .modal-window-glass,
     [data-theme="light"] .glass-panel,
     [data-theme="light"] .summary-card-glass {
-      background: rgba(255, 255, 255, 0.96) !important;
-      border-color: rgba(0, 0, 0, 0.1) !important;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.06), 0 8px 10px -6px rgba(0, 0, 0, 0.04) !important;
+      background: rgba(255, 255, 255, 0.9) !important;
+      border-color: rgba(255, 107, 0, 0.15) !important;
+      box-shadow: 0 12px 30px -5px rgba(255, 107, 0, 0.08), 0 4px 14px rgba(0, 0, 0, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+    }
+
+    [data-theme="light"] .page-title,
+    [data-theme="light"] .card-title-text,
+    [data-theme="light"] .brand-title,
+    [data-theme="light"] h1,
+    [data-theme="light"] h2,
+    [data-theme="light"] h3,
+    [data-theme="light"] h4,
+    [data-theme="light"] h5 {
+      color: #1A1612 !important;
+    }
+
+    [data-theme="light"] .stat-value {
+      color: #1A1612 !important;
+    }
+
+    [data-theme="light"] .stat-label {
+      color: #5C4F46 !important;
+    }
+
+    [data-theme="light"] .stat-card {
+      background: rgba(255, 255, 255, 0.92) !important;
+      border-color: rgba(255, 107, 0, 0.15) !important;
+    }
+
+    [data-theme="light"] .stat-theme-green {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(255, 255, 255, 0.96) 100%) !important;
+      border-color: rgba(16, 185, 129, 0.45) !important;
+    }
+
+    [data-theme="light"] .stat-theme-green .stat-value {
+      color: #059669 !important;
     }
 
     [data-theme="light"] .input-glass,
     [data-theme="light"] .select-glass {
       background: #FFFFFF !important;
-      color: #0F172A !important;
-      border-color: #CBD5E1 !important;
+      color: #1A1612 !important;
+      border: 1.5px solid rgba(255, 107, 0, 0.25) !important;
+    }
+
+    [data-theme="light"] .input-glass:focus,
+    [data-theme="light"] .select-glass:focus {
+      border-color: #FF6B00 !important;
+      box-shadow: 0 0 0 3.5px rgba(255, 107, 0, 0.22) !important;
     }
 
     [data-theme="light"] .input-glass::placeholder {
-      color: #94A3B8 !important;
+      color: #8C7D73 !important;
+    }
+
+    [data-theme="light"] .table-glass-container {
+      background: rgba(255, 255, 255, 0.95) !important;
+      border-color: rgba(255, 107, 0, 0.14) !important;
     }
 
     [data-theme="light"] .table-glass th,
     [data-theme="light"] .glass-table th {
-      background: #F1F5F9 !important;
-      color: #0F172A !important;
-      border-bottom: 1.5px solid #CBD5E1 !important;
+      background: rgba(255, 245, 238, 0.95) !important;
+      color: #1A1612 !important;
+      border-bottom: 2px solid rgba(255, 107, 0, 0.2) !important;
     }
 
     [data-theme="light"] .table-glass td,
     [data-theme="light"] .glass-table td {
-      border-bottom: 1px solid #E2E8F0 !important;
-      color: #334155 !important;
+      border-bottom: 1px solid rgba(255, 107, 0, 0.08) !important;
+      color: #382E27 !important;
     }
 
     [data-theme="light"] .table-glass tr:hover td,
     [data-theme="light"] .glass-table tr:hover td {
-      background: rgba(241, 245, 249, 0.9) !important;
+      background: rgba(255, 107, 0, 0.05) !important;
     }
 
     [data-theme="light"] .pin-digit-box {
       background: #FFFFFF !important;
-      color: #0F172A !important;
-      border-color: #CBD5E1 !important;
+      color: #1A1612 !important;
+      border-color: rgba(255, 107, 0, 0.3) !important;
+    }
+
+    [data-theme="light"] .pin-digit-box:focus {
+      border-color: #FF6B00 !important;
+      box-shadow: 0 0 15px rgba(255, 107, 0, 0.35) !important;
     }
 
     [data-theme="light"] .badge-glass {
-      background: rgba(0, 0, 0, 0.04) !important;
-      border-color: rgba(0, 0, 0, 0.1) !important;
-      color: #334155 !important;
+      background: rgba(255, 107, 0, 0.08) !important;
+      border-color: rgba(255, 107, 0, 0.2) !important;
+      color: #382E27 !important;
     }
 
     [data-theme="light"] .btn-glass.btn-dark {
-      background: #E2E8F0 !important;
-      color: #1E293B !important;
-      border-color: #CBD5E1 !important;
+      background: #1C1713 !important;
+      color: #FFFFFF !important;
+      border-color: #FF6B00 !important;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
+    }
+
+    [data-theme="light"] .btn-glass.btn-dark i {
+      color: #FF8533 !important;
     }
 
     [data-theme="light"] .btn-glass.btn-dark:hover {
-      background: #CBD5E1 !important;
-      color: #0F172A !important;
+      background: #2D241E !important;
+      border-color: #FF8533 !important;
+      box-shadow: 0 8px 22px rgba(255, 107, 0, 0.35) !important;
     }
 
     [data-theme="light"] .nav-item {
-      color: #475569 !important;
+      color: #4A3E37 !important;
     }
 
-    [data-theme="light"] .nav-item:hover,
-    [data-theme="light"] .nav-item.active {
-      background: rgba(255, 107, 0, 0.12) !important;
+    [data-theme="light"] .nav-item:hover {
+      background: rgba(255, 107, 0, 0.1) !important;
       color: var(--orange-600) !important;
-      border-color: var(--orange-500) !important;
+      border-color: rgba(255, 107, 0, 0.3) !important;
     }
 
-    [data-theme="light"] .page-title,
-    [data-theme="light"] h1,
-    [data-theme="light"] h2,
-    [data-theme="light"] h3,
-    [data-theme="light"] h4 {
-      color: #0F172A !important;
+    [data-theme="light"] .nav-item.active {
+      background: var(--orange-gradient) !important;
+      color: #FFFFFF !important;
+      box-shadow: var(--shadow-orange) !important;
+      border-color: rgba(255, 255, 255, 0.3) !important;
     }
 
     [data-theme="light"] .glass-pill {
       background: #FFFFFF !important;
-      border-color: #CBD5E1 !important;
-      color: #334155 !important;
+      border-color: rgba(255, 107, 0, 0.2) !important;
+      color: #382E27 !important;
     }
 
+    [data-theme="light"] .student-att-card {
+      background: rgba(255, 255, 255, 0.95) !important;
+      border-color: rgba(255, 107, 0, 0.12) !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03) !important;
+    }
+
+    [data-theme="light"] .student-att-card:hover {
+      background: #FFFDFB !important;
+      border-color: rgba(255, 107, 0, 0.35) !important;
+      box-shadow: 0 4px 16px rgba(255, 107, 0, 0.12) !important;
+    }
+
+    [data-theme="light"] .student-name-link {
+      color: #1A1612 !important;
+    }
+
+    [data-theme="light"] .student-sub-info {
+      color: #6B5D53 !important;
+    }
+    
     .floating-theme-btn {
       position: fixed;
       bottom: 24px;
@@ -3185,8 +3322,8 @@
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px;">
                       <span style="font-size: 11.5px; font-weight: 700; color: #FFF;">เลือกห้องเรียน:</span>
                       <div style="display: flex; gap: 4px;">
-                        <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-att-select-all-classes" style="font-size: 10px; padding: 2px 7px;">ทุกห้อง</button>
-                        <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-att-clear-classes" style="font-size: 10px; padding: 2px 7px;">ล้าง</button>
+                        <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-att-select-all-classes" style="font-size: 10px; padding: 2px 7px;"><i class="fas fa-check-double"></i> ทุกห้อง</button>
+                        <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-att-clear-classes" style="font-size: 10px; padding: 2px 7px;"><i class="fas fa-rotate-left"></i> ล้าง</button>
                       </div>
                     </div>
                     <div id="att-class-checkbox-list" style="display: flex; flex-direction: column; gap: 6px; max-height: 230px; overflow-y: auto;"></div>
@@ -3396,8 +3533,8 @@
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px;">
                       <span style="font-size: 11.5px; font-weight: 700; color: #FFF;">เลือกห้องเรียน:</span>
                       <div style="display: flex; gap: 4px;">
-                        <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-report-select-all-classes" style="font-size: 10px; padding: 2px 7px;">ทุกห้อง</button>
-                        <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-report-clear-classes" style="font-size: 10px; padding: 2px 7px;">ล้าง</button>
+                        <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-report-select-all-classes" style="font-size: 10px; padding: 2px 7px;"><i class="fas fa-check-double"></i> ทุกห้อง</button>
+                        <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-report-clear-classes" style="font-size: 10px; padding: 2px 7px;"><i class="fas fa-rotate-left"></i> ล้าง</button>
                       </div>
                     </div>
                     <div id="report-class-checkbox-list" style="display: flex; flex-direction: column; gap: 6px; max-height: 230px; overflow-y: auto;"></div>
@@ -3417,8 +3554,8 @@
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px;">
                       <span style="font-size: 11.5px; font-weight: 700; color: #FFF;">เลือกกิจกรรม/วิชา:</span>
                       <div style="display: flex; gap: 4px;">
-                        <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-report-select-all-activities" style="font-size: 10px; padding: 2px 7px;">ทั้งหมด</button>
-                        <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-report-clear-activities" style="font-size: 10px; padding: 2px 7px;">ล้าง</button>
+                        <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-report-select-all-activities" style="font-size: 10px; padding: 2px 7px;"><i class="fas fa-check-double"></i> ทั้งหมด</button>
+                        <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-report-clear-activities" style="font-size: 10px; padding: 2px 7px;"><i class="fas fa-rotate-left"></i> ล้าง</button>
                       </div>
                     </div>
                     <div id="report-activity-checkbox-list" style="display: flex; flex-direction: column; gap: 6px; max-height: 230px; overflow-y: auto;"></div>
@@ -3632,8 +3769,8 @@
           <input type="password" class="input-glass" id="input-admin-pass" placeholder="กรอกรหัสผ่านเพื่อเข้าใช้งาน" autofocus required />
         </div>
         <div style="display: flex; gap: 10px; margin-top: 24px;">
-          <button type="button" class="btn-glass btn-dark btn-close-modal" style="flex: 1;">ยกเลิก</button>
-          <button type="submit" class="btn-glass btn-orange" style="flex: 1; font-weight: 700;">เข้าสู่ระบบ</button>
+          <button type="button" class="btn-glass btn-dark btn-close-modal" style="flex: 1;"><i class="fas fa-xmark"></i> ยกเลิก</button>
+          <button type="submit" class="btn-glass btn-orange" style="flex: 1; font-weight: 700;"><i class="fas fa-arrow-right-to-bracket"></i> เข้าสู่ระบบ</button>
         </div>
       </form>
     </div>
@@ -3665,7 +3802,7 @@
           <select class="select-glass" id="form-student-class"></select>
         </div>
         <div style="display: flex; gap: 10px; margin-top: 24px;">
-          <button type="button" class="btn-glass btn-dark btn-close-modal" style="flex: 1;">ยกเลิก</button>
+          <button type="button" class="btn-glass btn-dark btn-close-modal" style="flex: 1;"><i class="fas fa-xmark"></i> ยกเลิก</button>
           <button type="submit" class="btn-glass btn-orange" style="flex: 1; font-weight: 700;"><i class="fas fa-floppy-disk"></i> บันทึกข้อมูล</button>
         </div>
       </form>
@@ -3689,7 +3826,7 @@
       <div id="class-list-container" style="display: flex; flex-direction: column; gap: 8px; max-height: 260px; overflow-y: auto;"></div>
 
       <div style="margin-top: 20px; text-align: right;">
-        <button type="button" class="btn-glass btn-dark btn-close-modal">ปิด</button>
+        <button type="button" class="btn-glass btn-dark btn-close-modal"><i class="fas fa-xmark"></i> ปิด</button>
       </div>
     </div>
   </div>
@@ -3943,7 +4080,7 @@
       </div>
 
       <div style="text-align: right;">
-        <button type="button" class="btn-glass btn-dark btn-close-modal">ปิดหน้าต่าง</button>
+        <button type="button" class="btn-glass btn-dark btn-close-modal"><i class="fas fa-xmark"></i> ปิดหน้าต่าง</button>
       </div>
     </div>
   </div>
@@ -4085,7 +4222,7 @@
       </p>
       <div style="display: flex; gap: 12px;">
         <button type="button" class="btn-glass btn-dark" id="btn-custom-confirm-cancel" style="flex: 1; padding: 12px;">
-          ยกเลิก
+          <i class="fas fa-xmark"></i> ยกเลิก
         </button>
         <button type="button" class="btn-glass btn-danger-glass" id="btn-custom-confirm-ok" style="flex: 1.2; padding: 12px; background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); color: #FFF; font-weight: 700;">
           <i class="fas fa-trash"></i> ยืนยันการลบ
@@ -4182,7 +4319,7 @@
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
               <label style="margin: 0;"><i class="fas fa-chalkboard-user"></i> ห้องเรียน (เลือกได้หลายห้อง):</label>
               <button type="button" class="btn-glass btn-sm-glass btn-cyan" id="btn-sch-select-all-classes" style="font-size: 10.5px; padding: 2px 8px;">
-                เลือกทั้งหมด
+                <i class="fas fa-check-double"></i> เลือกทั้งหมด
               </button>
             </div>
             <div id="sch-class-checkboxes-container" style="max-height: 120px; overflow-y: auto; background: rgba(0,0,0,0.3); border: 1.5px solid var(--border-glass); border-radius: 8px; padding: 8px 12px; display: flex; flex-wrap: wrap; gap: 8px;">
@@ -4374,7 +4511,7 @@
             <span>เปิดใช้งานตารางนี้</span>
           </label>
           <div style="display: flex; gap: 8px;">
-            <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-cancel-edit-schedule" style="display: none;">ยกเลิก</button>
+            <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-cancel-edit-schedule" style="display: none;"><i class="fas fa-ban"></i> ยกเลิก</button>
             <button type="button" class="btn-glass btn-orange" id="btn-save-schedule-rule" style="font-weight: 700;">
               <i class="fas fa-floppy-disk"></i> บันทึกตารางเวลา
             </button>
@@ -4652,14 +4789,14 @@
               <i class="fas fa-chalkboard-user" style="color: var(--orange-400);"></i> 2. เลือกห้องเรียน
             </label>
             <div style="display: flex; gap: 6px;">
-              <button type="button" class="btn-glass btn-sm-glass" id="btn-modal-session-select-all" style="font-size: 10.5px; padding: 2px 8px;">เลือกทุกห้อง</button>
-              <button type="button" class="btn-glass btn-sm-glass" id="btn-modal-session-clear-all" style="font-size: 10.5px; padding: 2px 8px;">ล้าง</button>
+              <button type="button" class="btn-glass btn-sm-glass btn-cyan" id="btn-modal-session-select-all" style="font-size: 10.5px; padding: 2px 8px;"><i class="fas fa-check-double"></i> เลือกทุกห้อง</button>
+              <button type="button" class="btn-glass btn-sm-glass btn-dark" id="btn-modal-session-clear-all" style="font-size: 10.5px; padding: 2px 8px;"><i class="fas fa-rotate-left"></i> ล้าง</button>
             </div>
           </div>
           <div id="modal-session-class-chips-container" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; max-height: 110px; overflow-y: auto;"></div>
           <div style="display: flex; gap: 6px; align-items: center;">
             <input type="text" class="input-glass" id="input-modal-session-custom-class" placeholder="พิมพ์ชื่อห้องเรียนเอง..." style="flex: 1; font-size: 12px;" />
-            <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-modal-session-add-custom-class" style="font-size: 12px; font-weight: 700;">+ เพิ่มห้องนี้</button>
+            <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-modal-session-add-custom-class" style="font-size: 12px; font-weight: 700;"><i class="fas fa-plus"></i> เพิ่มห้องนี้</button>
           </div>
           <div id="modal-session-selected-classes-summary" style="margin-top: 8px; background: rgba(0,240,255,0.06); border: 1px solid rgba(0,240,255,0.3); padding: 7px 10px; border-radius: 6px; font-size: 12px; color: #FFF;">
             🏫 ห้องที่เปิดรับ: <strong id="modal-session-selected-classes-text" style="color: var(--cyan-400);">ทุกห้องเรียน (All)</strong>
@@ -4806,11 +4943,11 @@
       <!-- Quick Preset Chips -->
       <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; align-items: center;">
         <span style="font-size: 11px; color: var(--text-muted);">ตำแหน่งแนะนำ:</span>
-        <button type="button" class="btn-glass btn-sm-glass chip-preset-loc" data-lat="13.7563" data-lng="100.5018" style="font-size: 10.5px; padding: 2px 8px;">กรุงเทพฯ</button>
-        <button type="button" class="btn-glass btn-sm-glass chip-preset-loc" data-lat="13.7649" data-lng="100.5383" style="font-size: 10.5px; padding: 2px 8px;">อนุสาวรีย์ชัยฯ</button>
-        <button type="button" class="btn-glass btn-sm-glass chip-preset-loc" data-lat="18.7883" data-lng="98.9853" style="font-size: 10.5px; padding: 2px 8px;">เชียงใหม่</button>
-        <button type="button" class="btn-glass btn-sm-glass chip-preset-loc" data-lat="14.9799" data-lng="102.0978" style="font-size: 10.5px; padding: 2px 8px;">นครราชสีมา</button>
-        <button type="button" class="btn-glass btn-sm-glass chip-preset-loc" data-lat="7.0087" data-lng="100.4747" style="font-size: 10.5px; padding: 2px 8px;">สงขลา/หาดใหญ่</button>
+        <button type="button" class="btn-glass btn-sm-glass chip-preset-loc" data-lat="13.7563" data-lng="100.5018" style="font-size: 10.5px; padding: 2px 8px;"><i class="fas fa-location-dot" style="color: var(--orange-500);"></i> กรุงเทพฯ</button>
+        <button type="button" class="btn-glass btn-sm-glass chip-preset-loc" data-lat="13.7649" data-lng="100.5383" style="font-size: 10.5px; padding: 2px 8px;"><i class="fas fa-location-dot" style="color: var(--orange-500);"></i> อนุสาวรีย์ชัยฯ</button>
+        <button type="button" class="btn-glass btn-sm-glass chip-preset-loc" data-lat="18.7883" data-lng="98.9853" style="font-size: 10.5px; padding: 2px 8px;"><i class="fas fa-location-dot" style="color: var(--orange-500);"></i> เชียงใหม่</button>
+        <button type="button" class="btn-glass btn-sm-glass chip-preset-loc" data-lat="14.9799" data-lng="102.0978" style="font-size: 10.5px; padding: 2px 8px;"><i class="fas fa-location-dot" style="color: var(--orange-500);"></i> นครราชสีมา</button>
+        <button type="button" class="btn-glass btn-sm-glass chip-preset-loc" data-lat="7.0087" data-lng="100.4747" style="font-size: 10.5px; padding: 2px 8px;"><i class="fas fa-location-dot" style="color: var(--orange-500);"></i> สงขลา/หาดใหญ่</button>
         <span id="map-search-status" style="font-size: 11px; color: var(--orange-400); margin-left: auto;"></span>
       </div>
 
@@ -4820,8 +4957,8 @@
         
         <!-- Floating Layer Switcher Badge -->
         <div style="position: absolute; top: 10px; right: 10px; z-index: 999; display: flex; gap: 4px; background: rgba(15,23,42,0.85); backdrop-filter: blur(10px); padding: 4px; border-radius: 6px; border: 1px solid var(--border-glass);">
-          <button type="button" class="btn-glass btn-sm-glass btn-map-layer active" data-layer="street" id="btn-layer-street" style="font-size: 10px; padding: 3px 8px;">ถนน (Street)</button>
-          <button type="button" class="btn-glass btn-sm-glass btn-map-layer" data-layer="satellite" id="btn-layer-satellite" style="font-size: 10px; padding: 3px 8px;">ดาวเทียม (Satellite)</button>
+          <button type="button" class="btn-glass btn-sm-glass btn-map-layer active" data-layer="street" id="btn-layer-street" style="font-size: 10px; padding: 3px 8px;"><i class="fas fa-map"></i> ถนน (Street)</button>
+          <button type="button" class="btn-glass btn-sm-glass btn-map-layer" data-layer="satellite" id="btn-layer-satellite" style="font-size: 10px; padding: 3px 8px;"><i class="fas fa-satellite"></i> ดาวเทียม (Satellite)</button>
         </div>
 
         <!-- Hint Overlay at bottom of map -->
@@ -19720,7 +19857,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
 
       <div style="padding-top: 14px; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: flex-end;">
         <button type="button" class="btn-glass btn-dark btn-sm-glass" onclick="closePublishParentReportModal()">
-          ปิดหน้าต่าง
+          <i class="fas fa-xmark"></i> ปิดหน้าต่าง
         </button>
       </div>
     </div>
@@ -19842,7 +19979,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
             <i class="fas fa-forward-step"></i> คนถัดไป (Batch)
           </button>
           <button type="button" class="btn-glass btn-dark btn-sm-glass" onclick="closeAIFaceEnrollmentModal()">
-            ปิดหน้าต่าง
+            <i class="fas fa-xmark"></i> ปิดหน้าต่าง
           </button>
         </div>
       </div>
@@ -19948,7 +20085,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
             <i class="fas fa-check-circle"></i> ✅ ยืนยันบันทึกผลการสแกน (0 คน) ลง Google Sheets
           </button>
           <button type="button" class="btn-glass btn-dark btn-sm-glass" onclick="closeAIFaceScannerModal()">
-            เสร็จสิ้น / ปิดกล้อง
+            <i class="fas fa-check"></i> เสร็จสิ้น / ปิดกล้อง
           </button>
         </div>
       </div>
