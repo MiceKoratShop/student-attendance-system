@@ -45,32 +45,32 @@
 
   <style>
     :root {
-      --bg-space: #07090E;
-      --bg-surface-1: rgba(16, 21, 32, 0.85);
-      --bg-surface-2: rgba(24, 31, 46, 0.78);
-      --bg-surface-card: rgba(14, 18, 28, 0.88);
-      --bg-glass-modal: rgba(11, 15, 24, 0.98);
+      --bg-space: #0E0E10;
+      --bg-surface-1: #121214;
+      --bg-surface-2: #1E1E22;
+      --bg-surface-card: #18181B;
+      --bg-glass-modal: #141416;
 
-      --orange-500: #FF6B00;
-      --orange-400: #FF8533;
-      --orange-600: #E65A00;
-      --orange-glow: rgba(255, 107, 0, 0.45);
-      --orange-subtle: rgba(255, 107, 0, 0.12);
-      --orange-gradient: linear-gradient(135deg, #FF6B00 0%, #FF8533 100%);
-      --orange-gradient-hover: linear-gradient(135deg, #FF7A00 0%, #FF944D 100%);
-      --orange-gradient-dark: linear-gradient(135deg, #1C120C 0%, #2E190E 100%);
+      --orange-500: #FF7A00;
+      --orange-400: #FF8A1E;
+      --orange-600: #E66900;
+      --orange-glow: rgba(255, 122, 0, 0.4);
+      --orange-subtle: rgba(255, 122, 0, 0.12);
+      --orange-gradient: linear-gradient(135deg, #FF7A00 0%, #FF9020 100%);
+      --orange-gradient-hover: linear-gradient(135deg, #FF8A1E 0%, #FFA030 100%);
+      --orange-gradient-dark: linear-gradient(135deg, #1A1410 0%, #29180E 100%);
 
       --text-pure-white: #FFFFFF;
-      --text-primary: #F8FAFC;
-      --text-secondary: #94A3B8;
-      --text-muted: #64748B;
-      --border-glass: rgba(255, 255, 255, 0.08);
-      --border-glass-light: rgba(255, 255, 255, 0.14);
-      --border-orange-glow: rgba(255, 107, 0, 0.45);
+      --text-primary: #F3F4F6;
+      --text-secondary: #9CA3AF;
+      --text-muted: #71717A;
+      --border-glass: #27272A;
+      --border-glass-light: #323238;
+      --border-orange-glow: rgba(255, 122, 0, 0.45);
 
-      --status-present: #10B981;
-      --status-present-bg: rgba(16, 185, 129, 0.14);
-      --status-present-border: rgba(16, 185, 129, 0.3);
+      --status-present: #22C55E;
+      --status-present-bg: rgba(34, 197, 94, 0.14);
+      --status-present-border: rgba(34, 197, 94, 0.3);
 
       --status-absent: #EF4444;
       --status-absent-bg: rgba(239, 68, 68, 0.14);
@@ -88,20 +88,20 @@
       --status-late-bg: rgba(236, 72, 153, 0.14);
       --status-late-border: rgba(236, 72, 153, 0.3);
 
-      --radius-xs: 7px;
-      --radius-sm: 11px;
-      --radius-md: 18px;
-      --radius-lg: 24px;
-      --radius-xl: 30px;
+      --radius-xs: 6px;
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 20px;
+      --radius-xl: 26px;
       --radius-full: 9999px;
 
-      --sidebar-w: 270px;
-      --header-h: 72px;
+      --sidebar-w: 260px;
+      --header-h: 68px;
 
-      --shadow-glass: 0 14px 35px -8px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-      --shadow-glass-lg: 0 20px 50px -10px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.15);
-      --shadow-orange: 0 8px 25px -4px rgba(255, 107, 0, 0.45);
-      --blur-val: blur(24px) saturate(190%);
+      --shadow-glass: 0 4px 18px rgba(0, 0, 0, 0.35);
+      --shadow-glass-lg: 0 10px 30px rgba(0, 0, 0, 0.5);
+      --shadow-orange: 0 4px 16px rgba(255, 122, 0, 0.35);
+      --blur-val: blur(16px);
     }
 
     * {
@@ -2180,203 +2180,409 @@
     /* ============================================================= */
     /* ☀️ LIGHT MODE & THEME SYSTEM STYLES */
     /* ============================================================= */
+    
+    /* LINE Schedule Notification Inspired Theme Overrides */
+    .top-header {
+      background: #121214 !important;
+      border-bottom: 1px solid #222226 !important;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3) !important;
+    }
+
+    .top-header .page-title {
+      color: #FFFFFF !important;
+    }
+
+    .top-header .page-subtitle {
+      color: #9CA3AF !important;
+    }
+
+    /* Top Navigation Tabs Bar */
+    .top-nav-bar {
+      background: #121214;
+      border-bottom: 1px solid #222226;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      position: sticky;
+      top: var(--header-h);
+      z-index: 90;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .top-nav-bar::-webkit-scrollbar { display: none; }
+
+    .top-nav-tabs {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .top-nav-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 18px;
+      font-size: 13.5px;
+      font-weight: 500;
+      color: #9CA3AF;
+      text-decoration: none;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .top-nav-tab:hover {
+      color: #FF7A00;
+    }
+
+    .top-nav-tab.active {
+      color: #FFFFFF;
+      font-weight: 700;
+      border-bottom: 3px solid #FF7A00;
+    }
+
+    /* Today Hero Banner */
+    .today-hero-banner {
+      background: #18181B;
+      border: 1px solid #27272A;
+      border-radius: 16px;
+      padding: 22px 26px;
+      color: #FFFFFF;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 22px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+    }
+
+    .today-hero-deco-arc {
+      position: absolute;
+      top: -30px;
+      right: -30px;
+      width: 170px;
+      height: 170px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(217, 119, 6, 0.22) 0%, rgba(255, 122, 0, 0.08) 55%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-day-pill {
+      background: #FF7A00;
+      color: #FFFFFF;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 9999px;
+      padding: 4px 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hero-main-title {
+      font-size: clamp(20px, 2vw, 24px);
+      font-weight: 800;
+      color: #FFFFFF;
+      margin: 8px 0 10px 0;
+      letter-spacing: -0.3px;
+    }
+
+    .hero-meta-row {
+      font-size: 13px;
+      color: #A1A1AA;
+    }
+
+    /* Signature Left Orange Border Stat Card */
+    .stat-card {
+      background: #18181B !important;
+      border: 1px solid #27272A !important;
+      border-left: 4px solid #FF7A00 !important;
+      border-radius: 16px !important;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
+      padding: 18px 22px !important;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35) !important;
+    }
+
+    .stat-label {
+      font-size: 12px !important;
+      color: #9CA3AF !important;
+      font-weight: 500 !important;
+      margin: 0 !important;
+    }
+
+    .stat-value-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .stat-value {
+      font-size: 28px !important;
+      font-weight: 800 !important;
+      color: #FFFFFF !important;
+      line-height: 1.1 !important;
+    }
+
+    .stat-unit-suffix {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #FF7A00;
+    }
+
+    /* Cards general */
+    .glass-card {
+      background: #18181B !important;
+      border: 1px solid #27272A !important;
+      border-radius: 16px !important;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25) !important;
+    }
+
+    .glass-table th {
+      background: #222226 !important;
+      color: #FFFFFF !important;
+      border-bottom: 1px solid #2E2E34 !important;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .glass-table td {
+      border-bottom: 1px solid #27272A !important;
+      color: #E4E4E7 !important;
+      font-size: 13px;
+    }
+
+    .glass-table tr:hover td {
+      background: rgba(255, 122, 0, 0.05) !important;
+    }
+
+    /* Buttons */
+    .btn-orange {
+      background: #FF7A00 !important;
+      color: #FFFFFF !important;
+      border: none !important;
+      border-radius: 10px !important;
+      box-shadow: 0 4px 14px rgba(255, 122, 0, 0.35) !important;
+      font-weight: 700 !important;
+    }
+
+    .btn-orange:hover, .btn-orange:active {
+      background: #FF8A1E !important;
+      box-shadow: 0 6px 20px rgba(255, 122, 0, 0.5) !important;
+      transform: translateY(-1px) !important;
+    }
+
+    .btn-dark {
+      background: #18181B !important;
+      color: #FFFFFF !important;
+      border: 1px solid #2E2E34 !important;
+      border-radius: 10px !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    .btn-dark:hover, .btn-dark:active {
+      background: #222226 !important;
+      border-color: #FF7A00 !important;
+      transform: translateY(-1px) !important;
+    }
+
+    /* System Status Pill */
+    .system-status-pill {
+      background: #12231A;
+      border: 1px solid #1E3A2B;
+      border-radius: 9999px;
+      padding: 5px 14px;
+      font-size: 11.5px;
+      color: #E5E7EB;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .system-status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #22C55E;
+      box-shadow: 0 0 8px #22C55E;
+      display: inline-block;
+    }
+
+
     [data-theme="light"] {
-      --bg-space: #FFF9F5;
-      --bg-surface-1: rgba(255, 255, 255, 0.95);
-      --bg-surface-2: rgba(255, 248, 242, 0.92);
-      --bg-surface-card: rgba(255, 255, 255, 0.92);
-      --bg-glass-modal: rgba(255, 255, 255, 0.98);
+      --bg-space: #F4F5F7;
+      --bg-surface-1: #FFFFFF;
+      --bg-surface-2: #F3F4F6;
+      --bg-surface-card: #FFFFFF;
+      --bg-glass-modal: #FFFFFF;
 
-      --text-pure-white: #1A1612;
-      --text-primary: #1A1612;
-      --text-secondary: #5C4F46;
-      --text-muted: #7E7067;
-      --border-glass: rgba(255, 107, 0, 0.12);
-      --border-glass-light: rgba(255, 107, 0, 0.22);
-      --border-orange-glow: rgba(255, 107, 0, 0.45);
+      --text-pure-white: #111827;
+      --text-primary: #111827;
+      --text-secondary: #6B7280;
+      --text-muted: #9CA3AF;
+      --border-glass: #E5E7EB;
+      --border-glass-light: #D1D5DB;
+      --border-orange-glow: rgba(255, 122, 0, 0.45);
 
-      --shadow-glass: 0 12px 30px -5px rgba(255, 107, 0, 0.08), 0 4px 14px rgba(0, 0, 0, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.95);
-      --shadow-glass-lg: 0 20px 50px -8px rgba(255, 107, 0, 0.12), 0 6px 18px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 1);
+      --shadow-glass: 0 4px 16px rgba(0, 0, 0, 0.05);
+      --shadow-glass-lg: 0 10px 25px rgba(0, 0, 0, 0.08);
     }
 
     [data-theme="light"] body {
-      background-color: #FFF8F3 !important;
-      color: #1A1612 !important;
-      background-image: 
-        radial-gradient(circle at 10% 15%, rgba(255, 107, 0, 0.09) 0%, transparent 40%),
-        radial-gradient(circle at 90% 85%, rgba(255, 133, 51, 0.07) 0%, transparent 45%),
-        radial-gradient(circle at 50% 50%, rgba(255, 246, 240, 0.85) 0%, transparent 70%) !important;
+      background-color: #F4F5F7 !important;
+      color: #111827 !important;
+      background-image: none !important;
     }
 
-    [data-theme="light"] .sidebar,
-    [data-theme="light"] .top-header,
-    [data-theme="light"] .mobile-bottom-nav {
-      background: rgba(255, 255, 255, 0.94) !important;
-      border-color: rgba(255, 107, 0, 0.14) !important;
-      box-shadow: 0 4px 20px rgba(255, 107, 0, 0.06) !important;
+    /* In Light mode, Top Header remains Sleek Pitch Black as shown in reference */
+    [data-theme="light"] .top-header {
+      background: #121214 !important;
+      border-bottom: 1px solid #222226 !important;
+    }
+    [data-theme="light"] .top-header .page-title {
+      color: #FFFFFF !important;
+    }
+    [data-theme="light"] .top-header .page-subtitle {
+      color: #9CA3AF !important;
+    }
+    [data-theme="light"] .top-header .system-status-pill {
+      background: #12231A !important;
+      border-color: #1E3A2B !important;
+      color: #E5E7EB !important;
     }
 
-    [data-theme="light"] .card-glass,
+    /* Top Nav Bar in Light Mode */
+    [data-theme="light"] .top-nav-bar {
+      background: #FFFFFF !important;
+      border-bottom: 1px solid #E5E7EB !important;
+    }
+    [data-theme="light"] .top-nav-tab {
+      color: #6B7280 !important;
+    }
+    [data-theme="light"] .top-nav-tab:hover {
+      color: #FF7A00 !important;
+    }
+    [data-theme="light"] .top-nav-tab.active {
+      color: #111827 !important;
+      font-weight: 700 !important;
+      border-bottom: 3px solid #FF7A00 !important;
+    }
+
+    /* Sidebar in Light Mode */
+    [data-theme="light"] .sidebar {
+      background: #FFFFFF !important;
+      border-color: #E5E7EB !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
+    }
+    [data-theme="light"] .nav-item {
+      color: #4B5563 !important;
+    }
+    [data-theme="light"] .nav-item:hover {
+      background: #F3F4F6 !important;
+      color: #111827 !important;
+      border-color: transparent !important;
+    }
+    [data-theme="light"] .nav-item.active {
+      background: #FF7A00 !important;
+      color: #FFFFFF !important;
+    }
+
+    /* Cards in Light Mode */
     [data-theme="light"] .glass-card,
+    [data-theme="light"] .card-glass,
     [data-theme="light"] .checkin-step-card,
     [data-theme="light"] .modal-window-glass,
-    [data-theme="light"] .glass-panel,
-    [data-theme="light"] .summary-card-glass {
-      background: rgba(255, 255, 255, 0.9) !important;
-      border-color: rgba(255, 107, 0, 0.15) !important;
-      box-shadow: 0 12px 30px -5px rgba(255, 107, 0, 0.08), 0 4px 14px rgba(0, 0, 0, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
-    }
-
-    [data-theme="light"] .page-title,
-    [data-theme="light"] .card-title-text,
-    [data-theme="light"] .brand-title,
-    [data-theme="light"] h1,
-    [data-theme="light"] h2,
-    [data-theme="light"] h3,
-    [data-theme="light"] h4,
-    [data-theme="light"] h5 {
-      color: #1A1612 !important;
-    }
-
-    [data-theme="light"] .stat-value {
-      color: #1A1612 !important;
-    }
-
-    [data-theme="light"] .stat-label {
-      color: #5C4F46 !important;
+    [data-theme="light"] .table-glass-container {
+      background: #FFFFFF !important;
+      border: 1px solid #E5E7EB !important;
+      border-radius: 16px !important;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04) !important;
     }
 
     [data-theme="light"] .stat-card {
-      background: rgba(255, 255, 255, 0.92) !important;
-      border-color: rgba(255, 107, 0, 0.15) !important;
+      background: #FFFFFF !important;
+      border: 1px solid #E5E7EB !important;
+      border-left: 4px solid #FF7A00 !important;
+      border-radius: 16px !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+    }
+    [data-theme="light"] .stat-value {
+      color: #111827 !important;
+    }
+    [data-theme="light"] .stat-label {
+      color: #6B7280 !important;
     }
 
-    [data-theme="light"] .stat-theme-green {
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(255, 255, 255, 0.96) 100%) !important;
-      border-color: rgba(16, 185, 129, 0.45) !important;
+    [data-theme="light"] .card-title-text,
+    [data-theme="light"] .page-title,
+    [data-theme="light"] h1,
+    [data-theme="light"] h2,
+    [data-theme="light"] h3,
+    [data-theme="light"] h4 {
+      color: #111827 !important;
     }
 
-    [data-theme="light"] .stat-theme-green .stat-value {
-      color: #059669 !important;
+    /* Table in Light Mode */
+    [data-theme="light"] .glass-table th {
+      background: #18181B !important;
+      color: #FFFFFF !important;
+      border-bottom: 1px solid #27272A !important;
+    }
+    [data-theme="light"] .glass-table td {
+      border-bottom: 1px solid #E5E7EB !important;
+      color: #374151 !important;
+    }
+    [data-theme="light"] .glass-table tr:hover td {
+      background: rgba(255, 122, 0, 0.04) !important;
     }
 
+    /* Inputs in Light Mode */
     [data-theme="light"] .input-glass,
     [data-theme="light"] .select-glass {
       background: #FFFFFF !important;
-      color: #1A1612 !important;
-      border: 1.5px solid rgba(255, 107, 0, 0.25) !important;
+      color: #111827 !important;
+      border: 1px solid #D1D5DB !important;
     }
-
     [data-theme="light"] .input-glass:focus,
     [data-theme="light"] .select-glass:focus {
-      border-color: #FF6B00 !important;
-      box-shadow: 0 0 0 3.5px rgba(255, 107, 0, 0.22) !important;
+      border-color: #FF7A00 !important;
+      box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.2) !important;
     }
 
-    [data-theme="light"] .input-glass::placeholder {
-      color: #8C7D73 !important;
+    [data-theme="light"] .btn-glass.btn-dark {
+      background: #18181B !important;
+      color: #FFFFFF !important;
+      border: 1px solid #2E2E34 !important;
     }
-
-    [data-theme="light"] .table-glass-container {
-      background: rgba(255, 255, 255, 0.95) !important;
-      border-color: rgba(255, 107, 0, 0.14) !important;
-    }
-
-    [data-theme="light"] .table-glass th,
-    [data-theme="light"] .glass-table th {
-      background: rgba(255, 245, 238, 0.95) !important;
-      color: #1A1612 !important;
-      border-bottom: 2px solid rgba(255, 107, 0, 0.2) !important;
-    }
-
-    [data-theme="light"] .table-glass td,
-    [data-theme="light"] .glass-table td {
-      border-bottom: 1px solid rgba(255, 107, 0, 0.08) !important;
-      color: #382E27 !important;
-    }
-
-    [data-theme="light"] .table-glass tr:hover td,
-    [data-theme="light"] .glass-table tr:hover td {
-      background: rgba(255, 107, 0, 0.05) !important;
+    [data-theme="light"] .btn-glass.btn-dark:hover {
+      background: #27272A !important;
+      border-color: #FF7A00 !important;
     }
 
     [data-theme="light"] .pin-digit-box {
       background: #FFFFFF !important;
-      color: #1A1612 !important;
-      border-color: rgba(255, 107, 0, 0.3) !important;
-    }
-
-    [data-theme="light"] .pin-digit-box:focus {
-      border-color: #FF6B00 !important;
-      box-shadow: 0 0 15px rgba(255, 107, 0, 0.35) !important;
-    }
-
-    [data-theme="light"] .badge-glass {
-      background: rgba(255, 107, 0, 0.08) !important;
-      border-color: rgba(255, 107, 0, 0.2) !important;
-      color: #382E27 !important;
-    }
-
-    [data-theme="light"] .btn-glass.btn-dark {
-      background: #1C1713 !important;
-      color: #FFFFFF !important;
-      border-color: #FF6B00 !important;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
-    }
-
-    [data-theme="light"] .btn-glass.btn-dark i {
-      color: #FF8533 !important;
-    }
-
-    [data-theme="light"] .btn-glass.btn-dark:hover {
-      background: #2D241E !important;
-      border-color: #FF8533 !important;
-      box-shadow: 0 8px 22px rgba(255, 107, 0, 0.35) !important;
-    }
-
-    [data-theme="light"] .nav-item {
-      color: #4A3E37 !important;
-    }
-
-    [data-theme="light"] .nav-item:hover {
-      background: rgba(255, 107, 0, 0.1) !important;
-      color: var(--orange-600) !important;
-      border-color: rgba(255, 107, 0, 0.3) !important;
-    }
-
-    [data-theme="light"] .nav-item.active {
-      background: var(--orange-gradient) !important;
-      color: #FFFFFF !important;
-      box-shadow: var(--shadow-orange) !important;
-      border-color: rgba(255, 255, 255, 0.3) !important;
-    }
-
-    [data-theme="light"] .glass-pill {
-      background: #FFFFFF !important;
-      border-color: rgba(255, 107, 0, 0.2) !important;
-      color: #382E27 !important;
+      color: #111827 !important;
+      border-color: #D1D5DB !important;
     }
 
     [data-theme="light"] .student-att-card {
-      background: rgba(255, 255, 255, 0.95) !important;
-      border-color: rgba(255, 107, 0, 0.12) !important;
+      background: #FFFFFF !important;
+      border-color: #E5E7EB !important;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03) !important;
     }
-
-    [data-theme="light"] .student-att-card:hover {
-      background: #FFFDFB !important;
-      border-color: rgba(255, 107, 0, 0.35) !important;
-      box-shadow: 0 4px 16px rgba(255, 107, 0, 0.12) !important;
-    }
-
     [data-theme="light"] .student-name-link {
-      color: #1A1612 !important;
+      color: #111827 !important;
     }
-
     [data-theme="light"] .student-sub-info {
-      color: #6B5D53 !important;
+      color: #6B7280 !important;
     }
-    
     .floating-theme-btn {
       position: fixed;
       bottom: 24px;
@@ -2516,30 +2722,70 @@
           <button type="button" class="mobile-nav-toggle" id="mobile-nav-btn" aria-label="เปิดเมนู">
             <i class="fas fa-bars"></i>
           </button>
-          <div class="page-title-box">
-            <h1 class="page-title" id="page-title-text">นักศึกษาเช็คชื่อตนเอง (Self Check-in)</h1>
-            <span class="page-subtitle" id="page-subtitle-text">ระบบเช็คชื่อนักศึกษาพร้อมมาตรการความปลอดภัย 4 ชั้น</span>
+          <div class="header-brand-box" style="display: flex; align-items: center; gap: 12px;">
+            <div class="top-brand-icon" style="width: 38px; height: 38px; border-radius: 12px; background: linear-gradient(135deg, #FF7A00 0%, #FF9020 100%); display: flex; align-items: center; justify-content: center; color: #FFF; font-size: 18px; box-shadow: 0 4px 12px rgba(255, 122, 0, 0.4); flex-shrink: 0;">
+              <i class="fas fa-bell"></i>
+            </div>
+            <div class="page-title-box">
+              <h1 class="page-title" id="page-title-text" style="margin: 0; font-size: 15px; font-weight: 700; color: #FFFFFF; line-height: 1.2;">ระบบแจ้งเตือนการเช็คชื่อนักศึกษา</h1>
+              <span class="page-subtitle" id="page-subtitle-text" style="font-size: 11px; color: #9CA3AF;">วิทยาลัยเทคโนโลยีบริหารธุรกิจ นครราชสีมา</span>
+            </div>
           </div>
         </div>
 
-        <div class="header-right" style="display: flex; align-items: center; gap: 8px;">
+        <div class="header-right" style="display: flex; align-items: center; gap: 10px;">
           <!-- THEME TOGGLE BUTTON -->
-          <button type="button" class="btn-glass btn-sm-glass btn-theme-toggle" id="btn-theme-toggle" title="สลับโหมดมืด / โหมดสว่าง" style="padding: 6px 12px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
-            <i class="fas fa-moon" id="theme-icon-indicator" style="color: var(--orange-400);"></i>
-            <span id="theme-text-indicator">โหมดมืด</span>
+          <button type="button" class="btn-theme-pill" id="btn-theme-toggle" title="สลับโหมดมืด / โหมดสว่าง" style="width: 36px; height: 36px; border-radius: 50%; background: #1E1E22; border: 1px solid #2E2E34; color: #FF7A00; display: inline-flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; transition: all 0.2s ease;">
+            <i class="fas fa-moon" id="theme-icon-indicator"></i>
           </button>
 
-          <div class="glass-pill" id="header-date-pill">
+          <!-- System Status Pill -->
+          <div class="system-status-pill" id="system-status-badge">
+            <span class="system-status-dot"></span>
+            <span>ระบบทำงานปกติ</span>
+          </div>
+
+          <div class="glass-pill" id="header-date-pill" style="display: none;">
             <i class="fas fa-calendar-day"></i>
             <span id="header-date-text">กำลังโหลด...</span>
           </div>
 
           <!-- Admin Mode Indicator & Return to Student Button -->
-          <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-switch-to-student" style="display: none;">
-            <i class="fas fa-mobile-screen"></i> หน้าเช็คชื่อ นศ.
+          <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-switch-to-student" style="display: none; border-radius: 9999px; font-size: 11.5px; padding: 4px 12px;">
+            <i class="fas fa-mobile-screen"></i> หน้านักศึกษา
           </button>
         </div>
       </header>
+
+      <!-- TOP NAVIGATION BAR (LINE SCHEDULE STYLE) -->
+      <nav class="top-nav-bar" id="top-nav-bar">
+        <div class="top-nav-tabs">
+          <a class="top-nav-tab active" data-view="dashboard" id="top-tab-dashboard">
+            <i class="fas fa-chart-pie" style="color: #FF7A00;"></i>
+            <span>ภาพรวม</span>
+          </a>
+          <a class="top-nav-tab" data-view="attendance" id="top-tab-attendance">
+            <i class="fas fa-calendar-check" style="color: #38BDF8;"></i>
+            <span>เช็คชื่อรายห้อง</span>
+          </a>
+          <a class="top-nav-tab" data-view="projector" id="top-tab-projector">
+            <i class="fas fa-qrcode" style="color: #F472B6;"></i>
+            <span>จอโปรเจกเตอร์</span>
+          </a>
+          <a class="top-nav-tab" data-view="students" id="top-tab-students">
+            <i class="fas fa-users-gear" style="color: #34D399;"></i>
+            <span>จัดการนักเรียน</span>
+          </a>
+          <a class="top-nav-tab" data-view="reports" id="top-tab-reports">
+            <i class="fas fa-file-invoice" style="color: #FBBF24;"></i>
+            <span>ออกรายงาน</span>
+          </a>
+          <a class="top-nav-tab" data-view="settings" id="top-tab-settings">
+            <i class="fas fa-sliders" style="color: #A78BFA;"></i>
+            <span>ตั้งค่า</span>
+          </a>
+        </div>
+      </nav>
 
       <div class="content-area">
         
@@ -2893,52 +3139,70 @@
           </div>
 
           <!-- STATS CARDS (PRIORITIZING มาเรียน AS #1 CARD) -->
-          <div class="grid-cards">
-            <div class="glass-card stat-card stat-theme-green" style="border: 1.5px solid rgba(16, 185, 129, 0.45); box-shadow: 0 0 25px rgba(16, 185, 129, 0.25);">
-              <div class="stat-icon-wrapper" style="background: rgba(16, 185, 129, 0.2); color: #10B981;"><i class="fas fa-circle-check"></i></div>
-              <div class="stat-info">
-                <span class="stat-value" id="dash-present-today" style="color: #10B981; text-shadow: 0 0 16px rgba(16, 185, 129, 0.6);">0</span>
-                <span class="stat-label" style="color: #E2E8F0; font-weight: 700;">✨ มาเรียน (อันดับ 1)</span>
+          <!-- TODAY HERO BANNER (MATCHING REFERENCE SCREENSHOT) -->
+          <div class="today-hero-banner">
+            <div class="today-hero-deco-arc"></div>
+            <div style="position: relative; z-index: 2;">
+              <div style="margin-bottom: 8px;">
+                <span class="hero-day-pill" id="hero-today-day-pill">
+                  <i class="fas fa-check"></i> <span id="hero-today-day-text">วันนี้</span>
+                </span>
+              </div>
+              <h2 class="hero-main-title" id="hero-today-title">สถิติการเช็คชื่อเข้าเรียนวันนี้</h2>
+              <div class="hero-meta-row">
+                <span>เวลาปัจจุบัน <strong id="hero-current-time-text" style="color: #FF7A00; font-family: monospace; font-size: 14px;">--:-- น.</strong></span>
+                <span style="margin-left: 18px;">เช็คชื่อแล้ววันนี้ทั้งหมด <strong id="hero-total-checked-text" style="color: #FF7A00; font-size: 15px; font-weight: 800;">0</strong> คน</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- STATS CARDS (MATCHING REFERENCE SCREENSHOT WITH SIGNATURE ORANGE LEFT BORDER) -->
+          <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 22px;">
+            <div class="stat-card">
+              <span class="stat-label">✨ มาเรียน (อันดับ 1)</span>
+              <div class="stat-value-row">
+                <span class="stat-value" id="dash-present-today" style="color: #22C55E;">0</span>
+                <span class="stat-unit-suffix">คน</span>
               </div>
             </div>
 
-            <div class="glass-card stat-card stat-theme-red">
-              <div class="stat-icon-wrapper"><i class="fas fa-circle-xmark"></i></div>
-              <div class="stat-info">
-                <span class="stat-value" id="dash-absent-today">0</span>
-                <span class="stat-label">ขาดเรียน</span>
+            <div class="stat-card">
+              <span class="stat-label">ขาดเรียน</span>
+              <div class="stat-value-row">
+                <span class="stat-value" id="dash-absent-today" style="color: #EF4444;">0</span>
+                <span class="stat-unit-suffix">คน</span>
               </div>
             </div>
 
-            <div class="glass-card stat-card stat-theme-amber">
-              <div class="stat-icon-wrapper"><i class="fas fa-notes-medical"></i></div>
-              <div class="stat-info">
-                <span class="stat-value" id="dash-sick-today">0</span>
-                <span class="stat-label">ลาป่วย</span>
+            <div class="stat-card">
+              <span class="stat-label">ลาป่วย</span>
+              <div class="stat-value-row">
+                <span class="stat-value" id="dash-sick-today" style="color: #F59E0B;">0</span>
+                <span class="stat-unit-suffix">คน</span>
               </div>
             </div>
 
-            <div class="glass-card stat-card stat-theme-purple">
-              <div class="stat-icon-wrapper"><i class="fas fa-envelope-open-text"></i></div>
-              <div class="stat-info">
-                <span class="stat-value" id="dash-leave-today">0</span>
-                <span class="stat-label">ลากิจ</span>
+            <div class="stat-card">
+              <span class="stat-label">ลากิจ</span>
+              <div class="stat-value-row">
+                <span class="stat-value" id="dash-leave-today" style="color: #8B5CF6;">0</span>
+                <span class="stat-unit-suffix">คน</span>
               </div>
             </div>
 
-            <div class="glass-card stat-card stat-theme-pink">
-              <div class="stat-icon-wrapper"><i class="fas fa-clock"></i></div>
-              <div class="stat-info">
-                <span class="stat-value" id="dash-late-today">0</span>
-                <span class="stat-label">มาสาย</span>
+            <div class="stat-card">
+              <span class="stat-label">มาสาย</span>
+              <div class="stat-value-row">
+                <span class="stat-value" id="dash-late-today" style="color: #EC4899;">0</span>
+                <span class="stat-unit-suffix">คน</span>
               </div>
             </div>
 
-            <div class="glass-card stat-card stat-theme-orange">
-              <div class="stat-icon-wrapper"><i class="fas fa-user-group"></i></div>
-              <div class="stat-info">
+            <div class="stat-card">
+              <span class="stat-label">นักเรียนทั้งหมด</span>
+              <div class="stat-value-row">
                 <span class="stat-value" id="dash-total-students">0</span>
-                <span class="stat-label">นักเรียนทั้งหมด</span>
+                <span class="stat-unit-suffix">คน</span>
               </div>
             </div>
           </div>
@@ -5872,6 +6136,16 @@
         });
       }
 
+      // Top Nav Tabs (LINE Schedule style)
+      var topNavTabs = document.querySelectorAll('.top-nav-tab');
+      for (var tn = 0; tn < topNavTabs.length; tn++) {
+        topNavTabs[tn].addEventListener('click', function(e) {
+          e.preventDefault();
+          var targetView = this.getAttribute('data-view');
+          if (targetView) switchView(targetView);
+        });
+      }
+
       // Mobile Bottom Nav Tabs
       var mobileTabs = document.querySelectorAll('.mobile-nav-tab');
       for (var m = 0; m < mobileTabs.length; m++) {
@@ -5911,6 +6185,16 @@
           mobileTabs[m].classList.add('active');
         } else {
           mobileTabs[m].classList.remove('active');
+        }
+      }
+
+      // Update Top Nav Tabs (LINE Schedule style)
+      var topTabs = document.querySelectorAll('.top-nav-tab');
+      for (var tt = 0; tt < topTabs.length; tt++) {
+        if (topTabs[tt].getAttribute('data-view') === viewName) {
+          topTabs[tt].classList.add('active');
+        } else {
+          topTabs[tt].classList.remove('active');
         }
       }
 
@@ -13576,6 +13860,23 @@
       document.getElementById('dash-sick-today').textContent = data.sick || 0;
       document.getElementById('dash-leave-today').textContent = data.leave || 0;
       document.getElementById('dash-late-today').textContent = data.late || 0;
+
+      // Update Today Hero Banner
+      var heroTotEl = document.getElementById('hero-total-checked-text');
+      if (heroTotEl) heroTotEl.textContent = data.present || 0;
+
+      var now = new Date();
+      var hStr = (now.getHours() < 10 ? '0' : '') + now.getHours();
+      var mStr = (now.getMinutes() < 10 ? '0' : '') + now.getMinutes();
+      var timeStr = hStr + ':' + mStr + ' น.';
+      var heroTimeEl = document.getElementById('hero-current-time-text');
+      if (heroTimeEl) heroTimeEl.textContent = timeStr;
+
+      var heroDayEl = document.getElementById('hero-today-day-text');
+      if (heroDayEl) {
+        var thaiDays = ['วันอาทิตย์', 'วันจันทร์', 'วันอังคาร', 'วันพุธ', 'วันพฤหัสบดี', 'วันศุกร์', 'วันเสาร์'];
+        heroDayEl.textContent = thaiDays[now.getDay()];
+      }
 
       // 1. Classroom Summary Table (Prioritizing 'มาเรียน' as #1 Column & Sorting)
       var tbody = document.getElementById('dash-class-table-body');
