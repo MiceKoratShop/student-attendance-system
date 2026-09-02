@@ -19370,6 +19370,26 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
       }
       localStorage.setItem('gas_student_app_attendance', JSON.stringify(allAtt));
 
+      // Add to recognized list tracking
+      var alreadyIn = false;
+      if (!AIFaceScannerState.recentRecognizedList) AIFaceScannerState.recentRecognizedList = [];
+      for (var r = 0; r < AIFaceScannerState.recentRecognizedList.length; r++) {
+        if (AIFaceScannerState.recentRecognizedList[r].studentId === sId) {
+          alreadyIn = true;
+          break;
+        }
+      }
+      if (!alreadyIn) {
+        AIFaceScannerState.recentRecognizedList.push({
+          studentId: sId,
+          name: studentObj.name,
+          className: studentObj.className,
+          status: checkinStatus,
+          confPct: confPct,
+          timeStr: checkinTimeStr
+        });
+      }
+
       // Add to recognized chips UI
       addRecognizedFaceChip(studentObj, checkinTimeStr, checkinStatus, confPct);
       updateFaceScanLiveCounters();
@@ -19432,9 +19452,66 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
       container.insertBefore(chip, container.firstChild);
     }
 
+    function confirmAndSyncFaceScanToDatabase() {
+      var targetDate = AIFaceScannerState.targetDate || (document.getElementById('att-date-select') && document.getElementById('att-date-select').value) || AppState.selectedDate || getTodayDateString();
+      var targetAct = AIFaceScannerState.targetActivity || (document.getElementById('att-activity-select') && document.getElementById('att-activity-select').value) || 'เช็คชื่อมาเรียน';
+      if (targetAct === 'all' || !targetAct) targetAct = 'เช็คชื่อมาเรียน';
+      var targetClass = AIFaceScannerState.targetClass || getSelectedAttendanceClasses() || AppState.selectedClass || 'all';
+
+      var recognized = AIFaceScannerState.recentRecognizedList || [];
+      if (recognized.length === 0) {
+        showToast('ยังไม่มีรายชื่อนักศึกษาที่สแกนใบหน้าติด กรุณาสแกนใบหน้าก่อนกดยืนยัน', 'warning');
+        return;
+      }
+
+      var listToSave = [];
+      for (var i = 0; i < recognized.length; i++) {
+        var rec = recognized[i];
+        listToSave.push({
+          date: targetDate,
+          studentId: rec.studentId,
+          status: rec.status || 'Present',
+          activityName: targetAct,
+          note: 'สแกนใบหน้า AI (' + (rec.confPct || 100) + '%)'
+        });
+      }
+
+      var classDisplay = (targetClass === 'all' || targetClass === 'ทุกห้องเรียน') ? 'ทุกห้องเรียน' : ('ห้อง ' + targetClass.replace(/^ห้อง\s*/, ''));
+      showLoadingPopup('กำลังบันทึกผลการเช็คชื่อ...', 'กำลังนำส่งข้อมูล ' + listToSave.length + ' คน (' + classDisplay + ' • ' + targetAct + ') เข้าสู่ Google Sheets');
+
+      if (isGASAvailable()) {
+        google.script.run
+          .withSuccessHandler(function(res) {
+            hideLoadingPopup();
+            closeAIFaceScannerModal();
+            showToast('บันทึกผลการสแกนใบหน้า ' + listToSave.length + ' คน ลง Google Sheets (' + targetAct + ') สำเร็จ! 🎉', 'success');
+            loadAttendanceDataForSelectedDate();
+          })
+          .withFailureHandler(function(err) {
+            hideLoadingPopup();
+            closeAIFaceScannerModal();
+            showToast('เกิดข้อผิดพลาดในการบันทึก: ' + (err.message || err), 'error');
+            loadAttendanceDataForSelectedDate();
+          })
+          .saveAttendanceBatch(listToSave, targetAct);
+      } else {
+        hideLoadingPopup();
+        closeAIFaceScannerModal();
+        showToast('บันทึกผลการสแกนใบหน้า ' + listToSave.length + ' คน ลงฐานข้อมูล (' + targetAct + ') เรียบร้อย! 🎉', 'success');
+        loadAttendanceDataForSelectedDate();
+      }
+    }
+
     function updateFaceScanLiveCounters() {
       var presEl = document.getElementById('face-scan-count-pres');
       var totEl = document.getElementById('face-scan-count-tot');
+      
+      var btnConfirm = document.getElementById('btn-confirm-face-scan-to-db');
+      if (btnConfirm) {
+        var scannedCount = (AIFaceScannerState.recentRecognizedList || []).length;
+        btnConfirm.innerHTML = '<i class="fas fa-check-circle"></i> ✅ ยืนยันบันทึกผลการสแกน (' + scannedCount + ' คน) ลง Google Sheets';
+      }
+
       if (!presEl || !totEl) return;
 
       var targetDate = AIFaceScannerState.targetDate || getTodayDateString();
@@ -19473,6 +19550,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
     // =========================================================================
     // EXPOSE GLOBAL FUNCTIONS TO WINDOW (ENSURES INLINE ONCLICK WORKS ON GITHUB & STANDALONE)
     // =========================================================================
+    window.confirmAndSyncFaceScanToDatabase = typeof confirmAndSyncFaceScanToDatabase !== 'undefined' ? confirmAndSyncFaceScanToDatabase : function(){};
     window.openAIFaceScannerModal = typeof openAIFaceScannerModal !== 'undefined' ? openAIFaceScannerModal : function(){};
     window.loadAttendanceDataForSelectedDate = typeof loadAttendanceDataForSelectedDate !== 'undefined' ? loadAttendanceDataForSelectedDate : function(){};
     window.openAIFaceEnrollmentModal = typeof openAIFaceEnrollmentModal !== 'undefined' ? openAIFaceEnrollmentModal : function(){};
@@ -19865,9 +19943,14 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
         <div style="font-size: 11px; color: var(--text-muted);">
           💡 <span style="color: #FBBF24;">คำแนะนำ:</span> ถือกล้องให้อยู่ในระดับสายตา ระยะห่าง 1-4 เมตร และมีแสงสว่างพอเหมาะ
         </div>
-        <button type="button" class="btn-glass btn-dark btn-sm-glass" onclick="closeAIFaceScannerModal()">
-          เสร็จสิ้น / ปิดกล้อง
-        </button>
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+          <button type="button" class="btn-glass btn-emerald" id="btn-confirm-face-scan-to-db" onclick="confirmAndSyncFaceScanToDatabase()" style="font-weight: 800; padding: 9px 20px; box-shadow: 0 0 20px rgba(16,185,129,0.5); font-size: 13.5px;">
+            <i class="fas fa-check-circle"></i> ✅ ยืนยันบันทึกผลการสแกน (0 คน) ลง Google Sheets
+          </button>
+          <button type="button" class="btn-glass btn-dark btn-sm-glass" onclick="closeAIFaceScannerModal()">
+            เสร็จสิ้น / ปิดกล้อง
+          </button>
+        </div>
       </div>
     </div>
   </div>
