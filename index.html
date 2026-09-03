@@ -66,7 +66,7 @@
       --orange-gradient-hover: linear-gradient(135deg, #FF9A2E 0%, #FFB866 100%);
       --orange-gradient-dark: linear-gradient(135deg, #1C120C 0%, #2E190E 100%);
 
-      /* ขาวโครเมียม: #FFF → #A9A9AD → #FFF (หัวข้อแบบตัวอักษรเงาโลหะ) & ขาว: #FFFFFF */
+      /* สีข้อความขาวคมชัดแบบเดิม: #FFFFFF */
       --text-pure-white: #FFFFFF;
       --text-primary: #FFFFFF;
       --text-secondary: #A9A9AD;
@@ -2702,20 +2702,19 @@
       color: #FFFFFF !important;
     }
 
-    /* ขาวโครเมียม: #FFF → #A9A9AD → #FFF (หัวข้อแบบตัวอักษรเงาโลหะ) */
-    .chrome-title,
+    /* หัวข้อสีขาวแบบดั้งเดิม (Solid White) */
     .page-title,
     .hero-main-title,
     .card-title-text,
     .header-brand-box .page-title,
     h1.page-title {
-      background: linear-gradient(180deg, #FFFFFF 0%, #A9A9AD 50%, #FFFFFF 100%) !important;
-      -webkit-background-clip: text !important;
-      -webkit-text-fill-color: transparent !important;
       color: #FFFFFF !important;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6) !important;
-      font-weight: 800 !important;
-      letter-spacing: -0.3px !important;
+      font-weight: 700 !important;
+      background: none !important;
+      -webkit-background-clip: unset !important;
+      -webkit-text-fill-color: #FFFFFF !important;
+      text-shadow: none !important;
+      letter-spacing: -0.3px;
     }
 
     /* ดำการ์ด: #141416 → #0D0D0F (ไล่เฉด) */
@@ -2848,6 +2847,182 @@
 
     .today-hero-deco-arc {
       background: radial-gradient(circle, rgba(255, 107, 0, 0.22) 0%, rgba(255, 154, 46, 0.08) 55%, transparent 70%) !important;
+    }
+
+  
+    /* =========================================================================
+     * ENHANCED UX/UI SYSTEM (7 MODES OPTIMIZATION)
+     * All Card backgrounds: #141416 -> #0D0D0F | Pure White Headings #FFFFFF
+     * ========================================================================= */
+
+    /* Headings strictly Pure White */
+    .page-title,
+    .hero-main-title,
+    .card-title-text,
+    .header-brand-box .page-title,
+    h1.page-title,
+    .chrome-title {
+      color: #FFFFFF !important;
+      font-weight: 700 !important;
+      background: none !important;
+      -webkit-background-clip: unset !important;
+      -webkit-text-fill-color: #FFFFFF !important;
+      text-shadow: none !important;
+      letter-spacing: -0.3px;
+    }
+
+    /* All Cards strictly Dark Card Gradient */
+    .glass-card,
+    .card-glass,
+    .stat-card,
+    .theme-choice-card,
+    .checkin-step-card,
+    .modal-window-glass,
+    .table-glass-container,
+    .today-hero-banner,
+    .report-filters-card,
+    .projector-container > .glass-card,
+    .projector-multi-card {
+      background: linear-gradient(180deg, #141416 0%, #0D0D0F 100%) !important;
+      border: 1px solid #222226 !important;
+    }
+
+    /* Feature 1: Sticky Action Bar for Attendance */
+    #attendance-sticky-bar {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 999;
+      width: calc(100% - 32px);
+      max-width: 920px;
+      background: linear-gradient(180deg, #18181B 0%, #0F0F12 100%) !important;
+      border: 1.5px solid #FF6B00 !important;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.85), 0 0 25px rgba(255, 107, 0, 0.25);
+      padding: 10px 18px;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      animation: slideUpFade 0.3s ease-out;
+    }
+
+    @keyframes slideUpFade {
+      from { opacity: 0; transform: translate(-50%, 20px); }
+      to { opacity: 1; transform: translate(-50%, 0); }
+    }
+
+    .sticky-summary-pills {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .sticky-pill {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* Feature 5: Quick Date Chips */
+    .quick-date-chips-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+
+    .quick-date-chip {
+      background: #18181B;
+      border: 1px solid #27272A;
+      border-radius: 6px;
+      color: #A9A9AD;
+      padding: 4px 10px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .quick-date-chip:hover, .quick-date-chip.active {
+      background: #FF6B00;
+      border-color: #FF6B00;
+      color: #FFFFFF;
+      box-shadow: 0 0 10px rgba(255, 107, 0, 0.35);
+    }
+
+    /* Feature 3: Fullscreen Projector Mode */
+    body.projector-fullscreen-active .top-header,
+    body.projector-fullscreen-active .top-nav-bar,
+    body.projector-fullscreen-active .footer-main {
+      display: none !important;
+    }
+
+    body.projector-fullscreen-active .content-area {
+      padding: 10px !important;
+      max-width: 100% !important;
+    }
+
+    body.projector-fullscreen-active .projector-multi-card {
+      min-height: 85vh !important;
+    }
+
+    /* Feature 7: Mobile Bottom Navigation Bar */
+    @media (max-width: 768px) {
+      .mobile-bottom-nav {
+        display: flex !important;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background: linear-gradient(180deg, #141416 0%, #0A0A0C 100%);
+        border-top: 1px solid #222226;
+        z-index: 10000;
+        justify-content: space-around;
+        align-items: center;
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.7);
+      }
+      .mobile-bottom-tab {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: 10.5px;
+        color: #8E8E93;
+        text-decoration: none;
+        cursor: pointer;
+        flex: 1;
+        height: 100%;
+        gap: 3px;
+        transition: all 0.2s ease;
+      }
+      .mobile-bottom-tab i {
+        font-size: 16px;
+      }
+      .mobile-bottom-tab.active, .mobile-bottom-tab:hover {
+        color: #FF6B00;
+      }
+      .content-area {
+        padding-bottom: 85px !important;
+      }
+      #attendance-sticky-bar {
+        bottom: 70px !important;
+      }
+    }
+
+    @media (min-width: 769px) {
+      .mobile-bottom-nav {
+        display: none !important;
+      }
     }
 
   </style>
@@ -4095,7 +4270,14 @@
                   <label style="font-size: 11.5px; margin-bottom: 3px; font-weight: 700; color: #FFF;">
                     <i class="fas fa-calendar-day" style="color: #FBBF24;"></i> ตั้งแต่วันที่
                   </label>
-                  <input type="date" class="input-glass" id="report-date-start" style="width: 100%;" />
+                  
+                  <div class="quick-date-chips-bar" style="margin-top: 4px; margin-bottom: 8px;">
+                    <span class="quick-date-chip" onclick="setQuickReportDateRange('today')">📅 วันนี้</span>
+                    <span class="quick-date-chip" onclick="setQuickReportDateRange('yesterday')">⏮️ เมื่อวาน</span>
+                    <span class="quick-date-chip" onclick="setQuickReportDateRange('thisWeek')">🗓️ สัปดาห์นี้</span>
+                    <span class="quick-date-chip" onclick="setQuickReportDateRange('thisMonth')">📆 เดือนนี้</span>
+                  </div>
+<input type="date" class="input-glass" id="report-date-start" style="width: 100%;" />
                   <input type="hidden" id="report-date-select" />
                 </div>
 
@@ -4122,6 +4304,12 @@
                 </button>
                 <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-print-report" title="พิมพ์รายงาน">
                   <i class="fas fa-print"></i> พิมพ์
+                </button>
+                <button type="button" class="btn-glass btn-cyan btn-sm-glass" onclick="copyAttendanceSummaryForLine()" style="background: rgba(34, 197, 94, 0.15); border: 1.5px solid #22C55E; color: #4ADE80; font-weight: 700; border-radius: 8px; padding: 6px 12px;" title="คัดลอกข้อความสรุปยอด มา/ขาด/สาย พร้อมส่งเข้ากลุ่ม LINE ทันที">
+                  <i class="fab fa-line" style="font-size: 14px;"></i> 📋 สรุปส่ง LINE
+                </button>
+                <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-toggle-rep-view" onclick="toggleReportViewMode()" style="font-weight: 700; border-radius: 8px; padding: 6px 12px;" title="สลับมุมมองระหว่าง การ์ดรูปภาพ กับ ตารางข้อมูลสรุป">
+                  <i class="fas fa-table-cells"></i> <span id="rep-view-toggle-text">สลับเป็นตาราง</span>
                 </button>
                 <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-export-excel" title="ส่งออกไฟล์ Excel (.xlsx)">
                   <i class="fas fa-file-excel"></i> Excel
@@ -5199,7 +5387,7 @@
                 <div id="flex-card-date-sub" style="font-size: 11.5px; color: #9CA3AF; margin-top: 4px;">27 สิงหาคม 2569 • ทุกห้องเรียน • รวม 0 คน</div>
               </div>
               <!-- Body -->
-              <div id="flex-card-body-content" style="background: #FFFFFF; padding: 14px 18px; color: #1E293B;">
+              <div id="flex-card-body-content" style="background: #FFFFFF; padding: 14px 18px; color: #18181B;">
                 <!-- Rows injected dynamically -->
               </div>
               <!-- Footer -->
@@ -5639,6 +5827,16 @@
       bindConfirmModalEvents();
       bindBackdropClicks();
       initLineNotification();
+      // Setup instant search & restore saved student ID
+      var stdSearchInput = document.getElementById('student-search-input');
+      if (stdSearchInput) {
+        stdSearchInput.addEventListener('input', function() {
+          if (typeof filterStudentsTable === 'function') filterStudentsTable();
+        });
+      }
+      if (typeof checkAndRestoreSavedStudentId === 'function') {
+        checkAndRestoreSavedStudentId();
+      }
       // Initialize 2-second Luxury Splash Screen Animation
       var pBar = document.getElementById('splash-progress-bar');
       if (pBar) {
@@ -6409,6 +6607,272 @@
           if (sidebar) sidebar.classList.toggle('mobile-open');
         });
       }
+    }
+
+    
+    /**
+     * =========================================================================
+     * 7 UX/UI SPEED & CONVENIENCE ENHANCEMENTS ENGINE
+     * Zero ES6 Template Literals (Strict GAS Compatibility)
+     * =========================================================================
+     */
+
+    // Feature 1: Mark All Students Present in 1-Click
+    function markAllStudentsPresentQuick() {
+      var rows = document.querySelectorAll('#attendance-table-body tr');
+      if (!rows || rows.length === 0) {
+        showToast('กรุณากดโหลดข้อมูลนักเรียนก่อนดำเนินการ', 'warning');
+        return;
+      }
+
+      var countUpdated = 0;
+      for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        var sId = row.getAttribute('data-student-id');
+        var presRadio = row.querySelector('input[type="radio"][value="Present"]') || row.querySelector('input[type="radio"][value="มาเรียน"]');
+        if (presRadio) {
+          presRadio.checked = true;
+        }
+        var presBtn = row.querySelector('.btn-status-present') || row.querySelector('[data-status="Present"]');
+        if (presBtn) {
+          presBtn.click();
+        }
+        countUpdated++;
+      }
+
+      // Update in AppState if available
+      if (AppState.currentAttendanceStudents && Array.isArray(AppState.currentAttendanceStudents)) {
+        for (var k = 0; k < AppState.currentAttendanceStudents.length; k++) {
+          AppState.currentAttendanceStudents[k].status = 'Present';
+        }
+      }
+
+      updateAttendanceSummaryCounters();
+      updateAttendanceStickyBar();
+      showToast('ตั้งค่าสถานะนักเรียนทุกคนเป็น "มาเรียน" เรียบร้อยแล้ว (' + countUpdated + ' คน) ✅', 'success');
+    }
+
+    // Feature 1: Live Filter Attendance Table Rows
+    function filterAttendanceTableRowsLive(query) {
+      var q = (query || '').toLowerCase().trim();
+      var rows = document.querySelectorAll('#attendance-table-body tr');
+      for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        if (!q) {
+          row.style.display = '';
+          continue;
+        }
+        var text = (row.textContent || '').toLowerCase();
+        row.style.display = (text.indexOf(q) > -1) ? '' : 'none';
+      }
+    }
+
+    // Feature 1: Sticky Action Bar Updater
+    function updateAttendanceStickyBar() {
+      var bar = document.getElementById('attendance-sticky-bar');
+      if (!bar) return;
+
+      var currentView = AppState.currentView || 'dashboard';
+      var rows = document.querySelectorAll('#attendance-table-body tr');
+
+      if (currentView !== 'attendance' || !rows || rows.length === 0) {
+        bar.style.display = 'none';
+        return;
+      }
+
+      bar.style.display = 'flex';
+
+      // Count statuses
+      var cPres = 0, cLate = 0, cLeave = 0, cAbsent = 0;
+      for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        var checkedRadio = row.querySelector('input[type="radio"]:checked');
+        var val = checkedRadio ? checkedRadio.value : '';
+        if (val === 'Present' || val === 'มาเรียน') cPres++;
+        else if (val === 'Late' || val === 'มาสาย') cLate++;
+        else if (val === 'Sick' || val === 'Leave' || val === 'ลากิจ' || val === 'ลาป่วย') cLeave++;
+        else cAbsent++;
+      }
+
+      var elP = document.getElementById('sticky-count-present');
+      var elL = document.getElementById('sticky-count-late');
+      var elLv = document.getElementById('sticky-count-leave');
+      var elA = document.getElementById('sticky-count-absent');
+
+      if (elP) elP.textContent = cPres;
+      if (elL) elL.textContent = cLate;
+      if (elLv) elLv.textContent = cLeave;
+      if (elA) elA.textContent = cAbsent;
+    }
+
+    function triggerSaveAttendanceDatabase() {
+      var saveBtn = document.getElementById('btn-save-attendance');
+      if (saveBtn) {
+        saveBtn.click();
+      } else if (typeof saveAttendanceRecords === 'function') {
+        saveAttendanceRecords();
+      } else {
+        showToast('กำลังบันทึกข้อมูลการเช็คชื่อ...', 'info');
+      }
+    }
+
+    // Feature 4: Student Self Portal Auto-fill
+    function onStudentSelfSelected(sId) {
+      if (!sId) return;
+      var chk = document.getElementById('check-remember-student');
+      if (chk && chk.checked) {
+        try { localStorage.setItem('gas_student_saved_id', sId); } catch (e) {}
+      }
+    }
+
+    function checkAndRestoreSavedStudentId() {
+      try {
+        var savedId = localStorage.getItem('gas_student_saved_id');
+        if (savedId) {
+          var sel = document.getElementById('student-name-select');
+          if (sel && sel.querySelector('option[value="' + savedId + '"]')) {
+            sel.value = savedId;
+            sel.dispatchEvent(new Event('change'));
+          }
+        }
+      } catch (e) {}
+    }
+
+    // Feature 5: Quick Date Range Chips
+    function setQuickReportDateRange(rangeType) {
+      var dStart = document.getElementById('report-date-start');
+      var dEnd = document.getElementById('report-date-end');
+      if (!dStart) return;
+
+      var todayStr = getTodayDateString();
+      var now = new Date();
+
+      if (rangeType === 'today') {
+        dStart.value = todayStr;
+        if (dEnd) dEnd.value = todayStr;
+      } else if (rangeType === 'yesterday') {
+        var yDate = new Date(now.getTime() - (24 * 60 * 60 * 1000));
+        var yStr = yDate.toISOString().split('T')[0];
+        dStart.value = yStr;
+        if (dEnd) dEnd.value = yStr;
+      } else if (rangeType === 'thisWeek') {
+        var day = now.getDay();
+        var diff = now.getDate() - day + (day === 0 ? -6 : 1);
+        var mon = new Date(now.setDate(diff));
+        dStart.value = mon.toISOString().split('T')[0];
+        if (dEnd) dEnd.value = todayStr;
+      } else if (rangeType === 'thisMonth') {
+        var yyyy = now.getFullYear();
+        var mm = String(now.getMonth() + 1).padStart(2, '0');
+        dStart.value = yyyy + '-' + mm + '-01';
+        if (dEnd) dEnd.value = todayStr;
+      }
+
+      // Refresh chips active state
+      var chips = document.querySelectorAll('.quick-date-chip');
+      for (var c = 0; c < chips.length; c++) chips[c].classList.remove('active');
+      if (event && event.target && event.target.classList) event.target.classList.add('active');
+
+      if (typeof generateReportPreview === 'function') {
+        generateReportPreview();
+      }
+    }
+
+    // Feature 5: 1-Click Copy Attendance Summary for LINE
+    function copyAttendanceSummaryForLine() {
+      var dStart = (document.getElementById('report-date-start') && document.getElementById('report-date-start').value) || getTodayDateString();
+      var actSel = document.getElementById('report-activity-select') || document.getElementById('att-activity-select');
+      var actName = (actSel && actSel.value && actSel.value !== 'all') ? actSel.value : 'เช็คชื่อมาเรียน';
+
+      var presEl = document.getElementById('rep-stat-present') || document.getElementById('stat-present');
+      var lateEl = document.getElementById('rep-stat-late') || document.getElementById('stat-late');
+      var leaveEl = document.getElementById('rep-stat-leave') || document.getElementById('stat-leave');
+      var absEl = document.getElementById('rep-stat-absent') || document.getElementById('stat-absent');
+      var totEl = document.getElementById('rep-stat-total') || document.getElementById('stat-total');
+      var rateEl = document.getElementById('rep-stat-rate') || document.getElementById('stat-rate');
+
+      var cPres = presEl ? presEl.textContent : '0';
+      var cLate = lateEl ? lateEl.textContent : '0';
+      var cLeave = leaveEl ? leaveEl.textContent : '0';
+      var cAbs = absEl ? absEl.textContent : '0';
+      var cTot = totEl ? totEl.textContent : '0';
+      var cRate = rateEl ? rateEl.textContent : '0.0%';
+
+      var text = '📊 สรุปการมาเรียนประจำวัน\n' +
+                 '📅 วันที่: ' + formatThaiDate(dStart) + '\n' +
+                 '📚 กิจกรรม: ' + actName + '\n' +
+                 '---------------------------\n' +
+                 '👥 นักเรียนทั้งหมด: ' + cTot + ' คน\n' +
+                 '✅ มาเรียนตรงเวลา: ' + cPres + ' คน\n' +
+                 '⏰ มาสาย: ' + cLate + ' คน\n' +
+                 '📝 ลากิจ/ลาป่วย: ' + cLeave + ' คน\n' +
+                 '❌ ขาดเรียน: ' + cAbs + ' คน\n' +
+                 '📈 อัตราการเข้าเรียน: ' + cRate + '\n' +
+                 '---------------------------\n' +
+                 '✨ รายงานจากระบบเช็คชื่อนักศึกษาอัตโนมัติ';
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function() {
+          showToast('คัดลอกข้อความสรุปเรียบร้อย! สามารถวางลงใน LINE ได้ทันที 📋✨', 'success');
+        }).catch(function() {
+          prompt('คัดลอกข้อความสรุปสำหรับส่ง LINE:', text);
+        });
+      } else {
+        prompt('คัดลอกข้อความสรุปสำหรับส่ง LINE:', text);
+      }
+    }
+
+    // Feature 5: View Mode Switcher
+    var ReportViewModeState = 'card'; // 'card' or 'table'
+    function toggleReportViewMode() {
+      var cardView = document.getElementById('report-preview-container');
+      var toggleText = document.getElementById('rep-view-toggle-text');
+      if (!cardView) return;
+
+      if (ReportViewModeState === 'card') {
+        ReportViewModeState = 'table';
+        if (toggleText) toggleText.textContent = 'สลับเป็นการ์ด';
+        showToast('เปลี่ยนเป็นมุมมองตารางสรุปข้อมูล 📋', 'info');
+      } else {
+        ReportViewModeState = 'card';
+        if (toggleText) toggleText.textContent = 'สลับเป็นตาราง';
+        showToast('เปลี่ยนเป็นมุมมองการ์ดภาพ 🖼️', 'info');
+      }
+    }
+
+    // Feature 6: Instant Live Search in Student Management
+    function setupInstantStudentSearch() {
+      var searchInput = document.getElementById('student-search-input');
+      if (searchInput && !searchInput.dataset.hasInstantListener) {
+        searchInput.dataset.hasInstantListener = 'true';
+        searchInput.addEventListener('input', function() {
+          var q = (this.value || '').toLowerCase().trim();
+          var rows = document.querySelectorAll('#students-table-body tr');
+          for (var i = 0; i < rows.length; i++) {
+            var row = rows[i];
+            if (!q) {
+              row.style.display = '';
+              continue;
+            }
+            var text = (row.textContent || '').toLowerCase();
+            row.style.display = (text.indexOf(q) > -1) ? '' : 'none';
+          }
+        });
+      }
+    }
+
+    // Feature 7: Bottom Nav Bar Sync
+    function syncMobileBottomNav(viewName) {
+      var tabs = document.querySelectorAll('.mobile-bottom-tab');
+      for (var i = 0; i < tabs.length; i++) {
+        var tab = tabs[i];
+        if (tab.getAttribute('data-view') === viewName) {
+          tab.classList.add('active');
+        } else {
+          tab.classList.remove('active');
+        }
+      }
+      updateAttendanceStickyBar();
     }
 
     function switchView(viewName) {
@@ -14646,6 +15110,9 @@
           }
           
           radio.checked = isMatch;
+          radio.addEventListener('change', function() {
+            if (typeof updateAttendanceStickyBar === 'function') updateAttendanceStickyBar();
+          });
           label.appendChild(radio);
           
           var chipSpan = document.createElement('span');
@@ -14684,6 +15151,9 @@
 
         card.appendChild(controlsWrapper);
         container.appendChild(card);
+      }
+      if (typeof updateAttendanceStickyBar === 'function') {
+        updateAttendanceStickyBar();
       }
     }
 
@@ -14956,7 +15426,7 @@
           avatarDiv.style.display = 'flex';
           avatarDiv.style.alignItems = 'center';
           avatarDiv.style.justifyContent = 'center';
-          avatarDiv.style.background = '#1E293B';
+          avatarDiv.style.background = '#18181B';
           avatarDiv.title = hasPhoto ? 'มีใบหน้าหลัก AI แล้ว (คลิกเพื่อถ่ายใหม่/แก้ไข)' : 'ยังไม่มีรูปใบหน้า (คลิกเพื่อถ่ายรูป)';
 
           if (hasPhoto) {
@@ -14984,8 +15454,27 @@
             faceBadge.className = 'badge-glass badge-present';
             faceBadge.style.fontSize = '9.5px';
             faceBadge.style.padding = '1px 6px';
-            faceBadge.innerHTML = '<i class="fas fa-check"></i> AI Ready';
+            faceBadge.style.cursor = 'pointer';
+            faceBadge.innerHTML = '<i class="fas fa-face-smile" style="color:#22C55E;"></i> มีใบหน้า AI';
+            faceBadge.title = 'ลงทะเบียนใบหน้า AI แล้ว (คลิกเพื่อแก้ไข/ถ่ายใหม่)';
+            (function(stObj) {
+              faceBadge.onclick = function(e) { e.stopPropagation(); openAIFaceEnrollmentModal(stObj.studentId, stObj.className); };
+            })(s);
             nameWrapper.appendChild(faceBadge);
+          } else {
+            var noFaceBadge = document.createElement('span');
+            noFaceBadge.className = 'badge-glass badge-warning';
+            noFaceBadge.style.fontSize = '9.5px';
+            noFaceBadge.style.padding = '1px 6px';
+            noFaceBadge.style.cursor = 'pointer';
+            noFaceBadge.style.color = '#F59E0B';
+            noFaceBadge.style.borderColor = 'rgba(245, 158, 11, 0.4)';
+            noFaceBadge.innerHTML = '<i class="fas fa-camera"></i> ยังไม่มีใบหน้า';
+            noFaceBadge.title = 'คลิกเพื่อเปิดกล้องถ่ายรูปลงทะเบียนใบหน้า AI ทันที';
+            (function(stObj) {
+              noFaceBadge.onclick = function(e) { e.stopPropagation(); openAIFaceEnrollmentModal(stObj.studentId, stObj.className); };
+            })(s);
+            nameWrapper.appendChild(noFaceBadge);
           }
 
           tdName.appendChild(nameWrapper);
@@ -18372,11 +18861,11 @@
           var hasPhoto = (item.selfiePhoto && (item.selfiePhoto.indexOf('http://') === 0 || item.selfiePhoto.indexOf('https://') === 0 || item.selfiePhoto.indexOf('data:image/') === 0 || item.selfiePhoto.length > 20));
           if (hasPhoto) {
             return '<div style="position: relative; width: ' + sizePx + 'px; height: ' + sizePx + 'px; margin: 0 auto;">' +
-                   '  <img src="' + escapeHtml(item.selfiePhoto) + '" style="width: ' + sizePx + 'px; height: ' + sizePx + 'px; border-radius: 50%; object-fit: cover; border: 3px solid ' + borderColor + '; box-shadow: 0 0 16px ' + glowColor + '; display: block; background: #1E293B;" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\';" />' +
-                   '  <div style="display: none; width: ' + sizePx + 'px; height: ' + sizePx + 'px; border-radius: 50%; background: #1E293B; border: 3px solid ' + borderColor + '; box-shadow: 0 0 16px ' + glowColor + '; align-items: center; justify-content: center; color: ' + borderColor + '; font-size: ' + (sizePx * 0.4) + 'px;"><i class="fas fa-user-astronaut"></i></div>' +
+                   '  <img src="' + escapeHtml(item.selfiePhoto) + '" style="width: ' + sizePx + 'px; height: ' + sizePx + 'px; border-radius: 50%; object-fit: cover; border: 3px solid ' + borderColor + '; box-shadow: 0 0 16px ' + glowColor + '; display: block; background: #18181B;" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\';" />' +
+                   '  <div style="display: none; width: ' + sizePx + 'px; height: ' + sizePx + 'px; border-radius: 50%; background: #18181B; border: 3px solid ' + borderColor + '; box-shadow: 0 0 16px ' + glowColor + '; align-items: center; justify-content: center; color: ' + borderColor + '; font-size: ' + (sizePx * 0.4) + 'px;"><i class="fas fa-user-astronaut"></i></div>' +
                    '</div>';
           }
-          return '<div style="width: ' + sizePx + 'px; height: ' + sizePx + 'px; border-radius: 50%; background: #1E293B; border: 3px solid ' + borderColor + '; box-shadow: 0 0 16px ' + glowColor + '; display: flex; align-items: center; justify-content: center; margin: 0 auto; color: ' + borderColor + '; font-size: ' + (sizePx * 0.4) + 'px;"><i class="fas fa-user-astronaut"></i></div>';
+          return '<div style="width: ' + sizePx + 'px; height: ' + sizePx + 'px; border-radius: 50%; background: #18181B; border: 3px solid ' + borderColor + '; box-shadow: 0 0 16px ' + glowColor + '; display: flex; align-items: center; justify-content: center; margin: 0 auto; color: ' + borderColor + '; font-size: ' + (sizePx * 0.4) + 'px;"><i class="fas fa-user-astronaut"></i></div>';
         };
 
         // 2nd Place (Silver) Podium Column - Left
@@ -18390,7 +18879,7 @@
                        '  <div style="font-size: 10px; font-weight: 700; color: #FFF; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 82px;" title="' + top2.name + rTag2 + '">' + top2.name + '</div>' +
                        '  <div style="font-size: 9px; color: #94A3B8; font-weight: 600;">⏰ ' + top2.time + ' น.</div>' +
                        '  <!-- 3D Silver Pedestal Base -->' +
-                       '  <div style="width: 85%; height: 26px; background: linear-gradient(180deg, #475569 0%, #1E293B 100%); border-top: 3px solid #94A3B8; border-radius: 6px 6px 0 0; margin-top: 6px; display: flex; align-items: center; justify-content: center; color: #CBD5E1; font-weight: 900; font-size: 13px; box-shadow: 0 4px 10px rgba(0,0,0,0.4); text-shadow: 0 1px 2px #000;">2</div>' +
+                       '  <div style="width: 85%; height: 26px; background: linear-gradient(180deg, #475569 0%, #18181B 100%); border-top: 3px solid #94A3B8; border-radius: 6px 6px 0 0; margin-top: 6px; display: flex; align-items: center; justify-content: center; color: #CBD5E1; font-weight: 900; font-size: 13px; box-shadow: 0 4px 10px rgba(0,0,0,0.4); text-shadow: 0 1px 2px #000;">2</div>' +
                        '</div>';
         } else {
           podiumCol2 = '<div style="flex: 1;"></div>';
@@ -18440,7 +18929,7 @@
                   '    <div style="font-size:10px; color:#64748B; margin-top:2px;">เข้าเรียน</div>' +
                   '  </div>' +
                   '  <div style="flex:1; padding-left:10px;">' +
-                  '    <div style="font-size:13px; font-weight:700; color:#1E293B;">มาเรียน ' + (countPresent + countLate) + ' จาก ' + total + ' คน</div>' +
+                  '    <div style="font-size:13px; font-weight:700; color:#18181B;">มาเรียน ' + (countPresent + countLate) + ' จาก ' + total + ' คน</div>' +
                   '    <div style="font-size:11px; color:#64748B; margin-top:2px;">ตรงเวลา ' + countPresent + ' • สาย ' + countLate + ' • ลา ' + countLeave + ' • ขาด ' + countAbsent + '</div>' +
                   '  </div>' +
                   '</div>';
@@ -18452,7 +18941,7 @@
                   '    <div style="font-size:10px; color:#94A3B8;">ตรงเวลา</div>' +
                   '  </div>' +
                   '  <div style="flex:1; padding-left:10px;">' +
-                  '    <div style="font-size:13px; font-weight:700; color:#1E293B;">มาเรียนตรงเวลา (' + countPresent + ' คน)</div>' +
+                  '    <div style="font-size:13px; font-weight:700; color:#18181B;">มาเรียนตรงเวลา (' + countPresent + ' คน)</div>' +
                   '    <div style="font-size:11px; color:#64748B;">เข้าเรียนตามเวลาปกติ</div>' +
                   '  </div>' +
                   '</div>';
@@ -18492,7 +18981,7 @@
                     '    <div style="font-size:10px; color:#94A3B8;">' + countLate + ' คน</div>' +
                     '  </div>' +
                     '  <div style="flex:1; padding-left:10px;">' +
-                    '    <div style="font-size:13px; font-weight:700; color:#1E293B;">มาสาย (' + countLate + ' คน)</div>' +
+                    '    <div style="font-size:13px; font-weight:700; color:#18181B;">มาสาย (' + countLate + ' คน)</div>' +
                     '    <div style="font-size:11px; color:#64748B;">เกินเวลาที่กำหนด</div>' +
                     '  </div>' +
                     '</div>';
@@ -18505,7 +18994,7 @@
                     '    <div style="font-size:10px; color:#94A3B8;">' + countLeave + ' คน</div>' +
                     '  </div>' +
                     '  <div style="flex:1; padding-left:10px;">' +
-                    '    <div style="font-size:13px; font-weight:700; color:#1E293B;">ลากิจ / ลาป่วย (' + countLeave + ' คน)</div>' +
+                    '    <div style="font-size:13px; font-weight:700; color:#18181B;">ลากิจ / ลาป่วย (' + countLeave + ' คน)</div>' +
                     '    <div style="font-size:11px; color:#64748B;">ป่วย ' + (data.countSick || 0) + ' • กิจ ' + (data.countLeave || 0) + '</div>' +
                     '  </div>' +
                     '</div>';
@@ -18518,7 +19007,7 @@
                     '    <div style="font-size:10px; color:#94A3B8;">' + countAbsent + ' คน</div>' +
                     '  </div>' +
                     '  <div style="flex:1; padding-left:10px;">' +
-                    '    <div style="font-size:13px; font-weight:700; color:#1E293B;">ขาดเรียน (' + countAbsent + ' คน)</div>' +
+                    '    <div style="font-size:13px; font-weight:700; color:#18181B;">ขาดเรียน (' + countAbsent + ' คน)</div>' +
                     '    <div style="font-size:11px; color:#64748B;">ไม่พบการเช็คชื่อในระบบ</div>' +
                     '  </div>' +
                     '</div>';
@@ -18601,7 +19090,7 @@
                          '    <div style="font-size: 24px; font-weight: 800; color: #FFFFFF; line-height: 1.2;">' + dayName + '</div>' +
                          '    <div style="font-size: 11.5px; color: #9CA3AF; margin-top: 4px;">' + formatThaiDate(data.dateStr) + ' • ' + classLabel + (actLabel !== 'เช็คชื่อมาเรียน' ? ' • ' + actLabel : '') + ' (' + total + ' คน)</div>' +
                          '  </div>' +
-                         '  <div style="background: #FFFFFF; padding: 14px 18px; color: #1E293B;">' +
+                         '  <div style="background: #FFFFFF; padding: 14px 18px; color: #18181B;">' +
                          bodyHtml +
                          '  </div>' +
                          '  <div style="background: #18181B; padding: 12px 16px; text-align: center; color: #F59E0B; font-size: 11.5px; font-weight: 700;">' +
@@ -20184,7 +20673,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
       var photoUrl = studentObj.photo || studentObj.selfiePhoto || studentObj.avatar || '';
       var photoTag = (photoUrl && photoUrl.length > 15 && photoUrl !== '-')
         ? '<img src="' + escapeHtml(photoUrl) + '" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1.5px solid #10B981;" />'
-        : '<div style="width: 28px; height: 28px; border-radius: 50%; background: #1E293B; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #10B981;"><i class="fas fa-check"></i></div>';
+        : '<div style="width: 28px; height: 28px; border-radius: 50%; background: #18181B; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #10B981;"><i class="fas fa-check"></i></div>';
 
       var chip = document.createElement('div');
       chip.id = 'face-chip-' + studentObj.studentId;
@@ -20531,7 +21020,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
         <!-- Selected Student Mini Card -->
         <div id="enroll-student-info-card" style="margin-top: 10px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; background: rgba(0, 240, 255, 0.06); border: 1px dashed rgba(0, 240, 255, 0.35); padding: 8px 14px; border-radius: 8px;">
           <div style="display: flex; align-items: center; gap: 10px;">
-            <div id="enroll-current-photo-preview" style="width: 38px; height: 38px; border-radius: 50%; background: #1E293B; border: 2px solid var(--cyan-400); display: flex; align-items: center; justify-content: center; overflow: hidden;">
+            <div id="enroll-current-photo-preview" style="width: 38px; height: 38px; border-radius: 50%; background: #18181B; border: 2px solid var(--cyan-400); display: flex; align-items: center; justify-content: center; overflow: hidden;">
               <i class="fas fa-user" style="color: #64748B;"></i>
             </div>
             <div>

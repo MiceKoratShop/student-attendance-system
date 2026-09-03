@@ -627,6 +627,43 @@
       font-size: 13px !important;
     }
 
+  
+    /* Enforce Dark Card Gradient & Pure White Titles */
+    .glass-card, .podium-card, .stat-box {
+      background: linear-gradient(180deg, #141416 0%, #0D0D0F 100%) !important;
+      border: 1px solid #222226 !important;
+    }
+
+    .hero-title,
+    .brand-logo span,
+    .podium-title span,
+    h1, h2, h3 {
+      color: #FFFFFF !important;
+      font-weight: 700 !important;
+      background: none !important;
+      -webkit-background-clip: unset !important;
+      -webkit-text-fill-color: #FFFFFF !important;
+      text-shadow: none !important;
+    }
+
+    .quick-chip-btn {
+      background: #18181B;
+      border: 1px solid #27272A;
+      border-radius: 4px;
+      color: #A9A9AD;
+      padding: 2px 7px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .quick-chip-btn:hover, .quick-chip-btn.active {
+      background: #FF6B00;
+      border-color: #FF6B00;
+      color: #FFFFFF;
+    }
+
   </style>
 </head>
 <body>
@@ -667,6 +704,10 @@
             <i class="fas fa-calendar-day" style="color: #FF6B00;"></i> 📅 วันที่
           </label>
           <input type="date" id="filter-report-date" onchange="onReportFilterMenuChange()" style="width: 100%; padding: 8px 12px; background: #141416; border: 1px solid #27272A; border-radius: 8px; color: #FFF; font-size: 12.5px; outline: none;" />
+          <div style="display: flex; gap: 4px; margin-top: 5px; flex-wrap: wrap;">
+            <button type="button" class="quick-chip-btn" onclick="setReportQuickDate('today')">📅 วันนี้</button>
+            <button type="button" class="quick-chip-btn" onclick="setReportQuickDate('yesterday')">⏮️ เมื่อวาน</button>
+          </div>
         </div>
 
         <div>
@@ -697,6 +738,9 @@
         </div>
 
         <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn-action" onclick="copyReportSummaryForLine()" style="background: rgba(34, 197, 94, 0.2); border: 1px solid #22C55E; color: #4ADE80; font-weight: 700; height: 38px; padding: 8px 12px; font-size: 12.5px;" title="คัดลอกข้อความสรุปยอดเพื่อนำไปวางในกลุ่ม LINE ได้ทันที">
+            <i class="fab fa-line"></i> 📋 สรุปส่ง LINE
+          </button>
           <button type="button" class="btn-action btn-cyan" onclick="onReportFilterMenuChange(true)" style="flex: 1; padding: 8px 12px; font-size: 12.5px; justify-content: center; height: 38px;">
             <i class="fas fa-arrows-rotate"></i> รีเฟรชข้อมูล
           </button>
@@ -1081,6 +1125,59 @@
       if (classSel) classSel.value = 'all';
 
       onReportFilterMenuChange(true);
+    }
+
+    
+    function setReportQuickDate(rangeType) {
+      var dateInp = document.getElementById('filter-report-date');
+      if (!dateInp) return;
+
+      var todayStr = getTodayDateString();
+      if (rangeType === 'today') {
+        dateInp.value = todayStr;
+      } else if (rangeType === 'yesterday') {
+        var now = new Date();
+        var yDate = new Date(now.getTime() - (24 * 60 * 60 * 1000));
+        dateInp.value = yDate.toISOString().split('T')[0];
+      }
+      onReportFilterMenuChange();
+    }
+
+    function copyReportSummaryForLine() {
+      if (!ReportState.data) {
+        alert('ยังไม่มีข้อมูลรายงานให้คัดลอก');
+        return;
+      }
+      var d = ReportState.data;
+      var s = d.stats || {};
+      var dateThai = (d.dayName || '') + ' ' + (d.dateThai || d.date || '');
+      var className = d.className || 'ทุกห้องเรียน';
+      var actName = d.activityName || 'เช็คชื่อมาเรียน';
+
+      var text = '📊 สรุปการมาเรียนประจำวัน\n' +
+                 '📅 วันที่: ' + dateThai + '\n' +
+                 '🏫 ห้อง: ' + className + '\n' +
+                 '📚 กิจกรรม: ' + actName + '\n' +
+                 '---------------------------\n' +
+                 '👥 ทั้งหมด: ' + (s.totalStudents || 0) + ' คน\n' +
+                 '✅ มาเรียนตรงเวลา: ' + (s.countOnTime || s.countPresent || 0) + ' คน\n' +
+                 '⏰ มาสาย: ' + (s.countLate || 0) + ' คน\n' +
+                 '📝 ลากิจ/ลาป่วย: ' + ((s.countSick || 0) + (s.countLeave || 0)) + ' คน\n' +
+                 '❌ ขาดเรียน: ' + (s.countAbsent || 0) + ' คน\n' +
+                 '📈 อัตราการเข้าเรียน: ' + (s.attRate || '0.0') + '%\n' +
+                 '---------------------------\n' +
+                 '✨ ตรวจสอบรายงานฉบับเต็มได้ที่:\n' +
+                 window.location.href;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function() {
+          alert('คัดลอกข้อความสรุปเรียบร้อยแล้ว! สามารถนำไปวางส่งในกลุ่ม LINE ได้ทันที 📋✨');
+        }).catch(function() {
+          prompt('คัดลอกข้อความสรุปสำหรับส่ง LINE:', text);
+        });
+      } else {
+        prompt('คัดลอกข้อความสรุปสำหรับส่ง LINE:', text);
+      }
     }
 
     function onReportFilterMenuChange(isForceFetch) {
