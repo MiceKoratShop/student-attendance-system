@@ -19,17 +19,28 @@
 
   <style>
     :root {
-      --bg-dark: #0E0E10;
-      --bg-card: #18181B;
-      --border-glass: #27272A;
+      /* ดำพื้น: #0A0A0C ← พื้นหลังคาร์บอน */
+      --bg-dark: #0A0A0C;
+      /* ดำการ์ด: #141416 → #0D0D0F (ไล่เฉด) */
+      --bg-card: linear-gradient(180deg, #141416 0%, #0D0D0F 100%);
+      --border-glass: #222226;
+
+      /* ส้มหลัก: #FF6B00 */
+      --orange-500: #FF6B00;
+      /* ส้มอ่อน: #FF9A2E */
+      --orange-400: #FF9A2E;
+      /* ส้มสว่าง: #FFB866 */
+      --orange-300: #FFB866;
+
       --cyan-400: #38BDF8;
-      --orange-400: #FF7A00;
       --gold-400: #F59E0B;
       --emerald-400: #22C55E;
       --rose-400: #EF4444;
       --amber-400: #F59E0B;
+
+      /* ขาวโครเมียม: #FFF → #A9A9AD → #FFF & ขาว: #FFFFFF */
       --text-main: #FFFFFF;
-      --text-muted: #9CA3AF;
+      --text-muted: #A9A9AD;
       --radius-lg: 16px;
       --radius-md: 12px;
       --radius-sm: 8px;
@@ -124,7 +135,7 @@
     }
 
     .btn-cyan {
-      background: #FF7A00 !important; border: none !important; color: #FFFFFF !important;
+      background: #FF6B00 !important; border: none !important; color: #FFFFFF !important;
       border-color: rgba(0, 240, 255, 0.4);
       color: #FFFFFF;
     }
@@ -387,7 +398,7 @@
 
     .student-card:hover {
       background: #1A1A1E;
-      border-color: #FF7A00;
+      border-color: #FF6B00;
     }
 
     .student-card:hover {
@@ -540,6 +551,82 @@
       .glass-card { background: #FFF !important; border: 1px solid #CCC !important; color: #000 !important; box-shadow: none !important; }
       .hero-title, .champ-name, .student-name { color: #000 !important; }
     }
+  
+    /* ขาวโครเมียม: #FFF → #A9A9AD → #FFF (หัวข้อแบบตัวอักษรเงาโลหะ) */
+    .hero-title,
+    .brand-logo span,
+    .podium-title span {
+      background: linear-gradient(180deg, #FFFFFF 0%, #A9A9AD 50%, #FFFFFF 100%) !important;
+      -webkit-background-clip: text !important;
+      -webkit-text-fill-color: transparent !important;
+      color: #FFFFFF !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6) !important;
+      font-weight: 800 !important;
+    }
+
+    body {
+      background-color: #0A0A0C !important;
+      color: #FFFFFF !important;
+    }
+
+    .top-nav {
+      background: #0D0D0F !important;
+      border-bottom: 1px solid #222226 !important;
+    }
+
+    .glass-card,
+    .podium-card {
+      background: linear-gradient(180deg, #141416 0%, #0D0D0F 100%) !important;
+      border: 1px solid #222226 !important;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+    }
+
+    .student-card {
+      background: #141416 !important;
+      border: 1px solid #222226 !important;
+    }
+
+    .student-card:hover {
+      background: #1C1C20 !important;
+      border-color: #FF6B00 !important;
+    }
+
+    .btn-orange, .btn-action.btn-orange {
+      background: linear-gradient(135deg, #FF6B00 0%, #FF9A2E 100%) !important;
+      color: #FFFFFF !important;
+      border: none !important;
+      box-shadow: 0 4px 18px rgba(255, 107, 0, 0.45) !important;
+    }
+
+    .btn-orange:hover, .btn-action.btn-orange:hover {
+      background: linear-gradient(135deg, #FF9A2E 0%, #FFB866 100%) !important;
+      box-shadow: 0 6px 24px rgba(255, 107, 0, 0.65) !important;
+    }
+
+  
+    select, input[type="date"] {
+      cursor: pointer !important;
+      pointer-events: auto !important;
+      background-color: #141416 !important;
+      color: #FFFFFF !important;
+      border: 1px solid #27272A !important;
+      border-radius: 8px !important;
+      font-size: 13px !important;
+      outline: none !important;
+    }
+
+    select:focus, input[type="date"]:focus {
+      border-color: #FF6B00 !important;
+      box-shadow: 0 0 0 2px rgba(255, 107, 0, 0.25) !important;
+    }
+
+    select option {
+      background-color: #18181B !important;
+      color: #FFFFFF !important;
+      padding: 10px 14px !important;
+      font-size: 13px !important;
+    }
+
   </style>
 </head>
 <body>
@@ -565,7 +652,7 @@
     <!-- REPORT CAPTURE AREA -->
         <!-- INTERACTIVE REPORT FILTER TOOLBAR & PERSISTENCE MENU -->
     <div class="glass-card" style="margin-bottom: 20px; border: 1px solid #27272A; background: #18181B; padding: 16px;">
-      <div style="font-size: 13px; font-weight: 800; color: #FF7A00; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+      <div style="font-size: 13px; font-weight: 800; color: #FF6B00; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
         <div style="display: flex; align-items: center; gap: 8px;">
           <i class="fas fa-sliders" style="font-size: 15px;"></i> 🎛️ เลือกดูข้อมูลรายงานตามห้อง / กิจกรรม / วันที่:
         </div>
@@ -577,14 +664,14 @@
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; align-items: end;">
         <div>
           <label style="font-size: 11.5px; font-weight: 700; color: #FFF; display: block; margin-bottom: 4px;">
-            <i class="fas fa-calendar-day" style="color: #FF7A00;"></i> 📅 วันที่
+            <i class="fas fa-calendar-day" style="color: #FF6B00;"></i> 📅 วันที่
           </label>
           <input type="date" id="filter-report-date" onchange="onReportFilterMenuChange()" style="width: 100%; padding: 8px 12px; background: #141416; border: 1px solid #27272A; border-radius: 8px; color: #FFF; font-size: 12.5px; outline: none;" />
         </div>
 
         <div>
           <label style="font-size: 11.5px; font-weight: 700; color: #FFF; display: block; margin-bottom: 4px;">
-            <i class="fas fa-layer-group" style="color: #FF7A00;"></i> 🎓 ระดับชั้น
+            <i class="fas fa-layer-group" style="color: #FF6B00;"></i> 🎓 ระดับชั้น
           </label>
           <select id="filter-report-level" onchange="onReportLevelFilterChange()" style="width: 100%; padding: 8px 12px; background: #141416; border: 1px solid #27272A; border-radius: 8px; color: #FFF; font-size: 12.5px; outline: none; cursor: pointer;">
             <option value="all">🌟 ทุกระดับชั้น</option>
@@ -593,7 +680,7 @@
 
         <div>
           <label style="font-size: 11.5px; font-weight: 700; color: #FFF; display: block; margin-bottom: 4px;">
-            <i class="fas fa-chalkboard-user" style="color: #FF7A00;"></i> 🏫 ห้องเรียน
+            <i class="fas fa-chalkboard-user" style="color: #FF6B00;"></i> 🏫 ห้องเรียน
           </label>
           <select id="filter-report-class" onchange="onReportFilterMenuChange()" style="width: 100%; padding: 8px 12px; background: #141416; border: 1px solid #27272A; border-radius: 8px; color: #FFF; font-size: 12.5px; outline: none; cursor: pointer;">
             <option value="all">🌟 ทุกห้องเรียน</option>
@@ -820,7 +907,7 @@
       return className.toLowerCase().indexOf(levelVal.toLowerCase()) > -1;
     }
 
-    function populateReportFilterMenuDropdowns(selectedDate, selectedLevel, selectedClass, selectedAct) {
+    function populateReportFilterMenuDropdowns(selectedDate, selectedLevel, selectedClass, selectedAct, explicitClasses, explicitActs) {
       var dateInp = document.getElementById('filter-report-date');
       var levelSel = document.getElementById('filter-report-level');
       var classSel = document.getElementById('filter-report-class');
@@ -828,26 +915,44 @@
 
       if (dateInp && selectedDate) dateInp.value = selectedDate;
 
-      // Extract unique classes and activities from raw students or local storage cache
+      // Extract unique classes
       var classesSeen = {};
       var levelsSeen = {};
       var actsSeen = {};
 
-      // Seed standard activities if empty
-      actsSeen['เช็คชื่อมาเรียน'] = true;
-      actsSeen['กิจกรรมหน้าเสาธง'] = true;
-      actsSeen['กิจกรรมโฮมรูม'] = true;
-
-      try {
-        var cachedClasses = JSON.parse(localStorage.getItem('gas_student_app_classes') || '[]');
-        if (Array.isArray(cachedClasses)) {
-          for (var c = 0; c < cachedClasses.length; c++) {
-            var cName = (typeof cachedClasses[c] === 'object' && cachedClasses[c]) ? (cachedClasses[c].name || cachedClasses[c].className || '') : String(cachedClasses[c] || '');
-            if (cName) classesSeen[cName] = true;
-          }
+      // 1. From explicitClasses argument
+      if (Array.isArray(explicitClasses)) {
+        for (var ec = 0; ec < explicitClasses.length; ec++) {
+          var itemE = explicitClasses[ec];
+          var eName = (typeof itemE === 'object' && itemE) ? (itemE.name || itemE.className || '') : String(itemE || '');
+          if (eName) classesSeen[eName] = true;
         }
-      } catch (e) {}
+      }
 
+      // 2. From ReportState.availableClasses
+      if (ReportState.availableClasses && Array.isArray(ReportState.availableClasses)) {
+        for (var ac = 0; ac < ReportState.availableClasses.length; ac++) {
+          var acName = (typeof ReportState.availableClasses[ac] === 'object' && ReportState.availableClasses[ac]) ? (ReportState.availableClasses[ac].name || ReportState.availableClasses[ac].className || '') : String(ReportState.availableClasses[ac] || '');
+          if (acName) classesSeen[acName] = true;
+        }
+      }
+
+      // 3. From localStorage cached classes
+      var classKeys = ['gas_student_app_classes', 'gas_cached_classes'];
+      for (var ck = 0; ck < classKeys.length; ck++) {
+        try {
+          var cachedClasses = JSON.parse(localStorage.getItem(classKeys[ck]) || '[]');
+          if (Array.isArray(cachedClasses)) {
+            for (var c = 0; c < cachedClasses.length; c++) {
+              var cItem = cachedClasses[c];
+              var cName = (typeof cItem === 'object' && cItem) ? (cItem.name || cItem.className || '') : String(cItem || '');
+              if (cName) classesSeen[cName] = true;
+            }
+          }
+        } catch (e) {}
+      }
+
+      // 4. From raw students in report
       if (ReportState.rawStudents && Array.isArray(ReportState.rawStudents)) {
         for (var s = 0; s < ReportState.rawStudents.length; s++) {
           var scName = ReportState.rawStudents[s].className;
@@ -855,9 +960,17 @@
         }
       }
 
+      // 5. Fallback common classroom names if empty (guarantees options are always clickable)
+      var defaultClasses = ['ปวช.1/1', 'ปวช.1/2', 'ปวช.1/3', 'ปวช.2/1', 'ปวช.2/2', 'ปวช.3/1', 'ปวช.3/2', 'ปวส.1/1', 'ปวส.1/2', 'ปวส.1/5', 'ปวส.2/1', 'ปวส.2/2'];
+      if (Object.keys(classesSeen).length === 0) {
+        for (var d = 0; d < defaultClasses.length; d++) {
+          classesSeen[defaultClasses[d]] = true;
+        }
+      }
+
       // Populate Level Dropdown (ชั้น)
       if (levelSel) {
-        var curLevel = selectedLevel || 'all';
+        var curLevel = selectedLevel || levelSel.value || 'all';
         levelSel.innerHTML = '<option value="all">🌟 ทุกระดับชั้น</option>';
         for (var clsKey in classesSeen) {
           var gl = extractGradeLevel(clsKey);
@@ -872,41 +985,64 @@
         levelSel.value = (curLevel && levelSel.querySelector('option[value="' + curLevel + '"]')) ? curLevel : 'all';
       }
 
-      // Populate Class Dropdown (ห้อง) filtered by selected level
+      // Populate Class Dropdown (ห้อง) filtered by current level
       var curLvlVal = (levelSel && levelSel.value) ? levelSel.value : (selectedLevel || 'all');
       repopulateClassDropdown(curLvlVal, selectedClass, classesSeen);
 
+      // Populate Activities Dropdown (กิจกรรม)
       if (actSel) {
-        var curAct = selectedAct || 'all';
+        var curAct = selectedAct || actSel.value || 'all';
         actSel.innerHTML = '<option value="all">🌟 ทุกกิจกรรม/วิชา</option>';
 
-        try {
-          var cachedActs = JSON.parse(localStorage.getItem('gas_student_app_activities') || '[]');
-          if (Array.isArray(cachedActs)) {
-            for (var a = 0; a < cachedActs.length; a++) {
-              var aName = (typeof cachedActs[a] === 'object' && cachedActs[a]) ? (cachedActs[a].name || cachedActs[a].activityName || '') : String(cachedActs[a] || '');
-              if (aName && !actsSeen[aName]) {
-                actsSeen[aName] = true;
-                var aOpt = document.createElement('option');
-                aOpt.value = aName;
-                aOpt.textContent = aName;
-                actSel.appendChild(aOpt);
+        // Default standard activities
+        actsSeen['เช็คชื่อมาเรียน'] = true;
+        actsSeen['กิจกรรมหน้าเสาธง'] = true;
+        actsSeen['กิจกรรมโฮมรูม'] = true;
+
+        // 1. From explicitActs argument
+        if (Array.isArray(explicitActs)) {
+          for (var ea = 0; ea < explicitActs.length; ea++) {
+            var aName1 = (typeof explicitActs[ea] === 'object' && explicitActs[ea]) ? (explicitActs[ea].name || explicitActs[ea].activityName || '') : String(explicitActs[ea] || '');
+            if (aName1) actsSeen[aName1] = true;
+          }
+        }
+
+        // 2. From ReportState.availableActivities
+        if (ReportState.availableActivities && Array.isArray(ReportState.availableActivities)) {
+          for (var aa = 0; aa < ReportState.availableActivities.length; aa++) {
+            var aName2 = (typeof ReportState.availableActivities[aa] === 'object' && ReportState.availableActivities[aa]) ? (ReportState.availableActivities[aa].name || ReportState.availableActivities[aa].activityName || '') : String(ReportState.availableActivities[aa] || '');
+            if (aName2) actsSeen[aName2] = true;
+          }
+        }
+
+        // 3. From cached activities
+        var actKeys = ['gas_student_app_activities', 'gas_cached_activities'];
+        for (var ak = 0; ak < actKeys.length; ak++) {
+          try {
+            var cachedActs = JSON.parse(localStorage.getItem(actKeys[ak]) || '[]');
+            if (Array.isArray(cachedActs)) {
+              for (var a = 0; a < cachedActs.length; a++) {
+                var aItem = cachedActs[a];
+                var aName3 = (typeof aItem === 'object' && aItem) ? (aItem.name || aItem.activityName || '') : String(aItem || '');
+                if (aName3) actsSeen[aName3] = true;
               }
             }
-          }
-        } catch (e) {}
+          } catch (e) {}
+        }
 
+        // 4. From raw students in report
         if (ReportState.rawStudents && Array.isArray(ReportState.rawStudents)) {
           for (var s2 = 0; s2 < ReportState.rawStudents.length; s2++) {
             var saName = ReportState.rawStudents[s2].activityName;
-            if (saName && !actsSeen[saName]) {
-              actsSeen[saName] = true;
-              var aOpt2 = document.createElement('option');
-              aOpt2.value = saName;
-              aOpt2.textContent = saName;
-              actSel.appendChild(aOpt2);
-            }
+            if (saName) actsSeen[saName] = true;
           }
+        }
+
+        for (var actKey in actsSeen) {
+          var aOpt = document.createElement('option');
+          aOpt.value = actKey;
+          aOpt.textContent = actKey;
+          actSel.appendChild(aOpt);
         }
         actSel.value = (curAct && actSel.querySelector('option[value="' + curAct + '"]')) ? curAct : 'all';
       }
@@ -919,7 +1055,10 @@
       var curClass = selectedClass || classSel.value || 'all';
       classSel.innerHTML = '<option value="all">🌟 ทุกห้องเรียน</option>';
 
-      var sortedClasses = Object.keys(classesSeenMap || {}).sort();
+      var sortedClasses = Object.keys(classesSeenMap || {}).sort(function(a, b) {
+        return a.localeCompare(b, 'th');
+      });
+
       for (var i = 0; i < sortedClasses.length; i++) {
         var cName = sortedClasses[i];
         if (isLevelMatch(levelVal, cName)) {
@@ -934,27 +1073,14 @@
 
     function onReportLevelFilterChange() {
       var levelSel = document.getElementById('filter-report-level');
+      var classSel = document.getElementById('filter-report-class');
       var levelVal = levelSel ? levelSel.value : 'all';
-      var classesSeen = {};
 
-      if (ReportState.rawStudents && Array.isArray(ReportState.rawStudents)) {
-        for (var s = 0; s < ReportState.rawStudents.length; s++) {
-          var scName = ReportState.rawStudents[s].className;
-          if (scName) classesSeen[scName] = true;
-        }
-      }
-      try {
-        var cachedClasses = JSON.parse(localStorage.getItem('gas_student_app_classes') || '[]');
-        if (Array.isArray(cachedClasses)) {
-          for (var c = 0; c < cachedClasses.length; c++) {
-            var cName = (typeof cachedClasses[c] === 'object' && cachedClasses[c]) ? (cachedClasses[c].name || cachedClasses[c].className || '') : String(cachedClasses[c] || '');
-            if (cName) classesSeen[cName] = true;
-          }
-        }
-      } catch (e) {}
+      // Rebuild classes list
+      populateReportFilterMenuDropdowns(null, levelVal, 'all', null);
+      if (classSel) classSel.value = 'all';
 
-      repopulateClassDropdown(levelVal, 'all', classesSeen);
-      onReportFilterMenuChange();
+      onReportFilterMenuChange(true);
     }
 
     function onReportFilterMenuChange(isForceFetch) {
@@ -963,19 +1089,15 @@
       var classSel = document.getElementById('filter-report-class');
       var actSel = document.getElementById('filter-report-activity');
 
-      var dateVal = (dateInp && dateInp.value) ? dateInp.value : '';
+      var dateVal = (dateInp && dateInp.value) ? dateInp.value : getTodayDateString();
       var levelVal = (levelSel && levelSel.value) ? levelSel.value : 'all';
       var classVal = (classSel && classSel.value) ? classSel.value : 'all';
       var actVal = (actSel && actSel.value) ? actSel.value : 'all';
 
       saveReportFilterSettings(dateVal, classVal, actVal, levelVal);
 
-      // If we have raw students loaded, filter client side immediately
-      if (!isForceFetch && ReportState.rawReportData && ReportState.rawReportData.students) {
-        applyClientReportFilter(dateVal, levelVal, classVal, actVal);
-      } else {
-        loadReportWithParams(dateVal, classVal, actVal, levelVal);
-      }
+      // Re-fetch or filter data for the selected room and activity
+      loadReportWithParams(dateVal, classVal, actVal, levelVal);
     }
 
     function applyClientReportFilter(dateVal, levelVal, classVal, actVal) {
@@ -991,7 +1113,7 @@
         var s = students[i];
         if (levelVal && levelVal !== 'all' && !isLevelMatch(levelVal, s.className)) continue;
         if (classVal && classVal !== 'all' && !isClassMatch(classVal, s.className)) continue;
-        if (actVal && actVal !== 'all' && s.activityName && !isActivityMatch(actVal, s.activityName)) continue;
+        if (actVal && actVal !== 'all' && !isActivityMatch(actVal, s.activityName || 'เช็คชื่อมาเรียน')) continue;
 
         filtered.push(s);
         var st = s.status;
@@ -1012,7 +1134,7 @@
       }
 
       onTimeChamps.sort(function(a, b) {
-        return String(a.checkinTime || a.time).localeCompare(String(b.checkinTime || b.time));
+        return String(a.checkinTime || a.time || '').localeCompare(String(b.checkinTime || b.time || ''));
       });
       var champs = [];
       for (var rc = 0; rc < Math.min(3, onTimeChamps.length); rc++) {
@@ -1056,8 +1178,20 @@
       var classParam = getQueryParam('class') || getQueryParam('className') || (savedSettings ? savedSettings.className : 'all') || 'all';
       var actParam = getQueryParam('activity') || getQueryParam('act') || (savedSettings ? savedSettings.activityName : 'all') || 'all';
 
+      // Populate dropdowns immediately with cached or default rooms/activities so user can click immediately!
       populateReportFilterMenuDropdowns(dateParam, levelParam, classParam, actParam);
       loadReportWithParams(dateParam, classParam, actParam, levelParam);
+    }
+
+    function showReportLoading(msg) {
+      var captureArea = document.getElementById('report-capture-area');
+      if (captureArea) {
+        captureArea.innerHTML = '<div class="glass-card" style="text-align:center; padding:50px 20px; border:1px solid #27272A; background:#18181B; margin-top:20px;">' +
+          '<div class="spinner" style="border-top-color:#FF6B00; width:44px; height:44px; border-width:3.5px;"></div>' +
+          '<h3 style="font-size:16px; font-weight:700; color:#FFF; margin-top:16px;">' + (msg || 'กำลังประมวลผลข้อมูลรายงาน...') + '</h3>' +
+          '<p style="font-size:12.5px; color:#A9A9AD; margin-top:6px;">กรุณารอสักครู่ ระบบกำลังดึงข้อมูลสถิติและการเช็คชื่อล่าสุด</p>' +
+        '</div>';
+      }
     }
 
     function loadReportWithParams(dateParam, classParam, actParam, levelParam) {
@@ -1066,54 +1200,54 @@
       actParam = actParam || 'all';
       levelParam = levelParam || 'all';
 
-      // 1. Check if there is a newly published report in localStorage matching this exact date
-      var savedPub = localStorage.getItem('gas_student_latest_published_report');
-      var isRenderedFromCache = false;
-      if (savedPub) {
-        try {
-          var parsed = JSON.parse(savedPub);
-          if (parsed && parsed.date === dateParam && parsed.students && parsed.students.length > 0) {
-            ReportState.rawReportData = JSON.parse(JSON.stringify(parsed));
-            ReportState.rawStudents = parsed.students;
-            populateReportFilterMenuDropdowns(dateParam, levelParam, classParam, actParam);
-            applyClientReportFilter(dateParam, levelParam, classParam, actParam);
-            isRenderedFromCache = true;
-          }
-        } catch (e) {}
-      }
+      showReportLoading('กำลังโหลดข้อมูลรายงานห้อง ' + (classParam === 'all' ? 'ทุกห้องเรียน' : classParam) + '...');
 
-      // 2. Fetch live data from backend to ensure real-time synchronization
+      // Live fetch from backend
       if (typeof google !== 'undefined' && google.script && google.script.run) {
         google.script.run
           .withSuccessHandler(function(res) {
-            if (res && res.status === 'success' && res.students && res.students.length > 0) {
+            if (res && res.status === 'success') {
               ReportState.rawReportData = JSON.parse(JSON.stringify(res));
-              ReportState.rawStudents = res.students;
+              ReportState.rawStudents = res.students || [];
+
               if (res.availableClasses && Array.isArray(res.availableClasses)) {
-                try { localStorage.setItem('gas_student_app_classes', JSON.stringify(res.availableClasses)); } catch (e) {}
+                ReportState.availableClasses = res.availableClasses;
+                try {
+                  localStorage.setItem('gas_student_app_classes', JSON.stringify(res.availableClasses));
+                  localStorage.setItem('gas_cached_classes', JSON.stringify(res.availableClasses));
+                } catch (e) {}
               }
               if (res.availableActivities && Array.isArray(res.availableActivities)) {
-                try { localStorage.setItem('gas_student_app_activities', JSON.stringify(res.availableActivities)); } catch (e) {}
+                ReportState.availableActivities = res.availableActivities;
+                try {
+                  localStorage.setItem('gas_student_app_activities', JSON.stringify(res.availableActivities));
+                  localStorage.setItem('gas_cached_activities', JSON.stringify(res.availableActivities));
+                } catch (e) {}
               }
-              populateReportFilterMenuDropdowns(dateParam, levelParam, classParam, actParam);
-              applyClientReportFilter(dateParam, levelParam, classParam, actParam);
-            } else if (!isRenderedFromCache) {
-              renderError('ไม่พบข้อมูลการเช็คชื่อสำหรับวันที่ ' + formatThaiDate(dateParam));
+
+              // Update dropdowns with complete authoritative list from backend
+              populateReportFilterMenuDropdowns(dateParam, levelParam, classParam, actParam, res.availableClasses, res.availableActivities);
+
+              if (res.students && res.students.length > 0) {
+                renderReportData(res);
+              } else {
+                renderReportData(res);
+              }
+            } else {
+              renderError('ไม่พบข้อมูลการเช็คชื่อสำหรับเงื่อนไขที่เลือก');
             }
           })
           .withFailureHandler(function(err) {
             console.warn('GAS fetch error:', err);
-            if (!isRenderedFromCache) {
-              renderError('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์: ' + (err.message || String(err)));
-            }
+            renderError('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์: ' + (err.message || String(err)));
           })
-          .getPublicDailyReportData(dateParam, 'all', 'all');
+          .getPublicDailyReportData(dateParam, classParam, actParam);
       } else {
-        fetchReportFromApi(dateParam, classParam, actParam);
+        fetchReportFromApi(dateParam, classParam, actParam, levelParam);
       }
     }
 
-    function fetchReportFromApi(dateParam, classParam, actParam) {
+    function fetchReportFromApi(dateParam, classParam, actParam, levelParam) {
       var gasUrl = getGasApiUrl();
       if (gasUrl && gasUrl.indexOf('http') === 0) {
         var reqUrl = gasUrl + '?action=getPublicDailyReportData&args=' + encodeURIComponent(JSON.stringify([dateParam, classParam, actParam]));
@@ -1123,9 +1257,16 @@
           })
           .then(function(res) {
             if (res && res.status === 'success') {
+              ReportState.rawReportData = JSON.parse(JSON.stringify(res));
+              ReportState.rawStudents = res.students || [];
+
+              if (res.availableClasses) ReportState.availableClasses = res.availableClasses;
+              if (res.availableActivities) ReportState.availableActivities = res.availableActivities;
+
+              populateReportFilterMenuDropdowns(dateParam, levelParam, classParam, actParam, res.availableClasses, res.availableActivities);
               renderReportData(res);
             } else {
-              renderError((res && res.message) ? res.message : 'ไม่พบข้อมูลรายงานสำหรับเงื่อนไขที่ระบุ');
+              renderOfflineFallback(dateParam, classParam, actParam);
             }
           })
           .catch(function(err) {
@@ -1135,46 +1276,6 @@
       } else {
         renderOfflineFallback(dateParam, classParam, actParam);
       }
-    }
-
-    function renderOfflineFallback(dateParam, classParam, actParam) {
-      // Local demo fallback
-      var demoData = {
-        status: 'success',
-        date: dateParam || '2026-08-31',
-        dateThai: '31 สิงหาคม 2569',
-        dayName: 'วันจันทร์',
-        className: classParam !== 'all' ? classParam : 'ทุกห้องเรียน',
-        activityName: 'เช็คชื่อมาเรียน',
-        stats: {
-          totalStudents: 20,
-          countPresent: 14,
-          countOnTime: 6,
-          countLate: 8,
-          countSick: 1,
-          countLeave: 1,
-          countAbsent: 4,
-          attRate: '70.0'
-        },
-        topChampions: [
-          { no: 1, name: 'นายพนรัญชน์ ศุกรวรรณ', className: 'ปวส.1/2', time: '08:45', selfiePhoto: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150', rank: 1 },
-          { no: 2, name: 'นายรัญวิทย์ หาญชนะ', className: 'ปวส.1/2', time: '08:45', selfiePhoto: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150', rank: 2 },
-          { no: 3, name: 'นางสาวกัลยกร สุขใจ', className: 'ปวส.1/2', time: '08:47', selfiePhoto: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150', rank: 3 }
-        ],
-        students: [
-          { no: 1, studentId: '66309010001', name: 'นายพนรัญชน์ ศุกรวรรณ', className: 'ปวส.1/2', status: 'Present', statusLabel: 'มาเรียนตรงเวลา', statusClass: 'present', checkinTime: '08:45:12', selfiePhoto: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150', note: '' },
-          { no: 2, studentId: '66309010002', name: 'นายรัญวิทย์ หาญชนะ', className: 'ปวส.1/2', status: 'Present', statusLabel: 'มาเรียนตรงเวลา', statusClass: 'present', checkinTime: '08:45:40', selfiePhoto: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150', note: '' },
-          { no: 3, studentId: '66309010003', name: 'นางสาวกัลยกร สุขใจ', className: 'ปวส.1/2', status: 'Present', statusLabel: 'มาเรียนตรงเวลา', statusClass: 'present', checkinTime: '08:47:05', selfiePhoto: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150', note: '' },
-          { no: 4, studentId: '66309010004', name: 'นายสุรจักร งามคงงาม', className: 'ปวส.1/2', status: 'Present', statusLabel: 'มาเรียนตรงเวลา', statusClass: 'present', checkinTime: '08:50:22', selfiePhoto: '', note: '' },
-          { no: 5, studentId: '66309010005', name: 'นายสิทธิพร นาควรนุช', className: 'ปวส.1/2', status: 'Present', statusLabel: 'มาเรียนตรงเวลา', statusClass: 'present', checkinTime: '08:50:45', selfiePhoto: '', note: '' },
-          { no: 6, studentId: '66309010006', name: 'นางสาวสมิตานัน งามโกศล', className: 'ปวส.1/2', status: 'Present', statusLabel: 'มาเรียนตรงเวลา', statusClass: 'present', checkinTime: '08:53:10', selfiePhoto: '', note: '' },
-          { no: 7, studentId: '66309010007', name: 'นายภานุวัฒน์ ตั้งใจ', className: 'ปวส.1/2', status: 'Late', statusLabel: 'มาสาย', statusClass: 'late', checkinTime: '09:05:12', selfiePhoto: '', note: 'สาย 20 นาที' },
-          { no: 8, studentId: '66309010008', name: 'นางสาวพิมพ์มาดา รักเรียน', className: 'ปวส.1/2', status: 'Sick', statusLabel: 'ลาป่วย', statusClass: 'sick', checkinTime: '-', selfiePhoto: '', note: 'มีใบรับรองแพทย์' },
-          { no: 9, studentId: '66309010009', name: 'นายวิศรุต คงคา', className: 'ปวส.1/2', status: 'Leave', statusLabel: 'ลากิจ', statusClass: 'leave', checkinTime: '-', selfiePhoto: '', note: 'ไปทำธุระกับผู้ปกครอง' },
-          { no: 10, studentId: '66309010010', name: 'นายธนกฤต ขาดเรียน', className: 'ปวส.1/2', status: 'Absent', statusLabel: 'ขาดเรียน', statusClass: 'absent', checkinTime: '-', selfiePhoto: '', note: 'ไม่พบเช็คชื่อ' }
-        ]
-      };
-      renderReportData(demoData);
     }
 
     function renderReportData(data) {
