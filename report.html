@@ -664,6 +664,87 @@
       color: #FFFFFF;
     }
 
+  
+    /* ITEM 6: 3D PODIUM PHOTO IN MEDAL FRAME & 300x300px HOVER ZOOM */
+    .avatar-wrapper {
+      position: relative;
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 8px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .avatar-img {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+      background: #18181B;
+      cursor: pointer;
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-radius 0.25s ease;
+      z-index: 10;
+    }
+
+    .avatar-champ {
+      width: 74px;
+      height: 74px;
+      border: 3px solid #FFD700 !important;
+      box-shadow: 0 0 22px rgba(255, 215, 0, 0.75) !important;
+    }
+
+    .avatar-silver {
+      width: 64px;
+      height: 64px;
+      border: 3px solid #C0C0C0 !important;
+      box-shadow: 0 0 16px rgba(192, 192, 192, 0.65) !important;
+    }
+
+    .avatar-bronze {
+      width: 64px;
+      height: 64px;
+      border: 3px solid #F97316 !important;
+      box-shadow: 0 0 16px rgba(249, 115, 22, 0.65) !important;
+    }
+
+    .avatar-medal-ribbon {
+      position: absolute;
+      bottom: -4px;
+      right: -4px;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #18181B;
+      border: 1.5px solid #27272A;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      z-index: 15;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+    }
+
+    /* Hover Zoom 300x300px smooth expansion */
+    .avatar-wrapper:hover {
+      z-index: 999999 !important;
+    }
+
+    .avatar-wrapper:hover .avatar-img {
+      position: fixed !important;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      width: 300px !important;
+      height: 300px !important;
+      border-radius: 20px !important;
+      z-index: 9999999 !important;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.95), 0 0 45px rgba(255, 107, 0, 0.65) !important;
+      border: 4px solid #FF6B00 !important;
+      pointer-events: auto;
+    }
+
   </style>
 </head>
 <body>
@@ -738,9 +819,7 @@
         </div>
 
         <div style="display: flex; gap: 8px;">
-          <button type="button" class="btn-action" onclick="copyReportSummaryForLine()" style="background: rgba(34, 197, 94, 0.2); border: 1px solid #22C55E; color: #4ADE80; font-weight: 700; height: 38px; padding: 8px 12px; font-size: 12.5px;" title="คัดลอกข้อความสรุปยอดเพื่อนำไปวางในกลุ่ม LINE ได้ทันที">
-            <i class="fab fa-line"></i> 📋 สรุปส่ง LINE
-          </button>
+          
           <button type="button" class="btn-action btn-cyan" onclick="onReportFilterMenuChange(true)" style="flex: 1; padding: 8px 12px; font-size: 12.5px; justify-content: center; height: 38px;">
             <i class="fas fa-arrows-rotate"></i> รีเฟรชข้อมูล
           </button>
@@ -959,7 +1038,7 @@
 
       if (dateInp && selectedDate) dateInp.value = selectedDate;
 
-      // Extract unique classes
+      // Extract unique classes STRICTLY from real data (NO FAKE HARDCODED CLASSES)
       var classesSeen = {};
       var levelsSeen = {};
       var actsSeen = {};
@@ -969,46 +1048,50 @@
         for (var ec = 0; ec < explicitClasses.length; ec++) {
           var itemE = explicitClasses[ec];
           var eName = (typeof itemE === 'object' && itemE) ? (itemE.name || itemE.className || '') : String(itemE || '');
-          if (eName) classesSeen[eName] = true;
+          if (eName && eName !== 'undefined') classesSeen[eName.trim()] = true;
         }
       }
 
       // 2. From ReportState.availableClasses
       if (ReportState.availableClasses && Array.isArray(ReportState.availableClasses)) {
         for (var ac = 0; ac < ReportState.availableClasses.length; ac++) {
-          var acName = (typeof ReportState.availableClasses[ac] === 'object' && ReportState.availableClasses[ac]) ? (ReportState.availableClasses[ac].name || ReportState.availableClasses[ac].className || '') : String(ReportState.availableClasses[ac] || '');
-          if (acName) classesSeen[acName] = true;
+          var itemAc = ReportState.availableClasses[ac];
+          var acName = (typeof itemAc === 'object' && itemAc) ? (itemAc.name || itemAc.className || '') : String(itemAc || '');
+          if (acName && acName !== 'undefined') classesSeen[acName.trim()] = true;
         }
       }
 
-      // 3. From localStorage cached classes
-      var classKeys = ['gas_student_app_classes', 'gas_cached_classes'];
-      for (var ck = 0; ck < classKeys.length; ck++) {
-        try {
-          var cachedClasses = JSON.parse(localStorage.getItem(classKeys[ck]) || '[]');
-          if (Array.isArray(cachedClasses)) {
-            for (var c = 0; c < cachedClasses.length; c++) {
-              var cItem = cachedClasses[c];
-              var cName = (typeof cItem === 'object' && cItem) ? (cItem.name || cItem.className || '') : String(cItem || '');
-              if (cName) classesSeen[cName] = true;
-            }
-          }
-        } catch (e) {}
-      }
-
-      // 4. From raw students in report
+      // 3. From raw students currently loaded in report
       if (ReportState.rawStudents && Array.isArray(ReportState.rawStudents)) {
         for (var s = 0; s < ReportState.rawStudents.length; s++) {
           var scName = ReportState.rawStudents[s].className;
-          if (scName) classesSeen[scName] = true;
+          if (scName && scName !== 'undefined') classesSeen[scName.trim()] = true;
         }
       }
 
-      // 5. Fallback common classroom names if empty (guarantees options are always clickable)
-      var defaultClasses = ['ปวช.1/1', 'ปวช.1/2', 'ปวช.1/3', 'ปวช.2/1', 'ปวช.2/2', 'ปวช.3/1', 'ปวช.3/2', 'ปวส.1/1', 'ปวส.1/2', 'ปวส.1/5', 'ปวส.2/1', 'ปวส.2/2'];
+      // 4. Fallback ONLY from cached classes if report data is empty
       if (Object.keys(classesSeen).length === 0) {
-        for (var d = 0; d < defaultClasses.length; d++) {
-          classesSeen[defaultClasses[d]] = true;
+        var classKeys = ['gas_student_app_classes', 'gas_cached_classes'];
+        for (var ck = 0; ck < classKeys.length; ck++) {
+          try {
+            var cachedClasses = JSON.parse(localStorage.getItem(classKeys[ck]) || '[]');
+            if (Array.isArray(cachedClasses)) {
+              for (var c = 0; c < cachedClasses.length; c++) {
+                var cItem = cachedClasses[c];
+                var cName = (typeof cItem === 'object' && cItem) ? (cItem.name || cItem.className || '') : String(cItem || '');
+                if (cName && cName !== 'undefined') classesSeen[cName.trim()] = true;
+              }
+            }
+          } catch (e) {}
+        }
+      }
+
+      // Extract Grade Levels ONLY from the classes that ACTUALLY exist in classesSeen!
+      // (Item 4: "ระดับชั้นที่มีอยู่ในตัวกรองช่องนั้น ไม่ใช่ทุกระดับชั้นของระบบ")
+      for (var clsKey in classesSeen) {
+        var gl = extractGradeLevel(clsKey);
+        if (gl && !levelsSeen[gl]) {
+          levelsSeen[gl] = true;
         }
       }
 
@@ -1016,15 +1099,13 @@
       if (levelSel) {
         var curLevel = selectedLevel || levelSel.value || 'all';
         levelSel.innerHTML = '<option value="all">🌟 ทุกระดับชั้น</option>';
-        for (var clsKey in classesSeen) {
-          var gl = extractGradeLevel(clsKey);
-          if (gl && !levelsSeen[gl]) {
-            levelsSeen[gl] = true;
-            var lOpt = document.createElement('option');
-            lOpt.value = gl;
-            lOpt.textContent = 'ชั้น ' + gl;
-            levelSel.appendChild(lOpt);
-          }
+        var sortedLevels = Object.keys(levelsSeen).sort();
+        for (var li = 0; li < sortedLevels.length; li++) {
+          var lvlName = sortedLevels[li];
+          var lOpt = document.createElement('option');
+          lOpt.value = lvlName;
+          lOpt.textContent = 'ชั้น ' + lvlName;
+          levelSel.appendChild(lOpt);
         }
         levelSel.value = (curLevel && levelSel.querySelector('option[value="' + curLevel + '"]')) ? curLevel : 'all';
       }
@@ -1038,51 +1119,32 @@
         var curAct = selectedAct || actSel.value || 'all';
         actSel.innerHTML = '<option value="all">🌟 ทุกกิจกรรม/วิชา</option>';
 
-        // Default standard activities
         actsSeen['เช็คชื่อมาเรียน'] = true;
-        actsSeen['กิจกรรมหน้าเสาธง'] = true;
-        actsSeen['กิจกรรมโฮมรูม'] = true;
 
-        // 1. From explicitActs argument
         if (Array.isArray(explicitActs)) {
           for (var ea = 0; ea < explicitActs.length; ea++) {
             var aName1 = (typeof explicitActs[ea] === 'object' && explicitActs[ea]) ? (explicitActs[ea].name || explicitActs[ea].activityName || '') : String(explicitActs[ea] || '');
-            if (aName1) actsSeen[aName1] = true;
+            if (aName1) actsSeen[aName1.trim()] = true;
           }
         }
 
-        // 2. From ReportState.availableActivities
         if (ReportState.availableActivities && Array.isArray(ReportState.availableActivities)) {
           for (var aa = 0; aa < ReportState.availableActivities.length; aa++) {
             var aName2 = (typeof ReportState.availableActivities[aa] === 'object' && ReportState.availableActivities[aa]) ? (ReportState.availableActivities[aa].name || ReportState.availableActivities[aa].activityName || '') : String(ReportState.availableActivities[aa] || '');
-            if (aName2) actsSeen[aName2] = true;
+            if (aName2) actsSeen[aName2.trim()] = true;
           }
         }
 
-        // 3. From cached activities
-        var actKeys = ['gas_student_app_activities', 'gas_cached_activities'];
-        for (var ak = 0; ak < actKeys.length; ak++) {
-          try {
-            var cachedActs = JSON.parse(localStorage.getItem(actKeys[ak]) || '[]');
-            if (Array.isArray(cachedActs)) {
-              for (var a = 0; a < cachedActs.length; a++) {
-                var aItem = cachedActs[a];
-                var aName3 = (typeof aItem === 'object' && aItem) ? (aItem.name || aItem.activityName || '') : String(aItem || '');
-                if (aName3) actsSeen[aName3] = true;
-              }
-            }
-          } catch (e) {}
-        }
-
-        // 4. From raw students in report
         if (ReportState.rawStudents && Array.isArray(ReportState.rawStudents)) {
           for (var s2 = 0; s2 < ReportState.rawStudents.length; s2++) {
             var saName = ReportState.rawStudents[s2].activityName;
-            if (saName) actsSeen[saName] = true;
+            if (saName) actsSeen[saName.trim()] = true;
           }
         }
 
-        for (var actKey in actsSeen) {
+        var sortedActs = Object.keys(actsSeen).sort();
+        for (var ai = 0; ai < sortedActs.length; ai++) {
+          var actKey = sortedActs[ai];
           var aOpt = document.createElement('option');
           aOpt.value = actKey;
           aOpt.textContent = actKey;
@@ -1507,30 +1569,71 @@
       var top2 = champs[1] || null;
       var top3 = champs[2] || null;
 
-      function buildColHtml(item, rankNum, medalEmoji, crownColor, baseClass, avatarClass) {
-        if (!item) {
-          return '<div class="podium-col"><div style="height: 120px;"></div></div>';
-        }
-        var photoUrl = item.selfiePhoto || '';
-        var photoTag = (photoUrl && photoUrl.length > 10) 
-          ? '<img src="' + escapeHtml(photoUrl) + '" class="avatar-img ' + avatarClass + '" alt="' + escapeHtml(item.name) + '" onclick="openPhotoModal(\'' + escapeHtml(photoUrl) + '\', \'' + escapeHtml(item.name) + '\', \'⏰ เช็คชื่อ: ' + escapeHtml(item.time) + ' น.\')" />'
-          : '<div class="avatar-img ' + avatarClass + '" style="display:flex; align-items:center; justify-content:center; font-size:24px;">' + medalEmoji + '</div>';
+      function createPodiumCol(item, rankNum, medalEmoji, crownColor, baseClass, avatarClass) {
+        var col = document.createElement('div');
+        col.className = 'podium-col';
 
-        return '<div class="podium-col">' +
-               '  <div class="crown-icon" style="color:' + crownColor + ';">👑 #' + rankNum + '</div>' +
-               '  <div class="avatar-wrapper">' + photoTag + '</div>' +
-               '  <div class="champ-name" title="' + escapeHtml(item.name) + '">' + escapeHtml(item.name) + '</div>' +
-               '  <div class="champ-time">⏰ ' + escapeHtml(item.time) + ' น.</div>' +
-               '  <div class="podium-base ' + baseClass + '">' + rankNum + '</div>' +
-               '</div>';
+        if (!item) {
+          var spacer = document.createElement('div');
+          spacer.style.height = '120px';
+          col.appendChild(spacer);
+          return col;
+        }
+
+        var crown = document.createElement('div');
+        crown.className = 'crown-icon';
+        crown.style.color = crownColor;
+        crown.textContent = '👑 #' + rankNum;
+        col.appendChild(crown);
+
+        var wrapper = document.createElement('div');
+        wrapper.className = 'avatar-wrapper';
+
+        var photoUrl = item.selfiePhoto || item.photo || '';
+        var defaultAvatarSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%2318181B'/%3E%3Cpath d='M50 48a16 16 0 1 0 0-32 16 16 0 0 0 0 32zm0 8c-18 0-34 11-34 26v4h68v-4c0-15-16-26-34-26z' fill='%23FF6B00'/%3E%3C/svg%3E";
+        var imgSrc = (photoUrl && photoUrl.length > 10) ? photoUrl : defaultAvatarSvg;
+
+        var img = document.createElement('img');
+        img.className = 'avatar-img ' + avatarClass;
+        img.src = imgSrc;
+        img.alt = item.name || '';
+        img.title = (item.name || '') + ' (ชี้เมาส์เพื่อดูภาพขนาด 300x300px)';
+        (function(srcVal, nameVal, timeVal) {
+          img.addEventListener('click', function() {
+            openPhotoModal(srcVal, nameVal, '⏰ เช็คชื่อ: ' + timeVal + ' น.');
+          });
+        })(imgSrc, item.name || '', item.time || '');
+        wrapper.appendChild(img);
+
+        var ribbon = document.createElement('div');
+        ribbon.className = 'avatar-medal-ribbon';
+        ribbon.textContent = medalEmoji;
+        wrapper.appendChild(ribbon);
+
+        col.appendChild(wrapper);
+
+        var nameDiv = document.createElement('div');
+        nameDiv.className = 'champ-name';
+        nameDiv.textContent = item.name || '';
+        nameDiv.title = item.name || '';
+        col.appendChild(nameDiv);
+
+        var timeDiv = document.createElement('div');
+        timeDiv.className = 'champ-time';
+        timeDiv.textContent = '⏰ ' + (item.time || '') + ' น.';
+        col.appendChild(timeDiv);
+
+        var baseDiv = document.createElement('div');
+        baseDiv.className = 'podium-base ' + baseClass;
+        baseDiv.textContent = String(rankNum);
+        col.appendChild(baseDiv);
+
+        return col;
       }
 
-      var html = '';
-      html += buildColHtml(top2, 2, '🥈', '#C0C0C0', 'base-silver', 'avatar-silver');
-      html += buildColHtml(top1, 1, '🥇', '#FFD700', 'base-gold', 'avatar-champ');
-      html += buildColHtml(top3, 3, '🥉', '#F97316', 'base-bronze', 'avatar-bronze');
-
-      grid.innerHTML = html;
+      grid.appendChild(createPodiumCol(top2, 2, '🥈', '#C0C0C0', 'base-silver', 'avatar-silver'));
+      grid.appendChild(createPodiumCol(top1, 1, '🥇', '#FFD700', 'base-gold', 'avatar-champ'));
+      grid.appendChild(createPodiumCol(top3, 3, '🥉', '#F97316', 'base-bronze', 'avatar-bronze'));
     }
 
     function renderStudentList() {

@@ -3025,6 +3025,54 @@
       }
     }
 
+  
+    .floating-theme-btn {
+      display: none !important;
+    }
+
+    /* Hide top nav and mobile bottom nav when on Student Self Check-in view */
+    body.view-student-checkin-active #top-nav-bar,
+    body.view-student-checkin-active #mobile-bottom-nav,
+    body.view-student-checkin-active .top-nav-bar,
+    body.view-student-checkin-active .mobile-bottom-nav,
+    body.view-student-checkin-active .sidebar {
+      display: none !important;
+    }
+
+    /* DASHBOARD CARD PALETTE UNIFICATION (Row 1, 3, 4, 5, 6 MATCHING Row 2) */
+    #view-dashboard .glass-card,
+    #view-dashboard .stat-card,
+    #view-dashboard .chart-card,
+    #view-dashboard .table-glass-container,
+    #view-dashboard .today-hero-banner {
+      background: linear-gradient(180deg, #141416 0%, #0D0D0F 100%) !important;
+      border: 1px solid #222226 !important;
+      border-radius: 16px !important;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45) !important;
+    }
+
+    #view-dashboard .stat-card {
+      border-left: 1px solid #222226 !important;
+    }
+
+    #view-dashboard .stat-card:hover {
+      border-color: rgba(255, 107, 0, 0.5) !important;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.65), 0 0 18px rgba(255, 107, 0, 0.2) !important;
+    }
+
+    #view-dashboard .chart-wrapper {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      padding: 6px 0 !important;
+    }
+
+    /* Remove any leftover navy blue rgba(14, 20, 34) overrides */
+    .glass-card,
+    #view-dashboard .stat-card {
+      background: linear-gradient(180deg, #141416 0%, #0D0D0F 100%) !important;
+    }
+
   </style>
 </head>
 <body class="mode-student">
@@ -5812,6 +5860,14 @@
 
     function initApp() {
       initTheme();
+      // Ensure student portal hides admin navigation bars initially
+      if (AppState.currentView === 'student-checkin' || !AppState.currentView) {
+        document.body.classList.add('view-student-checkin-active');
+        var initTopNav = document.getElementById('top-nav-bar');
+        if (initTopNav) initTopNav.style.display = 'none';
+        var initMobNav = document.getElementById('mobile-bottom-nav');
+        if (initMobNav) initMobNav.style.display = 'none';
+      }
       // Clean legacy mock data from localStorage if exists
       cleanLegacyMockStorage();
 
@@ -6877,6 +6933,19 @@
 
     function switchView(viewName) {
       AppState.currentView = viewName;
+
+      // Item 1: Hide Admin Menus when on student self check-in page
+      var topNav = document.getElementById('top-nav-bar');
+      var mobNav = document.getElementById('mobile-bottom-nav');
+      if (viewName === 'student-checkin') {
+        document.body.classList.add('view-student-checkin-active');
+        if (topNav) topNav.style.display = 'none';
+        if (mobNav) mobNav.style.display = 'none';
+      } else {
+        document.body.classList.remove('view-student-checkin-active');
+        if (topNav) topNav.style.display = '';
+        if (mobNav) mobNav.style.display = '';
+      }
       
       // Update Sidebar Nav
       var navLinks = document.querySelectorAll('.nav-item');
@@ -20837,9 +20906,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
 
   </script>
   <!-- FLOATING THEME TOGGLE BUTTON -->
-  <button type="button" class="floating-theme-btn" id="btn-floating-theme" title="สลับโหมดมืด / โหมดสว่าง">
-    <i class="fas fa-moon" id="floating-theme-icon"></i>
-  </button>
+  <!-- Theme toggle button removed as requested -->
 
   <!-- FLOATING BLURRED TEACHER LOGIN BUTTON (BOTTOM CORNER) -->
   <button type="button" class="floating-teacher-btn" id="btn-show-admin-login" title="เข้าสู่ระบบสำหรับอาจารย์ผู้สอน / Admin">
