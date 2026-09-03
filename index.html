@@ -522,7 +522,7 @@
       overflow-x: auto;
       border-radius: var(--radius-sm);
       border: 1px solid var(--border-glass);
-      background: rgba(11, 15, 24, 0.6);
+      background: #18181B;
       -webkit-overflow-scrolling: touch;
     }
 
@@ -533,12 +533,12 @@
       font-size: 14px;
     }
 
-    .glass-table th {
-      background: rgba(22, 28, 42, 0.85);
-      color: var(--text-secondary);
-      font-weight: 600;
+    .glass-table th, .table-glass th, table th {
+      background: #18181B !important;
+      color: #FFFFFF !important;
+      font-weight: 700 !important;
       padding: 14px 18px;
-      border-bottom: 1px solid var(--border-glass);
+      border-bottom: 1px solid #27272A !important;
       white-space: nowrap;
       font-size: 13px;
       text-transform: uppercase;
@@ -619,7 +619,7 @@
 
     /* Dark Button: Obsidian Black with Warm Orange Rim & Orange Icon */
     .btn-dark {
-      background: #0B0F19;
+      background: #18181B;
       color: #FFFFFF !important;
       border: 1.5px solid rgba(255, 107, 0, 0.45);
       box-shadow: 0 6px 18px -4px rgba(0, 0, 0, 0.55);
@@ -834,7 +834,7 @@
       align-items: center;
       justify-content: space-between;
       padding: 10px 14px;
-      background: rgba(20, 26, 40, 0.7);
+      background: #18181B;
       border: 1px solid var(--border-glass);
       border-radius: var(--radius-sm);
       animation: slideFadeIn 0.3s ease;
@@ -890,7 +890,7 @@
       width: 38px;
       height: 38px;
       border-radius: var(--radius-full);
-      background: rgba(20, 26, 40, 0.9);
+      background: #18181B;
       border: 2px solid var(--border-glass-light);
       color: var(--text-muted);
       display: flex;
@@ -1092,7 +1092,7 @@
 
     .student-att-card:hover {
       border-color: rgba(255, 107, 0, 0.35);
-      background: rgba(20, 26, 40, 0.95);
+      background: #18181B;
     }
 
     .student-meta-block {
@@ -1184,7 +1184,7 @@
       font-size: 11.5px;
       font-weight: 600;
       cursor: pointer;
-      background: rgba(20, 26, 40, 0.8);
+      background: #18181B;
       border: 1px solid var(--border-glass);
       color: var(--text-secondary);
       transition: all 0.15s ease;
@@ -1227,7 +1227,7 @@
     .student-note-block:focus-within {
       border-color: var(--orange-500);
       box-shadow: 0 0 8px rgba(255, 107, 0, 0.25);
-      background: rgba(14, 18, 28, 0.95);
+      background: #18181B;
       width: 140px;
     }
 
@@ -1499,7 +1499,7 @@
 
     .glass-toast {
       pointer-events: auto;
-      background: rgba(14, 18, 28, 0.96);
+      background: #18181B;
       border: 1px solid var(--border-glass-light);
       border-radius: var(--radius-sm);
       padding: 12px 18px;
@@ -2017,7 +2017,7 @@
       gap: 7px;
       padding: 7px 14px;
       border-radius: 9999px;
-      background: rgba(15, 23, 42, 0.45);
+      background: #18181B;
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border: 1px solid rgba(255, 255, 255, 0.12);
@@ -2167,7 +2167,7 @@
     }
     .leaflet-container {
       font-family: 'Prompt', 'Kanit', sans-serif !important;
-      background: #0B0F19 !important;
+      background: #18181B !important;
     }
     .btn-map-layer.active {
       background: var(--orange-500) !important;
@@ -2611,6 +2611,74 @@
       box-shadow: 0 0 20px rgba(255, 107, 0, 0.4);
     }
 
+  
+    /* UNIVERSAL TABLE & BUTTON THEME POLISH (USER SPECIFIED) */
+    table th, .glass-table th, .table-glass th, .report-table th {
+      background: #18181B !important;
+      color: #FFFFFF !important;
+      font-weight: 700 !important;
+      border-bottom: 1px solid #27272A !important;
+    }
+
+    [data-theme="light"] table th,
+    [data-theme="light"] .glass-table th,
+    [data-theme="light"] .table-glass th,
+    [data-theme="light"] .report-table th {
+      background: #18181B !important;
+      color: #FFFFFF !important;
+      border-bottom: 1px solid #27272A !important;
+    }
+
+    .table-glass-container {
+      background: #18181B !important;
+      border: 1px solid #27272A !important;
+      border-radius: 14px !important;
+    }
+
+    [data-theme="light"] .table-glass-container {
+      background: #FFFFFF !important;
+      border: 1px solid #E5E7EB !important;
+      border-radius: 14px !important;
+    }
+
+    /* Orange Buttons: Pantone Orange #FF7A00 with Pure White Text */
+    .btn-orange, .btn-glass.btn-orange, button.btn-orange {
+      background: #FF7A00 !important;
+      color: #FFFFFF !important;
+      border: none !important;
+      border-radius: 10px !important;
+      box-shadow: 0 4px 14px rgba(255, 122, 0, 0.35) !important;
+      font-weight: 700 !important;
+    }
+
+    .btn-orange:hover, .btn-glass.btn-orange:hover, button.btn-orange:hover {
+      background: #FF8A1E !important;
+      color: #FFFFFF !important;
+      box-shadow: 0 6px 20px rgba(255, 122, 0, 0.5) !important;
+      transform: translateY(-1px) !important;
+    }
+
+    /* Dark Buttons: Deep Matte #18181B with Orange Trim & Icon */
+    .btn-dark, .btn-glass.btn-dark, button.btn-dark {
+      background: #18181B !important;
+      color: #FFFFFF !important;
+      border: 1.5px solid #2E2E34 !important;
+      border-radius: 10px !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+      font-weight: 600 !important;
+    }
+
+    .btn-dark i, .btn-glass.btn-dark i, button.btn-dark i {
+      color: #FF7A00 !important;
+    }
+
+    .btn-dark:hover, .btn-glass.btn-dark:hover, button.btn-dark:hover {
+      background: #222226 !important;
+      border-color: #FF7A00 !important;
+      color: #FFFFFF !important;
+      transform: translateY(-1px) !important;
+    }
+
   </style>
 </head>
 <body class="mode-student">
@@ -2856,7 +2924,7 @@
                       <i class="fas fa-key" style="color: var(--orange-400);"></i> รหัส OTP ไดนามิก:
                     </div>
                     <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
-                      <div id="student-auto-otp-display" style="font-family: 'Consolas', 'Courier New', monospace; font-size: 26px; font-weight: 900; color: #38BDF8; letter-spacing: 4px; background: #06111e; padding: 6px 12px; border-radius: 8px; border: 1.5px solid #0284C7; text-align: center; flex: 1;">
+                      <div id="student-auto-otp-display" style="font-family: 'Consolas', 'Courier New', monospace; font-size: 26px; font-weight: 900; color: #38BDF8; letter-spacing: 4px; background: #141416; padding: 6px 12px; border-radius: 8px; border: 1.5px solid #0284C7; text-align: center; flex: 1;">
                         ------
                       </div>
                       <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-copy-auto-otp" style="padding: 10px 12px; font-size: 12px;" title="คัดลอกรหัส OTP">
@@ -2920,7 +2988,7 @@
             </div>
 
             <!-- LIVE ACTIVE SESSION & CHECKED-IN STUDENTS FEED (Displayed ONLY while session is active/open) -->
-            <div id="student-live-feed-card" style="display: none; margin-top: 24px; background: rgba(15, 23, 42, 0.75); border: 1.5px solid rgba(0, 240, 255, 0.35); border-radius: var(--radius-md); padding: 18px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); backdrop-filter: blur(12px); animation: fadeIn 0.4s ease;">
+            <div id="student-live-feed-card" style="display: none; margin-top: 24px; background: #18181B; border: 1.5px solid rgba(0, 240, 255, 0.35); border-radius: var(--radius-md); padding: 18px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); backdrop-filter: blur(12px); animation: fadeIn 0.4s ease;">
               <!-- Header & Active Session Badge -->
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
                 <div style="display: flex; align-items: center; gap: 8px;">
@@ -3775,12 +3843,22 @@
                 <!-- 1. Report Type -->
                 <div class="form-group-glass" style="margin-bottom: 0;">
                   <label style="font-size: 11.5px; margin-bottom: 3px; font-weight: 700; color: #FFF;">
-                    <i class="fas fa-file-lines" style="color: var(--cyan-400);"></i> รูปแบบรายงาน
+                    <i class="fas fa-file-lines" style="color: #38BDF8;"></i> รูปแบบรายงาน
                   </label>
                   <select class="select-glass" id="report-type-select" style="width: 100%;">
                     <option value="daily">📅 รายงานประจำวัน / ช่วงวันที่</option>
                     <option value="monthly">🗓️ รายงานประจำเดือน</option>
                     <option value="term">🎓 รายงานสถิติประจำภาคเรียน</option>
+                  </select>
+                </div>
+
+                <!-- 1.5 Grade Level Selector (ชั้น) -->
+                <div class="form-group-glass" style="margin-bottom: 0;">
+                  <label style="font-size: 11.5px; margin-bottom: 3px; font-weight: 700; color: #FFF;">
+                    <i class="fas fa-layer-group" style="color: #FF7A00;"></i> ระดับชั้น
+                  </label>
+                  <select class="select-glass" id="report-level-select" style="width: 100%;">
+                    <option value="all">🌟 ทุกระดับชั้น</option>
                   </select>
                 </div>
 
@@ -3864,9 +3942,6 @@
                 <button type="button" class="btn-glass btn-emerald btn-sm-glass" id="btn-load-report-db" onclick="generateReportPreview()" style="font-weight: 800; padding: 7px 18px; background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: #FFF; box-shadow: 0 4px 15px rgba(16,185,129,0.4);" title="โหลดข้อมูลจากฐานข้อมูล Google Sheets และประมวลผลรายงาน">
                   <i class="fas fa-arrows-rotate"></i> 🔄 โหลดฐานข้อมูลเพื่อประมวลผล
                 </button>
-                <button type="button" class="btn-glass btn-sm-glass" id="btn-publish-parent-report" onclick="openPublishParentReportModal()" style="background: linear-gradient(135deg, #FF6B00 0%, #F59E0B 100%); border: none; color: #FFF; font-weight: 800; padding: 7px 18px; box-shadow: 0 4px 15px rgba(255, 107, 0, 0.45); font-size: 13px; cursor: pointer; border-radius: 8px;" title="ตั้งค่าและส่งข้อมูลไปยังหน้ารายงาน">
-                  <i class="fas fa-paper-plane" style="margin-right: 6px;"></i> 🚀 ส่งไปยังรีพอร์ต
-                </button>
                 <button type="button" class="btn-glass btn-emerald btn-sm-glass" id="btn-report-download-flex-card" onclick="downloadReportFlexCardImage()" title="บันทึกภาพการ์ด Flex สีสันสวยงาม เพื่อนำไปส่งในกลุ่ม LINE" style="font-weight: 700;">
                   <i class="fas fa-camera"></i> 📸 บันทึกการ์ด Flex เป็นรูปภาพ
                 </button>
@@ -3886,8 +3961,8 @@
                 <button type="button" class="btn-glass btn-orange btn-sm-glass" id="btn-download-pdf" title="ดาวน์โหลดรายงานเป็นไฟล์ PDF">
                   <i class="fas fa-file-pdf"></i> โหลด PDF
                 </button>
-                <button type="button" class="btn-glass btn-sm-glass" id="btn-open-line-send" style="background: rgba(6, 199, 85, 0.18); border-color: rgba(6, 199, 85, 0.45); color: #22C55E; font-weight: 600;" title="ส่งสรุปรายงานเข้ากลุ่ม LINE ทันที">
-                  <i class="fab fa-line" style="font-size: 14px;"></i> ส่งเข้า LINE
+                <button type="button" class="btn-glass btn-sm-glass" id="btn-open-line-send" onclick="sendLineSummaryNow()" style="background: #18181B; border: 1.5px solid #22C55E; color: #22C55E; font-weight: 700; border-radius: 10px;" title="ส่งสรุปรายงานเข้ากลุ่ม LINE ทันที">
+                  <i class="fab fa-line" style="font-size: 15px; color: #22C55E;"></i> ส่งเข้า LINE
                 </button>
                 <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-open-line-settings" title="ตั้งค่าการแจ้งเตือนและการส่งอัตโนมัติเข้ากลุ่ม LINE">
                   <i class="fas fa-gear"></i> ตั้งค่า LINE
@@ -3897,7 +3972,7 @@
             </div>
           </div>
 
-          <div class="glass-card" id="report-preview-container" style="background: rgba(20,26,40,0.85); overflow-x: auto;"></div>
+          <div class="glass-card" id="report-preview-container" style="background: #18181B; border: 1px solid #27272A; overflow-x: auto;"></div>
         </section>
 
         <!-- ============================================================= -->
@@ -3929,7 +4004,7 @@
               </p>
               <div class="grid-2" style="gap: 12px;">
                 <div class="theme-choice-card" id="card-theme-dark" style="cursor: pointer; background: rgba(11,15,25,0.8); border: 2px solid var(--orange-500); border-radius: 12px; padding: 14px; display: flex; align-items: center; gap: 12px; transition: all 0.2s;">
-                  <div style="width: 42px; height: 42px; border-radius: 10px; background: #0B0F19; border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 18px; color: #FF8533;">
+                  <div style="width: 42px; height: 42px; border-radius: 10px; background: #18181B; border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 18px; color: #FF8533;">
                     <i class="fas fa-moon"></i>
                   </div>
                   <div>
@@ -3994,7 +4069,7 @@
   </div>
 
   <!-- FLOATING 400x400 LIVE SELFIE HOVER PREVIEW -->
-  <div id="live-selfie-hover-preview" style="display: none; position: fixed; z-index: 9999999; pointer-events: none; width: 400px; height: 400px; border-radius: 16px; overflow: hidden; border: 2.5px solid #FF6B00; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.95), 0 0 35px rgba(255, 107, 0, 0.45); background: #0b0f19; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); animation: zoomPreview 0.18s cubic-bezier(0.16, 1, 0.3, 1);">
+  <div id="live-selfie-hover-preview" style="display: none; position: fixed; z-index: 9999999; pointer-events: none; width: 400px; height: 400px; border-radius: 16px; overflow: hidden; border: 2.5px solid #FF6B00; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.95), 0 0 35px rgba(255, 107, 0, 0.45); background: #18181B; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); animation: zoomPreview 0.18s cubic-bezier(0.16, 1, 0.3, 1);">
     <img id="live-selfie-hover-img" src="" alt="Selfie Preview" style="width: 400px; height: 400px; min-width: 400px; min-height: 400px; max-width: 400px; max-height: 400px; object-fit: cover; display: block;" />
     <div id="live-selfie-hover-caption" style="position: absolute; bottom: 0; left: 0; right: 0; padding: 14px 18px; background: linear-gradient(0deg, rgba(5,7,12,0.95) 0%, rgba(5,7,12,0.7) 65%, transparent 100%); color: #FFF; font-size: 13px; font-weight: 600; text-shadow: 0 1px 3px rgba(0,0,0,0.8);">
       <div id="live-selfie-hover-name" style="font-size: 15px; font-weight: 700; color: #FFF;"></div>
@@ -4008,7 +4083,7 @@
 
   <!-- MODAL: GLOBAL LOADING POPUP -->
   <div class="modal-backdrop-glass" id="modal-global-loading" style="z-index: 9999999; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); background: rgba(3, 5, 10, 0.82);">
-    <div class="modal-window-glass" style="max-width: 350px; text-align: center; padding: 32px 24px; border: 1px solid rgba(255, 107, 0, 0.45); box-shadow: 0 0 35px rgba(255, 107, 0, 0.28); background: rgba(14, 18, 28, 0.95);">
+    <div class="modal-window-glass" style="max-width: 350px; text-align: center; padding: 32px 24px; border: 1px solid rgba(255, 107, 0, 0.45); box-shadow: 0 0 35px rgba(255, 107, 0, 0.28); background: #18181B;">
       <div style="position: relative; width: 68px; height: 68px; margin: 0 auto 18px auto; display: flex; align-items: center; justify-content: center;">
         <div style="position: absolute; inset: 0; border-radius: 50%; border: 3.5px solid rgba(255, 107, 0, 0.15); border-top-color: var(--orange-500); animation: spinGlow 0.85s linear infinite;"></div>
         <i class="fas fa-satellite-dish" style="font-size: 24px; color: var(--orange-400); animation: radarPulse 1.5s ease-in-out infinite;"></i>
@@ -4358,7 +4433,7 @@
       </div>
 
       <div style="position: relative; width: 100%; max-width: 320px; margin: 0 auto 16px auto; border-radius: 18px; overflow: hidden; background: #000; aspect-ratio: 1/1; box-shadow: 0 0 25px rgba(0, 240, 255, 0.25); border: 2px solid var(--cyan-400);">
-        <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-toggle-qr-camera" onclick="toggleQRCameraFacingMode()" style="position: absolute; top: 10px; right: 10px; z-index: 15; font-size: 11px; padding: 4px 10px; background: rgba(15,23,42,0.85); box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+        <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-toggle-qr-camera" onclick="toggleQRCameraFacingMode()" style="position: absolute; top: 10px; right: 10px; z-index: 15; font-size: 11px; padding: 4px 10px; background: #18181B; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
           <i class="fas fa-camera-rotate"></i> สลับกล้อง (<span id="qr-cam-mode-label">หลัง</span>)
         </button>
         <video id="qr-scanner-video" playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
@@ -4825,7 +4900,7 @@
           <input type="text" class="input-glass" id="input-line-group-id" placeholder="วาง Group ID เช่น C43789abcdef0123456789abcdef0123..." style="font-family: monospace; font-size: 12.5px;" />
 
           <!-- Webhook URL Box for Bot Integration -->
-          <div style="margin-top: 10px; background: rgba(15, 23, 42, 0.7); border: 1px dashed rgba(56, 189, 248, 0.4); border-radius: 8px; padding: 10px 12px;">
+          <div style="margin-top: 10px; background: #18181B; border: 1px dashed rgba(56, 189, 248, 0.4); border-radius: 8px; padding: 10px 12px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; flex-wrap: wrap; gap: 6px;">
               <span style="font-size: 11.5px; font-weight: 700; color: #38BDF8;"><i class="fas fa-link"></i> Webhook URL สำหรับบอท LINE (นำไปใส่ใน LINE Developers):</span>
               <button type="button" class="btn-glass btn-sm-glass" id="btn-copy-gas-webhook-url" style="font-size: 10.5px; padding: 2px 8px; background: rgba(56, 189, 248, 0.15); border-color: rgba(56, 189, 248, 0.4); color: #38BDF8;">
@@ -4864,7 +4939,7 @@
               </button>
             </div>
           </div>
-          <div id="line-setting-class-checkboxes" style="max-height: 140px; overflow-y: auto; background: rgba(15, 23, 42, 0.65); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); padding: 10px 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px;">
+          <div id="line-setting-class-checkboxes" style="max-height: 140px; overflow-y: auto; background: #18181B; border: 1px solid var(--border-glass); border-radius: var(--radius-sm); padding: 10px 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px;">
             <!-- Populated dynamically -->
           </div>
           <div id="line-selected-classes-summary" style="font-size: 11.5px; color: var(--orange-400); font-weight: 600; margin-top: 5px;">
@@ -4899,7 +4974,7 @@
         </div>
 
         <!-- AUTO-SEND SCHEDULE -->
-        <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); padding: 14px 16px; margin: 14px 0;">
+        <div style="background: #18181B; border: 1px solid var(--border-glass); border-radius: var(--radius-sm); padding: 14px 16px; margin: 14px 0;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
             <div style="font-weight: 700; font-size: 13.5px; color: #FFF;">
               <i class="fas fa-clock" style="color: var(--orange-400);"></i> ส่งรายงานอัตโนมัติประจำวัน (Daily Auto-Send)
@@ -4941,7 +5016,7 @@
             </div>
           </div>
           <!-- LIVE FLEX CARD PREVIEW (MODERN DARK HEADER & WHITE CARD) -->
-          <div id="line-flex-card-container" style="background: #0B0F19; border: 1.5px solid var(--border-glass); border-radius: 14px; padding: 16px; margin-bottom: 12px; display: flex; justify-content: center;">
+          <div id="line-flex-card-container" style="background: #18181B; border: 1.5px solid var(--border-glass); border-radius: 14px; padding: 16px; margin-bottom: 12px; display: flex; justify-content: center;">
             <div id="line-flex-card-box" style="width: 100%; max-width: 360px; border-radius: 16px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.8), 0 0 15px rgba(255,107,0,0.15); font-family: 'Prompt', 'Kanit', sans-serif;">
               <!-- Header -->
               <div style="background: #18181B; padding: 18px 20px; color: #FFF; text-align: left;">
@@ -4972,7 +5047,7 @@
           <div style="font-size: 11.5px; font-weight: 700; color: var(--orange-400); margin-bottom: 4px;">
             <i class="fas fa-pen-to-square"></i> ข้อความแบบข้อความล้วน (Fallback / แก้ไขเองได้):
           </div>
-          <textarea id="line-message-live-preview" class="input-glass" rows="5" style="width: 100%; font-family: 'Consolas', 'Courier New', monospace; font-size: 12px; color: #86EFAC; line-height: 1.5; background: #06111e; border: 1.5px solid var(--border-glass); border-radius: var(--radius-sm); padding: 12px; resize: vertical;" placeholder="พิมพ์หรือแก้ไขข้อความที่ต้องการส่งเข้า LINE ที่นี่..."></textarea>
+          <textarea id="line-message-live-preview" class="input-glass" rows="5" style="width: 100%; font-family: 'Consolas', 'Courier New', monospace; font-size: 12px; color: #86EFAC; line-height: 1.5; background: #141416; border: 1.5px solid var(--border-glass); border-radius: var(--radius-sm); padding: 12px; resize: vertical;" placeholder="พิมพ์หรือแก้ไขข้อความที่ต้องการส่งเข้า LINE ที่นี่..."></textarea>
           <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px; line-height: 1.4;">
             💡 <strong>คุณสามารถพิมพ์/แก้ไขข้อความในกรอบนี้ได้อย่างอิสระ</strong> เมื่อกด "บันทึก" หรือ "ทดสอบ" ระบบจะส่งข้อความตามที่คุณแก้ไขนี้ครับ
           </div>
@@ -5220,7 +5295,7 @@
         <div id="map-picker-canvas" style="width: 100%; height: 100%; z-index: 1;"></div>
         
         <!-- Floating Layer Switcher Badge -->
-        <div style="position: absolute; top: 10px; right: 10px; z-index: 999; display: flex; gap: 4px; background: rgba(15,23,42,0.85); backdrop-filter: blur(10px); padding: 4px; border-radius: 6px; border: 1px solid var(--border-glass);">
+        <div style="position: absolute; top: 10px; right: 10px; z-index: 999; display: flex; gap: 4px; background: #18181B; backdrop-filter: blur(10px); padding: 4px; border-radius: 6px; border: 1px solid var(--border-glass);">
           <button type="button" class="btn-glass btn-sm-glass btn-map-layer active" data-layer="street" id="btn-layer-street" style="font-size: 10px; padding: 3px 8px;"><i class="fas fa-map"></i> ถนน (Street)</button>
           <button type="button" class="btn-glass btn-sm-glass btn-map-layer" data-layer="satellite" id="btn-layer-satellite" style="font-size: 10px; padding: 3px 8px;"><i class="fas fa-satellite"></i> ดาวเทียม (Satellite)</button>
         </div>
@@ -7126,7 +7201,7 @@
         itemDiv.style.alignItems = 'center';
         itemDiv.style.justifyContent = 'space-between';
         itemDiv.style.padding = '10px 14px';
-        itemDiv.style.background = 'rgba(20,26,40,0.8)';
+        itemDiv.style.background = '#18181B';
         itemDiv.style.border = '1px solid var(--border-glass)';
         itemDiv.style.borderRadius = 'var(--radius-sm)';
 
@@ -10273,7 +10348,7 @@
         hLeft.style.flexWrap = 'wrap';
 
         var actBadge = document.createElement('div');
-        actBadge.style.background = 'linear-gradient(135deg, ' + themeCol + '22 0%, rgba(15,23,42,0.85) 100%)';
+        actBadge.style.background = 'linear-gradient(135deg, ' + themeCol + '22 0%, #18181B 100%)';
         actBadge.style.border = '1.5px solid ' + themeCol;
         actBadge.style.borderRadius = '8px';
         actBadge.style.padding = '5px 12px';
@@ -14165,7 +14240,7 @@
 
       var listContainer = document.getElementById('attendance-student-list');
       if (listContainer && (!listContainer.innerHTML || listContainer.innerHTML.trim() === '')) {
-        listContainer.innerHTML = '<div class="glass-card" style="text-align: center; padding: 40px 20px; border: 1.5px dashed rgba(16,185,129,0.35); background: rgba(15,23,42,0.6);">' +
+        listContainer.innerHTML = '<div class="glass-card" style="text-align: center; padding: 40px 20px; border: 1.5px dashed rgba(16,185,129,0.35); background: #18181B;">' +
           '<i class="fas fa-chalkboard-user" style="font-size: 42px; color: var(--emerald-400); margin-bottom: 14px; display: inline-block;"></i>' +
           '<h3 style="font-size: 16.5px; font-weight: 800; color: #FFF; margin-bottom: 8px;">พร้อมประมวลผลการเช็คชื่อรายห้อง</h3>' +
           '<p style="font-size: 13px; color: var(--text-muted); max-width: 480px; margin: 0 auto 18px;">กรุณาเลือกห้องเรียน, วันที่ และกิจกรรมที่ต้องการ จากนั้นกดปุ่มด้านล่างเพื่อดึงข้อมูลจากฐานข้อมูล</p>' +
@@ -15851,6 +15926,44 @@
       container.appendChild(paper);
     }
 
+    function extractGradeLevel(className) {
+      if (!className) return '';
+      className = String(className).trim().replace(/^ห้อง\s*/, '');
+      var m = className.match(/^([^\/\s0-9]+[\.\s]*\d+)/i);
+      if (m) {
+        return m[1].replace(/\s+/g, '');
+      }
+      var parts = className.split(/[\/\s]/);
+      return parts[0] || className;
+    }
+
+    function isLevelMatch(levelVal, className) {
+      if (!levelVal || levelVal === 'all') return true;
+      if (!className) return false;
+      var lvl = extractGradeLevel(className);
+      if (lvl.toLowerCase() === levelVal.toLowerCase()) return true;
+      return className.toLowerCase().indexOf(levelVal.toLowerCase()) > -1;
+    }
+
+    function filterReportClassCheckboxesByLevel(levelVal) {
+      var container = document.getElementById('report-class-checkbox-list');
+      if (!container) return;
+      var labels = container.querySelectorAll('label');
+      for (var i = 1; i < labels.length; i++) {
+        var chk = labels[i].querySelector('.report-class-item-chk');
+        if (chk) {
+          var match = isLevelMatch(levelVal, chk.value);
+          labels[i].style.display = match ? 'flex' : 'none';
+          if (levelVal !== 'all') {
+            chk.checked = match;
+          }
+        }
+      }
+      var allChk = document.getElementById('chk-report-class-all');
+      if (allChk && levelVal !== 'all') allChk.checked = false;
+      updateReportClassBtnLabel();
+    }
+
     function populateReportMultiSelectFilters() {
       var savedPrefs = getSavedReportFilterPreferences();
 
@@ -15860,6 +15973,32 @@
         if (repTypeSelect && savedPrefs.reportType) repTypeSelect.value = savedPrefs.reportType;
         var repStatSelect = document.getElementById('report-status-select');
         if (repStatSelect && savedPrefs.status) repStatSelect.value = savedPrefs.status;
+      }
+
+      // 0. Populate Grade Levels (ชั้น)
+      var levelSelect = document.getElementById('report-level-select');
+      var uniqueClasses = getAllAvailableClasses();
+      if (levelSelect) {
+        var curLevelVal = (savedPrefs && savedPrefs.level) ? savedPrefs.level : (levelSelect.value || 'all');
+        levelSelect.innerHTML = '<option value="all">🌟 ทุกระดับชั้น</option>';
+        var levelsSeen = {};
+        for (var lIdx = 0; lIdx < uniqueClasses.length; lIdx++) {
+          var lvlName = extractGradeLevel(uniqueClasses[lIdx]);
+          if (lvlName && !levelsSeen[lvlName]) {
+            levelsSeen[lvlName] = true;
+            var lOpt = document.createElement('option');
+            lOpt.value = lvlName;
+            lOpt.textContent = 'ชั้น ' + lvlName;
+            levelSelect.appendChild(lOpt);
+          }
+        }
+        levelSelect.value = (curLevelVal && levelSelect.querySelector('option[value="' + curLevelVal + '"]')) ? curLevelVal : 'all';
+        levelSelect.onchange = function() {
+          var selLvl = this.value;
+          filterReportClassCheckboxesByLevel(selLvl);
+          saveReportFilterPreferences();
+          generateReportPreview();
+        };
       }
 
       // 1. Populate Classrooms
@@ -16370,7 +16509,7 @@
       // Show initial clean placeholder guide until user clicks "🔄 โหลดฐานข้อมูลเพื่อประมวลผล"
       var repContainer = document.getElementById('report-preview-container') || document.getElementById('report-table-container');
       if (repContainer && (!repContainer.innerHTML || repContainer.innerHTML.trim() === '')) {
-        repContainer.innerHTML = '<div class="glass-card" style="text-align: center; padding: 40px 20px; border: 1.5px dashed rgba(16,185,129,0.35); background: rgba(15,23,42,0.6);">' +
+        repContainer.innerHTML = '<div class="glass-card" style="text-align: center; padding: 40px 20px; border: 1.5px dashed rgba(16,185,129,0.35); background: #18181B;">' +
           '<i class="fas fa-file-chart-column" style="font-size: 42px; color: var(--emerald-400); margin-bottom: 14px; display: inline-block;"></i>' +
           '<h3 style="font-size: 16.5px; font-weight: 800; color: #FFF; margin-bottom: 8px;">พร้อมออกรายงาน PDF / Excel</h3>' +
           '<p style="font-size: 13px; color: var(--text-muted); max-width: 480px; margin: 0 auto 18px;">กรุณาเลือกรูปแบบรายงาน, ห้องเรียน, กิจกรรม และช่วงวันที่ที่ต้องการ จากนั้นกดปุ่มด้านล่างเพื่อประมวลผล</p>' +
@@ -16517,6 +16656,8 @@
           hideLoadingPopup();
           showToast('ดาวน์โหลดไฟล์ PDF เรียบร้อยแล้ว! 📄✨', 'success');
         }).catch(function(err) {
+          var m = document.getElementById('flex-card-render-mount');
+          if (m && m.parentNode) { m.parentNode.removeChild(m); }
           hideLoadingPopup();
           console.warn('html2pdf error:', err);
           window.print();
@@ -18454,11 +18595,15 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
       if (!mount) {
         mount = document.createElement('div');
         mount.id = 'flex-card-render-mount';
-        mount.style.cssText = 'position:fixed; left:0; top:0; z-index:-99999; opacity:1; visibility:visible; pointer-events:none; background:#0B0F19; padding:16px; width:380px; box-sizing:border-box;';
+        mount.style.cssText = 'position:fixed; left:-9999px; top:-9999px; z-index:-99999; opacity:1; visibility:visible; pointer-events:none; background:#18181B; padding:16px; width:380px; box-sizing:border-box;';
         document.body.appendChild(mount);
       }
       mount.innerHTML = renderFlexCardHtml(stats);
       return mount.firstElementChild || mount;
+    }
+
+    function openLineSendModal() {
+      sendLineSummaryNow();
     }
 
     function downloadFlexCardAsImage(dateStr, className, targetId) {
@@ -18487,12 +18632,15 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
           scale: 2,
           useCORS: true,
           allowTaint: true,
-          backgroundColor: '#0B0F19',
+          backgroundColor: '#18181B',
           logging: false,
           width: 360,
           scrollX: 0,
           scrollY: 0
         }).then(function(canvas) {
+          // Immediately clean up temporary mount from DOM to prevent any ghost image
+          var m = document.getElementById('flex-card-render-mount');
+          if (m && m.parentNode) { m.parentNode.removeChild(m); }
           hideLoadingPopup();
           if (!canvas || canvas.width === 0 || canvas.height === 0) {
             showToast('เกิดข้อผิดพลาด: ไม่สามารถสร้างภาพ Canvas ได้', 'error');
@@ -18715,7 +18863,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
                          '  </div>' +
 
                          '  <!-- FORMAT SELECTION: FLEX CARD VS TEXT ONLY -->' +
-                         '  <div style="background: rgba(15,23,42,0.85); border: 1.5px solid var(--border-glass); border-radius: 10px; padding: 10px 14px; margin-bottom: 12px;">' +
+                         '  <div style="background: #18181B; border: 1.5px solid var(--border-glass); border-radius: 10px; padding: 10px 14px; margin-bottom: 12px;">' +
                          '    <label style="font-size: 11.5px; font-weight: 700; color: #FFF; display: block; margin-bottom: 8px;">' +
                          '      <i class="fas fa-layer-group" style="color: var(--orange-400);"></i> เลือกรูปแบบการส่งเข้า LINE:' +
                          '    </label>' +
@@ -18770,7 +18918,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
                          '      </label>' +
                          '      <span style="font-size: 10.5px; color: var(--text-muted);">(แก้ไขข้อความในกล่องนี้ได้ตามต้องการ)</span>' +
                          '    </div>' +
-                         '    <textarea id="quick-send-line-text" class="input-glass" rows="6" style="width:100%; font-family:monospace; font-size:11px; color:#86EFAC; background:#06111e; border:1.5px solid var(--border-glass); border-radius:8px; padding:10px; resize:vertical; line-height:1.5;">' +
+                         '    <textarea id="quick-send-line-text" class="input-glass" rows="6" style="width:100%; font-family:monospace; font-size:11px; color:#86EFAC; background:#141416; color:#FFFFFF; border:1.5px solid var(--border-glass); border-radius:8px; padding:10px; resize:vertical; line-height:1.5;">' +
                          escapeHtml(defaultSendMsg) +
                          '    </textarea>' +
                          '  </div>' +
@@ -19726,7 +19874,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
 
                 ctx.font = 'bold 12.5px Prompt, Kanit, sans-serif';
                 var textWidth = ctx.measureText(tagText).width;
-                ctx.fillStyle = isMatched ? 'rgba(16, 185, 129, 0.92)' : 'rgba(15, 23, 42, 0.85)';
+                ctx.fillStyle = isMatched ? 'rgba(16, 185, 129, 0.92)' : '#18181B';
                 ctx.shadowBlur = 0;
                 ctx.fillRect(x, Math.max(0, y - 24), textWidth + 16, 22);
 
@@ -20059,7 +20207,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
 
       <div>
         <!-- FILTER CONFIGURATION SECTION -->
-        <div style="background: rgba(15, 23, 42, 0.85); border: 1.5px solid rgba(255, 107, 0, 0.35); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+        <div style="background: #18181B; border: 1.5px solid rgba(255, 107, 0, 0.35); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
           <div style="font-size: 13px; font-weight: 800; color: #FF6B00; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
             <i class="fas fa-sliders"></i> ตั้งค่าข้อมูลที่ต้องการส่งไปยังหน้ารีพอร์ท:
           </div>
@@ -20125,7 +20273,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
         </div>
 
         <!-- Share Link Box -->
-        <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(0, 240, 255, 0.35); border-radius: 12px; padding: 12px; margin-bottom: 14px;">
+        <div style="background: #18181B; border: 1px solid rgba(0, 240, 255, 0.35); border-radius: 12px; padding: 12px; margin-bottom: 14px;">
           <label style="font-size: 11.5px; font-weight: 700; color: var(--cyan-400); display: block; margin-bottom: 5px;">
             <i class="fas fa-link"></i> 🔗 ลิงก์หน้ารายงานออนไลน์:
           </label>
@@ -20186,13 +20334,13 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
       </div>
 
       <!-- SELECT STUDENT SECTION -->
-      <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px; margin-bottom: 14px;">
+      <div style="background: #18181B; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px; margin-bottom: 14px;">
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; align-items: end;">
           <div>
             <label style="font-size: 12px; font-weight: 700; color: #FFF; display: block; margin-bottom: 4px;">
               <i class="fas fa-chalkboard-user" style="color: var(--orange-400);"></i> 1. เลือกห้องเรียน:
             </label>
-            <select id="enroll-class-select" onchange="onEnrollClassChange()" style="width: 100%; padding: 8px 12px; background: #0F172A; border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: #FFF; font-size: 13px; outline: none; cursor: pointer;">
+            <select id="enroll-class-select" onchange="onEnrollClassChange()" style="width: 100%; padding: 8px 12px; background: #18181B; border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: #FFF; font-size: 13px; outline: none; cursor: pointer;">
               <option value="all">🌟 ทุกห้องเรียน</option>
             </select>
           </div>
@@ -20201,7 +20349,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
             <label style="font-size: 12px; font-weight: 700; color: #FFF; display: block; margin-bottom: 4px;">
               <i class="fas fa-user-graduate" style="color: var(--cyan-400);"></i> 2. เลือกนักศึกษา:
             </label>
-            <select id="enroll-student-select" onchange="onEnrollStudentChange()" style="width: 100%; padding: 8px 12px; background: #0F172A; border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: #FFF; font-size: 13px; outline: none; cursor: pointer;">
+            <select id="enroll-student-select" onchange="onEnrollStudentChange()" style="width: 100%; padding: 8px 12px; background: #18181B; border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: #FFF; font-size: 13px; outline: none; cursor: pointer;">
               <option value="">-- กรุณาเลือกนักศึกษา --</option>
             </select>
           </div>
@@ -20237,7 +20385,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
       <div style="position: relative; width: 100%; height: 340px; max-height: 48vh; background: #000; border-radius: 14px; overflow: hidden; border: 2px solid rgba(0, 240, 255, 0.5); box-shadow: 0 0 25px rgba(0, 240, 255, 0.25); margin-bottom: 14px; display: flex; align-items: center; justify-content: center;">
         
         <!-- Live Video -->
-        <button type="button" class="btn-glass btn-cyan btn-sm-glass" onclick="toggleEnrollCameraFacingMode()" style="position: absolute; top: 12px; right: 12px; z-index: 15; font-size: 11.5px; padding: 6px 12px; background: rgba(15,23,42,0.85); box-shadow: 0 4px 15px rgba(0,0,0,0.5); backdrop-filter: blur(8px); border-radius: 20px; font-weight: 700; border: 1.5px solid var(--cyan-400);" title="สลับกล้องหน้า / กล้องหลัง">
+        <button type="button" class="btn-glass btn-cyan btn-sm-glass" onclick="toggleEnrollCameraFacingMode()" style="position: absolute; top: 12px; right: 12px; z-index: 15; font-size: 11.5px; padding: 6px 12px; background: #18181B; box-shadow: 0 4px 15px rgba(0,0,0,0.5); backdrop-filter: blur(8px); border-radius: 20px; font-weight: 700; border: 1.5px solid var(--cyan-400);" title="สลับกล้องหน้า / กล้องหลัง">
           <i class="fas fa-camera-rotate"></i> สลับกล้อง (<span id="enroll-cam-mode-floating-label">หน้า</span>)
         </button>
         <video id="enroll-video" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover;"></video>
@@ -20254,7 +20402,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
         </div>
 
         <!-- Live Status Guide Text -->
-        <div style="position: absolute; bottom: 12px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); border: 1px solid rgba(0, 240, 255, 0.4); padding: 5px 14px; border-radius: 20px; font-size: 11.5px; font-weight: 700; color: #FFF; display: flex; align-items: center; gap: 8px;" id="enroll-live-status">
+        <div style="position: absolute; bottom: 12px; background: #18181B; backdrop-filter: blur(8px); border: 1px solid rgba(0, 240, 255, 0.4); padding: 5px 14px; border-radius: 20px; font-size: 11.5px; font-weight: 700; color: #FFF; display: flex; align-items: center; gap: 8px;" id="enroll-live-status">
           <span class="gps-status-dot green" style="width: 8px; height: 8px;"></span>
           <span id="enroll-status-text">กรุณาให้นักศึกษามองตรงที่กล้อง แสงสว่างพอเหมาะ</span>
         </div>
@@ -20318,7 +20466,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
         <div style="position: absolute; bottom: 12px; right: 12px; width: 24px; height: 24px; border-bottom: 3px solid var(--cyan-400); border-right: 3px solid var(--cyan-400); pointer-events: none;"></div>
 
         <!-- Top Status HUD Badge -->
-        <div style="position: absolute; top: 12px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); border: 1px solid rgba(0, 240, 255, 0.4); padding: 5px 14px; border-radius: 20px; font-size: 11.5px; font-weight: 700; color: #FFF; display: flex; align-items: center; gap: 8px; z-index: 10;" id="face-scanner-status-badge">
+        <div style="position: absolute; top: 12px; background: #18181B; backdrop-filter: blur(8px); border: 1px solid rgba(0, 240, 255, 0.4); padding: 5px 14px; border-radius: 20px; font-size: 11.5px; font-weight: 700; color: #FFF; display: flex; align-items: center; gap: 8px; z-index: 10;" id="face-scanner-status-badge">
           <span class="gps-status-dot green" style="animation: pulse-live 1.2s infinite; width: 8px; height: 8px;"></span>
           <span id="face-scanner-status-text">กำลังสแกน... กรุณาแพนกล้องส่องไปที่ใบหน้านักศึกษา</span>
         </div>
@@ -20335,7 +20483,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
       </div>
 
       <!-- CONTROLS & SETTINGS TOOLBAR -->
-      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 10px 14px; margin-bottom: 14px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; background: #18181B; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 10px 14px; margin-bottom: 14px;">
         <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
           <button type="button" class="btn-glass btn-orange btn-sm-glass" onclick="openAIFaceEnrollmentModal('', AIFaceScannerState.targetClass)" style="font-weight: 800;" title="เปิดหน้าต่างถ่ายรูป/ลงทะเบียนใบหน้าให้นักศึกษาใหม่">
             <i class="fas fa-user-plus"></i> + ลงทะเบียนใบหน้า

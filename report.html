@@ -19,17 +19,17 @@
 
   <style>
     :root {
-      --bg-dark: #090D16;
-      --bg-card: rgba(17, 24, 39, 0.85);
-      --border-glass: rgba(255, 255, 255, 0.1);
-      --cyan-400: #00F0FF;
-      --orange-400: #FF6B00;
-      --gold-400: #FFD700;
-      --emerald-400: #10B981;
-      --rose-400: #F43F5E;
+      --bg-dark: #0E0E10;
+      --bg-card: #18181B;
+      --border-glass: #27272A;
+      --cyan-400: #38BDF8;
+      --orange-400: #FF7A00;
+      --gold-400: #F59E0B;
+      --emerald-400: #22C55E;
+      --rose-400: #EF4444;
       --amber-400: #F59E0B;
-      --text-main: #F8FAFC;
-      --text-muted: #94A3B8;
+      --text-main: #FFFFFF;
+      --text-muted: #9CA3AF;
       --radius-lg: 16px;
       --radius-md: 12px;
       --radius-sm: 8px;
@@ -44,13 +44,8 @@
     }
 
     body {
-      background-color: var(--bg-dark);
-      background-image: 
-        radial-gradient(at 0% 0%, rgba(0, 240, 255, 0.08) 0px, transparent 50%),
-        radial-gradient(at 100% 0%, rgba(255, 107, 0, 0.08) 0px, transparent 50%),
-        radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.06) 0px, transparent 50%);
-      background-attachment: fixed;
-      color: var(--text-main);
+      background-color: #0E0E10;
+      color: #FFFFFF;
       min-height: 100vh;
       padding-bottom: 50px;
     }
@@ -80,7 +75,7 @@
       justify-content: space-between;
       align-items: center;
       padding: 12px 18px;
-      background: rgba(15, 23, 42, 0.85);
+      background: #121214; border-bottom: 1px solid #222226;
       border-bottom: 1px solid var(--border-glass);
       position: sticky;
       top: 0;
@@ -117,7 +112,7 @@
       font-weight: 600;
       cursor: pointer;
       border: 1px solid var(--border-glass);
-      background: rgba(255, 255, 255, 0.08);
+      background: #18181B; border: 1.5px solid #2E2E34;
       color: #FFF;
       transition: all 0.2s ease;
       text-decoration: none;
@@ -129,9 +124,9 @@
     }
 
     .btn-cyan {
-      background: rgba(0, 240, 255, 0.15);
+      background: #FF7A00 !important; border: none !important; color: #FFFFFF !important;
       border-color: rgba(0, 240, 255, 0.4);
-      color: var(--cyan-400);
+      color: #FFFFFF;
     }
 
     .btn-emerald {
@@ -175,7 +170,7 @@
 
     /* 3D Podium Container */
     .podium-card {
-      background: linear-gradient(180deg, #111827 0%, #0B0F19 100%);
+      background: linear-gradient(180deg, #111827 0%, #18181B 100%);
       border: 1.5px solid rgba(251, 191, 36, 0.4);
       border-radius: var(--radius-lg);
       padding: 20px 14px;
@@ -227,7 +222,7 @@
       border-radius: 50%;
       object-fit: cover;
       display: block;
-      background: #1E293B;
+      background: #18181B;
     }
 
     .avatar-champ {
@@ -307,7 +302,7 @@
     }
 
     .stat-box {
-      background: rgba(15, 23, 42, 0.7);
+      background: #18181B;
       border: 1px solid var(--border-glass);
       border-radius: var(--radius-md);
       padding: 14px 10px;
@@ -338,7 +333,7 @@
     .search-input {
       flex: 1;
       min-width: 180px;
-      background: rgba(15, 23, 42, 0.9);
+      background: #18181B;
       border: 1px solid var(--border-glass);
       border-radius: var(--radius-sm);
       padding: 8px 12px;
@@ -383,15 +378,20 @@
       align-items: center;
       justify-content: space-between;
       padding: 12px 14px;
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      background: #141416;
+      border: 1px solid #27272A;
       border-radius: var(--radius-md);
       margin-bottom: 8px;
       transition: all 0.2s;
     }
 
     .student-card:hover {
-      background: rgba(30, 41, 59, 0.8);
+      background: #1A1A1E;
+      border-color: #FF7A00;
+    }
+
+    .student-card:hover {
+      background: #1C1C20;
       border-color: rgba(255, 255, 255, 0.15);
     }
 
@@ -407,7 +407,7 @@
       height: 44px;
       border-radius: 50%;
       object-fit: cover;
-      background: #1E293B;
+      background: #18181B;
       border: 1.5px solid var(--border-glass);
       flex-shrink: 0;
       cursor: pointer;
@@ -493,7 +493,7 @@
     }
 
     .photo-modal-content {
-      background: #0F172A;
+      background: #18181B;
       border: 1px solid var(--border-glass);
       border-radius: var(--radius-lg);
       padding: 16px;
@@ -551,7 +551,7 @@
       <span>ระบบเช็คชื่อนักเรียน</span>
     </div>
     <div class="nav-actions">
-      <button type="button" class="btn-action btn-cyan" onclick="downloadReportImage()" title="บันทึกภาพรายงานเพื่อแชร์">
+      <button type="button" class="btn-action btn-orange" onclick="downloadReportImage()" title="บันทึกภาพรายงานเพื่อแชร์">
         <i class="fas fa-camera"></i> <span>บันทึกภาพ</span>
       </button>
       <button type="button" class="btn-action" onclick="copyShareLink()" title="คัดลอกลิงก์แชร์">
@@ -563,6 +563,59 @@
   <main class="container">
     
     <!-- REPORT CAPTURE AREA -->
+        <!-- INTERACTIVE REPORT FILTER TOOLBAR & PERSISTENCE MENU -->
+    <div class="glass-card" style="margin-bottom: 20px; border: 1px solid #27272A; background: #18181B; padding: 16px;">
+      <div style="font-size: 13px; font-weight: 800; color: #FF7A00; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <i class="fas fa-sliders" style="font-size: 15px;"></i> 🎛️ เลือกดูข้อมูลรายงานตามห้อง / กิจกรรม / วันที่:
+        </div>
+        <span style="font-size: 11px; color: var(--text-muted); font-weight: 500;">
+          <i class="fas fa-floppy-disk"></i> บันทึกการเลือกไว้ให้อัตโนมัติ
+        </span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; align-items: end;">
+        <div>
+          <label style="font-size: 11.5px; font-weight: 700; color: #FFF; display: block; margin-bottom: 4px;">
+            <i class="fas fa-calendar-day" style="color: #FF7A00;"></i> 📅 วันที่
+          </label>
+          <input type="date" id="filter-report-date" onchange="onReportFilterMenuChange()" style="width: 100%; padding: 8px 12px; background: #141416; border: 1px solid #27272A; border-radius: 8px; color: #FFF; font-size: 12.5px; outline: none;" />
+        </div>
+
+        <div>
+          <label style="font-size: 11.5px; font-weight: 700; color: #FFF; display: block; margin-bottom: 4px;">
+            <i class="fas fa-layer-group" style="color: #FF7A00;"></i> 🎓 ระดับชั้น
+          </label>
+          <select id="filter-report-level" onchange="onReportLevelFilterChange()" style="width: 100%; padding: 8px 12px; background: #141416; border: 1px solid #27272A; border-radius: 8px; color: #FFF; font-size: 12.5px; outline: none; cursor: pointer;">
+            <option value="all">🌟 ทุกระดับชั้น</option>
+          </select>
+        </div>
+
+        <div>
+          <label style="font-size: 11.5px; font-weight: 700; color: #FFF; display: block; margin-bottom: 4px;">
+            <i class="fas fa-chalkboard-user" style="color: #FF7A00;"></i> 🏫 ห้องเรียน
+          </label>
+          <select id="filter-report-class" onchange="onReportFilterMenuChange()" style="width: 100%; padding: 8px 12px; background: #141416; border: 1px solid #27272A; border-radius: 8px; color: #FFF; font-size: 12.5px; outline: none; cursor: pointer;">
+            <option value="all">🌟 ทุกห้องเรียน</option>
+          </select>
+        </div>
+
+        <div>
+          <label style="font-size: 11.5px; font-weight: 700; color: #FFF; display: block; margin-bottom: 4px;">
+            <i class="fas fa-tags" style="color: #A78BFA;"></i> 📚 รายวิชา / กิจกรรม
+          </label>
+          <select id="filter-report-activity" onchange="onReportFilterMenuChange()" style="width: 100%; padding: 8px 12px; background: #141416; border: 1px solid #27272A; border-radius: var(--radius-sm); color: #FFF; font-size: 12.5px; outline: none; cursor: pointer;">
+            <option value="all">🌟 ทุกกิจกรรม/วิชา</option>
+          </select>
+        </div>
+
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn-action btn-cyan" onclick="onReportFilterMenuChange(true)" style="flex: 1; padding: 8px 12px; font-size: 12.5px; justify-content: center; height: 38px;">
+            <i class="fas fa-arrows-rotate"></i> รีเฟรชข้อมูล
+          </button>
+        </div>
+      </div>
+    </div>
     <div id="report-capture-area">
       
       <!-- HERO HEADER -->
@@ -705,24 +758,291 @@
       return DEFAULT_GAS_URL;
     }
 
-    function initReportPage() {
-      var dateParam = getQueryParam('date') || '';
-      var classParam = getQueryParam('class') || getQueryParam('className') || 'all';
-      var actParam = getQueryParam('activity') || getQueryParam('act') || 'all';
+    function getSavedReportFilterSettings() {
+      try {
+        var raw = localStorage.getItem('gas_report_view_saved_settings');
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      return null;
+    }
 
-      // 1. Immediately check if there is a newly published report in localStorage
+    function saveReportFilterSettings(dateVal, classVal, actVal) {
+      try {
+        var settings = {
+          date: dateVal || '',
+          className: classVal || 'all',
+          activityName: actVal || 'all',
+          savedAt: Date.now()
+        };
+        localStorage.setItem('gas_report_view_saved_settings', JSON.stringify(settings));
+      } catch (e) {}
+    }
+
+    function extractGradeLevel(className) {
+      if (!className) return '';
+      className = String(className).trim().replace(/^ห้อง\s*/, '');
+      var m = className.match(/^([^\/\s0-9]+[\.\s]*\d+)/i);
+      if (m) {
+        return m[1].replace(/\s+/g, '');
+      }
+      var parts = className.split(/[\/\s]/);
+      return parts[0] || className;
+    }
+
+    function isLevelMatch(levelVal, className) {
+      if (!levelVal || levelVal === 'all') return true;
+      if (!className) return false;
+      var lvl = extractGradeLevel(className);
+      if (lvl.toLowerCase() === levelVal.toLowerCase()) return true;
+      return className.toLowerCase().indexOf(levelVal.toLowerCase()) > -1;
+    }
+
+    function populateReportFilterMenuDropdowns(selectedDate, selectedLevel, selectedClass, selectedAct) {
+      var dateInp = document.getElementById('filter-report-date');
+      var levelSel = document.getElementById('filter-report-level');
+      var classSel = document.getElementById('filter-report-class');
+      var actSel = document.getElementById('filter-report-activity');
+
+      if (dateInp && selectedDate) dateInp.value = selectedDate;
+
+      // Extract unique classes and activities from raw students or local storage cache
+      var classesSeen = {};
+      var levelsSeen = {};
+      var actsSeen = {};
+
+      try {
+        var cachedClasses = JSON.parse(localStorage.getItem('gas_student_app_classes') || '[]');
+        if (Array.isArray(cachedClasses)) {
+          for (var c = 0; c < cachedClasses.length; c++) {
+            var cName = (typeof cachedClasses[c] === 'object' && cachedClasses[c]) ? (cachedClasses[c].name || cachedClasses[c].className || '') : String(cachedClasses[c] || '');
+            if (cName) classesSeen[cName] = true;
+          }
+        }
+      } catch (e) {}
+
+      if (ReportState.rawStudents && Array.isArray(ReportState.rawStudents)) {
+        for (var s = 0; s < ReportState.rawStudents.length; s++) {
+          var scName = ReportState.rawStudents[s].className;
+          if (scName) classesSeen[scName] = true;
+        }
+      }
+
+      // Populate Level Dropdown (ชั้น)
+      if (levelSel) {
+        var curLevel = selectedLevel || 'all';
+        levelSel.innerHTML = '<option value="all">🌟 ทุกระดับชั้น</option>';
+        for (var clsKey in classesSeen) {
+          var gl = extractGradeLevel(clsKey);
+          if (gl && !levelsSeen[gl]) {
+            levelsSeen[gl] = true;
+            var lOpt = document.createElement('option');
+            lOpt.value = gl;
+            lOpt.textContent = 'ชั้น ' + gl;
+            levelSel.appendChild(lOpt);
+          }
+        }
+        levelSel.value = (curLevel && levelSel.querySelector('option[value="' + curLevel + '"]')) ? curLevel : 'all';
+      }
+
+      // Populate Class Dropdown (ห้อง) filtered by selected level
+      var curLvlVal = (levelSel && levelSel.value) ? levelSel.value : (selectedLevel || 'all');
+      repopulateClassDropdown(curLvlVal, selectedClass, classesSeen);
+
+      if (actSel) {
+        var curAct = selectedAct || 'all';
+        actSel.innerHTML = '<option value="all">🌟 ทุกกิจกรรม/วิชา</option>';
+
+        try {
+          var cachedActs = JSON.parse(localStorage.getItem('gas_student_app_activities') || '[]');
+          if (Array.isArray(cachedActs)) {
+            for (var a = 0; a < cachedActs.length; a++) {
+              var aName = (typeof cachedActs[a] === 'object' && cachedActs[a]) ? (cachedActs[a].name || cachedActs[a].activityName || '') : String(cachedActs[a] || '');
+              if (aName && !actsSeen[aName]) {
+                actsSeen[aName] = true;
+                var aOpt = document.createElement('option');
+                aOpt.value = aName;
+                aOpt.textContent = aName;
+                actSel.appendChild(aOpt);
+              }
+            }
+          }
+        } catch (e) {}
+
+        if (ReportState.rawStudents && Array.isArray(ReportState.rawStudents)) {
+          for (var s2 = 0; s2 < ReportState.rawStudents.length; s2++) {
+            var saName = ReportState.rawStudents[s2].activityName;
+            if (saName && !actsSeen[saName]) {
+              actsSeen[saName] = true;
+              var aOpt2 = document.createElement('option');
+              aOpt2.value = saName;
+              aOpt2.textContent = saName;
+              actSel.appendChild(aOpt2);
+            }
+          }
+        }
+        actSel.value = (curAct && actSel.querySelector('option[value="' + curAct + '"]')) ? curAct : 'all';
+      }
+    }
+
+    function repopulateClassDropdown(levelVal, selectedClass, classesSeenMap) {
+      var classSel = document.getElementById('filter-report-class');
+      if (!classSel) return;
+
+      var curClass = selectedClass || classSel.value || 'all';
+      classSel.innerHTML = '<option value="all">🌟 ทุกห้องเรียน</option>';
+
+      var sortedClasses = Object.keys(classesSeenMap || {}).sort();
+      for (var i = 0; i < sortedClasses.length; i++) {
+        var cName = sortedClasses[i];
+        if (isLevelMatch(levelVal, cName)) {
+          var opt = document.createElement('option');
+          opt.value = cName;
+          opt.textContent = 'ห้อง ' + cName.replace(/^ห้อง\s*/, '');
+          classSel.appendChild(opt);
+        }
+      }
+      classSel.value = (curClass && classSel.querySelector('option[value="' + curClass + '"]')) ? curClass : 'all';
+    }
+
+    function onReportLevelFilterChange() {
+      var levelSel = document.getElementById('filter-report-level');
+      var levelVal = levelSel ? levelSel.value : 'all';
+      var classesSeen = {};
+
+      if (ReportState.rawStudents && Array.isArray(ReportState.rawStudents)) {
+        for (var s = 0; s < ReportState.rawStudents.length; s++) {
+          var scName = ReportState.rawStudents[s].className;
+          if (scName) classesSeen[scName] = true;
+        }
+      }
+      try {
+        var cachedClasses = JSON.parse(localStorage.getItem('gas_student_app_classes') || '[]');
+        if (Array.isArray(cachedClasses)) {
+          for (var c = 0; c < cachedClasses.length; c++) {
+            var cName = (typeof cachedClasses[c] === 'object' && cachedClasses[c]) ? (cachedClasses[c].name || cachedClasses[c].className || '') : String(cachedClasses[c] || '');
+            if (cName) classesSeen[cName] = true;
+          }
+        }
+      } catch (e) {}
+
+      repopulateClassDropdown(levelVal, 'all', classesSeen);
+      onReportFilterMenuChange();
+    }
+
+    function onReportFilterMenuChange(isForceFetch) {
+      var dateInp = document.getElementById('filter-report-date');
+      var levelSel = document.getElementById('filter-report-level');
+      var classSel = document.getElementById('filter-report-class');
+      var actSel = document.getElementById('filter-report-activity');
+
+      var dateVal = (dateInp && dateInp.value) ? dateInp.value : '';
+      var levelVal = (levelSel && levelSel.value) ? levelSel.value : 'all';
+      var classVal = (classSel && classSel.value) ? classSel.value : 'all';
+      var actVal = (actSel && actSel.value) ? actSel.value : 'all';
+
+      saveReportFilterSettings(dateVal, classVal, actVal, levelVal);
+
+      // If we have raw students loaded, filter client side immediately
+      if (!isForceFetch && ReportState.rawReportData && ReportState.rawReportData.students) {
+        applyClientReportFilter(dateVal, levelVal, classVal, actVal);
+      } else {
+        loadReportWithParams(dateVal, classVal, actVal, levelVal);
+      }
+    }
+
+    function applyClientReportFilter(dateVal, levelVal, classVal, actVal) {
+      if (!ReportState.rawReportData) return;
+      var raw = JSON.parse(JSON.stringify(ReportState.rawReportData));
+      var students = raw.students || [];
+
+      var filtered = [];
+      var cPres = 0, cOnTime = 0, cLate = 0, cSick = 0, cLeave = 0, cAbsent = 0;
+      var onTimeChamps = [];
+
+      for (var i = 0; i < students.length; i++) {
+        var s = students[i];
+        if (levelVal && levelVal !== 'all' && !isLevelMatch(levelVal, s.className)) continue;
+        if (classVal && classVal !== 'all' && !isClassMatch(classVal, s.className)) continue;
+        if (actVal && actVal !== 'all' && s.activityName && !isActivityMatch(actVal, s.activityName)) continue;
+
+        filtered.push(s);
+        var st = s.status;
+        if (st === 'Present' || st === 'มาเรียน') {
+          cPres++;
+          cOnTime++;
+          onTimeChamps.push(s);
+        } else if (st === 'Late' || st === 'มาสาย') {
+          cPres++;
+          cLate++;
+        } else if (st === 'Sick' || st === 'ลาป่วย') {
+          cSick++;
+        } else if (st === 'Leave' || st === 'ลากิจ') {
+          cLeave++;
+        } else {
+          cAbsent++;
+        }
+      }
+
+      onTimeChamps.sort(function(a, b) {
+        return String(a.checkinTime || a.time).localeCompare(String(b.checkinTime || b.time));
+      });
+      var champs = [];
+      for (var rc = 0; rc < Math.min(3, onTimeChamps.length); rc++) {
+        var ch = onTimeChamps[rc];
+        ch.rank = rc + 1;
+        ch.time = ch.checkinTime || ch.time;
+        champs.push(ch);
+      }
+
+      var tot = filtered.length;
+      raw.students = filtered;
+      raw.stats = {
+        totalStudents: tot,
+        countPresent: cPres,
+        countOnTime: cOnTime,
+        countLate: cLate,
+        countSick: cSick,
+        countLeave: cLeave,
+        countAbsent: cAbsent,
+        attRate: tot > 0 ? ((cPres / tot) * 100).toFixed(1) : '0.0'
+      };
+      raw.topChampions = champs;
+      var lvlPart = (levelVal && levelVal !== 'all') ? ('ชั้น ' + levelVal) : '';
+      var clsPart = (classVal && classVal !== 'all') ? ('ห้อง ' + classVal.replace(/^ห้อง\s*/, '')) : '';
+      if (lvlPart && clsPart) raw.className = lvlPart + ' • ' + clsPart;
+      else if (clsPart) raw.className = clsPart;
+      else if (lvlPart) raw.className = lvlPart + ' (ทุกห้อง)';
+      else raw.className = 'ทุกห้องเรียน';
+      raw.activityName = (actVal === 'all' || !actVal) ? 'ทุกกิจกรรม/วิชา' : actVal;
+
+      renderReportData(raw);
+    }
+
+    function initReportPage() {
+      var savedSettings = getSavedReportFilterSettings();
+
+      var dateParam = getQueryParam('date') || (savedSettings ? savedSettings.date : '') || '';
+      var levelParam = getQueryParam('level') || (savedSettings ? savedSettings.levelName : 'all') || 'all';
+      var classParam = getQueryParam('class') || getQueryParam('className') || (savedSettings ? savedSettings.className : 'all') || 'all';
+      var actParam = getQueryParam('activity') || getQueryParam('act') || (savedSettings ? savedSettings.activityName : 'all') || 'all';
+
+      populateReportFilterMenuDropdowns(dateParam, levelParam, classParam, actParam);
+      loadReportWithParams(dateParam, classParam, actParam, levelParam);
+    }
+
+    function loadReportWithParams(dateParam, classParam, actParam) {
+      // 1. Check if there is a newly published report in localStorage
       var savedPub = localStorage.getItem('gas_student_latest_published_report');
       var isRenderedFromCache = false;
       if (savedPub) {
         try {
           var parsed = JSON.parse(savedPub);
           if (parsed && parsed.students && parsed.students.length > 0) {
-            var isDateMatch = (!dateParam || parsed.date === dateParam);
-            var isClassOk = (classParam === 'all' || isClassMatch(classParam, parsed.className));
-            if (isDateMatch && isClassOk) {
-              renderReportData(parsed);
-              isRenderedFromCache = true;
-            }
+            ReportState.rawReportData = JSON.parse(JSON.stringify(parsed));
+            ReportState.rawStudents = parsed.students;
+            populateReportFilterMenuDropdowns(dateParam || parsed.date, classParam, actParam);
+            applyClientReportFilter(dateParam || parsed.date, classParam, actParam);
+            isRenderedFromCache = true;
           }
         } catch (e) {}
       }
@@ -732,7 +1052,10 @@
         google.script.run
           .withSuccessHandler(function(res) {
             if (res && res.status === 'success' && res.students && res.students.length > 0) {
-              renderReportData(res);
+              ReportState.rawReportData = JSON.parse(JSON.stringify(res));
+              ReportState.rawStudents = res.students;
+              populateReportFilterMenuDropdowns(dateParam || res.date, classParam, actParam);
+              applyClientReportFilter(dateParam || res.date, classParam, actParam);
             } else if (!isRenderedFromCache) {
               renderError('ไม่พบข้อมูลการเช็คชื่อสำหรับเงื่อนไขที่เลือก');
             }
@@ -998,9 +1321,9 @@
         var photoTag = hasRealPhoto
           ? '<div style="position: relative; flex-shrink: 0;">' +
             '  <img src="' + escapeHtml(photoUrl) + '" class="student-avatar" style="border: 2px solid var(--orange-400); box-shadow: 0 0 10px rgba(255, 107, 0, 0.35); cursor: pointer;" alt="' + escapeHtml(st.name) + '" onclick="openPhotoModal(\'' + escapeHtml(photoUrl) + '\', \'' + escapeHtml(st.name) + '\', \'ห้อง ' + escapeHtml(st.className) + ' • เวลา ' + escapeHtml(st.checkinTime) + ' • ' + escapeHtml(st.statusLabel) + '\')" title="คลิกเพื่อดูรูปถ่ายเซลฟี่ยืนยันตัวตนขนาดเต็ม" />' +
-            '  <span style="position: absolute; bottom: -2px; right: -2px; background: #FF6B00; color: #FFF; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 8px; border: 1.5px solid #0F172A;"><i class="fas fa-camera"></i></span>' +
+            '  <span style="position: absolute; bottom: -2px; right: -2px; background: #FF6B00; color: #FFF; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 8px; border: 1.5px solid #18181B;"><i class="fas fa-camera"></i></span>' +
             '</div>'
-          : '<div class="student-avatar" style="display:flex; align-items:center; justify-content:center; color:var(--text-muted); background: #1E293B;"><i class="fas fa-user"></i></div>';
+          : '<div class="student-avatar" style="display:flex; align-items:center; justify-content:center; color:var(--text-muted); background: #18181B;"><i class="fas fa-user"></i></div>';
 
         var badgeClass = 'badge-absent';
         var badgeText = st.statusLabel || 'ขาดเรียน';
@@ -1085,7 +1408,7 @@
       html2canvas(captureArea, {
         scale: 2.2,
         useCORS: true,
-        backgroundColor: '#090D16',
+        backgroundColor: '#0E0E10',
         logging: false
       }).then(function(canvas) {
         var imgData = canvas.toDataURL('image/jpeg', 0.95);
