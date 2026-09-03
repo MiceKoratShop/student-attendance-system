@@ -45,28 +45,35 @@
 
   <style>
     :root {
-      --bg-space: #0E0E10;
+      /* ดำพื้น: #0A0A0C ← พื้นหลังคาร์บอน */
+      --bg-space: #0A0A0C;
       --bg-surface-1: #121214;
-      --bg-surface-2: #1E1E22;
-      --bg-surface-card: #18181B;
+      --bg-surface-2: #161619;
+      /* ดำการ์ด: #141416 → #0D0D0F (ไล่เฉด) */
+      --bg-surface-card: #141416;
+      --card-gradient: linear-gradient(180deg, #141416 0%, #0D0D0F 100%);
       --bg-glass-modal: #141416;
 
-      --orange-500: #FF7A00;
-      --orange-400: #FF8A1E;
-      --orange-600: #E66900;
-      --orange-glow: rgba(255, 122, 0, 0.4);
-      --orange-subtle: rgba(255, 122, 0, 0.12);
-      --orange-gradient: linear-gradient(135deg, #FF7A00 0%, #FF9020 100%);
-      --orange-gradient-hover: linear-gradient(135deg, #FF8A1E 0%, #FFA030 100%);
-      --orange-gradient-dark: linear-gradient(135deg, #1A1410 0%, #29180E 100%);
+      /* ส้มหลัก: #FF6B00 ← ตัวเลข / ปุ่มหลัก / เส้นขอบ */
+      --orange-500: #FF6B00;
+      /* ส้มอ่อน: #FF9A2E ← ไล่เฉด / เงาเรือง */
+      --orange-400: #FF9A2E;
+      /* ส้มสว่าง: #FFB866 ← ไฮไลต์ */
+      --orange-300: #FFB866;
+      --orange-glow: rgba(255, 107, 0, 0.45);
+      --orange-subtle: rgba(255, 107, 0, 0.12);
+      --orange-gradient: linear-gradient(135deg, #FF6B00 0%, #FF9A2E 100%);
+      --orange-gradient-hover: linear-gradient(135deg, #FF9A2E 0%, #FFB866 100%);
+      --orange-gradient-dark: linear-gradient(135deg, #1C120C 0%, #2E190E 100%);
 
+      /* ขาวโครเมียม: #FFF → #A9A9AD → #FFF (หัวข้อแบบตัวอักษรเงาโลหะ) & ขาว: #FFFFFF */
       --text-pure-white: #FFFFFF;
-      --text-primary: #F3F4F6;
-      --text-secondary: #9CA3AF;
-      --text-muted: #71717A;
-      --border-glass: #27272A;
-      --border-glass-light: #323238;
-      --border-orange-glow: rgba(255, 122, 0, 0.45);
+      --text-primary: #FFFFFF;
+      --text-secondary: #A9A9AD;
+      --text-muted: #8E8E93;
+      --border-glass: #222226;
+      --border-glass-light: #2C2C32;
+      --border-orange-glow: rgba(255, 107, 0, 0.5);
 
       --status-present: #22C55E;
       --status-present-bg: rgba(34, 197, 94, 0.14);
@@ -98,9 +105,9 @@
       --sidebar-w: 260px;
       --header-h: 68px;
 
-      --shadow-glass: 0 4px 18px rgba(0, 0, 0, 0.35);
-      --shadow-glass-lg: 0 10px 30px rgba(0, 0, 0, 0.5);
-      --shadow-orange: 0 4px 16px rgba(255, 122, 0, 0.35);
+      --shadow-glass: 0 4px 18px rgba(0, 0, 0, 0.45);
+      --shadow-glass-lg: 0 10px 30px rgba(0, 0, 0, 0.6);
+      --shadow-orange: 0 4px 18px rgba(255, 107, 0, 0.45);
       --blur-val: blur(16px);
     }
 
@@ -611,7 +618,7 @@
     }
 
     .btn-orange:hover, .btn-orange:active {
-      background: linear-gradient(135deg, #FF7A00 0%, #FF944D 100%);
+      background: linear-gradient(135deg, #FF6B00 0%, #FF944D 100%);
       color: #FFFFFF !important;
       transform: translateY(-2px);
       box-shadow: 0 12px 28px -3px rgba(255, 107, 0, 0.65), 0 4px 10px rgba(0, 0, 0, 0.4);
@@ -2233,13 +2240,13 @@
     }
 
     .top-nav-tab:hover {
-      color: #FF7A00;
+      color: #FF6B00;
     }
 
     .top-nav-tab.active {
       color: #FFFFFF;
       font-weight: 700;
-      border-bottom: 3px solid #FF7A00;
+      border-bottom: 3px solid #FF6B00;
     }
 
     /* Today Hero Banner */
@@ -2267,7 +2274,7 @@
     }
 
     .hero-day-pill {
-      background: #FF7A00;
+      background: #FF6B00;
       color: #FFFFFF;
       font-size: 12px;
       font-weight: 700;
@@ -2295,7 +2302,7 @@
     .stat-card {
       background: #18181B !important;
       border: 1px solid #27272A !important;
-      border-left: 4px solid #FF7A00 !important;
+      border-left: 4px solid #FF6B00 !important;
       border-radius: 16px !important;
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
       padding: 18px 22px !important;
@@ -2334,7 +2341,7 @@
     .stat-unit-suffix {
       font-size: 12.5px;
       font-weight: 700;
-      color: #FF7A00;
+      color: #FF6B00;
     }
 
     /* Cards general */
@@ -2365,7 +2372,7 @@
 
     /* Buttons */
     .btn-orange {
-      background: #FF7A00 !important;
+      background: #FF6B00 !important;
       color: #FFFFFF !important;
       border: none !important;
       border-radius: 10px !important;
@@ -2389,7 +2396,7 @@
 
     .btn-dark:hover, .btn-dark:active {
       background: #222226 !important;
-      border-color: #FF7A00 !important;
+      border-color: #FF6B00 !important;
       transform: translateY(-1px) !important;
     }
 
@@ -2467,12 +2474,12 @@
       color: #6B7280 !important;
     }
     [data-theme="light"] .top-nav-tab:hover {
-      color: #FF7A00 !important;
+      color: #FF6B00 !important;
     }
     [data-theme="light"] .top-nav-tab.active {
       color: #111827 !important;
       font-weight: 700 !important;
-      border-bottom: 3px solid #FF7A00 !important;
+      border-bottom: 3px solid #FF6B00 !important;
     }
 
     /* Sidebar in Light Mode */
@@ -2490,7 +2497,7 @@
       border-color: transparent !important;
     }
     [data-theme="light"] .nav-item.active {
-      background: #FF7A00 !important;
+      background: #FF6B00 !important;
       color: #FFFFFF !important;
     }
 
@@ -2509,7 +2516,7 @@
     [data-theme="light"] .stat-card {
       background: #FFFFFF !important;
       border: 1px solid #E5E7EB !important;
-      border-left: 4px solid #FF7A00 !important;
+      border-left: 4px solid #FF6B00 !important;
       border-radius: 16px !important;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
     }
@@ -2552,7 +2559,7 @@
     }
     [data-theme="light"] .input-glass:focus,
     [data-theme="light"] .select-glass:focus {
-      border-color: #FF7A00 !important;
+      border-color: #FF6B00 !important;
       box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.2) !important;
     }
 
@@ -2563,7 +2570,7 @@
     }
     [data-theme="light"] .btn-glass.btn-dark:hover {
       background: #27272A !important;
-      border-color: #FF7A00 !important;
+      border-color: #FF6B00 !important;
     }
 
     [data-theme="light"] .pin-digit-box {
@@ -2641,9 +2648,9 @@
       border-radius: 14px !important;
     }
 
-    /* Orange Buttons: Pantone Orange #FF7A00 with Pure White Text */
+    /* Orange Buttons: Pantone Orange #FF6B00 with Pure White Text */
     .btn-orange, .btn-glass.btn-orange, button.btn-orange {
-      background: #FF7A00 !important;
+      background: #FF6B00 !important;
       color: #FFFFFF !important;
       border: none !important;
       border-radius: 10px !important;
@@ -2669,14 +2676,178 @@
     }
 
     .btn-dark i, .btn-glass.btn-dark i, button.btn-dark i {
-      color: #FF7A00 !important;
+      color: #FF6B00 !important;
     }
 
     .btn-dark:hover, .btn-glass.btn-dark:hover, button.btn-dark:hover {
       background: #222226 !important;
-      border-color: #FF7A00 !important;
+      border-color: #FF6B00 !important;
       color: #FFFFFF !important;
       transform: translateY(-1px) !important;
+    }
+
+  
+    /* ========================================================================= */
+    /* USER BRAND PALETTE OVERRIDES: ORANGE, CARBON, METALLIC CHROME & GRADIENTS */
+    /* ========================================================================= */
+    
+    /* ดำพื้น: #0A0A0C ← พื้นหลังคาร์บอน */
+    body {
+      background-color: #0A0A0C !important;
+      background-image: 
+        radial-gradient(circle at 12% 15%, rgba(255, 107, 0, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 88% 85%, rgba(255, 154, 46, 0.06) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(13, 13, 15, 0.7) 0%, transparent 80%) !important;
+      background-attachment: fixed !important;
+      color: #FFFFFF !important;
+    }
+
+    /* ขาวโครเมียม: #FFF → #A9A9AD → #FFF (หัวข้อแบบตัวอักษรเงาโลหะ) */
+    .chrome-title,
+    .page-title,
+    .hero-main-title,
+    .card-title-text,
+    .header-brand-box .page-title,
+    h1.page-title {
+      background: linear-gradient(180deg, #FFFFFF 0%, #A9A9AD 50%, #FFFFFF 100%) !important;
+      -webkit-background-clip: text !important;
+      -webkit-text-fill-color: transparent !important;
+      color: #FFFFFF !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6) !important;
+      font-weight: 800 !important;
+      letter-spacing: -0.3px !important;
+    }
+
+    /* ดำการ์ด: #141416 → #0D0D0F (ไล่เฉด) */
+    .glass-card,
+    .card-glass,
+    .modal-window-glass,
+    .today-hero-banner,
+    .checkin-step-card {
+      background: linear-gradient(180deg, #141416 0%, #0D0D0F 100%) !important;
+      border: 1px solid #222226 !important;
+      border-radius: 16px !important;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+    }
+
+    /* การ์ดสถิติ (Stat Card): ส้มหลัก #FF6B00 ← เส้นขอบ / ตัวเลข */
+    .stat-card {
+      background: linear-gradient(180deg, #141416 0%, #0D0D0F 100%) !important;
+      border: 1px solid #222226 !important;
+      border-left: 4px solid #FF6B00 !important; /* ส้มหลัก: เส้นขอบ */
+      border-radius: 16px !important;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5) !important;
+      padding: 18px 22px !important;
+    }
+
+    .stat-card:hover {
+      border-left-color: #FF9A2E !important; /* ส้มอ่อน */
+      box-shadow: 0 8px 26px rgba(255, 107, 0, 0.18), 0 4px 16px rgba(0, 0, 0, 0.6) !important;
+      transform: translateY(-2px) !important;
+    }
+
+    .stat-value {
+      font-size: 28px !important;
+      font-weight: 800 !important;
+      color: #FFFFFF !important; /* ขาว */
+      line-height: 1.1 !important;
+    }
+
+    .stat-unit-suffix {
+      font-size: 13px !important;
+      font-weight: 700 !important;
+      color: #FF6B00 !important; /* ส้มหลัก: ตัวเลข */
+    }
+
+    /* ปุ่มสีส้ม: ส้มหลัก #FF6B00 + ส้มอ่อน #FF9A2E (ไล่เฉด / เงาเรือง) */
+    .btn-orange, .btn-glass.btn-orange, button.btn-orange {
+      background: linear-gradient(135deg, #FF6B00 0%, #FF9A2E 100%) !important;
+      color: #FFFFFF !important;
+      border: none !important;
+      border-radius: 10px !important;
+      box-shadow: 0 4px 18px rgba(255, 107, 0, 0.45) !important; /* เงาเรือง */
+      font-weight: 700 !important;
+      transition: all 0.25s ease !important;
+    }
+
+    .btn-orange:hover, .btn-glass.btn-orange:hover, button.btn-orange:hover {
+      background: linear-gradient(135deg, #FF9A2E 0%, #FFB866 100%) !important; /* ส้มสว่าง: ไฮไลต์ */
+      box-shadow: 0 6px 24px rgba(255, 107, 0, 0.65) !important;
+      transform: translateY(-2px) !important;
+    }
+
+    /* ปุ่มสีดำ: ดำการ์ด #141416 → #0D0D0F ตัดส้มตามต้นแบบ */
+    .btn-dark, .btn-glass.btn-dark, button.btn-dark {
+      background: linear-gradient(180deg, #141416 0%, #0D0D0F 100%) !important;
+      color: #FFFFFF !important;
+      border: 1.5px solid #2C2C32 !important;
+      border-radius: 10px !important;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4) !important;
+      font-weight: 600 !important;
+    }
+
+    .btn-dark i, .btn-glass.btn-dark i, button.btn-dark i {
+      color: #FF6B00 !important; /* ส้มหลัก */
+    }
+
+    .btn-dark:hover, .btn-glass.btn-dark:hover, button.btn-dark:hover {
+      background: #1C1C20 !important;
+      border-color: #FF6B00 !important;
+      color: #FFFFFF !important;
+      box-shadow: 0 4px 16px rgba(255, 107, 0, 0.25) !important;
+      transform: translateY(-1px) !important;
+    }
+
+    /* Header & Navigation Bar: ดำคาร์บอน */
+    .top-header {
+      background: #0D0D0F !important;
+      border-bottom: 1px solid #222226 !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6) !important;
+    }
+
+    .top-brand-icon {
+      background: linear-gradient(135deg, #FF6B00 0%, #FF9A2E 100%) !important;
+      box-shadow: 0 4px 16px rgba(255, 107, 0, 0.45) !important;
+    }
+
+    .top-nav-bar {
+      background: #0D0D0F !important;
+      border-bottom: 1px solid #222226 !important;
+    }
+
+    .top-nav-tab.active, .nav-item.active {
+      color: #FFFFFF !important;
+      border-bottom: 3px solid #FF6B00 !important; /* ส้มหลัก */
+      font-weight: 700 !important;
+    }
+
+    /* ตารางข้อมูล: หัวตารางสีดำเข้ม #141416 ตัวหนังสือขาว */
+    table th, .glass-table th, .table-glass th, .report-table th {
+      background: #141416 !important;
+      color: #FFFFFF !important;
+      font-weight: 700 !important;
+      border-bottom: 1px solid #222226 !important;
+    }
+
+    .table-glass-container {
+      background: linear-gradient(180deg, #141416 0%, #0D0D0F 100%) !important;
+      border: 1px solid #222226 !important;
+      border-radius: 14px !important;
+    }
+
+    /* แบนเนอร์สถานะประจำวัน (Today Hero Banner) */
+    .today-hero-banner {
+      background: linear-gradient(180deg, #141416 0%, #0D0D0F 100%) !important;
+      border: 1px solid #222226 !important;
+    }
+
+    .hero-day-pill {
+      background: linear-gradient(135deg, #FF6B00 0%, #FF9A2E 100%) !important;
+      box-shadow: 0 3px 12px rgba(255, 107, 0, 0.4) !important;
+    }
+
+    .today-hero-deco-arc {
+      background: radial-gradient(circle, rgba(255, 107, 0, 0.22) 0%, rgba(255, 154, 46, 0.08) 55%, transparent 70%) !important;
     }
 
   </style>
@@ -2791,7 +2962,7 @@
             <i class="fas fa-bars"></i>
           </button>
           <div class="header-brand-box" style="display: flex; align-items: center; gap: 12px;">
-            <div class="top-brand-icon" style="width: 38px; height: 38px; border-radius: 12px; background: linear-gradient(135deg, #FF7A00 0%, #FF9020 100%); display: flex; align-items: center; justify-content: center; color: #FFF; font-size: 18px; box-shadow: 0 4px 12px rgba(255, 122, 0, 0.4); flex-shrink: 0;">
+            <div class="top-brand-icon" style="width: 38px; height: 38px; border-radius: 12px; background: linear-gradient(135deg, #FF6B00 0%, #FF9020 100%); display: flex; align-items: center; justify-content: center; color: #FFF; font-size: 18px; box-shadow: 0 4px 12px rgba(255, 122, 0, 0.4); flex-shrink: 0;">
               <i class="fas fa-bell"></i>
             </div>
             <div class="page-title-box">
@@ -2803,7 +2974,7 @@
 
         <div class="header-right" style="display: flex; align-items: center; gap: 10px;">
           <!-- THEME TOGGLE BUTTON -->
-          <button type="button" class="btn-theme-pill" id="btn-theme-toggle" title="สลับโหมดมืด / โหมดสว่าง" style="width: 36px; height: 36px; border-radius: 50%; background: #1E1E22; border: 1px solid #2E2E34; color: #FF7A00; display: inline-flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; transition: all 0.2s ease;">
+          <button type="button" class="btn-theme-pill" id="btn-theme-toggle" title="สลับโหมดมืด / โหมดสว่าง" style="width: 36px; height: 36px; border-radius: 50%; background: #1E1E22; border: 1px solid #2E2E34; color: #FF6B00; display: inline-flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; transition: all 0.2s ease;">
             <i class="fas fa-moon" id="theme-icon-indicator"></i>
           </button>
 
@@ -2829,7 +3000,7 @@
       <nav class="top-nav-bar" id="top-nav-bar">
         <div class="top-nav-tabs">
           <a class="top-nav-tab active" data-view="dashboard" id="top-tab-dashboard">
-            <i class="fas fa-chart-pie" style="color: #FF7A00;"></i>
+            <i class="fas fa-chart-pie" style="color: #FF6B00;"></i>
             <span>ภาพรวม</span>
           </a>
           <a class="top-nav-tab" data-view="attendance" id="top-tab-attendance">
@@ -3218,8 +3389,8 @@
               </div>
               <h2 class="hero-main-title" id="hero-today-title">สถิติการเช็คชื่อเข้าเรียนวันนี้</h2>
               <div class="hero-meta-row">
-                <span>เวลาปัจจุบัน <strong id="hero-current-time-text" style="color: #FF7A00; font-family: monospace; font-size: 14px;">--:-- น.</strong></span>
-                <span style="margin-left: 18px;">เช็คชื่อแล้ววันนี้ทั้งหมด <strong id="hero-total-checked-text" style="color: #FF7A00; font-size: 15px; font-weight: 800;">0</strong> คน</span>
+                <span>เวลาปัจจุบัน <strong id="hero-current-time-text" style="color: #FF6B00; font-family: monospace; font-size: 14px;">--:-- น.</strong></span>
+                <span style="margin-left: 18px;">เช็คชื่อแล้ววันนี้ทั้งหมด <strong id="hero-total-checked-text" style="color: #FF6B00; font-size: 15px; font-weight: 800;">0</strong> คน</span>
               </div>
             </div>
           </div>
@@ -3855,7 +4026,7 @@
                 <!-- 1.5 Grade Level Selector (ชั้น) -->
                 <div class="form-group-glass" style="margin-bottom: 0;">
                   <label style="font-size: 11.5px; margin-bottom: 3px; font-weight: 700; color: #FFF;">
-                    <i class="fas fa-layer-group" style="color: #FF7A00;"></i> ระดับชั้น
+                    <i class="fas fa-layer-group" style="color: #FF6B00;"></i> ระดับชั้น
                   </label>
                   <select class="select-glass" id="report-level-select" style="width: 100%;">
                     <option value="all">🌟 ทุกระดับชั้น</option>
