@@ -38,7 +38,7 @@
       --rose-400: #EF4444;
       --amber-400: #F59E0B;
 
-      /* ขาวโครเมียม: #FFF → #A9A9AD → #FFF & ขาว: #FFFFFF */
+      /* สีข้อความขาวคมชัดแบบเดิม: #FFFFFF */
       --text-main: #FFFFFF;
       --text-muted: #A9A9AD;
       --radius-lg: 16px;
@@ -552,16 +552,16 @@
       .hero-title, .champ-name, .student-name { color: #000 !important; }
     }
   
-    /* ขาวโครเมียม: #FFF → #A9A9AD → #FFF (หัวข้อแบบตัวอักษรเงาโลหะ) */
+    /* หัวข้อสีขาวแบบดั้งเดิม (Solid White) */
     .hero-title,
     .brand-logo span,
     .podium-title span {
-      background: linear-gradient(180deg, #FFFFFF 0%, #A9A9AD 50%, #FFFFFF 100%) !important;
-      -webkit-background-clip: text !important;
-      -webkit-text-fill-color: transparent !important;
       color: #FFFFFF !important;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6) !important;
       font-weight: 800 !important;
+      background: none !important;
+      -webkit-background-clip: unset !important;
+      -webkit-text-fill-color: #FFFFFF !important;
+      text-shadow: none !important;
     }
 
     body {
@@ -1184,13 +1184,13 @@
     }
 
     function showReportLoading(msg) {
-      var captureArea = document.getElementById('report-capture-area');
-      if (captureArea) {
-        captureArea.innerHTML = '<div class="glass-card" style="text-align:center; padding:50px 20px; border:1px solid #27272A; background:#18181B; margin-top:20px;">' +
-          '<div class="spinner" style="border-top-color:#FF6B00; width:44px; height:44px; border-width:3.5px;"></div>' +
-          '<h3 style="font-size:16px; font-weight:700; color:#FFF; margin-top:16px;">' + (msg || 'กำลังประมวลผลข้อมูลรายงาน...') + '</h3>' +
-          '<p style="font-size:12.5px; color:#A9A9AD; margin-top:6px;">กรุณารอสักครู่ ระบบกำลังดึงข้อมูลสถิติและการเช็คชื่อล่าสุด</p>' +
-        '</div>';
+      var subtitle = document.getElementById('report-subtitle');
+      if (subtitle) {
+        subtitle.innerHTML = '<i class="fas fa-spinner fa-spin" style="color:#FF6B00; margin-right:6px;"></i> ' + (msg || 'กำลังโหลดข้อมูลรายงานล่าสุด...');
+      }
+      var studentContainer = document.getElementById('student-list-container');
+      if (studentContainer) {
+        studentContainer.innerHTML = '<div style="text-align:center; padding:40px 20px; color:#A9A9AD;"><div class="spinner" style="border-top-color:#FF6B00; width:36px; height:36px; margin:0 auto 14px;"></div><div style="color:#FFFFFF; font-weight:700; font-size:15px; margin-bottom:4px;">' + (msg || 'กำลังประมวลผลข้อมูลรายงาน...') + '</div><div style="font-size:12px; color:#A9A9AD;">กรุณารอสักครู่ ระบบกำลังดึงข้อมูลสถิติและการเช็คชื่อล่าสุด</div></div>';
       }
     }
 
@@ -1276,6 +1276,30 @@
       } else {
         renderOfflineFallback(dateParam, classParam, actParam);
       }
+    }
+
+    function renderOfflineFallback(dateParam, classParam, actParam) {
+      var fallbackData = {
+        status: 'success',
+        date: dateParam || getTodayDateString(),
+        dateThai: formatThaiDate(dateParam || getTodayDateString()),
+        dayName: getThaiDayOfWeek(dateParam || getTodayDateString()),
+        className: (classParam === 'all' || !classParam) ? 'ทุกห้องเรียน' : ('ห้อง ' + classParam.replace(/^ห้อง\s*/, '')),
+        activityName: (actParam === 'all' || !actParam) ? 'เช็คชื่อมาเรียน' : actParam,
+        stats: {
+          totalStudents: 0,
+          countPresent: 0,
+          countOnTime: 0,
+          countLate: 0,
+          countSick: 0,
+          countLeave: 0,
+          countAbsent: 0,
+          attRate: '0.0'
+        },
+        topChampions: [],
+        students: []
+      };
+      renderReportData(fallbackData);
     }
 
     function renderReportData(data) {
@@ -1424,7 +1448,7 @@
 
       var students = ReportState.data.students;
       var filter = ReportState.currentFilter;
-      var q = ReportState.searchQuery.toLowerCase().trim();
+      var q = (ReportState.searchQuery || '').toLowerCase().trim();
 
       var filtered = [];
       for (var i = 0; i < students.length; i++) {
