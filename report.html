@@ -778,6 +778,29 @@
       } catch (e) {}
     }
 
+    function getTodayDateString() {
+      var now = new Date();
+      var y = now.getFullYear();
+      var m = String(now.getMonth() + 1);
+      if (m.length < 2) m = '0' + m;
+      var d = String(now.getDate());
+      if (d.length < 2) d = '0' + d;
+      return y + '-' + m + '-' + d;
+    }
+
+    function isActivityMatch(filter, recordActivity) {
+      if (!filter || filter === 'all' || filter === 'ทุกกิจกรรม' || filter === 'ทุกกิจกรรม/วิชา' || filter === 'undefined') return true;
+      var rAct = String(recordActivity || 'เช็คชื่อมาเรียน').trim().toLowerCase();
+      var parts = String(filter).split(',');
+      for (var i = 0; i < parts.length; i++) {
+        var f = parts[i].trim().toLowerCase();
+        if (!f || f === 'all') return true;
+        if (rAct === f || rAct.indexOf(f) > -1 || f.indexOf(rAct) > -1) return true;
+        if ((f === 'เช็คชื่อมาเรียน' || f === 'กิจกรรมหน้าเสาธง') && (!recordActivity || rAct === 'เช็คชื่อมาเรียน')) return true;
+      }
+      return false;
+    }
+
     function extractGradeLevel(className) {
       if (!className) return '';
       className = String(className).trim().replace(/^ห้อง\s*/, '');
@@ -809,6 +832,11 @@
       var classesSeen = {};
       var levelsSeen = {};
       var actsSeen = {};
+
+      // Seed standard activities if empty
+      actsSeen['เช็คชื่อมาเรียน'] = true;
+      actsSeen['กิจกรรมหน้าเสาธง'] = true;
+      actsSeen['กิจกรรมโฮมรูม'] = true;
 
       try {
         var cachedClasses = JSON.parse(localStorage.getItem('gas_student_app_classes') || '[]');
@@ -1019,9 +1047,11 @@
     }
 
     function initReportPage() {
+      var today = getTodayDateString();
       var savedSettings = getSavedReportFilterSettings();
 
-      var dateParam = getQueryParam('date') || (savedSettings ? savedSettings.date : '') || '';
+      // ALWAYS DEFAULT TO TODAY'S DATE unless an explicit date parameter is passed in the URL
+      var dateParam = getQueryParam('date') || today;
       var levelParam = getQueryParam('level') || (savedSettings ? savedSettings.levelName : 'all') || 'all';
       var classParam = getQueryParam('class') || getQueryParam('className') || (savedSettings ? savedSettings.className : 'all') || 'all';
       var actParam = getQueryParam('activity') || getQueryParam('act') || (savedSettings ? savedSettings.activityName : 'all') || 'all';
@@ -1030,18 +1060,23 @@
       loadReportWithParams(dateParam, classParam, actParam, levelParam);
     }
 
-    function loadReportWithParams(dateParam, classParam, actParam) {
-      // 1. Check if there is a newly published report in localStorage
+    function loadReportWithParams(dateParam, classParam, actParam, levelParam) {
+      dateParam = dateParam || getTodayDateString();
+      classParam = classParam || 'all';
+      actParam = actParam || 'all';
+      levelParam = levelParam || 'all';
+
+      // 1. Check if there is a newly published report in localStorage matching this exact date
       var savedPub = localStorage.getItem('gas_student_latest_published_report');
       var isRenderedFromCache = false;
       if (savedPub) {
         try {
           var parsed = JSON.parse(savedPub);
-          if (parsed && parsed.students && parsed.students.length > 0) {
+          if (parsed && parsed.date === dateParam && parsed.students && parsed.students.length > 0) {
             ReportState.rawReportData = JSON.parse(JSON.stringify(parsed));
             ReportState.rawStudents = parsed.students;
-            populateReportFilterMenuDropdowns(dateParam || parsed.date, classParam, actParam);
-            applyClientReportFilter(dateParam || parsed.date, classParam, actParam);
+            populateReportFilterMenuDropdowns(dateParam, levelParam, classParam, actParam);
+            applyClientReportFilter(dateParam, levelParam, classParam, actParam);
             isRenderedFromCache = true;
           }
         } catch (e) {}
@@ -1054,10 +1089,16 @@
             if (res && res.status === 'success' && res.students && res.students.length > 0) {
               ReportState.rawReportData = JSON.parse(JSON.stringify(res));
               ReportState.rawStudents = res.students;
-              populateReportFilterMenuDropdowns(dateParam || res.date, classParam, actParam);
-              applyClientReportFilter(dateParam || res.date, classParam, actParam);
+              if (res.availableClasses && Array.isArray(res.availableClasses)) {
+                try { localStorage.setItem('gas_student_app_classes', JSON.stringify(res.availableClasses)); } catch (e) {}
+              }
+              if (res.availableActivities && Array.isArray(res.availableActivities)) {
+                try { localStorage.setItem('gas_student_app_activities', JSON.stringify(res.availableActivities)); } catch (e) {}
+              }
+              populateReportFilterMenuDropdowns(dateParam, levelParam, classParam, actParam);
+              applyClientReportFilter(dateParam, levelParam, classParam, actParam);
             } else if (!isRenderedFromCache) {
-              renderError('ไม่พบข้อมูลการเช็คชื่อสำหรับเงื่อนไขที่เลือก');
+              renderError('ไม่พบข้อมูลการเช็คชื่อสำหรับวันที่ ' + formatThaiDate(dateParam));
             }
           })
           .withFailureHandler(function(err) {
@@ -1066,7 +1107,7 @@
               renderError('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์: ' + (err.message || String(err)));
             }
           })
-          .getPublicDailyReportData(dateParam, classParam, actParam);
+          .getPublicDailyReportData(dateParam, 'all', 'all');
       } else {
         fetchReportFromApi(dateParam, classParam, actParam);
       }

@@ -16470,17 +16470,10 @@
       var legacyEl = document.getElementById('report-date-select');
       var today = getTodayDateString();
 
-      if (startEl) {
-        if (!startEl.value) {
-          startEl.value = today;
-        }
-      }
-
-      if (endEl) {
-        if (!endEl.value) {
-          endEl.value = (startEl && startEl.value) ? startEl.value : today;
-        }
-      }
+      // ALWAYS DEFAULT REPORT DATES TO TODAY'S DATE (วันปัจจุบัน)
+      if (startEl) startEl.value = today;
+      if (endEl) endEl.value = today;
+      if (legacyEl) legacyEl.value = today;
 
       if (legacyEl && startEl) legacyEl.value = startEl.value;
 
