@@ -624,7 +624,258 @@
       box-shadow: 0 12px 28px -3px rgba(255, 107, 0, 0.65), 0 4px 10px rgba(0, 0, 0, 0.4);
     }
 
-    /* Dark Button: Obsidian Black with Warm Orange Rim & Orange Icon */
+    /* ========================================================
+       TACTILE 3D MODERN BUTTONS & ACTION GROUPS (ORANGE / DARK / BLACK / WHITE)
+       ======================================================== */
+    .student-action-group-3d {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: flex-end !important;
+      gap: 8px !important;
+      flex-wrap: nowrap !important;
+      white-space: nowrap !important;
+    }
+
+    .btn-3d-action {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 6px !important;
+      padding: 6px 14px !important;
+      min-height: 34px !important;
+      font-size: 12.5px !important;
+      font-weight: 700 !important;
+      font-family: 'Prompt', sans-serif !important;
+      border-radius: 8px !important;
+      cursor: pointer !important;
+      white-space: nowrap !important;
+      user-select: none !important;
+      touch-action: manipulation !important;
+      transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      text-decoration: none !important;
+    }
+
+    /* 3D Dark Obsidian Button */
+    .btn-3d-dark {
+      background: linear-gradient(180deg, #2C2C34 0%, #1C1C22 55%, #121216 100%) !important;
+      color: #FFFFFF !important;
+      border: 1px solid rgba(255, 107, 0, 0.38) !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.25) !important;
+      border-bottom: 2.5px solid #08080A !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+    }
+    .btn-3d-dark:hover {
+      background: linear-gradient(180deg, #3A3A46 0%, #26262E 55%, #18181F 100%) !important;
+      border-color: #FF6B00 !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 7px 18px rgba(0, 0, 0, 0.7), 0 0 14px rgba(255, 107, 0, 0.3) !important;
+    }
+    .btn-3d-dark:active {
+      transform: translateY(2px) !important;
+      border-bottom-width: 1px !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    /* 3D Radiant Orange Button */
+    .btn-3d-orange {
+      background: linear-gradient(180deg, #FF8533 0%, #FF6B00 50%, #E65100 100%) !important;
+      color: #FFFFFF !important;
+      border: 1px solid #FF944D !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.45) !important;
+      border-bottom: 2.5px solid #9E3300 !important;
+      box-shadow: 0 4px 14px rgba(255, 107, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
+    }
+    .btn-3d-orange:hover {
+      background: linear-gradient(180deg, #FFA366 0%, #FF8533 50%, #F55A00 100%) !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 8px 20px rgba(255, 107, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.45) !important;
+    }
+    .btn-3d-orange:active {
+      transform: translateY(2px) !important;
+      border-bottom-width: 1px !important;
+      box-shadow: 0 1px 4px rgba(255, 107, 0, 0.35), inset 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    /* 3D Dark Danger Button */
+    .btn-3d-danger {
+      background: linear-gradient(180deg, #2F1A1A 0%, #201212 55%, #150A0A 100%) !important;
+      color: #FFA3A3 !important;
+      border: 1px solid rgba(239, 68, 68, 0.45) !important;
+      border-top: 1px solid rgba(255, 150, 150, 0.25) !important;
+      border-bottom: 2.5px solid #0B0404 !important;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+    }
+    .btn-3d-danger:hover {
+      background: linear-gradient(180deg, #422020 0%, #2E1515 55%, #220E0E 100%) !important;
+      border-color: #EF4444 !important;
+      color: #FFFFFF !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4) !important;
+    }
+    .btn-3d-danger:active {
+      transform: translateY(2px) !important;
+      border-bottom-width: 1px !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    /* Redefine Colored Legacy Button Classes to fit Black/Gray/Orange 3D Design */
+    .btn-cyan, .btn-emerald, .btn-pink, .btn-amber {
+      background: linear-gradient(180deg, #2C2C34 0%, #1C1C22 55%, #121216 100%) !important;
+      color: #FFFFFF !important;
+      border: 1px solid rgba(255, 107, 0, 0.38) !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.22) !important;
+      border-bottom: 2.5px solid #08080A !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+    }
+    .btn-cyan:hover, .btn-emerald:hover, .btn-pink:hover, .btn-amber:hover {
+      background: linear-gradient(180deg, #383842 0%, #23232A 55%, #16161B 100%) !important;
+      border-color: #FF6B00 !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7), 0 0 14px rgba(255, 107, 0, 0.3) !important;
+    }
+    .btn-cyan:active, .btn-emerald:active, .btn-pink:active, .btn-amber:active {
+      transform: translateY(2px) !important;
+      border-bottom-width: 1px !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    /* Redefine Base Button Classes */
+    .btn-orange {
+      background: linear-gradient(180deg, #FF8533 0%, #FF6B00 50%, #E65100 100%) !important;
+      color: #FFFFFF !important;
+      border: 1px solid #FF944D !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.45) !important;
+      border-bottom: 2.5px solid #9E3300 !important;
+      box-shadow: 0 4px 14px rgba(255, 107, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
+    }
+    .btn-orange:hover {
+      background: linear-gradient(180deg, #FFA366 0%, #FF8533 50%, #F55A00 100%) !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 8px 20px rgba(255, 107, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.45) !important;
+    }
+    .btn-orange:active {
+      transform: translateY(2px) !important;
+      border-bottom-width: 1px !important;
+      box-shadow: 0 1px 4px rgba(255, 107, 0, 0.35), inset 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    .btn-dark {
+      background: linear-gradient(180deg, #2C2C34 0%, #1C1C22 55%, #121216 100%) !important;
+      color: #FFFFFF !important;
+      border: 1px solid rgba(255, 107, 0, 0.38) !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.22) !important;
+      border-bottom: 2.5px solid #08080A !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+    }
+    .btn-dark:hover {
+      background: linear-gradient(180deg, #383842 0%, #23232A 55%, #16161B 100%) !important;
+      border-color: #FF6B00 !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7), 0 0 14px rgba(255, 107, 0, 0.3) !important;
+    }
+    .btn-dark:active {
+      transform: translateY(2px) !important;
+      border-bottom-width: 1px !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    .btn-danger-glass {
+      background: linear-gradient(180deg, #2F1A1A 0%, #201212 55%, #150A0A 100%) !important;
+      color: #FFA3A3 !important;
+      border: 1px solid rgba(239, 68, 68, 0.45) !important;
+      border-top: 1px solid rgba(255, 150, 150, 0.25) !important;
+      border-bottom: 2.5px solid #0B0404 !important;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+    }
+    .btn-danger-glass:hover {
+      background: linear-gradient(180deg, #422020 0%, #2E1515 55%, #220E0E 100%) !important;
+      border-color: #EF4444 !important;
+      color: #FFFFFF !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4) !important;
+    }
+    .btn-danger-glass:active {
+      transform: translateY(2px) !important;
+      border-bottom-width: 1px !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    /* Gradient Shading & Depth for All Cards */
+    .glass-card {
+      background: linear-gradient(165deg, #1A1A1E 0%, #141417 50%, #0D0D0F 100%) !important;
+      backdrop-filter: var(--blur-val) !important;
+      -webkit-backdrop-filter: var(--blur-val) !important;
+      border-radius: var(--radius-md) !important;
+      border: 1px solid #282830 !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+    }
+    .glass-card:hover {
+      border-color: rgba(255, 107, 0, 0.35) !important;
+      box-shadow: 0 16px 40px -6px rgba(0, 0, 0, 0.8), 0 0 24px rgba(255, 107, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+    }
+
+    /* Gradient Shading & Depth for Stat Cards */
+    .stat-card, #view-dashboard .stat-card {
+      background: linear-gradient(165deg, #1C1815 0%, #151417 50%, #0E0E10 100%) !important;
+      border: 1px solid #282830 !important;
+      border-left: 4.5px solid #FF6B00 !important;
+      border-radius: 16px !important;
+      box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+    }
+    .stat-card:hover, #view-dashboard .stat-card:hover {
+      border-left-color: #FF9A2E !important;
+      border-color: rgba(255, 107, 0, 0.45) !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 12px 30px -4px rgba(0, 0, 0, 0.75), 0 0 20px rgba(255, 107, 0, 0.18) !important;
+    }
+
+    /* Gradient Shading & Inner Shadow for All Inputs and Dropdowns */
+    .input-glass, .select-glass, textarea.input-glass {
+      background: linear-gradient(180deg, #1D1D24 0%, #121216 100%) !important;
+      border: 1px solid #2E2E38 !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.09) !important;
+      border-radius: var(--radius-sm) !important;
+      color: #FFFFFF !important;
+      font-size: 14px !important;
+      box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+    }
+    .input-glass:focus, .select-glass:focus, textarea.input-glass:focus {
+      background: linear-gradient(180deg, #24242D 0%, #15151B 100%) !important;
+      border-color: #FF6B00 !important;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4), 0 0 14px rgba(255, 107, 0, 0.35) !important;
+    }
+
+    /* Prominent White Dashboard Stats Numbers */
+    #view-dashboard .stat-value,
+    .stat-value {
+      font-size: clamp(34px, 3.2vw, 42px) !important;
+      font-weight: 900 !important;
+      color: #FFFFFF !important;
+      line-height: 1.05 !important;
+      letter-spacing: -0.5px !important;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6) !important;
+    }
+
+    /* Category Tab styling */
+    .session-cat-tab {
+      background: linear-gradient(180deg, #25252B 0%, #18181D 100%) !important;
+      color: #CBD5E1 !important;
+      border: 1px solid #33333C !important;
+      border-bottom: 2px solid #0E0E12 !important;
+      border-radius: 8px !important;
+      transition: all 0.2s ease !important;
+    }
+    .session-cat-tab.active {
+      background: linear-gradient(180deg, #FF8533 0%, #FF6B00 50%, #E65100 100%) !important;
+      color: #FFFFFF !important;
+      border: 1px solid #FF944D !important;
+      border-bottom: 2.5px solid #9E3300 !important;
+      box-shadow: 0 4px 12px rgba(255, 107, 0, 0.45) !important;
+    }
+
+    
+/* Dark Button: Obsidian Black with Warm Orange Rim & Orange Icon */
     .btn-dark {
       background: #18181B;
       color: #FFFFFF !important;
@@ -1856,34 +2107,20 @@
       letter-spacing: -0.5px;
     }
 
-    #view-dashboard #dash-present-today {
-      color: #34D399 !important;
-      text-shadow: 0 0 24px rgba(52, 211, 153, 0.7), 0 2px 8px rgba(0, 0, 0, 0.8) !important;
-    }
-
-    #view-dashboard #dash-absent-today {
-      color: #F87171 !important;
-      text-shadow: 0 0 24px rgba(248, 113, 113, 0.7), 0 2px 8px rgba(0, 0, 0, 0.8) !important;
-    }
-
-    #view-dashboard #dash-sick-today {
-      color: #FBBF24 !important;
-      text-shadow: 0 0 24px rgba(251, 191, 36, 0.7), 0 2px 8px rgba(0, 0, 0, 0.8) !important;
-    }
-
-    #view-dashboard #dash-leave-today {
-      color: #A78BFA !important;
-      text-shadow: 0 0 24px rgba(167, 139, 250, 0.7), 0 2px 8px rgba(0, 0, 0, 0.8) !important;
-    }
-
-    #view-dashboard #dash-late-today {
-      color: #F472B6 !important;
-      text-shadow: 0 0 24px rgba(244, 114, 182, 0.7), 0 2px 8px rgba(0, 0, 0, 0.8) !important;
-    }
-
-    #view-dashboard #dash-total-students {
-      color: #38BDF8 !important;
-      text-shadow: 0 0 24px rgba(56, 189, 248, 0.7), 0 2px 8px rgba(0, 0, 0, 0.8) !important;
+    #view-dashboard #dash-present-today,
+    #view-dashboard #dash-absent-today,
+    #view-dashboard #dash-sick-today,
+    #view-dashboard #dash-leave-today,
+    #view-dashboard #dash-late-today,
+    #view-dashboard #dash-total-students,
+    #view-dashboard .stat-value,
+    .stat-value {
+      color: #FFFFFF !important;
+      font-size: clamp(34px, 3.2vw, 44px) !important;
+      font-weight: 900 !important;
+      line-height: 1.05 !important;
+      letter-spacing: -0.5px !important;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.75), 0 0 18px rgba(255, 255, 255, 0.25) !important;
     }
 
     #view-dashboard .stat-label {
@@ -3633,7 +3870,128 @@
       }
     }
 
-  </style>
+  
+    /* =========================================================
+       GLOBAL AUTHORITATIVE THEME OVERRIDES (BLACK / DARK GRAY / WARM ORANGE)
+       ========================================================= */
+    .btn-cyan, .btn-emerald, .btn-pink, .btn-amber {
+      background: linear-gradient(180deg, #2C2C34 0%, #1C1C22 55%, #121216 100%) !important;
+      color: #FFFFFF !important;
+      border: 1px solid rgba(255, 107, 0, 0.38) !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.22) !important;
+      border-bottom: 2.5px solid #08080A !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+    }
+    .btn-cyan:hover, .btn-emerald:hover, .btn-pink:hover, .btn-amber:hover {
+      background: linear-gradient(180deg, #383842 0%, #23232A 55%, #16161B 100%) !important;
+      border-color: #FF6B00 !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7), 0 0 14px rgba(255, 107, 0, 0.3) !important;
+    }
+    .btn-cyan:active, .btn-emerald:active, .btn-pink:active, .btn-amber:active {
+      transform: translateY(2px) !important;
+      border-bottom-width: 1px !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    .btn-orange {
+      background: linear-gradient(180deg, #FF8533 0%, #FF6B00 50%, #E65100 100%) !important;
+      color: #FFFFFF !important;
+      border: 1px solid #FF944D !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.45) !important;
+      border-bottom: 2.5px solid #9E3300 !important;
+      box-shadow: 0 4px 14px rgba(255, 107, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
+    }
+    .btn-orange:hover {
+      background: linear-gradient(180deg, #FFA366 0%, #FF8533 50%, #F55A00 100%) !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 8px 20px rgba(255, 107, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.45) !important;
+    }
+    .btn-orange:active {
+      transform: translateY(2px) !important;
+      border-bottom-width: 1px !important;
+      box-shadow: 0 1px 4px rgba(255, 107, 0, 0.35), inset 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    .btn-dark {
+      background: linear-gradient(180deg, #2C2C34 0%, #1C1C22 55%, #121216 100%) !important;
+      color: #FFFFFF !important;
+      border: 1px solid rgba(255, 107, 0, 0.38) !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.22) !important;
+      border-bottom: 2.5px solid #08080A !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+    }
+    .btn-dark:hover {
+      background: linear-gradient(180deg, #383842 0%, #23232A 55%, #16161B 100%) !important;
+      border-color: #FF6B00 !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7), 0 0 14px rgba(255, 107, 0, 0.3) !important;
+    }
+    .btn-dark:active {
+      transform: translateY(2px) !important;
+      border-bottom-width: 1px !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    .btn-danger-glass {
+      background: linear-gradient(180deg, #2F1A1A 0%, #201212 55%, #150A0A 100%) !important;
+      color: #FFA3A3 !important;
+      border: 1px solid rgba(239, 68, 68, 0.45) !important;
+      border-top: 1px solid rgba(255, 150, 150, 0.25) !important;
+      border-bottom: 2.5px solid #0B0404 !important;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+    }
+    .btn-danger-glass:hover {
+      background: linear-gradient(180deg, #422020 0%, #2E1515 55%, #220E0E 100%) !important;
+      border-color: #EF4444 !important;
+      color: #FFFFFF !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4) !important;
+    }
+    .btn-danger-glass:active {
+      transform: translateY(2px) !important;
+      border-bottom-width: 1px !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    .glass-card {
+      background: linear-gradient(165deg, #1A1A1E 0%, #141417 50%, #0D0D0F 100%) !important;
+      border: 1px solid #282830 !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+    }
+
+    .stat-card, #view-dashboard .stat-card {
+      background: linear-gradient(165deg, #1C1815 0%, #151417 50%, #0E0E10 100%) !important;
+      border: 1px solid #282830 !important;
+      border-left: 4.5px solid #FF6B00 !important;
+      box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+    }
+
+    .input-glass, .select-glass, textarea.input-glass {
+      background: linear-gradient(180deg, #1D1D24 0%, #121216 100%) !important;
+      border: 1px solid #2E2E38 !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.09) !important;
+      color: #FFFFFF !important;
+      box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+    }
+    .input-glass:focus, .select-glass:focus, textarea.input-glass:focus {
+      background: linear-gradient(180deg, #24242D 0%, #15151B 100%) !important;
+      border-color: #FF6B00 !important;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4), 0 0 14px rgba(255, 107, 0, 0.35) !important;
+    }
+
+    #view-dashboard .stat-value,
+    .stat-value {
+      font-size: clamp(34px, 3.2vw, 44px) !important;
+      font-weight: 900 !important;
+      color: #FFFFFF !important;
+      line-height: 1.05 !important;
+      letter-spacing: -0.5px !important;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.75), 0 0 18px rgba(255, 255, 255, 0.25) !important;
+    }
+    
+</style>
 </head>
 <body class="mode-student">
   <!-- LUXURY 2-SECOND INTRO SPLASH SCREEN -->
@@ -4183,7 +4541,7 @@
             <div class="stat-card">
               <span class="stat-label">✨ มาเรียน (อันดับ 1)</span>
               <div class="stat-value-row">
-                <span class="stat-value" id="dash-present-today" style="color: #22C55E;">0</span>
+                <span class="stat-value" id="dash-present-today">0</span>
                 <span class="stat-unit-suffix">คน</span>
               </div>
             </div>
@@ -4191,7 +4549,7 @@
             <div class="stat-card">
               <span class="stat-label">ขาดเรียน</span>
               <div class="stat-value-row">
-                <span class="stat-value" id="dash-absent-today" style="color: #EF4444;">0</span>
+                <span class="stat-value" id="dash-absent-today">0</span>
                 <span class="stat-unit-suffix">คน</span>
               </div>
             </div>
@@ -4199,7 +4557,7 @@
             <div class="stat-card">
               <span class="stat-label">ลาป่วย</span>
               <div class="stat-value-row">
-                <span class="stat-value" id="dash-sick-today" style="color: #F59E0B;">0</span>
+                <span class="stat-value" id="dash-sick-today">0</span>
                 <span class="stat-unit-suffix">คน</span>
               </div>
             </div>
@@ -4207,7 +4565,7 @@
             <div class="stat-card">
               <span class="stat-label">ลากิจ</span>
               <div class="stat-value-row">
-                <span class="stat-value" id="dash-leave-today" style="color: #8B5CF6;">0</span>
+                <span class="stat-value" id="dash-leave-today">0</span>
                 <span class="stat-unit-suffix">คน</span>
               </div>
             </div>
@@ -4215,7 +4573,7 @@
             <div class="stat-card">
               <span class="stat-label">มาสาย</span>
               <div class="stat-value-row">
-                <span class="stat-value" id="dash-late-today" style="color: #EC4899;">0</span>
+                <span class="stat-value" id="dash-late-today">0</span>
                 <span class="stat-unit-suffix">คน</span>
               </div>
             </div>
@@ -4308,12 +4666,12 @@
               </div>
               <form id="form-create-session">
                 <!-- SECTION 1: SEPARATED ATTENDANCE CATEGORIES & ACTIVITIES -->
-                <div style="background: rgba(0, 240, 255, 0.03); border: 1px solid rgba(0, 240, 255, 0.2); border-radius: var(--radius-md); padding: 16px 18px; margin-bottom: 20px;">
+                <div style="background: linear-gradient(165deg, #1C1815 0%, #151417 60%, #0E0E10 100%); border: 1px solid #2A2420; border-left: 4.5px solid var(--orange-500); border-radius: var(--radius-md); padding: 16px 18px; margin-bottom: 20px; box-shadow: 0 6px 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06);">
                   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
                     <label style="font-size: 14px; font-weight: 700; color: #FFF; margin: 0; display: flex; align-items: center; gap: 8px;">
-                      <i class="fas fa-list-check" style="color: var(--cyan-400);"></i> 1. เลือกหมวดหมู่การเช็คชื่อ
+                      <i class="fas fa-list-check" style="color: var(--orange-500);"></i> 1. เลือกหมวดหมู่การเช็คชื่อ
                     </label>
-                    <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-projector-manage-act" style="font-size: 11px; padding: 3px 10px;" title="เปิดหน้าต่างจัดการรายการทั้งหมด">
+                    <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-projector-manage-act" style="font-size: 11px; padding: 3px 10px;" title="เปิดหน้าต่างจัดการรายการทั้งหมด">
                       <i class="fas fa-sliders"></i> จัดการรายการทั้งหมด
                     </button>
                   </div>
@@ -4370,13 +4728,13 @@
                 </div>
 
                 <!-- SECTION 2: MULTI-CLASSROOM SELECTION (เลือกหลายห้องพร้อมกัน หรือกำหนดห้องเอง) -->
-                <div style="background: rgba(0, 240, 255, 0.03); border: 1px solid rgba(0, 240, 255, 0.2); border-radius: var(--radius-md); padding: 16px 18px; margin-bottom: 20px;">
+                <div style="background: linear-gradient(165deg, #1C1815 0%, #151417 60%, #0E0E10 100%); border: 1px solid #2A2420; border-left: 4.5px solid var(--orange-500); border-radius: var(--radius-md); padding: 16px 18px; margin-bottom: 20px; box-shadow: 0 6px 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06);">
                   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
                     <label style="font-size: 14px; font-weight: 700; color: #FFF; margin: 0; display: flex; align-items: center; gap: 8px;">
-                      <i class="fas fa-chalkboard-user" style="color: var(--cyan-400);"></i> 2. เลือกห้องเรียนที่เปิดเช็คชื่อ (เลือกพร้อมกันหลายห้องได้)
+                      <i class="fas fa-chalkboard-user" style="color: var(--orange-500);"></i> 2. เลือกห้องเรียนที่เปิดเช็คชื่อ (เลือกพร้อมกันหลายห้องได้)
                     </label>
                     <div style="display: flex; gap: 6px; align-items: center;">
-                      <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-session-select-all-classes" style="font-size: 11.5px; padding: 4px 10px;" title="เลือกทุกห้องเรียน">
+                      <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-session-select-all-classes" style="font-size: 11.5px; padding: 4px 10px;" title="เลือกทุกห้องเรียน">
                         <i class="fas fa-check-double"></i> เลือกทุกห้อง
                       </button>
                       <button type="button" class="btn-glass btn-danger-glass btn-sm-glass" id="btn-session-clear-all-classes" style="font-size: 11.5px; padding: 4px 10px;" title="ล้างการเลือกทั้งหมด">
@@ -4401,9 +4759,9 @@
                   </div>
 
                   <!-- Live Selected Classes Summary Banner -->
-                  <div id="session-selected-classes-summary" style="margin-top: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; background: rgba(0,240,255,0.06); border: 1px solid rgba(0,240,255,0.3); padding: 9px 14px; border-radius: 8px;">
+                  <div id="session-selected-classes-summary" style="margin-top: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; background: linear-gradient(135deg, rgba(255,107,0,0.12) 0%, rgba(20,20,24,0.85) 100%); border: 1px solid rgba(255,107,0,0.4); padding: 9px 14px; border-radius: 8px;">
                     <div style="font-size: 13px; color: #FFF; font-weight: 600;">
-                      🏫 ห้องที่เปิดรับเช็คชื่อ: <span id="session-selected-classes-text" style="color: var(--cyan-400); font-weight: 800; font-size: 14px;">ทุกห้องเรียน (All)</span>
+                      🏫 ห้องที่เปิดรับเช็คชื่อ: <span id="session-selected-classes-text" style="color: var(--orange-400); font-weight: 800; font-size: 14px;">ทุกห้องเรียน (All)</span>
                     </div>
                     <span class="badge-glass badge-present" id="session-selected-classes-count-badge" style="font-size: 11.5px;">ทุกห้องเรียน</span>
                   </div>
@@ -4495,7 +4853,7 @@
                 </div>
 
                 <!-- SECTION: LATE CUTOFF TIME SETTINGS (กำหนดเวลาตัดสาย) -->
-                <div style="background: rgba(245, 158, 11, 0.04); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: var(--radius-md); padding: 14px 16px; margin: 16px 0;">
+                <div style="background: linear-gradient(165deg, #1C1815 0%, #151417 60%, #0E0E10 100%); border: 1px solid #2A2420; border-left: 4.5px solid var(--orange-500); border-radius: var(--radius-md); padding: 14px 16px; margin: 16px 0; box-shadow: 0 6px 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06);">
                   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
                     <label style="font-size: 13.5px; font-weight: 700; color: #FFF; margin: 0; display: flex; align-items: center; gap: 8px;">
                       <i class="fas fa-user-clock" style="color: #FBBF24;"></i> 4. กำหนดเวลาตัดสาย (เช็คชื่อเลยกำหนดขึ้นว่า "มาสาย")
@@ -4754,7 +5112,7 @@
                     <th style="width: 140px;">รหัสนักศึกษา</th>
                     <th>ชื่อ - นามสกุล</th>
                     <th style="width: 130px;">ห้องเรียน</th>
-                    <th style="text-align: right; width: 150px;">จัดการ</th>
+                    <th style="text-align: right; width: 240px; min-width: 240px;">จัดการ</th>
                   </tr>
                 </thead>
                 <tbody id="student-table-body"></tbody>
@@ -5234,7 +5592,7 @@
       </div>
 
       <!-- Classroom Selection Before Import -->
-      <div class="form-group-glass" style="margin-bottom: 14px; background: rgba(0, 240, 255, 0.05); padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(0, 240, 255, 0.2);">
+      <div class="form-group-glass" style="margin-bottom: 14px; background: linear-gradient(180deg, #1C1C22 0%, #121216 100%); padding: 12px 14px; border-radius: 12px; border: 1px solid #2E2E38; box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);">
         <label class="form-label-glass" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
           <span><i class="fas fa-school" style="color: var(--cyan-400);"></i> กำหนดห้องเรียนสำหรับนำเข้า:</span>
           <span style="font-size: 11.5px; color: var(--text-muted); font-weight: 400;">(หากเลือกห้อง จะกำหนดให้นักเรียนทุกคนอยู่ในห้องนี้)</span>
@@ -6067,7 +6425,7 @@
 
       <form id="form-modal-create-session">
         <!-- CATEGORY & ACTIVITY SELECTOR -->
-        <div style="background: rgba(0, 240, 255, 0.03); border: 1px solid rgba(0, 240, 255, 0.2); border-radius: var(--radius-md); padding: 14px 16px; margin-bottom: 16px;">
+        <div style="background: linear-gradient(180deg, #1A1A20 0%, #121216 100%); border: 1px solid #2A2A34; border-radius: var(--radius-md); padding: 14px 16px; margin-bottom: 16px;">
           <label style="font-size: 13.5px; font-weight: 700; color: #FFF; margin-bottom: 10px; display: block;">
             <i class="fas fa-list-check" style="color: var(--cyan-400);"></i> 1. เลือกหมวดหมู่และรายการเช็คชื่อ
           </label>
@@ -6122,8 +6480,8 @@
             <input type="text" class="input-glass" id="input-modal-session-custom-class" placeholder="พิมพ์ชื่อห้องเรียนเอง..." style="flex: 1; font-size: 12px;" />
             <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-modal-session-add-custom-class" style="font-size: 12px; font-weight: 700;"><i class="fas fa-plus"></i> เพิ่มห้องนี้</button>
           </div>
-          <div id="modal-session-selected-classes-summary" style="margin-top: 8px; background: rgba(0,240,255,0.06); border: 1px solid rgba(0,240,255,0.3); padding: 7px 10px; border-radius: 6px; font-size: 12px; color: #FFF;">
-            🏫 ห้องที่เปิดรับ: <strong id="modal-session-selected-classes-text" style="color: var(--cyan-400);">ทุกห้องเรียน (All)</strong>
+          <div id="modal-session-selected-classes-summary" style="margin-top: 8px; background: linear-gradient(135deg, rgba(255,107,0,0.12) 0%, rgba(20,20,24,0.85) 100%); border: 1px solid rgba(255,107,0,0.4); padding: 7px 10px; border-radius: 6px; font-size: 12px; color: #FFF;">
+            🏫 ห้องที่เปิดรับ: <strong id="modal-session-selected-classes-text" style="color: var(--orange-400);">ทุกห้องเรียน (All)</strong>
           </div>
         </div>
 
@@ -8264,14 +8622,14 @@
       var allChip = document.createElement('button');
       allChip.type = 'button';
       allChip.className = 'btn-glass btn-sm-glass session-class-chip' + (isAll ? ' active-chip' : '');
-      allChip.style.cssText = 'font-size: 12px; padding: 5px 12px; border-radius: 20px; transition: all 0.2s; cursor: pointer;' + 
+      allChip.style.cssText = 'font-size: 12px; padding: 6px 14px; border-radius: 20px; transition: all 0.2s; cursor: pointer;' + 
         (isAll 
-          ? ' border: 1.5px solid var(--cyan-400); background: rgba(0,240,255,0.22); color: #FFF; font-weight: 700; box-shadow: 0 0 10px rgba(0,240,255,0.35);' 
-          : ' border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); color: var(--text-secondary);');
+          ? ' border: 1px solid #FF944D; border-bottom: 2.5px solid #9E3300; background: linear-gradient(180deg, #FF8533 0%, #FF6B00 50%, #E65100 100%); color: #FFF; font-weight: 700; box-shadow: 0 4px 12px rgba(255,107,0,0.4);' 
+          : ' border: 1px solid #33333C; border-bottom: 2px solid #0D0D10; background: linear-gradient(180deg, #25252B 0%, #18181D 100%); color: var(--text-secondary);');
 
       var allIcon = document.createElement('i');
       allIcon.className = isAll ? 'fas fa-circle-check' : 'far fa-circle';
-      allIcon.style.cssText = 'margin-right: 5px; color: ' + (isAll ? 'var(--cyan-400)' : 'var(--text-muted)') + ';';
+      allIcon.style.cssText = 'margin-right: 5px; color: ' + (isAll ? '#FFFFFF' : 'var(--text-muted)') + ';';
       allChip.appendChild(allIcon);
       allChip.appendChild(document.createTextNode('🌟 ทุกห้องเรียน (All)'));
 
@@ -11348,7 +11706,7 @@
 
       var btnAll = document.createElement('button');
       btnAll.type = 'button';
-      btnAll.className = 'btn-glass btn-sm-glass ' + (isAllSelected ? 'btn-cyan active' : 'btn-dark');
+      btnAll.className = 'btn-glass btn-sm-glass ' + (isAllSelected ? 'btn-orange active' : 'btn-dark');
       btnAll.style.padding = '4px 10px';
       btnAll.style.fontSize = '11.5px';
       btnAll.style.fontWeight = isAllSelected ? '700' : '500';
@@ -15349,9 +15707,44 @@
     function renderDashboardCharts(data) {
       if (typeof Chart === 'undefined') return;
 
+      // 1. DOUGHNUT CHART: Gradient shading, borderWidth: 0, spacing, dimension
       var ctxDoughnut = document.getElementById('chart-status-doughnut');
       if (ctxDoughnut) {
         if (AppState.charts.doughnut) AppState.charts.doughnut.destroy();
+
+        var dCtx = ctxDoughnut.getContext('2d');
+        var dHeight = ctxDoughnut.parentElement ? (ctxDoughnut.parentElement.clientHeight || 280) : 280;
+
+        // Multi-stop gradients for rich 3D shading
+        var gradPresent = dCtx.createLinearGradient(0, 0, 0, dHeight);
+        gradPresent.addColorStop(0, '#34D399');
+        gradPresent.addColorStop(0.5, '#10B981');
+        gradPresent.addColorStop(1, '#059669');
+
+        var gradAbsent = dCtx.createLinearGradient(0, 0, 0, dHeight);
+        gradAbsent.addColorStop(0, '#F87171');
+        gradAbsent.addColorStop(0.5, '#EF4444');
+        gradAbsent.addColorStop(1, '#B91C1C');
+
+        var gradSick = dCtx.createLinearGradient(0, 0, 0, dHeight);
+        gradSick.addColorStop(0, '#FBBF24');
+        gradSick.addColorStop(0.5, '#F59E0B');
+        gradSick.addColorStop(1, '#B45309');
+
+        var gradLeave = dCtx.createLinearGradient(0, 0, 0, dHeight);
+        gradLeave.addColorStop(0, '#A78BFA');
+        gradLeave.addColorStop(0.5, '#8B5CF6');
+        gradLeave.addColorStop(1, '#6D28D9');
+
+        var gradLate = dCtx.createLinearGradient(0, 0, 0, dHeight);
+        gradLate.addColorStop(0, '#F472B6');
+        gradLate.addColorStop(0.5, '#EC4899');
+        gradLate.addColorStop(1, '#BE185D');
+
+        var gradUnchecked = dCtx.createLinearGradient(0, 0, 0, dHeight);
+        gradUnchecked.addColorStop(0, '#64748B');
+        gradUnchecked.addColorStop(0.5, '#475569');
+        gradUnchecked.addColorStop(1, '#334155');
         
         AppState.charts.doughnut = new Chart(ctxDoughnut, {
           type: 'doughnut',
@@ -15360,28 +15753,24 @@
             datasets: [{
               data: [data.present, data.absent, data.sick, data.leave, data.late, data.unchecked],
               backgroundColor: [
-                'rgba(16, 185, 129, 0.75)',
-                'rgba(239, 68, 68, 0.75)',
-                'rgba(245, 158, 11, 0.75)',
-                'rgba(139, 92, 246, 0.75)',
-                'rgba(236, 72, 153, 0.75)',
-                'rgba(148, 163, 184, 0.25)'
+                gradPresent,
+                gradAbsent,
+                gradSick,
+                gradLeave,
+                gradLate,
+                gradUnchecked
               ],
-              borderColor: [
-                'rgba(52, 211, 153, 1)',
-                'rgba(248, 113, 113, 1)',
-                'rgba(251, 191, 36, 1)',
-                'rgba(167, 139, 250, 1)',
-                'rgba(244, 114, 182, 1)',
-                'rgba(203, 213, 225, 0.4)'
-              ],
-              borderWidth: 2,
-              hoverOffset: 6
+              borderColor: 'transparent',
+              borderWidth: 0,
+              hoverOffset: 8,
+              borderRadius: 4,
+              spacing: 3
             }]
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
+            cutout: '68%',
             plugins: {
               legend: {
                 position: 'bottom',
@@ -15398,10 +15787,26 @@
         });
       }
 
+      // 2. BAR CHART: Gradient from transparent base (bottom) rising to rich deep color at top
       var ctxClassBar = document.getElementById('chart-class-bar');
       if (ctxClassBar) {
         if (AppState.charts.classBar) AppState.charts.classBar.destroy();
         
+        var bCtx = ctxClassBar.getContext('2d');
+        var bHeight = ctxClassBar.parentElement ? (ctxClassBar.parentElement.clientHeight || 280) : 280;
+
+        // Gradient for Present: from bottom (y=bHeight-35) to top (y=20)
+        var gradBarPresent = bCtx.createLinearGradient(0, bHeight - 35, 0, 20);
+        gradBarPresent.addColorStop(0, 'rgba(34, 197, 94, 0.08)');
+        gradBarPresent.addColorStop(0.4, 'rgba(34, 197, 94, 0.50)');
+        gradBarPresent.addColorStop(1, 'rgba(34, 197, 94, 0.98)');
+
+        // Gradient for Absent/Sick/Leave/Late: from bottom (y=bHeight-35) to top (y=20)
+        var gradBarAbsent = bCtx.createLinearGradient(0, bHeight - 35, 0, 20);
+        gradBarAbsent.addColorStop(0, 'rgba(239, 68, 68, 0.08)');
+        gradBarAbsent.addColorStop(0.4, 'rgba(239, 68, 68, 0.50)');
+        gradBarAbsent.addColorStop(1, 'rgba(239, 68, 68, 0.98)');
+
         var labels = [];
         var presentData = [];
         var absentData = [];
@@ -15420,18 +15825,18 @@
               {
                 label: '✨ มาเรียน (Present)',
                 data: presentData,
-                backgroundColor: 'rgba(16, 185, 129, 0.75)',
-                borderColor: 'rgba(52, 211, 153, 1)',
-                borderWidth: 1.5,
-                borderRadius: 8
+                backgroundColor: gradBarPresent,
+                borderColor: 'transparent',
+                borderWidth: 0,
+                borderRadius: { topLeft: 8, topRight: 8, bottomLeft: 0, bottomRight: 0 }
               },
               {
                 label: '⚠️ ขาด / ลา / สาย',
                 data: absentData,
-                backgroundColor: 'rgba(239, 68, 68, 0.75)',
-                borderColor: 'rgba(248, 113, 113, 1)',
-                borderWidth: 1.5,
-                borderRadius: 8
+                backgroundColor: gradBarAbsent,
+                borderColor: 'transparent',
+                borderWidth: 0,
+                borderRadius: { topLeft: 8, topRight: 8, bottomLeft: 0, bottomRight: 0 }
               }
             ]
           },
@@ -16223,13 +16628,17 @@
 
           var tdActions = document.createElement('td');
           tdActions.style.textAlign = 'right';
-          
+          tdActions.style.whiteSpace = 'nowrap';
+          tdActions.style.minWidth = '240px';
+
+          var actionGroup = document.createElement('div');
+          actionGroup.className = 'student-action-group-3d';
+
           var btnFace = document.createElement('button');
           btnFace.type = 'button';
-          btnFace.className = 'btn-glass btn-cyan btn-sm-glass';
-          btnFace.style.fontSize = '11px';
+          btnFace.className = 'btn-3d-action btn-3d-orange';
           btnFace.title = 'ถ่ายรูป/ลงทะเบียนใบหน้า AI ของนักศึกษาคนนี้';
-          btnFace.innerHTML = '<i class="fas fa-camera"></i> 📸 ใบหน้า';
+          btnFace.innerHTML = '<i class="fas fa-camera"></i> <span>ใบหน้า</span>';
           (function(stObj) {
             btnFace.addEventListener('click', function(e) {
               e.preventDefault();
@@ -16237,15 +16646,13 @@
               openAIFaceEnrollmentModal(stObj.studentId, stObj.className);
             });
           })(s);
-          tdActions.appendChild(btnFace);
-
-          var space0 = document.createTextNode(' ');
-          tdActions.appendChild(space0);
+          actionGroup.appendChild(btnFace);
 
           var btnEdit = document.createElement('button');
           btnEdit.type = 'button';
-          btnEdit.className = 'btn-glass btn-dark btn-sm-glass';
-          btnEdit.innerHTML = '<i class="fas fa-pen-to-square"></i> แก้ไข';
+          btnEdit.className = 'btn-3d-action btn-3d-dark';
+          btnEdit.title = 'แก้ไขข้อมูลนักเรียนคนนี้';
+          btnEdit.innerHTML = '<i class="fas fa-pen-to-square"></i> <span>แก้ไข</span>';
           (function(stObj) {
             btnEdit.addEventListener('click', function(e) {
               e.preventDefault();
@@ -16253,15 +16660,13 @@
               openEditStudentModal(stObj);
             });
           })(s);
-          tdActions.appendChild(btnEdit);
-          
-          var space = document.createTextNode(' ');
-          tdActions.appendChild(space);
+          actionGroup.appendChild(btnEdit);
 
           var btnDel = document.createElement('button');
           btnDel.type = 'button';
-          btnDel.className = 'btn-glass btn-danger-glass btn-sm-glass';
-          btnDel.innerHTML = '<i class="fas fa-trash-can"></i> ลบ';
+          btnDel.className = 'btn-3d-action btn-3d-danger';
+          btnDel.title = 'ลบข้อมูลนักเรียนคนนี้';
+          btnDel.innerHTML = '<i class="fas fa-trash-can"></i> <span>ลบ</span>';
           (function(sId, sName) {
             btnDel.addEventListener('click', function(e) {
               e.preventDefault();
@@ -16278,7 +16683,9 @@
               });
             });
           })(s.studentId, s.name);
-          tdActions.appendChild(btnDel);
+          actionGroup.appendChild(btnDel);
+
+          tdActions.appendChild(actionGroup);
 
           tr.appendChild(tdActions);
           tbody.appendChild(tr);
