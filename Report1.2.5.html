@@ -914,6 +914,18 @@
       renderStudentCards();
     }
 
+        function formatPhotoUrl(url) {
+      if (!url || typeof url !== 'string') return '';
+      var str = url.trim();
+      if (!str || str === '-' || str === 'null' || str === 'undefined') return '';
+      if (str.indexOf('data:image') === 0) return str;
+      var driveMatch = str.match(/(?:id=|\/d\/)([a-zA-Z0-9_-]{20,})/);
+      if (driveMatch && driveMatch[1]) {
+        return 'https://lh3.googleusercontent.com/d/' + driveMatch[1];
+      }
+      return str;
+    }
+
     var DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbyENNsNjTy8YvyBsm73Ab68GUkKklL_E-nuKWWehPzT8C-AlatfNy0IHLaY-F390TYmng/exec';
 
     function getQueryParam(key) {
@@ -1002,8 +1014,9 @@
       // Update Summary Statistics
       updateSummaryTiles(res.summary || calculateSummary(filtered));
 
-      // Render 3D Podium for Top Champions
-      renderPodium(res.topChampions || extractTopChampions(filtered));
+      // Render 3D Podium for Top Champions (Strictly from ปวส.1/2 & ปวส.1/5 with Live Selfie Camera)
+      var roomChampions = extractTopChampions(filtered);
+      renderPodium(roomChampions);
 
       // Render Student Cards
       renderStudentCards();
@@ -1024,19 +1037,37 @@
     }
 
     function extractTopChampions(students) {
-      var onTime = [];
+      var withSelfie = [];
       for (var i = 0; i < students.length; i++) {
         var s = students[i];
-        if (s.status === 'Present' || s.status === 'มาเรียน' || s.status === 'มาเรียนตรงเวลา') {
-          if (s.time && s.time !== '-') {
-            onTime.push(s);
+        var isPres = (s.status === 'Present' || s.status === 'มาเรียน' || s.status === 'มาเรียนตรงเวลา');
+        var hasTime = (s.time && s.time !== '-');
+        var selfie = formatPhotoUrl(s.selfiePhoto);
+        var hasSelfie = (selfie && selfie.length > 15 && selfie !== '-');
+
+        // Strictly prioritize students with Live Selfie Camera check-in
+        if (isPres && hasTime && hasSelfie) {
+          withSelfie.push(s);
+        }
+      }
+
+      withSelfie.sort(function(a, b) {
+        return String(a.time).localeCompare(String(b.time));
+      });
+
+      // Fallback: if fewer than 3 students have live selfies, fill with on-time students
+      if (withSelfie.length < 3) {
+        for (var j = 0; j < students.length; j++) {
+          var st = students[j];
+          var isP = (st.status === 'Present' || st.status === 'มาเรียน' || st.status === 'มาเรียนตรงเวลา');
+          if (isP && st.time && st.time !== '-' && withSelfie.indexOf(st) === -1) {
+            withSelfie.push(st);
+            if (withSelfie.length >= 3) break;
           }
         }
       }
-      onTime.sort(function(a, b) {
-        return String(a.time).localeCompare(String(b.time));
-      });
-      return onTime.slice(0, 3);
+
+      return withSelfie.slice(0, 3);
     }
 
     function updateSummaryTiles(summary) {
@@ -1095,20 +1126,27 @@
         var wrapper = document.createElement('div');
         wrapper.className = 'avatar-wrapper';
 
-        var photoUrl = item.selfiePhoto || item.photo || '';
+        var photoUrl = formatPhotoUrl(item.selfiePhoto);
         var defaultAvatarSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%2318181B'/%3E%3Cpath d='M50 48a16 16 0 1 0 0-32 16 16 0 0 0 0 32zm0 8c-18 0-34 11-34 26v4h68v-4c0-15-16-26-34-26z' fill='%23FF6B00'/%3E%3C/svg%3E";
-        var imgSrc = (photoUrl && photoUrl.length > 10) ? photoUrl : defaultAvatarSvg;
+        var hasLivePhoto = (photoUrl && photoUrl.length > 15 && photoUrl !== '-');
+        var imgSrc = hasLivePhoto ? photoUrl : defaultAvatarSvg;
 
         var img = document.createElement('img');
         img.className = 'avatar-img ' + avatarClass;
         img.src = imgSrc;
         img.alt = item.name || '';
-        img.title = (item.name || '') + ' (ชี้เมาส์เพื่อดูภาพขนาด 300x300px)';
-        (function(srcVal, nameVal, timeVal) {
+        img.title = (item.name || '') + (hasLivePhoto ? ' (ภาพถ่ายเซลฟี่สด • คลิกดูขนาดใหญ่)' : '');
+        img.onerror = function() {
+          this.onerror = null;
+          this.src = defaultAvatarSvg;
+        };
+        (function(srcVal, nameVal, timeVal, hasPic) {
           img.addEventListener('click', function() {
-            openPhotoModal(srcVal, nameVal, '⏰ เช็คชื่อ: ' + timeVal + ' น.');
+            if (hasPic) {
+              openPhotoModal(srcVal, nameVal, '⏰ เวลาเช็คชื่อ Live Selfie: ' + timeVal + ' น.');
+            }
           });
-        })(imgSrc, item.name || '', item.time || '');
+        })(imgSrc, item.name || '', item.time || '', hasLivePhoto);
         wrapper.appendChild(img);
 
         var ribbon = document.createElement('div');
@@ -1240,29 +1278,35 @@
         stIcon = 'fa-circle-xmark';
       }
 
-      // Selfie Box
+      // Selfie Box: Strictly from Live Selfie Camera (s.selfiePhoto)
       var selfieBox = document.createElement('div');
       selfieBox.className = 'selfie-box';
 
-      var photoSrc = s.selfiePhoto || s.photo || '';
-      var hasPhoto = (photoSrc && photoSrc.length > 15 && photoSrc !== '-');
+      var rawSelfie = s.selfiePhoto || '';
+      var photoSrc = formatPhotoUrl(rawSelfie);
+      var hasLiveSelfie = (photoSrc && photoSrc.length > 15 && photoSrc !== '-');
 
-      if (hasPhoto) {
+      if (hasLiveSelfie) {
         var img = document.createElement('img');
         img.className = 'selfie-img';
         img.src = photoSrc;
         img.alt = s.name || '';
-        img.title = 'คลิกเพื่อดูภาพถ่ายเซลฟี่ขนาดใหญ่';
+        img.title = 'คลิกเพื่อดูภาพถ่าย Live Selfie Camera ขนาดใหญ่';
+        img.onerror = function() {
+          this.onerror = null;
+          this.style.display = 'none';
+          if (this.nextElementSibling) this.nextElementSibling.style.display = 'flex';
+        };
         selfieBox.appendChild(img);
 
         var overlayTag = document.createElement('div');
         overlayTag.className = 'selfie-badge-overlay ' + stBadgeClass;
-        overlayTag.innerHTML = '<i class="fas fa-camera"></i> ยืนยันเซลฟี่';
+        overlayTag.innerHTML = '<i class="fas fa-camera"></i> Live Selfie';
         selfieBox.appendChild(overlayTag);
       } else {
         var noPhotoDiv = document.createElement('div');
         noPhotoDiv.className = 'selfie-no-photo';
-        noPhotoDiv.innerHTML = '<i class="fas fa-camera-slash" style="font-size: 28px;"></i><span>ไม่มีรูปเซลฟี่</span>';
+        noPhotoDiv.innerHTML = '<i class="fas fa-camera-slash" style="font-size: 28px; color: #64748B;"></i><span>ไม่มีรูปเซลฟี่สด</span>';
         selfieBox.appendChild(noPhotoDiv);
 
         var overlayTag2 = document.createElement('div');
