@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>รายงานเช็คชื่อ ปวส.1/2 และ ปวส.1/5 - ภาพเซลฟี่ยืนยันตัวตน</title>
+  <!-- Google Fonts: Inter & Prompt -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- html2canvas -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <style>
+    :root {
+      --bg-dark: #0A0A0C;
+      --card-bg: linear-gradient(180deg, #141416 0%, #0D0D0F 100%);
+      --card-border: #222226;
+      --orange-main: #FF6B00;
+      --orange-light: #FF9A2E;
+      --text-white: #FFFFFF;
+      --text-muted: #9CA3AF;
+      --green-pres: #22C55E;
+      --red-abs: #EF4444;
+      --yellow-sick: #EAB308;
+      --blue-leave: #3B82F6;
+      --purple-late: #A855F7;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(255, 107, 0, 0.08) 0%, transparent 35%),
+        radial-gradient(circle at 85% 85%, rgba(255, 154, 46, 0.05) 0%, transparent 40%);
+      background-attachment: fixed;
+      color: #F3F4F6;
+      font-family: 'Prompt', 'Inter', sans-serif;
+      min-height: 100vh;
+      padding: 16px 12px 60px 12px;
+      overflow-x: hidden;
+    }
+
+    .report-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* CARDS */
+    .glass-card {
+      background: var(--card-bg) !important;
+      border: 1px solid var(--card-border) !important;
+      border-radius: 16px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+      position: relative;
+    }
+
+    /* HEADER & BRANDING */
+    .report-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #222226;
+    }
+
+    .header-left h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-white) !important;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-left p {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .badge-fixed-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      font-weight: 600;
+      background: rgba(255, 107, 0, 0.15);
+      border: 1px solid rgba(255, 107, 0, 0.35);
+      color: var(--orange-light);
+    }
+
+    /* TOOLBAR & CONTROLS */
+    .toolbar-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .toolbar-filters {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .date-input-wrap {
+      display: inline-flex;
+      align-items: center;
+      background: #18181B;
+      border: 1px solid #27272A;
+      border-radius: 10px;
+      padding: 4px 10px;
+      gap: 6px;
+      color: #FFF;
+      font-size: 13px;
+    }
+
+    .date-input-wrap input[type="date"] {
+      background: transparent;
+      border: none;
+      color: #FFF;
+      font-size: 13px;
+      outline: none;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .chip-btn {
+      background: #18181B;
+      border: 1px solid #27272A;
+      color: #D1D5DB;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .chip-btn:hover, .chip-btn.active {
+      background: var(--orange-main);
+      color: #FFF;
+      border-color: var(--orange-main);
+      box-shadow: 0 0 12px rgba(255, 107, 0, 0.3);
+    }
+
+    .action-btns-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid #27272A;
+      background: #18181B;
+      color: #FFF;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .btn-action:hover {
+      border-color: var(--orange-main);
+      color: var(--orange-light);
+    }
+
+    .btn-action.btn-primary {
+      background: linear-gradient(135deg, #FF6B00 0%, #E05300 100%);
+      border-color: var(--orange-main);
+      color: #FFF;
+      box-shadow: 0 4px 14px rgba(255, 107, 0, 0.35);
+    }
+
+    /* STATS SUMMARY TILES */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .stat-tile {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .stat-label {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stat-val {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text-white);
+      line-height: 1.1;
+    }
+
+    /* PODIUM SECTION */
+    .podium-box {
+      margin-bottom: 18px;
+      text-align: center;
+    }
+
+    .podium-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #FFF;
+      margin-bottom: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .podium-grid {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 16px;
+      padding-top: 10px;
+      flex-wrap: nowrap;
+    }
+
+    .podium-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      width: 105px;
+    }
+
+    .avatar-wrapper {
+      position: relative;
+      width: 68px;
+      height: 68px;
+      margin: 0 auto 6px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .avatar-img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+      background: #18181B;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      z-index: 10;
+    }
+
+    .avatar-champ {
+      width: 70px;
+      height: 70px;
+      border: 3px solid #FFD700 !important;
+      box-shadow: 0 0 18px rgba(255, 215, 0, 0.7) !important;
+    }
+
+    .avatar-silver {
+      width: 60px;
+      height: 60px;
+      border: 3px solid #C0C0C0 !important;
+      box-shadow: 0 0 14px rgba(192, 192, 192, 0.6) !important;
+    }
+
+    .avatar-bronze {
+      width: 60px;
+      height: 60px;
+      border: 3px solid #F97316 !important;
+      box-shadow: 0 0 14px rgba(249, 115, 22, 0.6) !important;
+    }
+
+    .avatar-medal-ribbon {
+      position: absolute;
+      bottom: -4px;
+      right: -4px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #18181B;
+      border: 1px solid #27272A;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      z-index: 15;
+    }
+
+    /* Podium 300x300 Hover Zoom */
+    .avatar-wrapper:hover {
+      z-index: 999999 !important;
+    }
+
+    .avatar-wrapper:hover .avatar-img {
+      position: fixed !important;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      width: 300px !important;
+      height: 300px !important;
+      border-radius: 20px !important;
+      z-index: 9999999 !important;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.95), 0 0 45px rgba(255, 107, 0, 0.65) !important;
+      border: 4px solid #FF6B00 !important;
+      pointer-events: auto;
+    }
+
+    .champ-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: #FFF;
+      line-height: 1.2;
+      max-width: 100px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin-top: 2px;
+    }
+
+    .champ-time {
+      font-size: 10.5px;
+      color: #34D399;
+      margin-bottom: 6px;
+    }
+
+    .podium-base {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 18px;
+      border-radius: 8px 8px 0 0;
+      color: #FFF;
+    }
+
+    .base-gold { height: 75px; background: linear-gradient(180deg, rgba(255,215,0,0.3) 0%, rgba(255,215,0,0.1) 100%); border-top: 2px solid #FFD700; }
+    .base-silver { height: 55px; background: linear-gradient(180deg, rgba(192,192,192,0.3) 0%, rgba(192,192,192,0.1) 100%); border-top: 2px solid #C0C0C0; }
+    .base-bronze { height: 42px; background: linear-gradient(180deg, rgba(249,115,22,0.3) 0%, rgba(249,115,22,0.1) 100%); border-top: 2px solid #F97316; }
+
+    /* STUDENT SELFIE GALLERY GRID */
+    .gallery-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .search-box {
+      position: relative;
+      flex: 1;
+      min-width: 200px;
+      max-width: 320px;
+    }
+
+    .search-box input {
+      width: 100%;
+      background: #18181B;
+      border: 1px solid #27272A;
+      border-radius: 8px;
+      padding: 7px 12px 7px 32px;
+      color: #FFF;
+      font-size: 12.5px;
+      font-family: inherit;
+      outline: none;
+    }
+
+    .search-box input:focus {
+      border-color: var(--orange-main);
+    }
+
+    .search-box i {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    .filter-tabs-bar {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .filter-tab {
+      background: #18181B;
+      border: 1px solid #27272A;
+      color: var(--text-muted);
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .filter-tab.active, .filter-tab:hover {
+      background: rgba(255, 107, 0, 0.2);
+      border-color: var(--orange-main);
+      color: #FFF;
+    }
+
+    /* STUDENT VERIFICATION CARDS */
+    .students-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 14px;
+    }
+
+    .student-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .student-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 107, 0, 0.4);
+    }
+
+    /* SELFIE IMAGE CONTAINER */
+    .selfie-box {
+      width: 100%;
+      height: 180px;
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+      background: #18181B;
+      border: 1px solid #27272A;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .selfie-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+
+    .selfie-box:hover .selfie-img {
+      transform: scale(1.05);
+    }
+
+    .selfie-no-photo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: #64748B;
+      font-size: 12px;
+    }
+
+    .selfie-badge-overlay {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      padding: 3px 8px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 700;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      z-index: 5;
+    }
+
+    .badge-time-overlay {
+      position: absolute;
+      bottom: 8px;
+      left: 8px;
+      background: rgba(0, 0, 0, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      padding: 2px 7px;
+      font-size: 10.5px;
+      font-weight: 600;
+      color: #34D399;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      z-index: 5;
+    }
+
+    .card-body {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .card-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-student-no {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--orange-main);
+      background: rgba(255, 107, 0, 0.12);
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+
+    .card-class-tag {
+      font-size: 11px;
+      font-weight: 700;
+      color: #38BDF8;
+      background: rgba(56, 189, 248, 0.12);
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+
+    .card-student-name {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #FFF;
+      line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-student-id {
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
+
+    .card-meta-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 4px;
+      padding-top: 6px;
+      border-top: 1px solid #1E1E22;
+      font-size: 11px;
+      color: #9CA3AF;
+    }
+
+    /* STATUS COLORS */
+    .status-tag-present { background: rgba(34, 197, 94, 0.2); color: #4ADE80; border: 1px solid #22C55E; }
+    .status-tag-late { background: rgba(168, 85, 247, 0.2); color: #C084FC; border: 1px solid #A855F7; }
+    .status-tag-sick { background: rgba(234, 179, 8, 0.2); color: #FACC15; border: 1px solid #EAB308; }
+    .status-tag-leave { background: rgba(59, 130, 246, 0.2); color: #60A5FA; border: 1px solid #3B82F6; }
+    .status-tag-absent { background: rgba(239, 68, 68, 0.2); color: #F87171; border: 1px solid #EF4444; }
+
+    /* PHOTO MODAL */
+    .photo-modal-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100000;
+      padding: 16px;
+    }
+
+    .photo-modal-box {
+      background: #141416;
+      border: 2px solid var(--orange-main);
+      border-radius: 16px;
+      max-width: 440px;
+      width: 100%;
+      padding: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
+      position: relative;
+      text-align: center;
+    }
+
+    .photo-modal-img {
+      width: 100%;
+      max-height: 400px;
+      border-radius: 12px;
+      object-fit: cover;
+      margin-bottom: 12px;
+      border: 1px solid #27272A;
+    }
+
+    .photo-modal-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #FFF;
+      margin-bottom: 4px;
+    }
+
+    .photo-modal-sub {
+      font-size: 12px;
+      color: #9CA3AF;
+      margin-bottom: 12px;
+    }
+
+    .photo-modal-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #27272A;
+      border: none;
+      color: #FFF;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    /* PRINT STYLES */
+    @media print {
+      body { background: #FFF !important; color: #000 !important; }
+      .toolbar-row, .gallery-toolbar, .photo-modal-backdrop { display: none !important; }
+      .glass-card, .stat-tile, .student-card { background: #FFF !important; border: 1px solid #CCC !important; color: #000 !important; box-shadow: none !important; }
+      .card-student-name, .stat-val, .header-left h1 { color: #000 !important; }
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 600px) {
+      body { padding: 8px 6px 40px 6px; }
+      .glass-card { padding: 12px 10px; }
+      .header-left h1 { font-size: 17px; }
+      .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+      .stat-val { font-size: 18px; }
+      .students-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .selfie-box { height: 130px; }
+      .podium-col { width: 90px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="report-wrapper" id="report-capture-area">
+    
+    <!-- HEADER -->
+    <div class="glass-card">
+      <div class="report-header">
+        <div class="header-left">
+          <h1>
+            <i class="fas fa-camera" style="color: var(--orange-main);"></i> 
+            รายงานเช็คชื่อ ปวส.1/2 & ปวส.1/5
+          </h1>
+          <p>
+            ระบบยืนยันตัวตนด้วยภาพถ่ายเซลฟี่จริง (Selfie Face Verification)
+          </p>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+          <span class="badge-fixed-tag">
+            <i class="fas fa-chalkboard-user"></i> ห้อง ปวส.1/2 & ปวส.1/5
+          </span>
+          <span class="badge-fixed-tag">
+            <i class="fas fa-tags"></i> กิจกรรม: เช็คชื่อมาเรียน
+          </span>
+        </div>
+      </div>
+
+      <!-- TOOLBAR -->
+      <div class="toolbar-row">
+        <div class="toolbar-filters">
+          <div class="date-input-wrap">
+            <i class="fas fa-calendar-day" style="color: var(--orange-main);"></i>
+            <input type="date" id="report-date-input" onchange="onDateChanged()" />
+          </div>
+          <button type="button" class="chip-btn active" id="chip-today" onclick="setQuickDate(0)">📅 วันนี้</button>
+          <button type="button" class="chip-btn" id="chip-yesterday" onclick="setQuickDate(-1)">⏮️ เมื่อวาน</button>
+          
+          <!-- ROOM FILTER CHIPS -->
+          <button type="button" class="chip-btn active" id="tab-room-all" onclick="filterRoom('all')">👥 ทั้ง 2 ห้อง</button>
+          <button type="button" class="chip-btn" id="tab-room-12" onclick="filterRoom('ปวส.1/2')">ปวส.1/2</button>
+          <button type="button" class="chip-btn" id="tab-room-15" onclick="filterRoom('ปวส.1/5')">ปวส.1/5</button>
+        </div>
+
+        <div class="action-btns-group">
+          <button type="button" class="btn-action" onclick="loadReportData()" title="รีเฟรชข้อมูลล่าสุด">
+            <i class="fas fa-arrows-rotate"></i> รีเฟรช
+          </button>
+          <button type="button" class="btn-action btn-primary" onclick="downloadReportImage()" title="ดาวน์โหลดเป็นการ์ดรูปภาพ">
+            <i class="fas fa-camera"></i> บันทึกภาพ
+          </button>
+          <button type="button" class="btn-action" onclick="window.print()" title="พิมพ์หรือบันทึกเป็น PDF">
+            <i class="fas fa-print"></i> พิมพ์ / PDF
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS SUMMARY -->
+    <div class="stats-grid">
+      <div class="stat-tile">
+        <span class="stat-label"><i class="fas fa-users" style="color:#38BDF8;"></i> นักเรียนทั้งหมด</span>
+        <span class="stat-val" id="stat-total">0</span>
+      </div>
+      <div class="stat-tile">
+        <span class="stat-label"><i class="fas fa-circle-check" style="color:var(--green-pres);"></i> มาเรียนตรงเวลา</span>
+        <span class="stat-val" id="stat-present" style="color:var(--green-pres);">0</span>
+      </div>
+      <div class="stat-tile">
+        <span class="stat-label"><i class="fas fa-clock" style="color:var(--purple-late);"></i> มาสาย</span>
+        <span class="stat-val" id="stat-late" style="color:var(--purple-late);">0</span>
+      </div>
+      <div class="stat-tile">
+        <span class="stat-label"><i class="fas fa-notes-medical" style="color:var(--yellow-sick);"></i> ลา (ป่วย/กิจ)</span>
+        <span class="stat-val" id="stat-leave" style="color:var(--yellow-sick);">0</span>
+      </div>
+      <div class="stat-tile">
+        <span class="stat-label"><i class="fas fa-circle-xmark" style="color:var(--red-abs);"></i> ขาดเรียน</span>
+        <span class="stat-val" id="stat-absent" style="color:var(--red-abs);">0</span>
+      </div>
+      <div class="stat-tile">
+        <span class="stat-label"><i class="fas fa-chart-pie" style="color:var(--orange-main);"></i> อัตรามาเรียน</span>
+        <span class="stat-val" id="stat-rate" style="color:var(--orange-light);">0%</span>
+      </div>
+    </div>
+
+    <!-- 3D PODIUM SECTION -->
+    <div class="glass-card podium-box" id="podium-section" style="display: none;">
+      <div class="podium-title">
+        <i class="fas fa-trophy" style="color: #FFD700;"></i> 
+        นักศึกษา 3 อันดับแรกที่เช็คชื่อตรงเวลาเร็วที่สุด
+      </div>
+      <div class="podium-grid" id="podium-grid-content"></div>
+    </div>
+
+    <!-- STUDENT VERIFICATION SELFIE GALLERY -->
+    <div class="glass-card">
+      <div class="gallery-toolbar">
+        <div class="search-box">
+          <i class="fas fa-magnifying-glass"></i>
+          <input type="text" id="student-search-input" placeholder="ค้นหาชื่อ หรือ รหัสนักศึกษา..." oninput="onSearchChanged()" />
+        </div>
+
+        <div class="filter-tabs-bar">
+          <button type="button" class="filter-tab active" id="tab-status-all" onclick="filterStatus('all')">ทั้งหมด (<span id="count-all">0</span>)</button>
+          <button type="button" class="filter-tab" id="tab-status-present" onclick="filterStatus('present')">มาเรียน (<span id="count-present">0</span>)</button>
+          <button type="button" class="filter-tab" id="tab-status-late" onclick="filterStatus('late')">มาสาย (<span id="count-late">0</span>)</button>
+          <button type="button" class="filter-tab" id="tab-status-leave" onclick="filterStatus('leave')">ลา (<span id="count-leave">0</span>)</button>
+          <button type="button" class="filter-tab" id="tab-status-absent" onclick="filterStatus('absent')">ขาด (<span id="count-absent">0</span>)</button>
+        </div>
+      </div>
+
+      <!-- GRID LIST -->
+      <div class="students-grid" id="students-grid-container">
+        <div style="text-align: center; padding: 40px; color: var(--text-muted); grid-column: 1 / -1;">
+          <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: var(--orange-main); margin-bottom: 8px;"></i>
+          <p>กำลังดึงข้อมูลและภาพถ่ายเซลฟี่ยืนยันตัวตน...</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- HD SELFIE PHOTO MODAL -->
+  <div class="photo-modal-backdrop" id="photo-modal" onclick="closePhotoModal()">
+    <div class="photo-modal-box" onclick="event.stopPropagation()">
+      <button type="button" class="photo-modal-close" onclick="closePhotoModal()">✕</button>
+      <img id="photo-modal-img" class="photo-modal-img" src="" alt="ภาพถ่ายเซลฟี่" />
+      <div class="photo-modal-title" id="photo-modal-name">ชื่อนักศึกษา</div>
+      <div class="photo-modal-sub" id="photo-modal-time">เวลาเช็คชื่อ</div>
+      <button type="button" class="btn-action btn-primary" onclick="closePhotoModal()" style="width: 100%;">ปิดหน้าต่าง</button>
+    </div>
+  </div>
+
+  <script>
+    // FIXED FILTERS AS REQUESTED
+    var FIXED_CLASSES = 'ปวส.1/2, ปวส.1/5';
+    var FIXED_ACTIVITY = 'เช็คชื่อมาเรียน';
+
+    var AppData = {
+      selectedDate: getTodayDateString(),
+      activeRoomFilter: 'all',
+      activeStatusFilter: 'all',
+      searchQuery: '',
+      allStudents: []
+    };
+
+    function getTodayDateString() {
+      var d = new Date();
+      var month = '' + (d.getMonth() + 1);
+      var day = '' + d.getDate();
+      var year = d.getFullYear();
+      if (month.length < 2) month = '0' + month;
+      if (day.length < 2) day = '0' + day;
+      return year + '-' + month + '-' + day;
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function setQuickDate(offsetDays) {
+      var d = new Date();
+      d.setDate(d.getDate() + offsetDays);
+      var month = '' + (d.getMonth() + 1);
+      var day = '' + d.getDate();
+      var year = d.getFullYear();
+      if (month.length < 2) month = '0' + month;
+      if (day.length < 2) day = '0' + day;
+      
+      var targetDate = year + '-' + month + '-' + day;
+      AppData.selectedDate = targetDate;
+      var dateInput = document.getElementById('report-date-input');
+      if (dateInput) dateInput.value = targetDate;
+
+      var chipToday = document.getElementById('chip-today');
+      var chipYest = document.getElementById('chip-yesterday');
+      if (chipToday) chipToday.className = (offsetDays === 0) ? 'chip-btn active' : 'chip-btn';
+      if (chipYest) chipYest.className = (offsetDays === -1) ? 'chip-btn active' : 'chip-btn';
+
+      loadReportData();
+    }
+
+    function onDateChanged() {
+      var dateInput = document.getElementById('report-date-input');
+      if (dateInput && dateInput.value) {
+        AppData.selectedDate = dateInput.value;
+        var chipToday = document.getElementById('chip-today');
+        var chipYest = document.getElementById('chip-yesterday');
+        var todayStr = getTodayDateString();
+        if (chipToday) chipToday.className = (dateInput.value === todayStr) ? 'chip-btn active' : 'chip-btn';
+        if (chipYest) chipYest.className = 'chip-btn';
+        loadReportData();
+      }
+    }
+
+    function filterRoom(roomName) {
+      AppData.activeRoomFilter = roomName;
+      var btnAll = document.getElementById('tab-room-all');
+      var btn12 = document.getElementById('tab-room-12');
+      var btn15 = document.getElementById('tab-room-15');
+      if (btnAll) btnAll.className = (roomName === 'all') ? 'chip-btn active' : 'chip-btn';
+      if (btn12) btn12.className = (roomName === 'ปวส.1/2') ? 'chip-btn active' : 'chip-btn';
+      if (btn15) btn15.className = (roomName === 'ปวส.1/5') ? 'chip-btn active' : 'chip-btn';
+      renderStudentCards();
+    }
+
+    function filterStatus(statusKey) {
+      AppData.activeStatusFilter = statusKey;
+      var tabs = ['all', 'present', 'late', 'leave', 'absent'];
+      for (var i = 0; i < tabs.length; i++) {
+        var el = document.getElementById('tab-status-' + tabs[i]);
+        if (el) {
+          el.className = (tabs[i] === statusKey) ? 'filter-tab active' : 'filter-tab';
+        }
+      }
+      renderStudentCards();
+    }
+
+    function onSearchChanged() {
+      var inp = document.getElementById('student-search-input');
+      AppData.searchQuery = (inp ? inp.value : '').trim().toLowerCase();
+      renderStudentCards();
+    }
+
+    function loadReportData() {
+      var container = document.getElementById('students-grid-container');
+      if (container) {
+        container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted); grid-column: 1 / -1;">' +
+          '<i class="fas fa-spinner fa-spin" style="font-size: 24px; color: var(--orange-main); margin-bottom: 8px;"></i>' +
+          '<p>กำลังดึงข้อมูลและภาพถ่ายเซลฟี่ ปวส.1/2 & ปวส.1/5...</p>' +
+          '</div>';
+      }
+
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(function(response) {
+            handleReportDataResponse(response);
+          })
+          .withFailureHandler(function(err) {
+            console.warn('loadReportData failed, using fallback:', err);
+            loadFallbackData();
+          })
+          .getPublicDailyReportData(AppData.selectedDate, 'all', FIXED_CLASSES, FIXED_ACTIVITY);
+      } else {
+        loadFallbackData();
+      }
+    }
+
+    function handleReportDataResponse(res) {
+      if (!res || !res.students) {
+        loadFallbackData();
+        return;
+      }
+
+      // Filter strictly to ปวส.1/2 and ปวส.1/5
+      var filtered = [];
+      for (var i = 0; i < res.students.length; i++) {
+        var s = res.students[i];
+        var c = (s.className || '').trim();
+        if (c.indexOf('ปวส.1/2') > -1 || c.indexOf('ปวส.1/5') > -1) {
+          filtered.push(s);
+        }
+      }
+
+      AppData.allStudents = filtered;
+
+      // Update Summary Statistics
+      updateSummaryTiles(res.summary || calculateSummary(filtered));
+
+      // Render 3D Podium for Top Champions
+      renderPodium(res.topChampions || extractTopChampions(filtered));
+
+      // Render Student Cards
+      renderStudentCards();
+    }
+
+    function calculateSummary(students) {
+      var cPres = 0, cLate = 0, cLeave = 0, cAbs = 0;
+      for (var i = 0; i < students.length; i++) {
+        var st = students[i].status;
+        if (st === 'Present' || st === 'มาเรียน' || st === 'มาเรียนตรงเวลา') cPres++;
+        else if (st === 'Late' || st === 'มาสาย') cLate++;
+        else if (st === 'Sick' || st === 'Leave' || st === 'ลาป่วย' || st === 'ลากิจ') cLeave++;
+        else cAbs++;
+      }
+      var total = students.length;
+      var rate = total > 0 ? (((cPres + cLate) / total) * 100).toFixed(1) + '%' : '100.0%';
+      return { total: total, present: cPres, late: cLate, leave: cLeave, absent: cAbs, rate: rate };
+    }
+
+    function extractTopChampions(students) {
+      var onTime = [];
+      for (var i = 0; i < students.length; i++) {
+        var s = students[i];
+        if (s.status === 'Present' || s.status === 'มาเรียน' || s.status === 'มาเรียนตรงเวลา') {
+          if (s.time && s.time !== '-') {
+            onTime.push(s);
+          }
+        }
+      }
+      onTime.sort(function(a, b) {
+        return String(a.time).localeCompare(String(b.time));
+      });
+      return onTime.slice(0, 3);
+    }
+
+    function updateSummaryTiles(summary) {
+      if (!summary) return;
+      var elTot = document.getElementById('stat-total');
+      var elP = document.getElementById('stat-present');
+      var elL = document.getElementById('stat-late');
+      var elLv = document.getElementById('stat-leave');
+      var elA = document.getElementById('stat-absent');
+      var elR = document.getElementById('stat-rate');
+
+      if (elTot) elTot.textContent = summary.total || 0;
+      if (elP) elP.textContent = summary.present || 0;
+      if (elL) elL.textContent = summary.late || 0;
+      if (elLv) elLv.textContent = summary.leave || 0;
+      if (elA) elA.textContent = summary.absent || 0;
+      if (elR) elR.textContent = summary.rate || '0%';
+    }
+
+    function renderPodium(champs) {
+      var podiumSection = document.getElementById('podium-section');
+      var grid = document.getElementById('podium-grid-content');
+      if (!podiumSection || !grid) return;
+
+      if (!champs || champs.length === 0) {
+        podiumSection.style.display = 'none';
+        return;
+      }
+
+      podiumSection.style.display = 'block';
+      grid.innerHTML = '';
+
+      var top1 = champs[0] || null;
+      var top2 = champs[1] || null;
+      var top3 = champs[2] || null;
+
+      function createPodiumCol(item, rankNum, medalEmoji, crownColor, baseClass, avatarClass) {
+        var col = document.createElement('div');
+        col.className = 'podium-col';
+
+        if (!item) {
+          var spacer = document.createElement('div');
+          spacer.style.height = '100px';
+          col.appendChild(spacer);
+          return col;
+        }
+
+        var crown = document.createElement('div');
+        crown.style.color = crownColor;
+        crown.style.fontSize = '12px';
+        crown.style.fontWeight = '800';
+        crown.style.marginBottom = '4px';
+        crown.textContent = '👑 #' + rankNum;
+        col.appendChild(crown);
+
+        var wrapper = document.createElement('div');
+        wrapper.className = 'avatar-wrapper';
+
+        var photoUrl = item.selfiePhoto || item.photo || '';
+        var defaultAvatarSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%2318181B'/%3E%3Cpath d='M50 48a16 16 0 1 0 0-32 16 16 0 0 0 0 32zm0 8c-18 0-34 11-34 26v4h68v-4c0-15-16-26-34-26z' fill='%23FF6B00'/%3E%3C/svg%3E";
+        var imgSrc = (photoUrl && photoUrl.length > 10) ? photoUrl : defaultAvatarSvg;
+
+        var img = document.createElement('img');
+        img.className = 'avatar-img ' + avatarClass;
+        img.src = imgSrc;
+        img.alt = item.name || '';
+        img.title = (item.name || '') + ' (ชี้เมาส์เพื่อดูภาพขนาด 300x300px)';
+        (function(srcVal, nameVal, timeVal) {
+          img.addEventListener('click', function() {
+            openPhotoModal(srcVal, nameVal, '⏰ เช็คชื่อ: ' + timeVal + ' น.');
+          });
+        })(imgSrc, item.name || '', item.time || '');
+        wrapper.appendChild(img);
+
+        var ribbon = document.createElement('div');
+        ribbon.className = 'avatar-medal-ribbon';
+        ribbon.textContent = medalEmoji;
+        wrapper.appendChild(ribbon);
+
+        col.appendChild(wrapper);
+
+        var nameDiv = document.createElement('div');
+        nameDiv.className = 'champ-name';
+        nameDiv.textContent = item.name || '';
+        nameDiv.title = item.name || '';
+        col.appendChild(nameDiv);
+
+        var timeDiv = document.createElement('div');
+        timeDiv.className = 'champ-time';
+        timeDiv.textContent = '⏰ ' + (item.time || '') + ' น.';
+        col.appendChild(timeDiv);
+
+        var baseDiv = document.createElement('div');
+        baseDiv.className = 'podium-base ' + baseClass;
+        baseDiv.textContent = String(rankNum);
+        col.appendChild(baseDiv);
+
+        return col;
+      }
+
+      grid.appendChild(createPodiumCol(top2, 2, '🥈', '#C0C0C0', 'base-silver', 'avatar-silver'));
+      grid.appendChild(createPodiumCol(top1, 1, '🥇', '#FFD700', 'base-gold', 'avatar-champ'));
+      grid.appendChild(createPodiumCol(top3, 3, '🥉', '#F97316', 'base-bronze', 'avatar-bronze'));
+    }
+
+    function renderStudentCards() {
+      var container = document.getElementById('students-grid-container');
+      if (!container) return;
+
+      var list = AppData.allStudents || [];
+      var roomF = AppData.activeRoomFilter;
+      var statusF = AppData.activeStatusFilter;
+      var query = AppData.searchQuery;
+
+      var countP = 0, countL = 0, countLv = 0, countA = 0;
+
+      var displayed = [];
+      for (var i = 0; i < list.length; i++) {
+        var s = list[i];
+        var sRoom = s.className || '';
+        var sStatus = s.status || 'Present';
+        var sNormalizedStatus = 'present';
+        if (sStatus === 'Late' || sStatus === 'มาสาย') sNormalizedStatus = 'late';
+        else if (sStatus === 'Sick' || sStatus === 'Leave' || sStatus === 'ลาป่วย' || sStatus === 'ลากิจ') sNormalizedStatus = 'leave';
+        else if (sStatus === 'Absent' || sStatus === 'ขาด' || sStatus === 'ขาดเรียน') sNormalizedStatus = 'absent';
+
+        if (sNormalizedStatus === 'present') countP++;
+        else if (sNormalizedStatus === 'late') countL++;
+        else if (sNormalizedStatus === 'leave') countLv++;
+        else if (sNormalizedStatus === 'absent') countA++;
+
+        // Filter by Room
+        if (roomF !== 'all' && sRoom.indexOf(roomF) === -1) continue;
+
+        // Filter by Status
+        if (statusF !== 'all' && sNormalizedStatus !== statusF) continue;
+
+        // Filter by Search Query
+        if (query) {
+          var matchName = (s.name || '').toLowerCase().indexOf(query) > -1;
+          var matchId = (s.studentId || '').toLowerCase().indexOf(query) > -1;
+          if (!matchName && !matchId) continue;
+        }
+
+        displayed.push(s);
+      }
+
+      // Update tab counts
+      var elCntAll = document.getElementById('count-all');
+      var elCntP = document.getElementById('count-present');
+      var elCntL = document.getElementById('count-late');
+      var elCntLv = document.getElementById('count-leave');
+      var elCntA = document.getElementById('count-absent');
+      if (elCntAll) elCntAll.textContent = list.length;
+      if (elCntP) elCntP.textContent = countP;
+      if (elCntL) elCntL.textContent = countL;
+      if (elCntLv) elCntLv.textContent = countLv;
+      if (elCntA) elCntA.textContent = countA;
+
+      container.innerHTML = '';
+
+      if (displayed.length === 0) {
+        container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted); grid-column: 1 / -1;">' +
+          '<i class="fas fa-user-slash" style="font-size: 28px; margin-bottom: 8px; color: #64748B;"></i>' +
+          '<p>ไม่พบรายชื่อนักศึกษาตามเงื่อนไขที่เลือก</p>' +
+          '</div>';
+        return;
+      }
+
+      for (var k = 0; k < displayed.length; k++) {
+        var student = displayed[k];
+        container.appendChild(createStudentCardElement(student, k + 1));
+      }
+    }
+
+    function createStudentCardElement(s, index) {
+      var card = document.createElement('div');
+      card.className = 'student-card';
+
+      // Status Styling
+      var stKey = s.status || 'Present';
+      var stLabel = 'มาเรียนตรงเวลา';
+      var stBadgeClass = 'status-tag-present';
+      var stIcon = 'fa-circle-check';
+
+      if (stKey === 'Late' || stKey === 'มาสาย') {
+        stLabel = 'มาสาย';
+        stBadgeClass = 'status-tag-late';
+        stIcon = 'fa-clock';
+      } else if (stKey === 'Sick' || stKey === 'ลาป่วย') {
+        stLabel = 'ลาป่วย';
+        stBadgeClass = 'status-tag-sick';
+        stIcon = 'fa-notes-medical';
+      } else if (stKey === 'Leave' || stKey === 'ลากิจ') {
+        stLabel = 'ลากิจ';
+        stBadgeClass = 'status-tag-leave';
+        stIcon = 'fa-envelope';
+      } else if (stKey === 'Absent' || stKey === 'ขาด' || stKey === 'ขาดเรียน') {
+        stLabel = 'ขาดเรียน';
+        stBadgeClass = 'status-tag-absent';
+        stIcon = 'fa-circle-xmark';
+      }
+
+      // Selfie Box
+      var selfieBox = document.createElement('div');
+      selfieBox.className = 'selfie-box';
+
+      var photoSrc = s.selfiePhoto || s.photo || '';
+      var hasPhoto = (photoSrc && photoSrc.length > 15 && photoSrc !== '-');
+
+      if (hasPhoto) {
+        var img = document.createElement('img');
+        img.className = 'selfie-img';
+        img.src = photoSrc;
+        img.alt = s.name || '';
+        img.title = 'คลิกเพื่อดูภาพถ่ายเซลฟี่ขนาดใหญ่';
+        selfieBox.appendChild(img);
+
+        var overlayTag = document.createElement('div');
+        overlayTag.className = 'selfie-badge-overlay ' + stBadgeClass;
+        overlayTag.innerHTML = '<i class="fas fa-camera"></i> ยืนยันเซลฟี่';
+        selfieBox.appendChild(overlayTag);
+      } else {
+        var noPhotoDiv = document.createElement('div');
+        noPhotoDiv.className = 'selfie-no-photo';
+        noPhotoDiv.innerHTML = '<i class="fas fa-camera-slash" style="font-size: 28px;"></i><span>ไม่มีรูปเซลฟี่</span>';
+        selfieBox.appendChild(noPhotoDiv);
+
+        var overlayTag2 = document.createElement('div');
+        overlayTag2.className = 'selfie-badge-overlay ' + stBadgeClass;
+        overlayTag2.innerHTML = '<i class="fas ' + stIcon + '"></i> ' + stLabel;
+        selfieBox.appendChild(overlayTag2);
+      }
+
+      // Time Overlay
+      var timeText = (s.time && s.time !== '-') ? s.time : '--:--';
+      var timeOverlay = document.createElement('div');
+      timeOverlay.className = 'badge-time-overlay';
+      timeOverlay.innerHTML = '<i class="fas fa-clock"></i> ' + timeText + ' น.';
+      selfieBox.appendChild(timeOverlay);
+
+      (function(src, nameVal, timeVal) {
+        selfieBox.addEventListener('click', function() {
+          if (src) {
+            openPhotoModal(src, nameVal, '⏰ เวลาเช็คชื่อ: ' + timeVal + ' น.');
+          }
+        });
+      })(photoSrc, s.name, timeText);
+
+      card.appendChild(selfieBox);
+
+      // Card Body
+      var body = document.createElement('div');
+      body.className = 'card-body';
+
+      var topRow = document.createElement('div');
+      topRow.className = 'card-top-row';
+
+      var noPill = document.createElement('span');
+      noPill.className = 'card-student-no';
+      noPill.textContent = '#' + (s.no || s.studentNo || index);
+      topRow.appendChild(noPill);
+
+      var classTag = document.createElement('span');
+      classTag.className = 'card-class-tag';
+      classTag.textContent = s.className || 'ปวส.1/2';
+      topRow.appendChild(classTag);
+
+      body.appendChild(topRow);
+
+      var nameEl = document.createElement('div');
+      nameEl.className = 'card-student-name';
+      nameEl.textContent = s.name || '';
+      nameEl.title = s.name || '';
+      body.appendChild(nameEl);
+
+      var idEl = document.createElement('div');
+      idEl.className = 'card-student-id';
+      idEl.textContent = 'รหัสประจำตัว: ' + (s.studentId || '-');
+      body.appendChild(idEl);
+
+      var metaRow = document.createElement('div');
+      metaRow.className = 'card-meta-info';
+
+      var distText = (s.distanceMeters) ? ('📍 ' + s.distanceMeters + ' ม.') : '📍 ในสถานศึกษา';
+      var distSpan = document.createElement('span');
+      distSpan.textContent = distText;
+      metaRow.appendChild(distSpan);
+
+      var stSpan = document.createElement('span');
+      stSpan.className = stBadgeClass;
+      stSpan.style.padding = '2px 6px';
+      stSpan.style.borderRadius = '4px';
+      stSpan.style.fontSize = '10.5px';
+      stSpan.style.fontWeight = '700';
+      stSpan.innerHTML = '<i class="fas ' + stIcon + '"></i> ' + stLabel;
+      metaRow.appendChild(stSpan);
+
+      body.appendChild(metaRow);
+      card.appendChild(body);
+
+      return card;
+    }
+
+    function openPhotoModal(imgSrc, name, timeStr) {
+      var modal = document.getElementById('photo-modal');
+      var img = document.getElementById('photo-modal-img');
+      var nameEl = document.getElementById('photo-modal-name');
+      var timeEl = document.getElementById('photo-modal-time');
+
+      if (modal && img) {
+        img.src = imgSrc;
+        if (nameEl) nameEl.textContent = name || '';
+        if (timeEl) timeEl.textContent = timeStr || '';
+        modal.style.display = 'flex';
+      }
+    }
+
+    function closePhotoModal() {
+      var modal = document.getElementById('photo-modal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function downloadReportImage() {
+      var captureArea = document.getElementById('report-capture-area');
+      if (!captureArea || typeof html2canvas === 'undefined') {
+        alert('กรุณารอสักครู่ กำลังเตรียมระบบบันทึกภาพ...');
+        return;
+      }
+
+      html2canvas(captureArea, {
+        backgroundColor: '#0A0A0C',
+        scale: 2,
+        useCORS: true,
+        logging: false
+      }).then(function(canvas) {
+        var link = document.createElement('a');
+        link.download = 'รายงานเช็คชื่อ-ปวส1-2และ1-5-' + AppData.selectedDate + '.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      }).catch(function(err) {
+        console.error('html2canvas error:', err);
+        alert('บันทึกรูปภาพไม่สำเร็จ กรุณาลองใหม่อีกครั้ง');
+      });
+    }
+
+    function loadFallbackData() {
+      // High quality realistic mock data for offline / preview testing
+      var mock = [
+        { no: 1, studentId: '67309010001', name: 'นายกิตติศักดิ์ เจริญสุข', className: 'ปวส.1/2', status: 'Present', time: '07:42:15', distanceMeters: 12, selfiePhoto: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&q=80' },
+        { no: 2, studentId: '67309010002', name: 'นางสาวพิมพ์ชนก รัตนวิเชียร', className: 'ปวส.1/5', status: 'Present', time: '07:44:20', distanceMeters: 18, selfiePhoto: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80' },
+        { no: 3, studentId: '67309010003', name: 'นายธนกร วรโชติ', className: 'ปวส.1/2', status: 'Present', time: '07:48:10', distanceMeters: 25, selfiePhoto: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80' },
+        { no: 4, studentId: '67309010004', name: 'นางสาวสุภาวดี มณีรัตน์', className: 'ปวส.1/5', status: 'Present', time: '07:55:04', distanceMeters: 30, selfiePhoto: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&q=80' },
+        { no: 5, studentId: '67309010005', name: 'นายณัฐภัทร วัฒนากูล', className: 'ปวส.1/2', status: 'Late', time: '08:35:12', distanceMeters: 15, selfiePhoto: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80' },
+        { no: 6, studentId: '67309010006', name: 'นางสาวกุลธิดา สุวรรณโชติ', className: 'ปวส.1/5', status: 'Leave', time: '-', distanceMeters: 0, selfiePhoto: '' },
+        { no: 7, studentId: '67309010007', name: 'นายภานุวัฒน์ บรรเทิง', className: 'ปวส.1/2', status: 'Absent', time: '-', distanceMeters: 0, selfiePhoto: '' },
+        { no: 8, studentId: '67309010008', name: 'นายศุภกิตติ์ ดำรงเกียรติ', className: 'ปวส.1/5', status: 'Present', time: '08:02:19', distanceMeters: 22, selfiePhoto: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=400&q=80' }
+      ];
+
+      handleReportDataResponse({
+        students: mock,
+        topChampions: [mock[0], mock[1], mock[2]],
+        summary: { total: 8, present: 5, late: 1, leave: 1, absent: 1, rate: '75.0%' }
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', function() {
+      var dateInput = document.getElementById('report-date-input');
+      if (dateInput) dateInput.value = AppData.selectedDate;
+      loadReportData();
+    });
+  </script>
+</body>
+</html>
