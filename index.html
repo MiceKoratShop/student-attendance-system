@@ -7052,6 +7052,9 @@
       if (cls && (cls.indexOf('ป.1/1') > -1 || cls.indexOf('ห้องเรียน 1') > -1)) {
         localStorage.removeItem('gas_student_app_classes');
       }
+      try {
+        localStorage.removeItem('gas_student_app_activities');
+      } catch (e) {}
     }
 
     // Google Apps Script Web App Deployment Endpoint (For GitHub Pages & External Hosting)
@@ -9664,6 +9667,13 @@
           }
           lineActSelect.appendChild(grpActL);
         }
+      }
+
+      // 7. Synchronize Report Multi-Select Filters
+      if (typeof populateReportMultiSelectFilters === 'function') {
+        try {
+          populateReportMultiSelectFilters();
+        } catch (e) {}
       }
     }
 
@@ -17587,33 +17597,25 @@
         }
       }
 
-      // Always default standard activities
-      addAct('เช็คชื่อมาเรียน');
-      addAct('กิจกรรมหน้าเสาธง');
-      addAct('โฮมรูม (Home Room)');
-      addAct('กิจกรรมพัฒนาผู้เรียน');
-      addAct('ชุมนุม/ชมรม');
-      addAct('จิตอาสา/บำเพ็ญประโยชน์');
+      // Strictly from AppState.activities (configured in 'จัดการรายการเช็คชื่อ')
+      var acList = AppState.activities;
+      if (!acList || !Array.isArray(acList) || acList.length === 0) {
+        try {
+          var cachedActs = JSON.parse(localStorage.getItem('gas_cached_activities') || '[]');
+          if (Array.isArray(cachedActs) && cachedActs.length > 0) {
+            acList = cachedActs;
+          }
+        } catch (e) {}
+      }
 
-      // From AppState.activities
-      var acList = AppState.activities || [];
-      for (var i = 0; i < acList.length; i++) addAct(acList[i]);
-
-      // From localStorage activities
-      try {
-        var cachedActs = JSON.parse(localStorage.getItem('gas_cached_activities') || localStorage.getItem('gas_student_app_activities') || '[]');
-        if (Array.isArray(cachedActs)) {
-          for (var k = 0; k < cachedActs.length; k++) addAct(cachedActs[k]);
+      if (Array.isArray(acList) && acList.length > 0) {
+        var norm = normalizeActivitiesList(acList);
+        for (var i = 0; i < norm.length; i++) {
+          if (norm[i] && norm[i].name) {
+            addAct(norm[i].name);
+          }
         }
-      } catch (e) {}
-
-      // From localStorage attendance records
-      try {
-        var allAtt = getLocalStorageAttendance();
-        for (var a = 0; a < allAtt.length; a++) {
-          if (allAtt[a].activityName) addAct(allAtt[a].activityName);
-        }
-      } catch (e) {}
+      }
 
       return uniqueActs;
     }
@@ -18007,11 +18009,18 @@
         if (anyClassUnchecked && uniqueClasses.length > 0) allChk.checked = false;
       }
 
-      // 2. Populate Activities
+      // 2. Populate Activities (Strictly configured items from "จัดการรายการเช็คชื่อ")
       var actListContainer = document.getElementById('report-activity-checkbox-list');
       if (actListContainer) {
         actListContainer.innerHTML = '';
         var uniqueActs = getAllAvailableActivities();
+
+        // Sanitize saved preferences against current configured activities
+        if (savedPrefs && Array.isArray(savedPrefs.selectedActivities)) {
+          savedPrefs.selectedActivities = savedPrefs.selectedActivities.filter(function(a) {
+            return uniqueActs.indexOf(a) > -1;
+          });
+        }
 
         var isAllActsDefault = (!savedPrefs || savedPrefs.allActsChecked === true || !savedPrefs.selectedActivities || savedPrefs.selectedActivities.length === 0);
 
@@ -18037,6 +18046,22 @@
         allActSpan.textContent = '🌟 ทุกกิจกรรม/วิชา';
         allActLbl.appendChild(allActSpan);
         actListContainer.appendChild(allActLbl);
+
+        var typeMap = {};
+        var actSrc = AppState.activities || [];
+        for (var t = 0; t < actSrc.length; t++) {
+          var it = actSrc[t];
+          if (it && typeof it === 'object' && it.name) {
+            typeMap[it.name] = it.type || 'general';
+          }
+        }
+
+        if (uniqueActs.length === 0) {
+          var emptyNotice = document.createElement('div');
+          emptyNotice.style.cssText = 'text-align:center; color:var(--text-muted); font-size:11.5px; padding:12px 6px;';
+          emptyNotice.textContent = 'ยังไม่มีรายการกิจกรรม/วิชาที่ตั้งค่าไว้';
+          actListContainer.appendChild(emptyNotice);
+        }
 
         var anyActUnchecked = false;
         for (var m = 0; m < uniqueActs.length; m++) {
@@ -18075,6 +18100,27 @@
             generateReportPreview();
           });
           actLbl.appendChild(aChk);
+
+          var actType = typeMap[act] || 'general';
+          var iconEl = document.createElement('i');
+          if (actType === 'period') {
+            iconEl.className = 'fas fa-clock';
+            iconEl.style.color = '#38BDF8';
+          } else if (actType === 'subject') {
+            iconEl.className = 'fas fa-book-open';
+            iconEl.style.color = '#34D399';
+          } else if (actType === 'activity') {
+            iconEl.className = 'fas fa-trophy';
+            iconEl.style.color = '#F472B6';
+          } else {
+            iconEl.className = 'fas fa-sun';
+            iconEl.style.color = '#FBBF24';
+          }
+          iconEl.style.fontSize = '11px';
+          iconEl.style.width = '14px';
+          iconEl.style.textAlign = 'center';
+          actLbl.appendChild(iconEl);
+
           var asp = document.createElement('span');
           asp.textContent = act;
           actLbl.appendChild(asp);
