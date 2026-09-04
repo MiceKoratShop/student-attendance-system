@@ -3991,6 +3991,132 @@
       text-shadow: 0 2px 10px rgba(0, 0, 0, 0.75), 0 0 18px rgba(255, 255, 255, 0.25) !important;
     }
     
+
+    /* =========================================================
+       LIGHT MODE: ALL CARDS PURE WHITE (#FFFFFF) WITH CRISP LIGHT BORDERS
+       ========================================================= */
+    [data-theme="light"] {
+      --bg-space: #F8FAFC !important;
+      --bg-surface-card: #FFFFFF !important;
+      --card-gradient: #FFFFFF !important;
+      --text-primary: #0F172A !important;
+      --text-secondary: #475569 !important;
+      --text-muted: #64748B !important;
+      --border-glass: #E2E8F0 !important;
+      --border-glass-light: #CBD5E1 !important;
+    }
+
+    [data-theme="light"] body {
+      background-color: #F8FAFC !important;
+      background-image: none !important;
+      color: #0F172A !important;
+    }
+
+    [data-theme="light"] .glass-card,
+    [data-theme="light"] .stat-card,
+    [data-theme="light"] #view-dashboard .stat-card,
+    [data-theme="light"] .today-hero-banner,
+    [data-theme="light"] .student-att-card,
+    [data-theme="light"] .modal-window-glass,
+    [data-theme="light"] .checkin-step-card,
+    [data-theme="light"] #report-preview-container,
+    [data-theme="light"] #printable-report-area {
+      background: #FFFFFF !important;
+      background-color: #FFFFFF !important;
+      border: 1px solid #E2E8F0 !important;
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.06), 0 2px 6px -1px rgba(0, 0, 0, 0.04) !important;
+      color: #0F172A !important;
+    }
+
+    [data-theme="light"] .glass-card:hover,
+    [data-theme="light"] .stat-card:hover,
+    [data-theme="light"] #view-dashboard .stat-card:hover {
+      border-color: rgba(255, 107, 0, 0.5) !important;
+      box-shadow: 0 8px 24px -3px rgba(255, 107, 0, 0.12), 0 4px 10px rgba(0, 0, 0, 0.06) !important;
+    }
+
+    [data-theme="light"] .stat-card {
+      border-left: 4.5px solid #FF6B00 !important;
+    }
+
+    [data-theme="light"] .card-title-text,
+    [data-theme="light"] .page-title,
+    [data-theme="light"] .hero-main-title,
+    [data-theme="light"] .stat-value,
+    [data-theme="light"] #view-dashboard .stat-value {
+      color: #0F172A !important;
+      text-shadow: none !important;
+    }
+
+    [data-theme="light"] .stat-label {
+      color: #64748B !important;
+    }
+
+    [data-theme="light"] .table-glass-container {
+      background: #FFFFFF !important;
+      border: 1px solid #E2E8F0 !important;
+    }
+
+    [data-theme="light"] .glass-table th {
+      background: #F1F5F9 !important;
+      color: #0F172A !important;
+      border-bottom: 2px solid #CBD5E1 !important;
+    }
+
+    [data-theme="light"] .glass-table td {
+      border-bottom: 1px solid #F1F5F9 !important;
+      color: #1E293B !important;
+    }
+
+    /* =========================================================
+       DROPDOWN SELECTS & OPTIONS: SOFT DARK GRAY BG & PURE WHITE TEXT
+       (Prevents white-on-white text disappearance across all browsers)
+       ========================================================= */
+    select,
+    select.select-glass,
+    .select-glass {
+      background: #25252D !important;
+      background-color: #25252D !important;
+      color: #FFFFFF !important;
+      border: 1px solid #3E3E4C !important;
+      border-radius: var(--radius-sm) !important;
+      font-weight: 500 !important;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+    }
+
+    select:focus,
+    select.select-glass:focus,
+    .select-glass:focus {
+      background: #2C2C36 !important;
+      background-color: #2C2C36 !important;
+      color: #FFFFFF !important;
+      border-color: #FF6B00 !important;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3), 0 0 14px rgba(255, 107, 0, 0.35) !important;
+    }
+
+    select option,
+    select.select-glass option,
+    .select-glass option,
+    option {
+      background-color: #25252D !important;
+      background: #25252D !important;
+      color: #FFFFFF !important;
+      padding: 10px 14px !important;
+      font-size: 13.5px !important;
+      font-weight: 500 !important;
+    }
+
+    select option:checked,
+    select option:hover,
+    .select-glass option:checked,
+    .select-glass option:hover,
+    option:checked,
+    option:hover {
+      background-color: #FF6B00 !important;
+      background: #FF6B00 !important;
+      color: #FFFFFF !important;
+    }
+
 </style>
 </head>
 <body class="mode-student">
@@ -17622,7 +17748,7 @@
 
       var paper = document.createElement('div');
       paper.style.padding = '24px';
-      paper.style.background = '#0F1523';
+      paper.style.background = '#141416';
       paper.style.borderRadius = 'var(--radius-sm)';
       paper.id = 'printable-report-area';
 
@@ -17658,21 +17784,21 @@
       kpiRow.className = 'grid-4';
       kpiRow.style.gap = '12px';
       kpiRow.style.marginBottom = '20px';
-      kpiRow.innerHTML = '<div class="glass-card" style="padding:14px; text-align:center; background:rgba(16,185,129,0.1); border-color:#10B981;">' +
-                         '  <div style="font-size:12px; color:#A7F3D0; font-weight:600;">มาเรียนปกติ (ครั้ง)</div>' +
-                         '  <div style="font-size:22px; font-weight:800; color:#10B981;">' + totPresent + '</div>' +
+      kpiRow.innerHTML = '<div class="glass-card" style="padding:14px; text-align:center; background:linear-gradient(165deg, #1C1815 0%, #151417 60%, #0E0E10 100%); border:1px solid #2A2420; border-left:4.5px solid #10B981; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.4);">' +
+                         '  <div style="font-size:12.5px; color:#34D399; font-weight:700; margin-bottom:2px;">มาเรียนปกติ (ครั้ง)</div>' +
+                         '  <div style="font-size:34px; font-weight:900; color:#FFFFFF; text-shadow:0 0 16px rgba(52,211,153,0.6); line-height:1.05;">' + totPresent + '</div>' +
                          '</div>' +
-                         '<div class="glass-card" style="padding:14px; text-align:center; background:rgba(255,107,0,0.1); border-color:#FF6B00;">' +
-                         '  <div style="font-size:12px; color:#FED7AA; font-weight:600;">มาสาย (ครั้ง)</div>' +
-                         '  <div style="font-size:22px; font-weight:800; color:#FF6B00;">' + totLate + '</div>' +
+                         '<div class="glass-card" style="padding:14px; text-align:center; background:linear-gradient(165deg, #1C1815 0%, #151417 60%, #0E0E10 100%); border:1px solid #2A2420; border-left:4.5px solid #FF6B00; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.4);">' +
+                         '  <div style="font-size:12.5px; color:#FED7AA; font-weight:700; margin-bottom:2px;">มาสาย (ครั้ง)</div>' +
+                         '  <div style="font-size:28px; font-weight:900; color:#FFFFFF; line-height:1.05;">' + totLate + '</div>' +
                          '</div>' +
-                         '<div class="glass-card" style="padding:14px; text-align:center; background:rgba(234,179,8,0.1); border-color:#EAB308;">' +
-                         '  <div style="font-size:12px; color:#FEF08A; font-weight:600;">ลากิจ/ป่วย (ครั้ง)</div>' +
-                         '  <div style="font-size:22px; font-weight:800; color:#EAB308;">' + totLeave + '</div>' +
+                         '<div class="glass-card" style="padding:14px; text-align:center; background:linear-gradient(165deg, #1C1815 0%, #151417 60%, #0E0E10 100%); border:1px solid #2A2420; border-left:4.5px solid #EAB308; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.4);">' +
+                         '  <div style="font-size:12.5px; color:#FEF08A; font-weight:700; margin-bottom:2px;">ลากิจ/ป่วย (ครั้ง)</div>' +
+                         '  <div style="font-size:28px; font-weight:900; color:#FFFFFF; line-height:1.05;">' + totLeave + '</div>' +
                          '</div>' +
-                         '<div class="glass-card" style="padding:14px; text-align:center; background:rgba(0,240,255,0.1); border-color:var(--cyan-400);">' +
-                         '  <div style="font-size:12px; color:#BAE6FD; font-weight:600;">อัตราการเข้าเรียนเฉลี่ย</div>' +
-                         '  <div style="font-size:22px; font-weight:800; color:var(--cyan-400);">' + avgRate + '%</div>' +
+                         '<div class="glass-card" style="padding:14px; text-align:center; background:linear-gradient(165deg, #1C1815 0%, #151417 60%, #0E0E10 100%); border:1px solid #2A2420; border-left:4.5px solid #FF9A2E; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.4);">' +
+                         '  <div style="font-size:12.5px; color:#FED7AA; font-weight:700; margin-bottom:2px;">อัตราการเข้าเรียนเฉลี่ย</div>' +
+                         '  <div style="font-size:28px; font-weight:900; color:#FF9A2E; line-height:1.05;">' + avgRate + '%</div>' +
                          '</div>';
       paper.appendChild(kpiRow);
 
@@ -18484,7 +18610,7 @@
         html2canvas(targetEl, {
           scale: 2,
           useCORS: true,
-          backgroundColor: '#0F1523'
+          backgroundColor: '#141416'
         }).then(function(canvas) {
           hideLoadingPopup();
           var link = document.createElement('a');
@@ -18626,7 +18752,7 @@
 
       var paper = document.createElement('div');
       paper.style.padding = '24px';
-      paper.style.background = '#0F1523';
+      paper.style.background = '#141416';
       paper.style.borderRadius = 'var(--radius-sm)';
       paper.id = 'printable-report-area';
 
@@ -18750,29 +18876,29 @@
       statsBar.style.gap = '8px';
       statsBar.style.marginBottom = '16px';
 
-      statsBar.innerHTML = '<div style="background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); border-radius: 8px; padding: 8px; text-align: center;">' +
-                             '<div style="font-size: 11px; color: #10B981; font-weight: 600;">มาเรียน</div>' +
-                             '<div style="font-size: 18px; font-weight: 800; color: #10B981;">' + countPresent + '</div>' +
+      statsBar.innerHTML = '<div style="background: linear-gradient(165deg, #1C1815 0%, #151417 60%, #0E0E10 100%); border: 1px solid #2A2420; border-left: 4.5px solid #10B981; border-radius: 10px; padding: 10px 8px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.4);">' +
+                             '<div style="font-size: 12px; color: #34D399; font-weight: 700; margin-bottom: 2px;">มาเรียน</div>' +
+                             '<div style="font-size: 32px; font-weight: 900; color: #FFFFFF; text-shadow: 0 0 16px rgba(52,211,153,0.6); line-height: 1.1;">' + countPresent + '</div>' +
                            '</div>' +
-                           '<div style="background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; padding: 8px; text-align: center;">' +
-                             '<div style="font-size: 11px; color: #EF4444; font-weight: 600;">ขาดเรียน</div>' +
-                             '<div style="font-size: 18px; font-weight: 800; color: #EF4444;">' + countAbsent + '</div>' +
+                           '<div style="background: linear-gradient(165deg, #1C1815 0%, #151417 60%, #0E0E10 100%); border: 1px solid #2A2420; border-left: 4.5px solid #EF4444; border-radius: 10px; padding: 10px 8px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.4);">' +
+                             '<div style="font-size: 12px; color: #F87171; font-weight: 700; margin-bottom: 2px;">ขาดเรียน</div>' +
+                             '<div style="font-size: 26px; font-weight: 900; color: #FFFFFF; line-height: 1.1;">' + countAbsent + '</div>' +
                            '</div>' +
-                           '<div style="background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3); border-radius: 8px; padding: 8px; text-align: center;">' +
-                             '<div style="font-size: 11px; color: #F59E0B; font-weight: 600;">ลาป่วย</div>' +
-                             '<div style="font-size: 18px; font-weight: 800; color: #F59E0B;">' + countSick + '</div>' +
+                           '<div style="background: linear-gradient(165deg, #1C1815 0%, #151417 60%, #0E0E10 100%); border: 1px solid #2A2420; border-left: 4.5px solid #F59E0B; border-radius: 10px; padding: 10px 8px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.4);">' +
+                             '<div style="font-size: 12px; color: #FBBF24; font-weight: 700; margin-bottom: 2px;">ลาป่วย</div>' +
+                             '<div style="font-size: 26px; font-weight: 900; color: #FFFFFF; line-height: 1.1;">' + countSick + '</div>' +
                            '</div>' +
-                           '<div style="background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.3); border-radius: 8px; padding: 8px; text-align: center;">' +
-                             '<div style="font-size: 11px; color: #8B5CF6; font-weight: 600;">ลากิจ</div>' +
-                             '<div style="font-size: 18px; font-weight: 800; color: #8B5CF6;">' + countLeave + '</div>' +
+                           '<div style="background: linear-gradient(165deg, #1C1815 0%, #151417 60%, #0E0E10 100%); border: 1px solid #2A2420; border-left: 4.5px solid #8B5CF6; border-radius: 10px; padding: 10px 8px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.4);">' +
+                             '<div style="font-size: 12px; color: #A78BFA; font-weight: 700; margin-bottom: 2px;">ลากิจ</div>' +
+                             '<div style="font-size: 26px; font-weight: 900; color: #FFFFFF; line-height: 1.1;">' + countLeave + '</div>' +
                            '</div>' +
-                           '<div style="background: rgba(236,72,153,0.15); border: 1px solid rgba(236,72,153,0.3); border-radius: 8px; padding: 8px; text-align: center;">' +
-                             '<div style="font-size: 11px; color: #EC4899; font-weight: 600;">มาสาย</div>' +
-                             '<div style="font-size: 18px; font-weight: 800; color: #EC4899;">' + countLate + '</div>' +
+                           '<div style="background: linear-gradient(165deg, #1C1815 0%, #151417 60%, #0E0E10 100%); border: 1px solid #2A2420; border-left: 4.5px solid #EC4899; border-radius: 10px; padding: 10px 8px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.4);">' +
+                             '<div style="font-size: 12px; color: #F472B6; font-weight: 700; margin-bottom: 2px;">มาสาย</div>' +
+                             '<div style="font-size: 26px; font-weight: 900; color: #FFFFFF; line-height: 1.1;">' + countLate + '</div>' +
                            '</div>' +
-                           '<div style="background: rgba(255,107,0,0.15); border: 1px solid rgba(255,107,0,0.3); border-radius: 8px; padding: 8px; text-align: center;">' +
-                             '<div style="font-size: 11px; color: #FF6B00; font-weight: 600;">รวมทั้งหมด</div>' +
-                             '<div style="font-size: 18px; font-weight: 800; color: #FF6B00;">' + totalAll + ' (' + attRate + '%)</div>' +
+                           '<div style="background: linear-gradient(165deg, #1C1815 0%, #151417 60%, #0E0E10 100%); border: 1px solid #2A2420; border-left: 4.5px solid #FF6B00; border-radius: 10px; padding: 10px 8px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.4);">' +
+                             '<div style="font-size: 12px; color: #FF6B00; font-weight: 700; margin-bottom: 2px;">รวมทั้งหมด</div>' +
+                             '<div style="font-size: 26px; font-weight: 900; color: #FFFFFF; line-height: 1.1;">' + totalAll + ' (' + attRate + '%)</div>' +
                            '</div>';
       paper.appendChild(statsBar);
 
@@ -18970,7 +19096,7 @@
           scale: 2,
           useCORS: true,
           allowTaint: true,
-          backgroundColor: '#0F1523',
+          backgroundColor: '#141416',
           logging: false
         }).then(function(canvas) {
           hideLoadingPopup();
