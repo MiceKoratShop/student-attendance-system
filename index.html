@@ -12016,6 +12016,25 @@
       });
     }
 
+    function transferLiveAttendanceToRoomList() {
+      var targetClass = getSelectedAttendanceClasses();
+      var attDateEl = document.getElementById('att-date-select');
+      var targetDate = (attDateEl && attDateEl.value) ? attDateEl.value : (AppState.selectedDate || getTodayDateString());
+      var attActSelect = document.getElementById('att-activity-select');
+      var targetAct = attActSelect ? attActSelect.value : 'all';
+
+      showLoadingPopup('กำลังดึงรายชื่อที่เช็คชื่อล่าสุด...', 'กำลังตรวจสอบข้อมูลจากระบบเช็คชื่อสดและ Face Scan');
+
+      var sess = AppState.activeSession || (AppState.activeSessions && AppState.activeSessions[0]) || null;
+      if (sess && typeof transferLiveAttendanceForSession === 'function') {
+        transferLiveAttendanceForSession(sess);
+        return;
+      }
+
+      loadAttendanceDataForSelectedDate();
+      showToast('ดึงข้อมูลการเช็คชื่อล่าสุดเข้าสู่ตารางเรียบร้อยแล้ว ✅', 'success');
+    }
+
     function transferLiveAttendanceForSession(sess) {
       if (!sess) return;
       var attClassInput = document.getElementById('att-class-select');
@@ -20585,6 +20604,22 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
       return str;
     }
 
+    function loadSafeFaceImage(url) {
+      return new Promise(function(resolve, reject) {
+        if (!url || url.length < 15) return reject(new Error('Invalid image URL'));
+        var img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = function() { resolve(img); };
+        img.onerror = function() {
+          var img2 = new Image();
+          img2.onload = function() { resolve(img2); };
+          img2.onerror = function(e) { reject(e); };
+          img2.src = url;
+        };
+        img.src = url;
+      });
+    }
+
     var AIFaceScannerState = {
       stream: null,
       facingMode: 'environment', // 'user' (front) or 'environment' (back)
@@ -20593,7 +20628,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
       faceMatcher: null,
       soundEnabled: true,
       audioCtx: null,
-      maxDescriptorDistance: 0.55, // balanced match threshold for classroom recognition (0.55 = 45-100% match)
+      maxDescriptorDistance: 0.58, // balanced sweet spot for classroom face recognition (42-100% match)
       targetSession: null,
       targetClass: 'all',
       targetActivity: 'เช็คชื่อมาเรียน',
@@ -20649,8 +20684,8 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
       var numVal = parseInt(val, 10) || 60;
       var lbl = document.getElementById('face-match-threshold-val');
       if (lbl) lbl.textContent = numVal + '%';
-      // Balanced mapping: 40% slider -> 0.65 distance, 60% slider -> 0.55 distance, 80% slider -> 0.45 distance
-      AIFaceScannerState.maxDescriptorDistance = 0.85 - (numVal * 0.5 / 100);
+      // Balanced mapping: 40% slider -> 0.68 distance, 60% slider -> 0.58 distance, 80% slider -> 0.48 distance
+      AIFaceScannerState.maxDescriptorDistance = 0.88 - (numVal * 0.5 / 100);
       if (AIFaceScannerState.faceMatcher && AIFaceScannerState.labeledDescriptors) {
         AIFaceScannerState.faceMatcher = new faceapi.FaceMatcher(AIFaceScannerState.labeledDescriptors, AIFaceScannerState.maxDescriptorDistance);
       }
@@ -20692,6 +20727,12 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
       var classDisplay = (targetClass === 'all' || targetClass === 'ทุกห้องเรียน') ? 'ทุกห้องเรียน' : ('ห้อง ' + targetClass.replace(/^ห้อง\s*/, ''));
       if (infoEl) infoEl.textContent = 'ห้อง: ' + classDisplay + ' • วิชา: ' + targetAct + ' (วันที่ ' + formatThaiDate(targetDate) + ')';
 
+      // Reset recent chips UI
+      var recentChips = document.getElementById('face-scan-recent-chips');
+      if (recentChips) {
+        recentChips.innerHTML = '<div style="color: #64748B; font-size: 12px; display: flex; align-items: center; gap: 6px; padding: 10px 0;"><i class="fas fa-sparkles" style="color: var(--cyan-400);"></i> ระบบพร้อมสแกน... แพนกล้องส่องไปที่ใบหน้านักศึกษาได้ทันที</div>';
+      }
+
       updateFaceScanLiveCounters();
       openModal('modal-ai-face-scanner');
 
@@ -20711,6 +20752,20 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
       var video = document.getElementById('face-scanner-video');
       if (video) video.srcObject = null;
       closeModal('modal-ai-face-scanner');
+
+      // If faces were recognized during this session, make sure they are imported into attendance list!
+      if (AIFaceScannerState.recentRecognizedList && AIFaceScannerState.recentRecognizedList.length > 0) {
+        confirmAndSyncFaceScanToDatabase();
+      } else {
+        // If attendance view is active, ensure list is visible
+        var attSection = document.getElementById('view-attendance');
+        if (attSection && attSection.classList.contains('active')) {
+          var listContainer = document.getElementById('attendance-student-list');
+          if (!listContainer || listContainer.children.length <= 1) {
+            loadAttendanceDataForSelectedDate();
+          }
+        }
+      }
     }
 
     function loadFaceApiModelsAndDescriptors(targetClass) {
@@ -20747,9 +20802,31 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
         AIFaceScannerState.faceMatcher = matcher;
         var enrolledCount = (AIFaceScannerState.labeledDescriptors || []).length;
         if (loadingOverlay) loadingOverlay.style.display = 'none';
+
+        var statusBadge = document.getElementById('face-scanner-status-badge');
+        var statusText = document.getElementById('face-scanner-status-text');
+
         if (enrolledCount === 0) {
+          if (statusBadge) {
+            statusBadge.style.background = 'rgba(239, 68, 68, 0.9)';
+            statusBadge.style.borderColor = '#EF4444';
+          }
+          if (statusText) {
+            statusText.innerHTML = '<i class="fas fa-triangle-exclamation"></i> ห้องนี้ยังไม่มีรูปใบหน้านักศึกษาในระบบ! กรุณากดปุ่ม "+ ลงทะเบียนใบหน้า" ด้านล่าง';
+          }
+          var recentChips = document.getElementById('face-scan-recent-chips');
+          if (recentChips) {
+            recentChips.innerHTML = '<div style="background: rgba(239,68,68,0.15); border: 1.5px dashed rgba(239,68,68,0.5); border-radius: 10px; padding: 10px 14px; width: 100%; text-align: center; color: #FCA5A5; font-size: 12px;"><i class="fas fa-user-xmark" style="font-size: 16px; margin-right: 6px;"></i>ยังไม่พบข้อมูลใบหน้านักศึกษาในห้องนี้ ระบบจึงตรวจพบใบหน้าได้แต่ยังไม่ทราบว่าเป็นใคร<button type="button" class="btn-glass btn-orange btn-sm-glass" onclick="openAIFaceEnrollmentModal(\'\', AIFaceScannerState.targetClass)" style="margin-left: 10px; padding: 3px 10px; font-size: 11px;">+ ลงทะเบียนใบหน้าเดี๋ยวนี้</button></div>';
+          }
           showToast('⚠️ ยังไม่มีข้อมูลใบหน้านักศึกษาในห้องนี้ กรุณากดปุ่ม "+ ลงทะเบียนใบหน้า" เพื่อถ่ายรูปหรือเพิ่มรูปนักศึกษา', 'warning');
         } else {
+          if (statusBadge) {
+            statusBadge.style.background = '#18181B';
+            statusBadge.style.borderColor = 'rgba(0, 240, 255, 0.4)';
+          }
+          if (statusText) {
+            statusText.textContent = '🟢 กำลังสแกน... พร้อมจับคู่ใบหน้านักศึกษา (' + enrolledCount + ' คน)';
+          }
           showToast('โหลดข้อมูลใบหน้านักศึกษาพร้อมใช้งาน (' + enrolledCount + ' คน) ✨', 'success');
         }
         startFaceCameraStream();
@@ -20765,7 +20842,15 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
     }
 
     function buildStudentFaceMatcher(targetClass, progressCb) {
+      // Ensure students list is loaded
       var students = AppState.students || [];
+      if (students.length === 0) {
+        var local = localStorage.getItem('gas_cached_students') || localStorage.getItem('gas_student_app_students');
+        if (local) {
+          try { students = JSON.parse(local); AppState.students = students; } catch (e) {}
+        }
+      }
+
       var roomStudents = [];
       for (var s = 0; s < students.length; s++) {
         if (isClassMatch(targetClass, students[s].className)) {
@@ -20774,6 +20859,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
       }
       if (roomStudents.length === 0) roomStudents = students;
 
+      var allAtt = getLocalStorageAttendance();
       var labeledDescriptors = [];
       var total = roomStudents.length;
       var processed = 0;
@@ -20786,6 +20872,18 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
           if (progressCb) progressCb(processed, total);
 
           var rawPhoto = std.photo || std.selfiePhoto || std.avatar || std.imageUrl || '';
+          
+          // Fallback: If student has no photo in profile, check previous check-in selfies
+          if (!rawPhoto || rawPhoto.length < 15) {
+            for (var a = allAtt.length - 1; a >= 0; a--) {
+              if (String(allAtt[a].studentId).trim() === String(std.studentId).trim() && allAtt[a].selfiePhoto && allAtt[a].selfiePhoto.length > 15) {
+                rawPhoto = allAtt[a].selfiePhoto;
+                std.photo = rawPhoto;
+                break;
+              }
+            }
+          }
+
           var photoUrl = formatFacePhotoUrl(rawPhoto);
           if (!photoUrl || photoUrl.length < 15 || photoUrl === '-' || photoUrl === 'null') {
             return Promise.resolve();
@@ -20797,15 +20895,15 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
             return Promise.resolve();
           }
 
-          return faceapi.fetchImage(photoUrl).then(function(img) {
-            // Dual-pass face detection: Pass 1 standard, Pass 2 fallback with higher sensitivity
-            var opt1 = new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.20 });
+          return loadSafeFaceImage(photoUrl).then(function(img) {
+            // Dual-pass face detection: Pass 1 standard (320px), Pass 2 fallback with higher sensitivity (416px)
+            var opt1 = new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.18 });
             return faceapi.detectSingleFace(img, opt1)
               .withFaceLandmarks()
               .withFaceDescriptor()
               .then(function(detection) {
                 if (detection && detection.descriptor) return detection;
-                var opt2 = new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.12 });
+                var opt2 = new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.10 });
                 return faceapi.detectSingleFace(img, opt2).withFaceLandmarks().withFaceDescriptor();
               });
           }).then(function(detection) {
@@ -20855,7 +20953,6 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
           video.onloadedmetadata = function() {
             video.play();
             AIFaceScannerState.isDetecting = true;
-            if (statusText) statusText.textContent = '🟢 กำลังตรวจจับใบหน้าแบบเรียลไทม์...';
             startFaceRecognitionLoop();
           };
         }
@@ -20876,7 +20973,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
         var displaySize = { width: video.clientWidth || 640, height: video.clientHeight || 480 };
         faceapi.matchDimensions(canvas, displaySize);
 
-        var options = new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.25 });
+        var options = new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.22 });
 
         faceapi.detectAllFaces(video, options)
           .withFaceLandmarks()
@@ -20896,13 +20993,16 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
                   ? AIFaceScannerState.faceMatcher.findBestMatch(descriptor)
                   : { label: 'unknown', distance: 1.0 };
 
-                var isMatched = (bestMatch.label !== 'unknown' && bestMatch.distance <= AIFaceScannerState.maxDescriptorDistance);
+                var matchLabel = bestMatch.label || bestMatch._label || 'unknown';
+                var matchDist = (typeof bestMatch.distance === 'number') ? bestMatch.distance : (typeof bestMatch._distance === 'number' ? bestMatch._distance : 1.0);
+
+                var isMatched = (matchLabel !== 'unknown' && matchDist <= AIFaceScannerState.maxDescriptorDistance);
                 var studentObj = null;
 
                 if (isMatched) {
                   var sList = AppState.students || [];
                   for (var s = 0; s < sList.length; s++) {
-                    if (String(sList[s].studentId).trim() === String(bestMatch.label).trim()) {
+                    if (String(sList[s].studentId).trim() === String(matchLabel).trim()) {
                       studentObj = sList[s];
                       break;
                     }
@@ -20932,7 +21032,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
                 ctx.stroke();
 
                 // Draw Name / Status Tag
-                var confPct = Math.round((1.0 - Math.min(1.0, bestMatch.distance)) * 100);
+                var confPct = Math.round((1.0 - Math.min(1.0, matchDist)) * 100);
                 var tagText = studentObj
                   ? ('✨ ' + studentObj.name + ' (' + confPct + '%)')
                   : '🔍 ตรวจพบใบหน้า';
@@ -20990,7 +21090,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
         checkinStatus = 'Late';
       }
 
-      // Update LocalStorage attendance
+      // 1. Immediately update LocalStorage attendance
       var allAtt = getLocalStorageAttendance();
       var foundIdx = -1;
       for (var a = 0; a < allAtt.length; a++) {
@@ -21021,7 +21121,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
       }
       localStorage.setItem('gas_student_app_attendance', JSON.stringify(allAtt));
 
-      // Add to recognized list tracking
+      // 2. Add to recognized list tracking
       var alreadyIn = false;
       if (!AIFaceScannerState.recentRecognizedList) AIFaceScannerState.recentRecognizedList = [];
       for (var r = 0; r < AIFaceScannerState.recentRecognizedList.length; r++) {
@@ -21041,11 +21141,36 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
         });
       }
 
-      // Add to recognized chips UI
+      // 3. Immediately update student card in attendance list if rendered on screen
+      var card = document.querySelector('#attendance-student-list .student-att-card[data-student-id="' + sId + '"]');
+      if (card) {
+        var radioPres = card.querySelector('input[type="radio"][value="Present"]');
+        if (radioPres) radioPres.checked = true;
+        var noteInput = card.querySelector('.student-att-note-input');
+        if (noteInput && !noteInput.value) {
+          noteInput.value = 'สแกนใบหน้า AI (' + confPct + '%)';
+        }
+        var subInfo = card.querySelector('.student-sub-info');
+        if (subInfo) {
+          var baseSub = subInfo.textContent.split(' • 🏷️')[0];
+          subInfo.textContent = baseSub + ' • 🏷️ ' + targetAct + ' (' + checkinTimeStr + ' สแกน AI)';
+        }
+      }
+      if (AppState.currentAttendanceStudents && Array.isArray(AppState.currentAttendanceStudents)) {
+        for (var cs = 0; cs < AppState.currentAttendanceStudents.length; cs++) {
+          if (String(AppState.currentAttendanceStudents[cs].studentId).trim() === String(sId).trim()) {
+            AppState.currentAttendanceStudents[cs].status = checkinStatus;
+            AppState.currentAttendanceStudents[cs].note = 'สแกนใบหน้า AI (' + confPct + '%)';
+          }
+        }
+      }
+      updateAttendanceStickyBar();
+
+      // 4. Add to recognized chips UI
       addRecognizedFaceChip(studentObj, checkinTimeStr, checkinStatus, confPct);
       updateFaceScanLiveCounters();
 
-      // Sync with Google Sheets Attendance Database directly
+      // 5. Sync with Google Sheets Attendance Database directly in background
       if (isGASAvailable()) {
         var recordToSave = [{
           date: targetDate,
@@ -21078,7 +21203,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
       }
 
       // Remove initial placeholder if present
-      if (container.firstElementChild && container.firstElementChild.textContent.indexOf('ระบบพร้อมสแกน') > -1) {
+      if (container.firstElementChild && (container.firstElementChild.textContent.indexOf('ระบบพร้อมสแกน') > -1 || container.firstElementChild.textContent.indexOf('ยังไม่พบข้อมูล') > -1)) {
         container.innerHTML = '';
       }
 
@@ -21128,37 +21253,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
         });
       }
 
-      // 1. Immediately update UI in attendance student cards (#attendance-student-list)
-      for (var r = 0; r < listToSave.length; r++) {
-        var item = listToSave[r];
-        var sId = item.studentId;
-        var card = document.querySelector('#attendance-student-list .student-att-card[data-student-id="' + sId + '"]');
-        if (card) {
-          var radioPres = card.querySelector('input[type="radio"][value="Present"]');
-          if (radioPres) radioPres.checked = true;
-          var noteInput = card.querySelector('.student-att-note-input');
-          if (noteInput && !noteInput.value) {
-            noteInput.value = item.note;
-          }
-          var subInfo = card.querySelector('.student-sub-info');
-          if (subInfo && recognized[r] && recognized[r].timeStr) {
-            var baseSub = subInfo.textContent.split(' • 🏷️')[0];
-            subInfo.textContent = baseSub + ' • 🏷️ ' + targetAct + ' (' + recognized[r].timeStr + ' สแกน AI)';
-          }
-        }
-        // Also update in AppState.currentAttendanceStudents
-        if (AppState.currentAttendanceStudents && Array.isArray(AppState.currentAttendanceStudents)) {
-          for (var cs = 0; cs < AppState.currentAttendanceStudents.length; cs++) {
-            if (String(AppState.currentAttendanceStudents[cs].studentId).trim() === String(sId).trim()) {
-              AppState.currentAttendanceStudents[cs].status = item.status || 'Present';
-              AppState.currentAttendanceStudents[cs].note = item.note;
-            }
-          }
-        }
-      }
-      updateAttendanceStickyBar();
-
-      // 2. Also save to localStorage
+      // 1. Immediately update LocalStorage attendance map
       var allAtt = getLocalStorageAttendance();
       var mapKeys = {};
       for (var k = 0; k < listToSave.length; k++) {
@@ -21173,29 +21268,57 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
       for (var m = 0; m < listToSave.length; m++) newAllAtt.push(listToSave[m]);
       localStorage.setItem('gas_student_app_attendance', JSON.stringify(newAllAtt));
 
-      // 3. Close modal immediately so user sees the updated cards
-      closeAIFaceScannerModal();
+      // 2. Prepare pendingTransferredRecords so loadAttendanceDataForSelectedDate renders cards with ALL scanned students marked Present INSTANTLY
+      var currentAttendanceMap = getAttendanceMapFromLocalStorage(targetDate, targetAct);
+      for (var tr = 0; tr < listToSave.length; tr++) {
+        var item = listToSave[tr];
+        var sId = item.studentId;
+        var rTime = (recognized[tr] && recognized[tr].timeStr) || new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+        currentAttendanceMap[sId] = {
+          status: item.status || 'Present',
+          checkinTime: rTime,
+          note: item.note,
+          activityName: targetAct,
+          date: targetDate
+        };
+        currentAttendanceMap[String(sId).toLowerCase()] = currentAttendanceMap[sId];
+      }
+      AppState.pendingTransferredRecords = currentAttendanceMap;
+
+      // 3. Close modal immediately
+      AIFaceScannerState.isDetecting = false;
+      if (AIFaceScannerState.stream) {
+        try {
+          var tracks = AIFaceScannerState.stream.getTracks();
+          for (var t = 0; t < tracks.length; t++) tracks[t].stop();
+        } catch (e) {}
+        AIFaceScannerState.stream = null;
+      }
+      var video = document.getElementById('face-scanner-video');
+      if (video) video.srcObject = null;
+      closeModal('modal-ai-face-scanner');
+
+      // 4. Force immediate render of the attendance list on the main screen
+      loadAttendanceDataForSelectedDate();
 
       var classDisplay = (targetClass === 'all' || targetClass === 'ทุกห้องเรียน') ? 'ทุกห้องเรียน' : ('ห้อง ' + targetClass.replace(/^ห้อง\s*/, ''));
       showLoadingPopup('กำลังบันทึกผลการเช็คชื่อ...', 'กำลังนำส่งข้อมูล ' + listToSave.length + ' คน (' + classDisplay + ' • ' + targetAct + ') เข้าสู่ Google Sheets');
 
+      // 5. Send batch to Google Sheets in background
       if (isGASAvailable()) {
         google.script.run
           .withSuccessHandler(function(res) {
             hideLoadingPopup();
             showToast('บันทึกผลการสแกนใบหน้า ' + listToSave.length + ' คน ลง Google Sheets (' + targetAct + ') สำเร็จ! 🎉', 'success');
-            loadAttendanceDataForSelectedDate();
           })
           .withFailureHandler(function(err) {
             hideLoadingPopup();
             showToast('เกิดข้อผิดพลาดในการบันทึก: ' + (err.message || err), 'error');
-            loadAttendanceDataForSelectedDate();
           })
           .saveAttendanceBatch(listToSave, targetAct);
       } else {
         hideLoadingPopup();
         showToast('บันทึกผลการสแกนใบหน้า ' + listToSave.length + ' คน ลงฐานข้อมูล (' + targetAct + ') เรียบร้อย! 🎉', 'success');
-        loadAttendanceDataForSelectedDate();
       }
     }
 
