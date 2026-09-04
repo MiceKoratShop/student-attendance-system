@@ -3320,6 +3320,319 @@
       }
     }
 
+  
+    /* =========================================================================
+       AI FACE SCANNER - PROFESSIONAL MOBILE-FIRST UX / UI
+       ========================================================================= */
+    #modal-ai-face-scanner .modal-window-glass {
+      max-width: 760px;
+      width: 95%;
+      padding: 18px 20px;
+      background: linear-gradient(180deg, #141416 0%, #0D0D0F 100%);
+      border: 1.5px solid rgba(0, 240, 255, 0.3);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.85), 0 0 35px rgba(0, 240, 255, 0.15);
+      border-radius: 18px;
+    }
+
+    .face-scanner-viewport {
+      position: relative;
+      width: 100%;
+      height: 350px;
+      max-height: 50vh;
+      background: #000;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 2px solid rgba(0, 240, 255, 0.45);
+      box-shadow: 0 0 25px rgba(0, 240, 255, 0.2);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* DIRECTLY BELOW CAMERA: Live Recognized Students Feed */
+    .face-scan-feed-container {
+      background: rgba(16, 185, 129, 0.07);
+      border: 1.5px solid rgba(16, 185, 129, 0.38);
+      border-radius: 14px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+    }
+
+    .face-scan-feed-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .face-scan-feed-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .face-scan-chips-scroll {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 2px 2px 6px;
+      min-height: 52px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(16, 185, 129, 0.4) transparent;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .face-scan-chips-scroll::-webkit-scrollbar {
+      height: 4px;
+    }
+    .face-scan-chips-scroll::-webkit-scrollbar-thumb {
+      background: rgba(16, 185, 129, 0.4);
+      border-radius: 4px;
+    }
+
+    .face-scan-placeholder {
+      color: #64748B;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 4px;
+      font-weight: 500;
+    }
+
+    .face-recognized-chip {
+      background: linear-gradient(135deg, rgba(20, 20, 22, 0.95), rgba(13, 13, 15, 0.98));
+      border: 1.5px solid rgba(16, 185, 129, 0.55);
+      border-radius: 20px;
+      padding: 5px 12px 5px 6px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      flex-shrink: 0;
+      animation: fadeIn 0.3s ease;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5), 0 0 10px rgba(16, 185, 129, 0.25);
+    }
+
+    .face-chip-photo {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1.5px solid #10B981;
+      background: #000;
+      flex-shrink: 0;
+    }
+
+    .face-chip-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(16, 185, 129, 0.2);
+      border: 1.5px solid #10B981;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: #10B981;
+      flex-shrink: 0;
+    }
+
+    .face-chip-info {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.25;
+    }
+
+    .face-chip-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: #FFFFFF;
+      white-space: nowrap;
+    }
+
+    .face-chip-meta {
+      font-size: 10px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* Clean Organized Toolbar */
+    .face-scan-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      background: #18181B;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 8px 12px;
+      margin-bottom: 12px;
+    }
+
+    .face-scan-toolbar-left {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .face-scan-toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .face-btn-ctrl {
+      font-size: 11.5px !important;
+      padding: 6px 10px !important;
+      border-radius: 8px !important;
+      font-weight: 700 !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      white-space: nowrap !important;
+    }
+
+    .face-scan-threshold-box {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.35);
+      padding: 4px 8px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .face-scan-threshold-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .face-scan-slider {
+      width: 75px;
+      accent-color: var(--cyan-400);
+      cursor: pointer;
+      height: 4px;
+    }
+
+    /* Action Buttons */
+    .face-scan-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .face-scan-action-btns {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      flex: 1 1 auto;
+      justify-content: flex-end;
+    }
+
+    .face-btn-confirm {
+      font-weight: 800 !important;
+      padding: 10px 18px !important;
+      font-size: 13px !important;
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.4) !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 8px !important;
+      flex: 1 1 auto;
+    }
+
+    .face-btn-close {
+      font-size: 12px !important;
+      padding: 10px 14px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 6px !important;
+      flex: 0 0 auto;
+    }
+
+    /* Mobile Responsive Optimizations for Face Scanner */
+    @media (max-width: 600px) {
+      #modal-ai-face-scanner {
+        padding: 0 !important;
+      }
+      #modal-ai-face-scanner .modal-window-glass {
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: 96vh !important;
+        border-radius: 18px 18px 0 0 !important;
+        padding: 12px 10px 16px !important;
+      }
+      .face-scanner-viewport {
+        height: clamp(190px, 34vh, 260px) !important;
+        border-radius: 10px !important;
+        margin-bottom: 8px !important;
+      }
+      .face-scan-feed-container {
+        padding: 8px 10px !important;
+        border-radius: 10px !important;
+        margin-bottom: 8px !important;
+      }
+      .face-scan-feed-header {
+        margin-bottom: 6px !important;
+      }
+      .face-scan-chips-scroll {
+        min-height: 48px !important;
+        padding-bottom: 4px !important;
+      }
+      .face-scan-toolbar {
+        padding: 6px 8px !important;
+        margin-bottom: 8px !important;
+        gap: 6px !important;
+      }
+      .face-btn-ctrl {
+        font-size: 11px !important;
+        padding: 5px 8px !important;
+      }
+      .face-scan-threshold-box {
+        padding: 3px 6px !important;
+      }
+      .face-scan-slider {
+        width: 60px !important;
+      }
+      .face-scan-actions {
+        flex-direction: column !important;
+        gap: 6px !important;
+      }
+      .face-scan-tip {
+        display: none !important;
+      }
+      .face-scan-action-btns {
+        width: 100% !important;
+        flex-direction: column !important;
+        gap: 6px !important;
+      }
+      .face-btn-confirm {
+        width: 100% !important;
+        padding: 11px 12px !important;
+        font-size: 13px !important;
+      }
+      .face-btn-close {
+        width: 100% !important;
+        padding: 8px 12px !important;
+      }
+    }
+
   </style>
 </head>
 <body class="mode-student">
@@ -20730,7 +21043,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
       // Reset recent chips UI
       var recentChips = document.getElementById('face-scan-recent-chips');
       if (recentChips) {
-        recentChips.innerHTML = '<div style="color: #64748B; font-size: 12px; display: flex; align-items: center; gap: 6px; padding: 10px 0;"><i class="fas fa-sparkles" style="color: var(--cyan-400);"></i> ระบบพร้อมสแกน... แพนกล้องส่องไปที่ใบหน้านักศึกษาได้ทันที</div>';
+        recentChips.innerHTML = '<div class="face-scan-placeholder"><i class="fas fa-sparkles" style="color: var(--cyan-400);"></i> ระบบพร้อมสแกน... แพนกล้องส่องไปที่ใบหน้านักศึกษาได้ทันที</div>';
       }
 
       updateFaceScanLiveCounters();
@@ -21078,6 +21391,13 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
 
       playFaceRecognitionSuccessChime();
 
+      // Haptic vibration feedback (1 short pulse for mobile)
+      try {
+        if (typeof navigator !== 'undefined' && navigator.vibrate) {
+          navigator.vibrate(60);
+        }
+      } catch (vibErr) {}
+
       var targetDate = AIFaceScannerState.targetDate || getTodayDateString();
       var targetAct = AIFaceScannerState.targetActivity || 'เช็คชื่อมาเรียน';
       var sess = AIFaceScannerState.targetSession;
@@ -21207,29 +21527,49 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
         container.innerHTML = '';
       }
 
-      var rawPhoto = studentObj.photo || studentObj.selfiePhoto || studentObj.avatar || '';
-      var photoUrl = formatFacePhotoUrl(rawPhoto);
-      var photoTag = (photoUrl && photoUrl.length > 15 && photoUrl !== '-')
-        ? '<img src="' + escapeHtml(photoUrl) + '" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1.5px solid #10B981;" />'
-        : '<div style="width: 28px; height: 28px; border-radius: 50%; background: #18181B; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #10B981;"><i class="fas fa-check"></i></div>';
-
       var chip = document.createElement('div');
       chip.id = 'face-chip-' + studentObj.studentId;
-      chip.style.cssText = 'background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.45); border-radius: 20px; padding: 4px 10px 4px 6px; display: flex; align-items: center; gap: 8px; flex-shrink: 0; animation: fadeIn 0.3s ease; box-shadow: 0 0 10px rgba(16,185,129,0.3);';
+      chip.className = 'face-recognized-chip';
+
+      var rawPhoto = studentObj.photo || studentObj.selfiePhoto || studentObj.avatar || '';
+      var photoUrl = formatFacePhotoUrl(rawPhoto);
+
+      if (photoUrl && photoUrl.length > 15 && photoUrl !== '-') {
+        var img = document.createElement('img');
+        img.className = 'face-chip-photo';
+        img.src = photoUrl;
+        img.alt = studentObj.name || '';
+        chip.appendChild(img);
+      } else {
+        var iconDiv = document.createElement('div');
+        iconDiv.className = 'face-chip-avatar';
+        iconDiv.innerHTML = '<i class="fas fa-check"></i>';
+        chip.appendChild(iconDiv);
+      }
+
+      var infoDiv = document.createElement('div');
+      infoDiv.className = 'face-chip-info';
+
+      var nameDiv = document.createElement('div');
+      nameDiv.className = 'face-chip-name';
+      nameDiv.textContent = studentObj.name || ('ID: ' + studentObj.studentId);
 
       var statusColor = (status === 'Late') ? '#FBBF24' : '#34D399';
       var statusTag = (status === 'Late') ? 'มาสาย' : 'มาเรียน';
 
-      chip.innerHTML = photoTag +
-        '<div>' +
-        '  <div style="font-size: 11.5px; font-weight: 700; color: #FFF; white-space: nowrap;">' + escapeHtml(studentObj.name) + '</div>' +
-        '  <div style="font-size: 10px; color: ' + statusColor + ';">' + statusTag + ' • ' + timeStr + ' (' + confPct + '%)</div>' +
-        '</div>';
+      var metaDiv = document.createElement('div');
+      metaDiv.className = 'face-chip-meta';
+      metaDiv.style.color = statusColor;
+      metaDiv.textContent = statusTag + ' • ' + timeStr + ' (' + confPct + '%)';
+
+      infoDiv.appendChild(nameDiv);
+      infoDiv.appendChild(metaDiv);
+      chip.appendChild(infoDiv);
 
       container.insertBefore(chip, container.firstChild);
     }
 
-    function confirmAndSyncFaceScanToDatabase() {
+        function confirmAndSyncFaceScanToDatabase() {
       var targetDate = AIFaceScannerState.targetDate || (document.getElementById('att-date-select') && document.getElementById('att-date-select').value) || AppState.selectedDate || getTodayDateString();
       var targetAct = AIFaceScannerState.targetActivity || (document.getElementById('att-activity-select') && document.getElementById('att-activity-select').value) || 'เช็คชื่อมาเรียน';
       if (targetAct === 'all' || !targetAct) targetAct = 'เช็คชื่อมาเรียน';
@@ -21667,23 +22007,24 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
   </div>
 
   <div class="modal-backdrop-glass" id="modal-ai-face-scanner" style="z-index: 10008;">
-    <div class="modal-window-glass" style="max-width: 820px; width: 95%; padding: 22px;">
-      <div class="modal-header-flex" style="margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1.5px solid rgba(0, 240, 255, 0.35);">
-        <div class="modal-title" style="display: flex; align-items: center; gap: 10px; color: #FFF; font-size: 16px;">
-          <div style="background: rgba(0, 240, 255, 0.15); width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--cyan-400); border: 1px solid rgba(0, 240, 255, 0.4);">
-            <i class="fas fa-camera-viewfinder" style="font-size: 18px;"></i>
+    <div class="modal-window-glass">
+      
+      <!-- MODAL HEADER -->
+      <div class="modal-header-flex" style="margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1.5px solid rgba(0, 240, 255, 0.25);">
+        <div class="modal-title" style="display: flex; align-items: center; gap: 8px; color: #FFF; font-size: 15px;">
+          <div style="background: rgba(0, 240, 255, 0.12); width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--cyan-400); border: 1px solid rgba(0, 240, 255, 0.35); flex-shrink: 0;">
+            <i class="fas fa-camera-viewfinder" style="font-size: 16px;"></i>
           </div>
           <div>
-            <div style="font-weight: 800; line-height: 1.2;">📷 สแกนใบหน้าเช็คชื่ออัตโนมัติ (AI Face Scan)</div>
-            <div style="font-size: 11.5px; color: var(--text-muted); font-weight: 500;" id="face-scanner-session-info">ห้อง: ทุกห้อง • วิชา: เช็คชื่อมาเรียน</div>
+            <div style="font-weight: 800; line-height: 1.2; font-size: 14px;">📷 สแกนใบหน้าเช็คชื่ออัตโนมัติ (AI Face Scan)</div>
+            <div style="font-size: 11px; color: var(--text-muted); font-weight: 500;" id="face-scanner-session-info">ห้อง: ทุกห้อง • วิชา: เช็คชื่อมาเรียน</div>
           </div>
         </div>
         <button type="button" class="modal-close btn-close-modal" onclick="closeAIFaceScannerModal()">&times;</button>
       </div>
 
       <!-- CAMERA VIEWPORT & HUD OVERLAY -->
-      <div style="position: relative; width: 100%; height: 380px; max-height: 55vh; background: #000; border-radius: 14px; overflow: hidden; border: 2px solid rgba(0, 240, 255, 0.5); box-shadow: 0 0 25px rgba(0, 240, 255, 0.25); margin-bottom: 14px; display: flex; align-items: center; justify-content: center;" id="face-scanner-viewport-container">
-        
+      <div class="face-scanner-viewport" id="face-scanner-viewport-container">
         <!-- Live Video Stream -->
         <video id="face-scanner-video" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover;"></video>
         
@@ -21691,86 +22032,93 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
         <canvas id="face-scanner-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;"></canvas>
 
         <!-- HUD Corner Brackets -->
-        <div style="position: absolute; top: 12px; left: 12px; width: 24px; height: 24px; border-top: 3px solid var(--cyan-400); border-left: 3px solid var(--cyan-400); pointer-events: none;"></div>
-        <div style="position: absolute; top: 12px; right: 12px; width: 24px; height: 24px; border-top: 3px solid var(--cyan-400); border-right: 3px solid var(--cyan-400); pointer-events: none;"></div>
-        <div style="position: absolute; bottom: 12px; left: 12px; width: 24px; height: 24px; border-bottom: 3px solid var(--cyan-400); border-left: 3px solid var(--cyan-400); pointer-events: none;"></div>
-        <div style="position: absolute; bottom: 12px; right: 12px; width: 24px; height: 24px; border-bottom: 3px solid var(--cyan-400); border-right: 3px solid var(--cyan-400); pointer-events: none;"></div>
+        <div style="position: absolute; top: 10px; left: 10px; width: 20px; height: 20px; border-top: 2.5px solid var(--cyan-400); border-left: 2.5px solid var(--cyan-400); pointer-events: none;"></div>
+        <div style="position: absolute; top: 10px; right: 10px; width: 20px; height: 20px; border-top: 2.5px solid var(--cyan-400); border-right: 2.5px solid var(--cyan-400); pointer-events: none;"></div>
+        <div style="position: absolute; bottom: 10px; left: 10px; width: 20px; height: 20px; border-bottom: 2.5px solid var(--cyan-400); border-left: 2.5px solid var(--cyan-400); pointer-events: none;"></div>
+        <div style="position: absolute; bottom: 10px; right: 10px; width: 20px; height: 20px; border-bottom: 2.5px solid var(--cyan-400); border-right: 2.5px solid var(--cyan-400); pointer-events: none;"></div>
 
         <!-- Top Status HUD Badge -->
-        <div style="position: absolute; top: 12px; background: #18181B; backdrop-filter: blur(8px); border: 1px solid rgba(0, 240, 255, 0.4); padding: 5px 14px; border-radius: 20px; font-size: 11.5px; font-weight: 700; color: #FFF; display: flex; align-items: center; gap: 8px; z-index: 10;" id="face-scanner-status-badge">
+        <div style="position: absolute; top: 10px; background: #18181B; backdrop-filter: blur(8px); border: 1px solid rgba(0, 240, 255, 0.4); padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; color: #FFF; display: flex; align-items: center; gap: 6px; z-index: 10;" id="face-scanner-status-badge">
           <span class="gps-status-dot green" style="animation: pulse-live 1.2s infinite; width: 8px; height: 8px;"></span>
           <span id="face-scanner-status-text">กำลังสแกน... กรุณาแพนกล้องส่องไปที่ใบหน้านักศึกษา</span>
         </div>
 
         <!-- AI Model / Student Descriptors Loading Overlay -->
-        <div id="face-scanner-loading-overlay" style="position: absolute; inset: 0; background: rgba(7, 9, 14, 0.94); backdrop-filter: blur(12px); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; z-index: 20; text-align: center;">
-          <i class="fas fa-brain-circuit fa-spin" style="font-size: 44px; color: var(--cyan-400); margin-bottom: 16px;"></i>
-          <h4 style="font-size: 16px; font-weight: 800; color: #FFF; margin-bottom: 6px;" id="face-loading-title">กำลังโหลดโมเดล AI ตรวจจับใบหน้า...</h4>
-          <p style="font-size: 12px; color: var(--text-muted); max-width: 360px; margin-bottom: 14px;" id="face-loading-desc">กำลังเตรียมความพร้อมของระบบประมวลผลและการจับคู่ภาพถ่ายนักศึกษา</p>
-          <div style="width: 240px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
+        <div id="face-scanner-loading-overlay" style="position: absolute; inset: 0; background: rgba(7, 9, 14, 0.94); backdrop-filter: blur(12px); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; z-index: 20; text-align: center;">
+          <i class="fas fa-brain-circuit fa-spin" style="font-size: 38px; color: var(--cyan-400); margin-bottom: 12px;"></i>
+          <h4 style="font-size: 15px; font-weight: 800; color: #FFF; margin-bottom: 6px;" id="face-loading-title">กำลังโหลดโมเดล AI ตรวจจับใบหน้า...</h4>
+          <p style="font-size: 11.5px; color: var(--text-muted); max-width: 340px; margin-bottom: 12px;" id="face-loading-desc">กำลังเตรียมความพร้อมของระบบประมวลผลและการจับคู่ภาพถ่ายนักศึกษา</p>
+          <div style="width: 220px; height: 5px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
             <div id="face-loading-bar" style="width: 30%; height: 100%; background: linear-gradient(90deg, #00F0FF, #10B981); transition: width 0.3s ease;"></div>
           </div>
         </div>
       </div>
 
-      <!-- CONTROLS & SETTINGS TOOLBAR -->
-      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; background: #18181B; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 10px 14px; margin-bottom: 14px;">
-        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-          <button type="button" class="btn-glass btn-orange btn-sm-glass" onclick="openAIFaceEnrollmentModal('', AIFaceScannerState.targetClass)" style="font-weight: 800;" title="เปิดหน้าต่างถ่ายรูป/ลงทะเบียนใบหน้าให้นักศึกษาใหม่">
-            <i class="fas fa-user-plus"></i> + ลงทะเบียนใบหน้า
+      <!-- 1. DIRECTLY BELOW CAMERA: LIVE RECOGNIZED STUDENTS FEED -->
+      <div class="face-scan-feed-container" id="face-scan-feed-section">
+        <div class="face-scan-feed-header">
+          <div class="face-scan-feed-title">
+            <i class="fas fa-user-check" style="color: #10B981; font-size: 14px;"></i>
+            <span>รายชื่อที่สแกนติดแล้วในคาบนี้</span>
+          </div>
+          <span class="badge-glass badge-present" id="face-scan-counter-badge" style="font-size: 12px; padding: 3px 10px; font-weight: 800;">
+            เช็คแล้ว: <span id="face-scan-count-pres" style="color: #34D399; font-weight: 900;">0</span> / <span id="face-scan-count-tot">0</span> คน
+          </span>
+        </div>
+
+        <div id="face-scan-recent-chips" class="face-scan-chips-scroll">
+          <div class="face-scan-placeholder">
+            <i class="fas fa-sparkles" style="color: var(--cyan-400);"></i>
+            <span>ระบบพร้อมสแกน... แพนกล้องส่องไปที่ใบหน้านักศึกษาได้ทันที</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. CONTROLS & SETTINGS TOOLBAR (CLEAN, PROFESSIONAL, TIDY) -->
+      <div class="face-scan-toolbar">
+        <div class="face-scan-toolbar-left">
+          <button type="button" class="btn-glass btn-cyan face-btn-ctrl" id="btn-toggle-face-camera" onclick="toggleFaceCameraFacingMode()" title="สลับกล้องหน้า / กล้องหลัง">
+            <i class="fas fa-camera-rotate"></i>
+            <span>สลับกล้อง (<span id="face-cam-mode-label">หลัง</span>)</span>
           </button>
-          <button type="button" class="btn-glass btn-cyan btn-sm-glass" id="btn-toggle-face-camera" onclick="toggleFaceCameraFacingMode()" title="สลับกล้องหน้า / กล้องหลัง">
-            <i class="fas fa-camera-rotate"></i> สลับกล้อง (<span id="face-cam-mode-label">หลัง</span>)
+          <button type="button" class="btn-glass btn-dark face-btn-ctrl" id="btn-toggle-face-sound" onclick="toggleFaceScannerSound()" title="เปิด/ปิดเสียงติ๊งแจ้งเตือน">
+            <i class="fas fa-volume-high" id="face-sound-icon" style="color: #22C55E;"></i>
+            <span id="face-sound-label">เสียง: เปิด</span>
           </button>
-          <button type="button" class="btn-glass btn-dark btn-sm-glass" id="btn-toggle-face-sound" onclick="toggleFaceScannerSound()" title="เปิด/ปิดเสียงติ๊งแจ้งเตือน">
-            <i class="fas fa-volume-high" id="face-sound-icon" style="color: #22C55E;"></i> <span id="face-sound-label">เสียง: เปิด</span>
+          <button type="button" class="btn-glass btn-orange face-btn-ctrl" onclick="openAIFaceEnrollmentModal('', AIFaceScannerState.targetClass)" title="เปิดหน้าต่างถ่ายรูป/ลงทะเบียนใบหน้าให้นักศึกษาใหม่">
+            <i class="fas fa-user-plus"></i>
+            <span>+ ลงทะเบียนหน้า</span>
           </button>
         </div>
 
         <!-- Confidence Slider -->
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); white-space: nowrap;">
-            ความแม่นยำ AI: <span id="face-match-threshold-val" style="color: var(--cyan-400); font-weight: 800;">60%</span>
-          </label>
-          <input type="range" id="face-match-threshold" min="40" max="80" value="60" oninput="updateFaceMatchThreshold(this.value)" style="width: 90px; accent-color: var(--cyan-400); cursor: pointer;" />
-        </div>
-      </div>
-
-      <!-- LIVE RECOGNIZED STUDENTS FEED -->
-      <div style="background: rgba(10, 14, 24, 0.75); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 12px 14px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
-          <div style="font-size: 12.5px; font-weight: 800; color: #FFF; display: flex; align-items: center; gap: 6px;">
-            <i class="fas fa-user-check" style="color: #10B981;"></i> รายชื่อที่สแกนติดแล้วในคาบนี้:
-          </div>
-          <div style="font-size: 12px; font-weight: 800;">
-            <span class="badge-glass badge-present" id="face-scan-counter-badge" style="font-size: 12px; padding: 3px 10px;">
-              เช็คแล้ว: <span id="face-scan-count-pres">0</span> / <span id="face-scan-count-tot">0</span> คน
-            </span>
-          </div>
-        </div>
-
-        <div id="face-scan-recent-chips" style="display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 8px; min-height: 50px; scrollbar-width: thin;">
-          <div style="color: #64748B; font-size: 12px; display: flex; align-items: center; gap: 6px; padding: 10px 0;">
-            <i class="fas fa-sparkles" style="color: var(--cyan-400);"></i> ระบบพร้อมสแกน... แพนกล้องส่องไปที่ใบหน้านักศึกษาได้ทันที
+        <div class="face-scan-toolbar-right">
+          <div class="face-scan-threshold-box">
+            <span class="face-scan-threshold-label">ความแม่นยำ AI: <b id="face-match-threshold-val" style="color: var(--cyan-400);">60%</b></span>
+            <input type="range" id="face-match-threshold" min="40" max="80" value="60" oninput="updateFaceMatchThreshold(this.value)" class="face-scan-slider" />
           </div>
         </div>
       </div>
 
-      <div style="margin-top: 14px; display: flex; justify-content: space-between; align-items: center;">
-        <div style="font-size: 11px; color: var(--text-muted);">
-          💡 <span style="color: #FBBF24;">คำแนะนำ:</span> ถือกล้องให้อยู่ในระดับสายตา ระยะห่าง 1-4 เมตร และมีแสงสว่างพอเหมาะ
+      <!-- 3. ACTION BUTTONS (ORDERLY & ERGONOMIC) -->
+      <div class="face-scan-actions">
+        <div class="face-scan-tip" style="font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 5px;">
+          <i class="fas fa-lightbulb" style="color: #FBBF24;"></i> ระยะห่าง 1-4 เมตร แสงสว่างพอเหมาะ
         </div>
-        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-          <button type="button" class="btn-glass btn-emerald" id="btn-confirm-face-scan-to-db" onclick="confirmAndSyncFaceScanToDatabase()" style="font-weight: 800; padding: 9px 20px; box-shadow: 0 0 20px rgba(16,185,129,0.5); font-size: 13.5px;">
-            <i class="fas fa-check-circle"></i> ✅ ยืนยันบันทึกผลการสแกน (0 คน) ลง Google Sheets
+        <div class="face-scan-action-btns">
+          <button type="button" class="btn-glass btn-emerald face-btn-confirm" id="btn-confirm-face-scan-to-db" onclick="confirmAndSyncFaceScanToDatabase()">
+            <i class="fas fa-check-circle"></i>
+            <span>✅ ยืนยันบันทึกผลการสแกน (0 คน) ลง Google Sheets</span>
           </button>
-          <button type="button" class="btn-glass btn-dark btn-sm-glass" onclick="closeAIFaceScannerModal()">
-            <i class="fas fa-check"></i> เสร็จสิ้น / ปิดกล้อง
+          <button type="button" class="btn-glass btn-dark face-btn-close" onclick="closeAIFaceScannerModal()">
+            <i class="fas fa-check"></i>
+            <span>เสร็จสิ้น / ปิดกล้อง</span>
           </button>
         </div>
       </div>
+
     </div>
   </div>
 
-</body>
+  </body>
 </html>
