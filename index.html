@@ -15707,6 +15707,12 @@
         var card = document.createElement('div');
         card.className = 'student-att-card';
         card.setAttribute('data-student-id', student.studentId);
+        var curCheckinTime = (rec && typeof rec === 'object' && rec.checkinTime && rec.checkinTime !== '-') ? rec.checkinTime : '';
+        var curSelfie = (rec && typeof rec === 'object' && rec.selfiePhoto) ? rec.selfiePhoto : '';
+        var curDist = (rec && typeof rec === 'object' && rec.distanceMeters) ? rec.distanceMeters : '';
+        card.setAttribute('data-checkin-time', curCheckinTime);
+        card.setAttribute('data-selfie-photo', curSelfie);
+        card.setAttribute('data-distance', curDist);
         
         var metaBlock = document.createElement('div');
         metaBlock.className = 'student-meta-block';
@@ -15910,11 +15916,20 @@
         var status = checkedRadio ? checkedRadio.value : 'Absent';
         var noteInput = cards[i].querySelector('.student-att-note-input');
         var note = noteInput ? noteInput.value.trim() : '';
+        var existingTime = cards[i].getAttribute('data-checkin-time') || '';
+        var existingSelfie = cards[i].getAttribute('data-selfie-photo') || '';
+        
+        var sTime = '-';
+        if (status === 'Present' || status === 'Late' || status === 'มาเรียน' || status === 'มาสาย') {
+          sTime = (existingTime && existingTime !== '-') ? existingTime : new Date().toLocaleTimeString('th-TH', { hour12: false, hour: '2-digit', minute: '2-digit' });
+        }
         
         listToSave.push({
           date: dateStr,
           studentId: studentId,
           status: status,
+          checkinTime: sTime,
+          selfiePhoto: existingSelfie,
           activityName: curActivity,
           note: note
         });
@@ -17957,6 +17972,8 @@
 
           var stLabel = (status === 'Present' || status === 'มาเรียน') ? 'มาเรียน' : ((status === 'Absent' || status === 'ขาด' || status === 'ขาดเรียน') ? 'ขาดเรียน' : ((status === 'Sick' || status === 'ลาป่วย') ? 'ลาป่วย' : ((status === 'Leave' || status === 'ลากิจ') ? 'ลากิจ' : 'มาสาย')));
 
+          var exportTime = (status === 'Absent' || status === 'ขาด' || status === 'ขาดเรียน') ? '-' : (cTime && cTime !== '-' ? formatTimeString(cTime) : '-');
+
           exportData.push({
             'วันที่': startDate,
             'เลขที่': s.studentNo || (j + 1),
@@ -17965,7 +17982,7 @@
             'ห้องเรียน': s.className,
             'กิจกรรม/วิชา': actName,
             'สถานะ': stLabel,
-            'เวลาเช็คชื่อ': cTime,
+            'เวลาเช็คชื่อ': exportTime,
             'หมายเหตุ': note
           });
         }
@@ -18407,7 +18424,8 @@
           subTimeDiv.style.color = '#94A3B8';
           subTimeDiv.style.marginTop = '2px';
           
-          var timeText = '🕒 เวลา: ' + (item.checkinTime && item.checkinTime !== '-' ? item.checkinTime : '-');
+          var formattedTime = (item.status === 'Absent' || item.status === 'ขาด' || item.status === 'ขาดเรียน') ? '-' : (item.checkinTime && item.checkinTime !== '-' ? formatTimeString(item.checkinTime) : '-');
+          var timeText = '🕒 เวลา: ' + formattedTime;
           if (item.distanceMeters && item.distanceMeters > 0) {
             timeText += ' • 📍 ' + item.distanceMeters + ' ม.';
           }
@@ -18700,6 +18718,8 @@
 
             var stLabel = (status === 'Present' || status === 'มาเรียน') ? 'มาเรียน' : ((status === 'Absent' || status === 'ขาด' || status === 'ขาดเรียน') ? 'ขาดเรียน' : ((status === 'Sick' || status === 'ลาป่วย') ? 'ลาป่วย' : ((status === 'Leave' || status === 'ลากิจ') ? 'ลากิจ' : 'มาสาย')));
 
+            var exportTime = (status === 'Absent' || status === 'ขาด' || status === 'ขาดเรียน') ? '-' : (cTime && cTime !== '-' ? formatTimeString(cTime) : '-');
+
             exportData.push({
               'วันที่': startDate,
               'เลขที่': s.studentNo,
@@ -18708,7 +18728,7 @@
               'ห้องเรียน': s.className,
               'กิจกรรม/รายวิชา': actName,
               'สถานะการมาเรียน': stLabel,
-              'เวลาเช็คชื่อ': cTime,
+              'เวลาเช็คชื่อ': exportTime,
               'รูปถ่ายเซลฟี่': hasPhoto,
               'ระยะทาง GPS (เมตร)': dist,
               'หมายเหตุ': note

@@ -914,6 +914,47 @@
       renderStudentCards();
     }
 
+    var DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbyENNsNjTy8YvyBsm73Ab68GUkKklL_E-nuKWWehPzT8C-AlatfNy0IHLaY-F390TYmng/exec';
+
+    function getQueryParam(key) {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        return params.get(key);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function getGasApiUrl() {
+      var saved = localStorage.getItem('gas_student_web_app_url');
+      if (saved && saved.indexOf('http') === 0) return saved;
+      var paramUrl = getQueryParam('gas_url');
+      if (paramUrl && paramUrl.indexOf('http') === 0) return paramUrl;
+      return DEFAULT_GAS_URL;
+    }
+
+    function fetchReportFromApi() {
+      var gasUrl = getGasApiUrl();
+      if (gasUrl && gasUrl.indexOf('http') === 0) {
+        var reqUrl = gasUrl + '?action=getPublicDailyReportData&args=' + encodeURIComponent(JSON.stringify([AppData.selectedDate, 'all', FIXED_CLASSES, FIXED_ACTIVITY]));
+        fetch(reqUrl)
+          .then(function(resp) { return resp.json(); })
+          .then(function(res) {
+            if (res && res.status === 'success' && res.students && res.students.length > 0) {
+              handleReportDataResponse(res);
+            } else {
+              loadFallbackData();
+            }
+          })
+          .catch(function(err) {
+            console.warn('Live API fetch error, using fallback:', err);
+            loadFallbackData();
+          });
+      } else {
+        loadFallbackData();
+      }
+    }
+
     function loadReportData() {
       var container = document.getElementById('students-grid-container');
       if (container) {
@@ -930,11 +971,11 @@
           })
           .withFailureHandler(function(err) {
             console.warn('loadReportData failed, using fallback:', err);
-            loadFallbackData();
+            fetchReportFromApi();
           })
           .getPublicDailyReportData(AppData.selectedDate, 'all', FIXED_CLASSES, FIXED_ACTIVITY);
       } else {
-        loadFallbackData();
+        fetchReportFromApi();
       }
     }
 
@@ -950,6 +991,8 @@
         var s = res.students[i];
         var c = (s.className || '').trim();
         if (c.indexOf('ปวส.1/2') > -1 || c.indexOf('ปวส.1/5') > -1) {
+          if (!s.time && s.checkinTime) s.time = s.checkinTime;
+          if (s.status === 'Absent' || s.status === 'ขาด' || s.status === 'ขาดเรียน') s.time = '-';
           filtered.push(s);
         }
       }
