@@ -6938,9 +6938,15 @@
      * =========================================================================
      */
 
+    function updateAttendanceSummaryCounters() {
+      if (typeof updateAttendanceStickyBar === 'function') {
+        updateAttendanceStickyBar();
+      }
+    }
+
     // Feature 1: Mark All Students Present in 1-Click
     function markAllStudentsPresentQuick() {
-      var rows = document.querySelectorAll('#attendance-table-body tr');
+      var rows = document.querySelectorAll('#attendance-student-list .student-att-card, #attendance-table-body tr');
       if (!rows || rows.length === 0) {
         showToast('กรุณากดโหลดข้อมูลนักเรียนก่อนดำเนินการ', 'warning');
         return;
@@ -6968,7 +6974,6 @@
         }
       }
 
-      updateAttendanceSummaryCounters();
       updateAttendanceStickyBar();
       showToast('ตั้งค่าสถานะนักเรียนทุกคนเป็น "มาเรียน" เรียบร้อยแล้ว (' + countUpdated + ' คน) ✅', 'success');
     }
@@ -6976,7 +6981,7 @@
     // Feature 1: Live Filter Attendance Table Rows
     function filterAttendanceTableRowsLive(query) {
       var q = (query || '').toLowerCase().trim();
-      var rows = document.querySelectorAll('#attendance-table-body tr');
+      var rows = document.querySelectorAll('#attendance-student-list .student-att-card, #attendance-table-body tr');
       for (var i = 0; i < rows.length; i++) {
         var row = rows[i];
         if (!q) {
@@ -6994,7 +6999,7 @@
       if (!bar) return;
 
       var currentView = AppState.currentView || 'dashboard';
-      var rows = document.querySelectorAll('#attendance-table-body tr');
+      var rows = document.querySelectorAll('#attendance-student-list .student-att-card, #attendance-table-body tr');
 
       if (currentView !== 'attendance' || !rows || rows.length === 0) {
         bar.style.display = 'none';
@@ -7027,9 +7032,8 @@
     }
 
     function triggerSaveAttendanceDatabase() {
-      var saveBtn = document.getElementById('btn-save-attendance');
-      if (saveBtn) {
-        saveBtn.click();
+      if (typeof saveAttendanceBatch === 'function') {
+        saveAttendanceBatch();
       } else if (typeof saveAttendanceRecords === 'function') {
         saveAttendanceRecords();
       } else {
@@ -7837,13 +7841,13 @@
     }
 
     function isClassMatch(filter, studentClass) {
-      if (!filter || filter === 'all' || filter === 'ทุกห้องเรียน' || filter === 'undefined') return true;
-      var sClass = String(studentClass || '').trim().toLowerCase();
+      if (!filter || filter === 'all' || filter === 'ทุกห้องเรียน' || filter === 'ทุกห้อง' || filter === 'undefined') return true;
+      var sClass = String(studentClass || '').trim().toLowerCase().replace(/^ห้อง\s*/, '');
       if (!sClass) return false;
       var parts = String(filter).split(',');
       for (var p = 0; p < parts.length; p++) {
-        var item = parts[p].trim().toLowerCase();
-        if (item === 'all' || item === 'ทุกห้องเรียน' || item === sClass) {
+        var item = parts[p].trim().toLowerCase().replace(/^ห้อง\s*/, '');
+        if (!item || item === 'all' || item === 'ทุกห้องเรียน' || item === 'ทุกห้อง' || item === sClass || sClass === item || sClass.indexOf(item) > -1 || item.indexOf(sClass) > -1) {
           return true;
         }
       }
@@ -20569,6 +20573,18 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
 
     
 
+    function formatFacePhotoUrl(url) {
+      if (!url || typeof url !== 'string') return '';
+      var str = url.trim();
+      if (!str || str === '-' || str === 'null' || str === 'undefined') return '';
+      if (str.indexOf('data:image') === 0) return str;
+      var driveMatch = str.match(/(?:id=|\/d\/)([a-zA-Z0-9_-]{20,})/);
+      if (driveMatch && driveMatch[1]) {
+        return 'https://lh3.googleusercontent.com/d/' + driveMatch[1];
+      }
+      return str;
+    }
+
     var AIFaceScannerState = {
       stream: null,
       facingMode: 'environment', // 'user' (front) or 'environment' (back)
@@ -20577,7 +20593,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
       faceMatcher: null,
       soundEnabled: true,
       audioCtx: null,
-      maxDescriptorDistance: 0.40, // default match threshold (lower = stricter)
+      maxDescriptorDistance: 0.55, // balanced match threshold for classroom recognition (0.55 = 45-100% match)
       targetSession: null,
       targetClass: 'all',
       targetActivity: 'เช็คชื่อมาเรียน',
@@ -20633,8 +20649,8 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
       var numVal = parseInt(val, 10) || 60;
       var lbl = document.getElementById('face-match-threshold-val');
       if (lbl) lbl.textContent = numVal + '%';
-      // Convert slider (40-80%) to distance threshold (0.60 to 0.35)
-      AIFaceScannerState.maxDescriptorDistance = 1.0 - (numVal / 100);
+      // Balanced mapping: 40% slider -> 0.65 distance, 60% slider -> 0.55 distance, 80% slider -> 0.45 distance
+      AIFaceScannerState.maxDescriptorDistance = 0.85 - (numVal * 0.5 / 100);
       if (AIFaceScannerState.faceMatcher && AIFaceScannerState.labeledDescriptors) {
         AIFaceScannerState.faceMatcher = new faceapi.FaceMatcher(AIFaceScannerState.labeledDescriptors, AIFaceScannerState.maxDescriptorDistance);
       }
@@ -20651,11 +20667,13 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
           }
         }
       }
-      if (!sess && AppState.activeSessions && AppState.activeSessions.length > 0) {
-        sess = AppState.activeSessions[0];
-      }
-      if (!sess && AppState.activeSession) {
-        sess = AppState.activeSession;
+      var currentView = AppState.currentView || '';
+      if (!sess && sessionId) {
+        if (AppState.activeSession && AppState.activeSession.sessionId === sessionId) {
+          sess = AppState.activeSession;
+        }
+      } else if (!sess && (currentView === 'projector' || currentView === 'session')) {
+        sess = AppState.activeSession || (AppState.activeSessions && AppState.activeSessions[0]) || null;
       }
 
       var targetClass = sess ? sess.className : (getSelectedAttendanceClasses() || AppState.selectedClass || 'all');
@@ -20693,12 +20711,6 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
       var video = document.getElementById('face-scanner-video');
       if (video) video.srcObject = null;
       closeModal('modal-ai-face-scanner');
-
-      // Refresh attendance list if currently on attendance page
-      var attSection = document.getElementById('view-attendance');
-      if (attSection && attSection.classList.contains('active')) {
-        loadAttendanceDataForSelectedDate();
-      }
     }
 
     function loadFaceApiModelsAndDescriptors(targetClass) {
@@ -20733,7 +20745,13 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
         });
       }).then(function(matcher) {
         AIFaceScannerState.faceMatcher = matcher;
+        var enrolledCount = (AIFaceScannerState.labeledDescriptors || []).length;
         if (loadingOverlay) loadingOverlay.style.display = 'none';
+        if (enrolledCount === 0) {
+          showToast('⚠️ ยังไม่มีข้อมูลใบหน้านักศึกษาในห้องนี้ กรุณากดปุ่ม "+ ลงทะเบียนใบหน้า" เพื่อถ่ายรูปหรือเพิ่มรูปนักศึกษา', 'warning');
+        } else {
+          showToast('โหลดข้อมูลใบหน้านักศึกษาพร้อมใช้งาน (' + enrolledCount + ' คน) ✨', 'success');
+        }
         startFaceCameraStream();
       }).catch(function(err) {
         console.error('Face API model loading error:', err);
@@ -20767,7 +20785,8 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
           processed++;
           if (progressCb) progressCb(processed, total);
 
-          var photoUrl = std.photo || std.selfiePhoto || std.avatar || std.imageUrl || '';
+          var rawPhoto = std.photo || std.selfiePhoto || std.avatar || std.imageUrl || '';
+          var photoUrl = formatFacePhotoUrl(rawPhoto);
           if (!photoUrl || photoUrl.length < 15 || photoUrl === '-' || photoUrl === 'null') {
             return Promise.resolve();
           }
@@ -20779,9 +20798,16 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
           }
 
           return faceapi.fetchImage(photoUrl).then(function(img) {
-            return faceapi.detectSingleFace(img, new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.45 }))
+            // Dual-pass face detection: Pass 1 standard, Pass 2 fallback with higher sensitivity
+            var opt1 = new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.20 });
+            return faceapi.detectSingleFace(img, opt1)
               .withFaceLandmarks()
-              .withFaceDescriptor();
+              .withFaceDescriptor()
+              .then(function(detection) {
+                if (detection && detection.descriptor) return detection;
+                var opt2 = new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.12 });
+                return faceapi.detectSingleFace(img, opt2).withFaceLandmarks().withFaceDescriptor();
+              });
           }).then(function(detection) {
             if (detection && detection.descriptor) {
               AIFaceScannerState.studentDescriptorsMap[std.studentId] = detection.descriptor;
@@ -20850,7 +20876,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
         var displaySize = { width: video.clientWidth || 640, height: video.clientHeight || 480 };
         faceapi.matchDimensions(canvas, displaySize);
 
-        var options = new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.45 });
+        var options = new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.25 });
 
         faceapi.detectAllFaces(video, options)
           .withFaceLandmarks()
@@ -20876,7 +20902,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
                 if (isMatched) {
                   var sList = AppState.students || [];
                   for (var s = 0; s < sList.length; s++) {
-                    if (sList[s].studentId === bestMatch.label) {
+                    if (String(sList[s].studentId).trim() === String(bestMatch.label).trim()) {
                       studentObj = sList[s];
                       break;
                     }
@@ -20944,7 +20970,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
       var sId = studentObj.studentId;
       var nowMs = Date.now();
 
-      // Check cooldown (5 seconds)
+      // Check cooldown (6 seconds)
       if (AIFaceScannerState.checkedInCooldown[sId] && nowMs < AIFaceScannerState.checkedInCooldown[sId]) {
         return;
       }
@@ -20968,7 +20994,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
       var allAtt = getLocalStorageAttendance();
       var foundIdx = -1;
       for (var a = 0; a < allAtt.length; a++) {
-        if (allAtt[a].date === targetDate && allAtt[a].studentId === sId && isActivityMatch(allAtt[a].activityName, targetAct)) {
+        if (allAtt[a].date === targetDate && String(allAtt[a].studentId).trim() === String(sId).trim() && isActivityMatch(allAtt[a].activityName, targetAct)) {
           foundIdx = a;
           break;
         }
@@ -20999,7 +21025,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
       var alreadyIn = false;
       if (!AIFaceScannerState.recentRecognizedList) AIFaceScannerState.recentRecognizedList = [];
       for (var r = 0; r < AIFaceScannerState.recentRecognizedList.length; r++) {
-        if (AIFaceScannerState.recentRecognizedList[r].studentId === sId) {
+        if (String(AIFaceScannerState.recentRecognizedList[r].studentId).trim() === String(sId).trim()) {
           alreadyIn = true;
           break;
         }
@@ -21056,7 +21082,8 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
         container.innerHTML = '';
       }
 
-      var photoUrl = studentObj.photo || studentObj.selfiePhoto || studentObj.avatar || '';
+      var rawPhoto = studentObj.photo || studentObj.selfiePhoto || studentObj.avatar || '';
+      var photoUrl = formatFacePhotoUrl(rawPhoto);
       var photoTag = (photoUrl && photoUrl.length > 15 && photoUrl !== '-')
         ? '<img src="' + escapeHtml(photoUrl) + '" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1.5px solid #10B981;" />'
         : '<div style="width: 28px; height: 28px; border-radius: 50%; background: #18181B; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #10B981;"><i class="fas fa-check"></i></div>';
@@ -21101,6 +21128,54 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
         });
       }
 
+      // 1. Immediately update UI in attendance student cards (#attendance-student-list)
+      for (var r = 0; r < listToSave.length; r++) {
+        var item = listToSave[r];
+        var sId = item.studentId;
+        var card = document.querySelector('#attendance-student-list .student-att-card[data-student-id="' + sId + '"]');
+        if (card) {
+          var radioPres = card.querySelector('input[type="radio"][value="Present"]');
+          if (radioPres) radioPres.checked = true;
+          var noteInput = card.querySelector('.student-att-note-input');
+          if (noteInput && !noteInput.value) {
+            noteInput.value = item.note;
+          }
+          var subInfo = card.querySelector('.student-sub-info');
+          if (subInfo && recognized[r] && recognized[r].timeStr) {
+            var baseSub = subInfo.textContent.split(' • 🏷️')[0];
+            subInfo.textContent = baseSub + ' • 🏷️ ' + targetAct + ' (' + recognized[r].timeStr + ' สแกน AI)';
+          }
+        }
+        // Also update in AppState.currentAttendanceStudents
+        if (AppState.currentAttendanceStudents && Array.isArray(AppState.currentAttendanceStudents)) {
+          for (var cs = 0; cs < AppState.currentAttendanceStudents.length; cs++) {
+            if (String(AppState.currentAttendanceStudents[cs].studentId).trim() === String(sId).trim()) {
+              AppState.currentAttendanceStudents[cs].status = item.status || 'Present';
+              AppState.currentAttendanceStudents[cs].note = item.note;
+            }
+          }
+        }
+      }
+      updateAttendanceStickyBar();
+
+      // 2. Also save to localStorage
+      var allAtt = getLocalStorageAttendance();
+      var mapKeys = {};
+      for (var k = 0; k < listToSave.length; k++) {
+        mapKeys[listToSave[k].date + '_' + listToSave[k].studentId + '_' + listToSave[k].activityName] = listToSave[k].status;
+      }
+      var newAllAtt = [];
+      for (var j = 0; j < allAtt.length; j++) {
+        var itemAct = allAtt[j].activityName || 'เช็คชื่อมาเรียน';
+        var key = allAtt[j].date + '_' + allAtt[j].studentId + '_' + itemAct;
+        if (!mapKeys[key]) newAllAtt.push(allAtt[j]);
+      }
+      for (var m = 0; m < listToSave.length; m++) newAllAtt.push(listToSave[m]);
+      localStorage.setItem('gas_student_app_attendance', JSON.stringify(newAllAtt));
+
+      // 3. Close modal immediately so user sees the updated cards
+      closeAIFaceScannerModal();
+
       var classDisplay = (targetClass === 'all' || targetClass === 'ทุกห้องเรียน') ? 'ทุกห้องเรียน' : ('ห้อง ' + targetClass.replace(/^ห้อง\s*/, ''));
       showLoadingPopup('กำลังบันทึกผลการเช็คชื่อ...', 'กำลังนำส่งข้อมูล ' + listToSave.length + ' คน (' + classDisplay + ' • ' + targetAct + ') เข้าสู่ Google Sheets');
 
@@ -21108,20 +21183,17 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
         google.script.run
           .withSuccessHandler(function(res) {
             hideLoadingPopup();
-            closeAIFaceScannerModal();
             showToast('บันทึกผลการสแกนใบหน้า ' + listToSave.length + ' คน ลง Google Sheets (' + targetAct + ') สำเร็จ! 🎉', 'success');
             loadAttendanceDataForSelectedDate();
           })
           .withFailureHandler(function(err) {
             hideLoadingPopup();
-            closeAIFaceScannerModal();
             showToast('เกิดข้อผิดพลาดในการบันทึก: ' + (err.message || err), 'error');
             loadAttendanceDataForSelectedDate();
           })
           .saveAttendanceBatch(listToSave, targetAct);
       } else {
         hideLoadingPopup();
-        closeAIFaceScannerModal();
         showToast('บันทึกผลการสแกนใบหน้า ' + listToSave.length + ' คน ลงฐานข้อมูล (' + targetAct + ') เรียบร้อย! 🎉', 'success');
         loadAttendanceDataForSelectedDate();
       }
@@ -21157,7 +21229,7 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
       for (var i = 0; i < roomStudents.length; i++) {
         var sId = roomStudents[i].studentId;
         for (var a = 0; a < allAtt.length; a++) {
-          if (allAtt[a].date === targetDate && allAtt[a].studentId === sId && isActivityMatch(allAtt[a].activityName, targetAct)) {
+          if (allAtt[a].date === targetDate && String(allAtt[a].studentId).trim() === String(sId).trim() && isActivityMatch(allAtt[a].activityName, targetAct)) {
             if (allAtt[a].status === 'Present' || allAtt[a].status === 'มาเรียน' || allAtt[a].status === 'Late' || allAtt[a].status === 'มาสาย') {
               presCount++;
             }
@@ -21171,7 +21243,6 @@ function renderFlexCardForExport(targetDate, targetClass, targetAct) {
     }
 
     
-
     // =========================================================================
     // EXPOSE GLOBAL FUNCTIONS TO WINDOW (ENSURES INLINE ONCLICK WORKS ON GITHUB & STANDALONE)
     // =========================================================================
